@@ -2,7 +2,7 @@
   inherit (inputs.nixpkgs) lib;
   mylib = import ./libs {inherit lib;};
   myvars = import ./vars {inherit lib;};
-  args = {inherit  inputs lib mylib myvars;}; # The args given
+  args = {inherit inputs lib mylib myvars;}; # The args given
   # to other nix files
   nixos_systems = {
     x86_64-linux = import ./machines (args // {system = "x86_64-linux";});
@@ -16,4 +16,8 @@ in {
   # evalTests = lib.lists.all (i: i.evalTests == {}) nixos_system_values;
   # NixOS Hosts
   nixosConfigurations = lib.mergeAttrsList (map (i: i.nixos_configurations or {}) nixos_systems_values);
+  # Packages
+  packages = lib.genAttrs
+    (builtins.attrNames nixos_systems)
+    (system: nixos_systems.${system}.packages or {});
 }

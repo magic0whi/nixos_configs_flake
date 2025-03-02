@@ -1,9 +1,12 @@
 {inputs, lib, mylib, myvars, system}: let
-  inherit (inputs) home-manager nixpkgs;
+  inherit (inputs) home-manager nixpkgs nixos-generators;
+  hostname = "proteus-sp4";
   specialArgs = inputs // {inherit mylib myvars;};
-  name = "surfacepro4";
   nixpkgs_modules = map mylib.relative_to_root [
-    "modules/nixos"
+    # "modules/secrets"
+    "modules/nixos/common"
+    "modules/nixos/desktop"
+    "modules/nixpaks"
   ];
   hm_modules = map mylib.relative_to_root [
     "modules/hm/common.nix"
@@ -11,37 +14,36 @@
   ];
 in {
   nixos_configurations = {
-    # host with hyprland compositor
-    "${name}" = nixpkgs.lib.nixosSystem {
+    "${hostname}" = nixpkgs.lib.nixosSystem {
       inherit system specialArgs;
       modules = nixpkgs_modules ++ [
+        nixos-generators.nixosModules.all-formats
         {
           imports = [
-            ./secureboot.nix
             ./hardware-configuration.nix
-            ./specs.nix
+            ./secureboot.nix
+            ./configuration.nix
+            ./impermanence.nix
+            # TODO
+            # hosts/idols-ai/netdev-mount.nix
           ];
-          # TODO: move to hosts
-          modules.desktop.wayland.enable = true;
-          # modules.secrets.desktop.enable = true;
-          # modules.secrets.impermanence.enable = true;
+          system.stateVersion = "25.05";
+          networking.hostName = hostname;
+          networking.wireless.iwd.enable = true;
         }
-        # nixos-generators.nixosModules.all-formats
       ] ++ (lib.optionals ((lib.lists.length hm_modules) > 0) [
         home-manager.nixosModules.home-manager {
           home-manager.backupFileExtension = "home-manager.backup";
           home-manager.extraSpecialArgs = specialArgs;
           home-manager.useGlobalPkgs = true;
           home-manager.useUserPackages = true;
-          home-manager.users."${myvars.username}".imports = hm_modules ++ [
-            ./hm.nix
-          ];
+          home-manager.users."${myvars.username}".imports = hm_modules ++ [./hm];
         }
       ]);
     };
   };
   # generate iso image for hosts with desktop environment
-  # packages = {
-    # "desktop-${name}" = inputs.self.nixosConfigurations."desktop-${name}".config.formats.iso;
-  # };
+  packages = {
+    "${hostname}" = inputs.self.nixosConfigurations."${hostname}".config.formats.iso;
+  };
 }

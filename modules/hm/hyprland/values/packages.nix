@@ -1,4 +1,4 @@
-{pkgs, ...}: {
+{pkgs, ...}: { # TODO
   home.packages = with pkgs; [
     waybar # the status bar
     swaybg # the wallpaper

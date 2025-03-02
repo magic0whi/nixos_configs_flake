@@ -19,6 +19,27 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     nur-ryan4yin.url = "github:ryan4yin/nur-packages";
+    impermanence.url = "github:nix-community/impermanence";
+    nixpak = {
+      url = "github:nixpak/nixpak";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    # generate iso/qcow2/docker/... image from nixos configuration
+    nixos-generators = {
+      url = "github:nix-community/nixos-generators";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    # anyrun - a wayland launcher
+    anyrun = {
+      url = "github:Kirottu/anyrun";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    # my private secrets, it's a private repository, you need to replace it with your own. TODO
+    # use ssh protocol to authenticate via ssh-agent/ssh-key, and shallow clone to save time
+    # mysecrets = {
+      # url = "git+ssh://git@github.com/ryan4yin/nix-secrets.git?shallow=1";
+      # flake = false;
+    # };
   };
   outputs = inputs: import ./main.nix inputs;
 }

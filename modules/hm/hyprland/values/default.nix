@@ -1,2 +1,3 @@
-{mylib, ...} @ args:
-map (i: import i args) (mylib.scan_path ./.)
+{mylib, ...}: {
+  imports = mylib.scanPaths ./.;
+}

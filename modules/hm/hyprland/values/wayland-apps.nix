@@ -1,14 +1,10 @@
-{
-  pkgs,
-  nur-ryan4yin,
-  ...
-}: {
+{pkgs, nur-ryan4yin, ...}: {
   # refer to https://codeberg.org/dnkl/foot/src/branch/master/foot.ini
   xdg.configFile."foot/foot.ini".text =
     ''
       [main]
       dpi-aware=yes
-      font=JetBrainsMono Nerd Font:size=13
+      font=JetBrainsMono Nerd Font:size=8
       shell=${pkgs.bash}/bin/bash --login -c 'nu --login --interactive'
       term=foot
       initial-window-size-pixels=3840x2160
@@ -23,8 +19,8 @@
 
   home.packages = [
     # pkgs.firefox-wayland
-    # pkgs.nixpaks.firefox
-    # pkgs.nixpaks.firefox-desktop-item
+    pkgs.nixpaks.firefox
+    pkgs.nixpaks.firefox-desktop-item
   ];
 
   programs = {
@@ -83,7 +79,7 @@
               "--password-store=gnome" # use gnome-keyring as password store
             ];
           })
-        .overrideAttrs (oldAttrs: rec {
+        .overrideAttrs (oldAttrs: {
           # Use VSCode Insiders to fix crash: https://github.com/NixOS/nixpkgs/issues/246509
           src = builtins.fetchTarball {
             url = "https://update.code.visualstudio.com/latest/linux-x64/insider";

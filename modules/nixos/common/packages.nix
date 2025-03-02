@@ -6,7 +6,7 @@
     fastfetch
     neovim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
     just # justfile
-    nushell # nushell
+    # nushell # nushell
     git # used by nix flakes
     git-lfs # used by huggingface models
 
@@ -79,4 +79,3 @@
   # https://github.com/iovisor/bcc
   programs.bcc.enable = true;
 }
-
