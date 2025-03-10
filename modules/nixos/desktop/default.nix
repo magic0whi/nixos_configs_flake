@@ -171,6 +171,7 @@ in {
           thunar-volman
         ];
       };
+      light.enable = true;
     };
     ## END misc.nix
     ## START security.nix
