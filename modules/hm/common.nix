@@ -1,7 +1,8 @@
 {myvars, mylib, pkgs, nur-ryan4yin, config, ...}: {
   imports = mylib.scan_path ./commons;
-  home = {
+  home = { # Home Manager needs a bit of information about you and the paths it should manage.
     inherit (myvars) username;
+    homeDirectory = "/home/${myvars.username}";
 
     # This value determines the Home Manager release that your
     # configuration is compatible with. This helps avoid breakage
@@ -65,6 +66,12 @@
     caddy # A webserver with automatic HTTPS via Let's Encrypt(replacement of nginx)
     croc # File transfer between computers securely and easily
     ncdu # analyzer your disk usage Interactively, via TUI(replacement of `du`)
+
+    libnotify # notify-send
+    wireguard-tools # manage wireguard vpn manually, via wg-quick
+
+    ventoy # create bootable usb
+    virt-viewer # vnc connect to VM, used by kubevirt
   ];
 
   programs = {
@@ -357,4 +364,9 @@
     };
   };
   ## END gpg.nix
+  # auto mount usb drives
+  services = {
+    udiskie.enable = true;
+    # syncthing.enable = true;
+  };
 }

@@ -21,7 +21,7 @@ default:
 # Run eval tests
 [group('nix')]
 test:
-  nix eval .#evalTests --show-trace --print-build-logs --verbose
+  nom build .#nixosConfigurations.proteus-sp4.config.system.build.toplevel --show-trace --verbose
 
 # Update all the flake inputs
 [group('nix')]

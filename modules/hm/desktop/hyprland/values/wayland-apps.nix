@@ -24,23 +24,9 @@
   ];
 
   programs = {
-    # a wayland only terminal emulator
-    foot = {
-      enable = true;
-      # foot can also be run in a server mode. In this mode, one process hosts multiple windows.
-      # All Wayland communication, VT parsing and rendering is done in the server process.
-      # New windows are opened by running footclient, which remains running until the terminal window is closed.
-      #
-      # Advantages to run foot in server mode including reduced memory footprint and startup time.
-      # The downside is a performance penalty. If one window is very busy with, for example, producing output,
-      # then other windows will suffer. Also, should the server process crash, all windows will be gone.
-      server.enable = true;
-    };
-
     # source code: https://github.com/nix-community/home-manager/blob/master/modules/programs/chromium.nix
     google-chrome = {
       enable = true;
-
       # https://wiki.archlinux.org/title/Chromium#Native_Wayland_support
       commandLineArgs = [
         "--ozone-platform-hint=auto"

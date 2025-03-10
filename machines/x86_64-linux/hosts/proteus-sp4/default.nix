@@ -10,7 +10,7 @@
   ];
   hm_modules = map mylib.relative_to_root [
     "modules/hm/common.nix"
-    "modules/hm/hyprland"
+    "modules/hm/desktop"
   ];
 in {
   nixos_configurations = {

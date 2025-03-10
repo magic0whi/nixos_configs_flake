@@ -10,6 +10,20 @@
   goBin = "${config.home.homeDirectory}/go/bin";
   rustBin = "${config.home.homeDirectory}/.cargo/bin";
 in {
+  # environment variables that always set at login
+  home.sessionVariables = {
+    # clean up ~
+    LESSHISTFILE = config.xdg.cacheHome + "/less/history";
+    LESSKEY = config.xdg.configHome + "/less/lesskey";
+    WINEPREFIX = config.xdg.dataHome + "/wine";
+
+    # set default applications
+    BROWSER = "firefox";
+
+    # enable scrolling in git diff
+    DELTA_PAGER = "less -R";
+  };
+
   # only works in bash/zsh, not nushell
   home.shellAliases = shellAliases;
 

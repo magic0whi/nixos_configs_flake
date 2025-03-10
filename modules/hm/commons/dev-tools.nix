@@ -45,6 +45,7 @@
     conda
 
     nil
+    android-tools
   ];
 
   programs = {
