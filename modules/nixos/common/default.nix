@@ -1,7 +1,10 @@
 {mylib, myvars, lib, config, pkgs, ...}: {
   imports = mylib.scan_path ./.;
-  environment.variables.EDITOR = "hx"; # START boot_loader.nix
+  environment.variables.EDITOR = lib.mkOverride 999 "hx";
+  # START boot_loader.nix
+  boot.loader.efi.canTouchEfiVariables = lib.mkDefault true; # Allow installation process to modify EFI boot variables
   boot.loader.systemd-boot = {
+    enable = lib.mkDefault true;
     configurationLimit = lib.mkDefault 10; # Limit the boot loader entries
     consoleMode = lib.mkDefault "max";
   };
@@ -12,7 +15,7 @@
   # END boot_loader.nix
   # START nix.nix
   nixpkgs.config.allowUnfree = lib.mkDefault true; # Allow chrome, vscode to install
-  nix.package = pkgs.nixVersions.latest; # Use latest nix, default is pkgs.nix
+  nix.package = lib.mkDefault pkgs.nixVersions.latest; # Use latest nix, default is pkgs.nix
   nix.gc = {
     automatic = lib.mkDefault true;
     dates = lib.mkDefault "weekly";
@@ -24,15 +27,15 @@
     # https://nixos.org/manual/nix/stable/command-ref/conf-file.html#conf-auto-optimise-store
     auto-optimise-store = lib.mkDefault true;
     # enable flakes globally
-    experimental-features = ["nix-command" "flakes"];
+    experimental-features = lib.mkDefault ["nix-command" "flakes"];
 
     # given the users in this list the right to specify additional substituters via:
     #    1. `nixConfig.substituers` in `flake.nix`
     #    2. command line args `--options substituers http://xxx`
-    trusted-users = [myvars.username];
+    trusted-users = lib.mkDefault [myvars.username];
 
     # substituers that will be considered before the official ones(https://cache.nixos.org)
-    substituters = [
+    substituters = lib.mkDefault [
       # cache mirror located in China
       # status: https://mirrors.ustc.edu.cn/status/
       # "https://mirrors.ustc.edu.cn/nix-channels/store"
@@ -47,11 +50,11 @@
       # "https://ryan4yin.cachix.org"
     ];
 
-    trusted-public-keys = [
+    trusted-public-keys = lib.mkDefault [
       "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
       "ryan4yin.cachix.org-1:Gbk27ZU5AYpGS9i3ssoLlwdvMIh0NxG0w8it/cv9kbU="
     ];
-    builders-use-substitutes = true;
+    builders-use-substitutes = lib.mkDefault true;
   };
 
   # nix.extraOptions = ''
@@ -93,7 +96,22 @@
   # END i18n.nix
   # START networking.nix
   networking.useNetworkd = lib.mkDefault true;
-  networking.firewall.enable = lib.mkDefault false; # Disable the firefall
+  networking.nftables.enable = lib.mkDefault true; # TODO add ruleset
+  networking.nftables = {
+    tables.nixos-fw = {
+      family = "inet";
+      content = ''
+        chain input-allow {
+          tcp dport snapenetio accept comment "Allow Syncthing"
+          udp dport { snapenetio, 21027 } accept comment "Allow Syncthing broadcasts (IPv4) / multicasts (IPv6)"
+          tcp dport 53317 counter accept comment "Allow LocalSend (HTTP/TCP)"
+          udp dport 53317 counter accept comment "Allow LocalSend (Multicast/UDP)"
+
+        }
+      '';
+    };
+  };
+  # networking.firewall.enable = lib.mkDefault false; # Disable the firefall
   networking.timeServers = lib.mkDefault [ # Or
   # services.timesyncd.servers = [
     "ntp.aliyun.com" # Aliyun NTP Server
@@ -114,7 +132,7 @@
   # set local's max-job to 0 to force remote building(disable local building)
   # nix.settings.max-jobs = 0;
   nix.distributedBuilds = lib.mkDefault true;
-  nix.buildMachines = let
+  nix.buildMachines = let # TODO
     sshUser = myvars.username;
     # ssh key's path on local machine
     sshKey = "/etc/agenix/ssh-key-romantic";
@@ -166,61 +184,63 @@
     # }
   ];
   # optional, useful when the builder has a faster internet connection than yours
-  nix.extraOptions = ''
+  nix.extraOptions = lib.mkDefault ''
     builders-use-substitutes = true
   '';
   # END remote-building.nix
   # START users-n-groups.nix
-  programs.zsh.enable = true;
-  users.defaultUserShell = pkgs.zsh; # set users' default shell system-wide
-  users.mutableUsers = lib.mkDefault false; # Don't allow mutate users outside the config.
-  users.groups = {
-    "${myvars.username}" = {};
-    docker = {};
-  };
-  users.users."${myvars.username}" = {
-    description = myvars.userfullname;
-    # Public Keys that can be used to login to all my PCs, Macbooks, and servers.
-    #
-    # Since its authority is so large, we must strengthen its security:
-    # - The corresponding private key must be:
-    #   1. Generated locally on every trusted client via:
-    #     ```bash
-    #     # KDF: bcrypt with 256 rounds, takes 2s on Apple M2):
-    #     # Passphrase: digits + letters + symbols, 12+ chars
-    #     ssh-keygen -t ed25519 -a 256 -C "ryan@xxx" -f ~/.ssh/xxx`
-    #     ```
-    #   2. Never leave the device and never sent over the network.
-    # - Or just use hardware security keys like Yubikey/CanoKey.
-    openssh.authorizedKeys.keys = myvars.ssh_authorized_keys;
-    initialHashedPassword = myvars.initial_hashed_password;
-    home = "/home/${myvars.username}";
-    isNormalUser = true;
-    extraGroups = [
-      # myvars.username # TODO may unnecessary
-      # "users"
-      "wheel"
-      "docker"
-      "libvirtd"
-    ];
-  };
-  # root's ssh key are mainly used for remote deployment
-  users.users.root = {
-    # An example to prevent use the recursive attribute set
-    initialHashedPassword = lib.mkDefault config.users.users."${myvars.username}".initialHashedPassword;
-    openssh.authorizedKeys.keys = lib.mkDefault config.users.users."${myvars.username}".openssh.authorizedKeys.keys;
+  programs.zsh.enable = lib.mkDefault true;
+  users = {
+    defaultUserShell = lib.mkOverride 999 pkgs.zsh; # set users' default shell system-wide
+    mutableUsers = lib.mkDefault false; # Don't allow mutate users outside the config.
+    groups = lib.mkDefault {
+      "${myvars.username}" = {};
+      docker = {};
+    };
+    users."${myvars.username}" = {
+      description = lib.mkDefault myvars.userfullname;
+      # Public Keys that can be used to login to all my PCs, Macbooks, and servers.
+      #
+      # Since its authority is so large, we must strengthen its security:
+      # - The corresponding private key must be:
+      #   1. Generated locally on every trusted client via:
+      #     ```bash
+      #     # KDF: bcrypt with 256 rounds, takes 2s on Apple M2):
+      #     # Passphrase: digits + letters + symbols, 12+ chars
+      #     ssh-keygen -t ed25519 -a 256 -C "ryan@xxx" -f ~/.ssh/xxx`
+      #     ```
+      #   2. Never leave the device and never sent over the network.
+      # - Or just use hardware security keys like Yubikey/CanoKey.
+      openssh.authorizedKeys.keys = lib.mkDefault myvars.ssh_authorized_keys;
+      initialHashedPassword = lib.mkDefault myvars.initial_hashed_password;
+      home = lib.mkDefault "/home/${myvars.username}";
+      isNormalUser = lib.mkDefault true;
+      extraGroups = lib.mkDefault [
+        # myvars.username # TODO may unnecessary
+        # "users"
+        "wheel"
+        "docker"
+        "libvirtd"
+      ];
+    };
+    # root's ssh key are mainly used for remote deployment
+    users.root = {
+      # An example to prevent use the recursive attribute set
+      initialHashedPassword = lib.mkDefault config.users.users."${myvars.username}".initialHashedPassword;
+      openssh.authorizedKeys.keys = lib.mkDefault config.users.users."${myvars.username}".openssh.authorizedKeys.keys;
+    };
   };
   # END users-n-groups.nix
   # START zram.nix
   zramSwap.enable = lib.mkDefault true;
   # END zram.nix
   # Add my self-signed CA certificate to the system-wide trust store.
-  security.pki.certificateFiles = [
+  security.pki.certificateFiles = lib.mkDefault [
     (mylib.relative_to_root "custom_files/proteus_ca.pem")
   ];
   ## START fhs.nix
   # create a fhs environment by command `fhs`, so we can run non-nixos packages in nixos!
-  environment.systemPackages = [(
+  environment.systemPackages = lib.mkDefault [(
   let
     base = pkgs.appimageTools.defaultFhsEnvArgs;
   in
@@ -246,8 +266,8 @@
   #
   # You can overwrite `NIX_LD_LIBRARY_PATH` in the environment where you run the non-NixOS binaries to customize the
   # search path for shared libraries.
-  programs.nix-ld.enable = true;
-  programs.nix-ld.libraries = [pkgs.stdenv.cc.cc];
+  programs.nix-ld.enable = lib.mkDefault true;
+  programs.nix-ld.libraries = lib.mkDefault [pkgs.stdenv.cc.cc];
   ## END fhs.nix
   ## START misc.nix
   # fix for `sudo xxx` in kitty/wezterm/foot and other modern terminal emulators

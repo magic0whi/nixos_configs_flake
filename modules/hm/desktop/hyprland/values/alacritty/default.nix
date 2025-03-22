@@ -40,10 +40,10 @@
         history = 10000;
       };
       font = {
-        bold = {family = "JetBrainsMono Nerd Font";};
-        italic = {family = "JetBrainsMono Nerd Font";};
-        normal = {family = "JetBrainsMono Nerd Font";};
-        bold_italic = {family = "JetBrainsMono Nerd Font";};
+        bold = {family = "Iosevka Nerd Font Mono";};
+        italic = {family = "Iosevka Nerd Font Mono";};
+        normal = {family = "Iosevka Nerd Font Mono";};
+        bold_italic = {family = "Iosevka Nerd Font Mono";};
         size =
           if pkgs.stdenv.isDarwin
           then 14

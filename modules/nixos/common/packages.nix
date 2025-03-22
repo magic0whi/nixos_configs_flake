@@ -3,10 +3,10 @@
   # $ nix search wget
   environment.systemPackages = with pkgs; [
     # core tools
+    keepassxc
     fastfetch
     neovim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
     just # justfile
-    # nushell # nushell
     git # used by nix flakes
     git-lfs # used by huggingface models
 

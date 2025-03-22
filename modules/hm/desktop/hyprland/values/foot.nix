@@ -8,7 +8,7 @@
     settings = {
       main = {
         term = "foot"; # or "xterm-256color" for maximum compatibility
-        font = "JetBrainsMono Nerd Font:size=8";
+        font = "Iosevka Nerd Font Mono:size=8";
         dpi-aware = "yes";
         shell = "${pkgs.bash}/bin/bash --login -c 'nu --login --interactive'"; # Spawn a nushell in login mode via `bash`
       };

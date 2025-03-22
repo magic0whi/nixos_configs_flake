@@ -8,7 +8,7 @@
     wl-clipboard # copying and pasting
     hyprpicker # color picker
 
-    hyprshot # screen shot
+    hyprshot # screenshot
     grim # taking screenshots
     slurp # selecting a region to screenshot
     wf-recorder # screen recording
@@ -22,6 +22,5 @@
     mpd # for playing system sounds
     mpc-cli # command-line mpd client
     ncmpcpp # a mpd client with a UI
-    networkmanagerapplet # provide GUI app: nm-connection-editor
   ];
 }

@@ -1,14 +1,13 @@
 {config, pkgs, ...}: let
-  shellAliases = {
+  shell_aliases = {
     k = "kubectl";
-
     urldecode = "python3 -c 'import sys, urllib.parse as ul; print(ul.unquote_plus(sys.stdin.read()))'";
     urlencode = "python3 -c 'import sys, urllib.parse as ul; print(ul.quote_plus(sys.stdin.read()))'";
+    cpr = "rsync --archive -hh --partial --info=stats1,progress2 --modify-window=1 \"$@\"";
   };
-
-  localBin = "${config.home.homeDirectory}/.local/bin";
-  goBin = "${config.home.homeDirectory}/go/bin";
-  rustBin = "${config.home.homeDirectory}/.cargo/bin";
+  local_bin = "${config.home.homeDirectory}/.local/bin";
+  go_bin = "${config.home.homeDirectory}/go/bin";
+  rust_bin = "${config.home.homeDirectory}/.cargo/bin";
 in {
   # environment variables that always set at login
   home.sessionVariables = {
@@ -24,20 +23,18 @@ in {
     DELTA_PAGER = "less -R";
   };
 
-  # only works in bash/zsh, not nushell
-  home.shellAliases = shellAliases;
+  home.shellAliases = shell_aliases; # only works in bash/zsh, not nushell
 
   programs.nushell = {
     enable = true;
     configFile.source = ./config.nu;
-    inherit shellAliases;
+    shellAliases = shell_aliases;
     # load the alias file for work
     # the file must exist, otherwise nushell will complain about it!
     #
     # currently, nushell does not support conditional sourcing of files
     # https://github.com/nushell/nushell/issues/8214
     extraConfig = with pkgs; ''
-      source /etc/agenix/alias-for-work.nushell
       # completion
       use ${nu_scripts}/share/nu_scripts/custom-completions/git/git-completions.nu *
       use ${nu_scripts}/share/nu_scripts/custom-completions/glow/glow-completions.nu *
@@ -58,7 +55,7 @@ in {
     enable = true;
     enableCompletion = true;
     bashrcExtra = ''
-      export PATH="$PATH:${localBin}:${goBin}:${rustBin}"
+      export PATH="$PATH:${local_bin}:${go_bin}:${rust_bin}"
     '';
   };
 }

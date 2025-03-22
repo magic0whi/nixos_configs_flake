@@ -1,4 +1,4 @@
-{myvars, mylib, pkgs, nur-ryan4yin, config, ...}: {
+{lib, myvars, mylib, pkgs, nur-ryan4yin, config, ...}: {
   imports = mylib.scan_path ./commons;
   home = { # Home Manager needs a bit of information about you and the paths it should manage.
     inherit (myvars) username;
@@ -26,8 +26,6 @@
 
     # Modern cli tools, replacement of grep/sed/...
 
-    # Interactively filter its input using fuzzy searching, not limit to filenames.
-    fzf
     # search for files by name, faster than find
     fd
     # search for files by its content, replacement of grep
@@ -74,13 +72,10 @@
     virt-viewer # vnc connect to VM, used by kubevirt
   ];
 
-  programs = {
-    # A modern replacement for ‘ls’
-    # useful in bash/zsh prompt, not in nushell.
+  programs = { # A modern replacement for ‘ls’, useful in bash/zsh prompt, but not in nushell.
     eza = {
       enable = true;
-      # do not enable aliases in nushell!
-      enableNushellIntegration = false;
+      enableNushellIntegration = false; # do not enable aliases in nushell!
       git = true;
       icons = "auto";
     };
@@ -102,8 +97,10 @@
     };
 
     # A command-line fuzzy finder
-    fzf = {
+    fzf = { # Interactively filter its input using fuzzy searching, not limit to filenames.
       enable = true;
+      defaultOptions = [ "-m" ];
+      defaultCommand = "rg --files";
       # https://github.com/catppuccin/fzf
       # catppuccin-mocha
       colors = {
@@ -139,30 +136,18 @@
     #   zi foo             # cd with interactive selection (using fzf)
     #
     #   z foo<SPACE><TAB>  # show interactive completions (zoxide v0.8.0+, bash 4.4+/fish/zsh only)
-    zoxide = {
-      enable = true;
-      enableBashIntegration = true;
-      enableZshIntegration = true;
-      enableNushellIntegration = true;
-    };
+    zoxide.enable = true;
 
     # Atuin replaces your existing shell history with a SQLite database,
     # and records additional context for your commands.
     # Additionally, it provides optional and fully encrypted
     # synchronisation of your history between machines, via an Atuin server.
-    atuin = {
-      enable = true;
-      enableBashIntegration = true;
-      enableZshIntegration = true;
-      enableNushellIntegration = true;
-    };
+    atuin.enable = true;
   };
   ## START yazi.nix
   programs.yazi = { # terminal file manager
     enable = true;
     # Changing working directory when exiting Yazi
-    enableBashIntegration = true;
-    enableNushellIntegration = true;
     settings = {
       manager = {
         show_hidden = true;
@@ -175,31 +160,32 @@
   ## END yazi.nix
   ## START starship.nix
   programs.starship = {
-    enable = true;
-
-    enableBashIntegration = true;
-    enableZshIntegration = true;
-    enableNushellIntegration = true;
-
-    settings =
-      {
-        character = {
-          success_symbol = "[›](bold green)";
-          error_symbol = "[›](bold red)";
-        };
-        aws = {
-          symbol = "🅰 ";
-        };
-        gcloud = {
-          # do not show the account/project's info
-          # to avoid the leak of sensitive information when sharing the terminal
-          format = "on [$symbol$active(\($region\))]($style) ";
-          symbol = "🅶 ️";
-        };
-
-        palette = "catppuccin_mocha";
-      }
-      // builtins.fromTOML (builtins.readFile "${nur-ryan4yin.packages.${pkgs.system}.catppuccin-starship}/palettes/mocha.toml");
+    enable = lib.mkDefault true;
+    settings = {
+      add_newline = lib.mkDefault false;
+      line_break.disabled = lib.mkDefault true;
+      status.disabled = lib.mkDefault false;
+      character.success_symbol = lib.mkDefault "[➜ ](bold green)";
+      character.error_symbol = lib.mkDefault "[✗ ](bold red)";
+      aws.disabled = lib.mkDefault true;
+      aws.symbol = lib.mkDefault "🅰 ";
+      gcloud = {
+        disabled = lib.mkDefault true;
+        # do not show the account/project's info
+        # to avoid the leak of sensitive information when sharing the terminal
+        format = lib.mkDefault "on [$symbol$active(\($region\))]($style) ";
+        symbol = lib.mkDefault "🅶 ️";
+      };
+      hostname.ssh_only = lib.mkDefault false;
+      hostname.format = lib.mkDefault "[$ssh_symbol$hostname]($style) ";
+      time.disabled = lib.mkDefault false;
+      time.format = lib.mkDefault "[$time]($style)";
+      right_format = lib.mkDefault "[$status$time]($style)";
+      username.format = lib.mkDefault "[$user]($style) @ ";
+      username.show_always = lib.mkDefault true;
+      palette = lib.mkDefault "catppuccin_mocha";
+    }
+    // builtins.fromTOML (builtins.readFile "${nur-ryan4yin.packages.${pkgs.system}.catppuccin-starship}/palettes/mocha.toml");
   };
   ## END starship.nix
   ## START helix.nix
@@ -364,9 +350,10 @@
     };
   };
   ## END gpg.nix
-  # auto mount usb drives
+  systemd.user.services."${myvars.username}".environment.STNODEFAULTFOLDER = lib.mkDefault "true"; # Don't create default ~/Sync folder
   services = {
-    udiskie.enable = true;
-    syncthing.enable = true;
+    udiskie.enable = lib.mkDefault true; # auto mount usb drives
+    syncthing.enable = lib.mkDefault true;
+    syncthing.tray.enable = lib.mkDefault true;
   };
 }

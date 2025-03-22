@@ -1,16 +1,7 @@
-{
-  impermanence,
-  pkgs,
-  myvars,
-  ...
-}: {
-  imports = [
-    impermanence.nixosModules.impermanence
-  ];
-
+{impermanence, pkgs, myvars, ...}: {
+  imports = [impermanence.nixosModules.impermanence];
   environment.systemPackages = [
-    # `sudo ncdu -x /`
-    pkgs.ncdu
+    pkgs.ncdu # `sudo ncdu -x /`
   ];
 
   # There are two ways to clear the root filesystem on every boot:

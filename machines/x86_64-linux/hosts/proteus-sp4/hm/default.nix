@@ -45,10 +45,28 @@
         Port 22
 
       Host github.com
-          IdentityFile ~/.ssh/idols-ai
+          IdentityFile ~/sync-work/3keys/private/proteus_ed25519.key
           # Specifies that ssh should only use the identity file explicitly configured above
           # required to prevent sending default identity files first.
           IdentitiesOnly yes
     '';
+  };
+  services.syncthing = {
+    key = "${./syncthing_key.pem}";
+    cert = "${./syncthing_cert.pem}";
+    settings = {
+      devices = {
+        "LGE-AN00" = { id = "T2V6DJB-243NJGD-5B63LUP-DSLNFBD-U72KGD2-AZVTIHL-HEUMBTI-HAVD7A2"; };
+        "M2011K2C" = { id = "M3HVW3S-OC32FV6-AHQ7JVU-KY7DQQ4-VF57UYZ-NCJCTU4-M2OXF4H-CY3HYAS"; };
+        "PROTEUSDESKTOP" = { id = "CLNAXLW-B2DBSV3-PDT246K-4CZQWGP-EE5MSB4-RUFYUKD-4ALXDXT-HZU3WAN"; };
+        "PROTEUSNOTEBOOK-WIN" = { id = "QAQHY4R-7KAQYI6-3WLUHMF-Y4LG5LR-XJMDYTF-3LUIOX3-VO33BCP-RBDM2A6"; };
+      };
+      folders = {
+        "sync-work" = {
+          path = "~/sync-work";
+          devices = [ "LGE-AN00" "M2011K2C" "PROTEUSDESKTOP" "PROTEUSNOTEBOOK-WIN" ];
+        };
+      };
+    };
   };
 }

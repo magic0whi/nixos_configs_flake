@@ -52,22 +52,21 @@ in {
     # PipeWire has a great bluetooth support, it can be a good alternative to PulseAudio.
     # https://nixos.wiki/wiki/PipeWire
     services.pipewire = {
-      enable = true;
-      alsa.enable = true;
-      alsa.support32Bit = true;
-      pulse.enable = true;
-      # If you want to use JACK applications, uncomment this
-      jack.enable = true;
-      wireplumber.enable = true;
+      enable = lib.mkDefault true;
+      alsa.enable = lib.mkDefault true;
+      alsa.support32Bit = lib.mkDefault true;
+      pulse.enable = lib.mkDefault true;
+      jack.enable = lib.mkDefault true;
+      wireplumber.enable = lib.mkDefault true;
     };
-    security.rtkit.enable = true; # rtkit is optional but recommended
+    security.rtkit.enable = lib.mkDefault true; # rtkit is optional but recommended
     services.pulseaudio.enable = false; # Disable pulseaudio, it conflicts with pipewire.
     # Bluetooth
     hardware.bluetooth.enable = true;
     services.blueman.enable = true;
     # Misc
     services = {
-      printing.enable = true; # Enable CUPS to print documents.
+      printing.enable = lib.mkDefault true; # Enable CUPS to print documents.
       geoclue2.enable = true; # Enable geolocation services.
       udev.packages = with pkgs; [
         gnome-settings-daemon
@@ -91,48 +90,31 @@ in {
     ## END peripherals.nix
     ## START fonts.nix
     fonts = { # all fonts are linked to /nix/var/nix/profiles/system/sw/share/X11/fonts
-      # use fonts specified by user rather than default ones
-      enableDefaultPackages = false;
-      fontDir.enable = true;
+      enableDefaultPackages = lib.mkOverride 999 false; # use fonts specified by user rather than default ones
+      fontDir.enable = lib.mkDefault true;
 
       packages = with pkgs; [
         # icon fonts
-        material-design-icons
-        font-awesome
+        material-design-icons # TODO: Remove
+        font-awesome # TODO: Remove
 
-        # Noto 系列字体是 Google 主导的，名字的含义是「没有豆腐」（no tofu），因为缺字时显示的方框或者方框被叫作 tofu
-        # Noto 系列字族名只支持英文，命名规则是 Noto + Sans 或 Serif + 文字名称。
-        # 其中汉字部分叫 Noto Sans/Serif CJK SC/TC/HK/JP/KR，最后一个词是地区变种。
-        # noto-fonts # 大部分文字的常见样式，不包含汉字
-        # noto-fonts-cjk # 汉字部分
-        noto-fonts-emoji # 彩色的表情符号字体
-        # noto-fonts-extra # 提供额外的字重和宽度变种
-
-        # 思源系列字体是 Adobe 主导的。其中汉字部分被称为「思源黑体」和「思源宋体」，是由 Adobe + Google 共同开发的
-        source-sans # 无衬线字体，不含汉字。字族名叫 Source Sans 3 和 Source Sans Pro，以及带字重的变体，加上 Source Sans 3 VF
-        source-serif # 衬线字体，不含汉字。字族名叫 Source Code Pro，以及带字重的变体
-        source-han-sans # 思源黑体
-        source-han-serif # 思源宋体
-
+        noto-fonts noto-fonts-emoji noto-fonts-cjk-sans noto-fonts-cjk-serif
+        inter-nerdfont # NerdFont patch of the Inter font
         # nerdfonts
         # https://github.com/NixOS/nixpkgs/blob/nixos-unstable-small/pkgs/data/fonts/nerd-fonts/manifests/fonts.json
         nerd-fonts.symbols-only # symbols icon only
         nerd-fonts.fira-code
         nerd-fonts.jetbrains-mono
         nerd-fonts.iosevka
-
-        julia-mono
-        dejavu_fonts
       ];
-
-      # user defined fonts
-      # the reason there's Noto Color Emoji everywhere is to override DejaVu's
-      # B&W emojis that would sometimes show instead of some Color emojis
-      fontconfig.defaultFonts = {
-        serif = ["Source Han Serif SC" "Source Han Serif TC" "Noto Color Emoji"];
-        sansSerif = ["Source Han Sans SC" "Source Han Sans TC" "Noto Color Emoji"];
-        monospace = ["JetBrainsMono Nerd Font" "Noto Color Emoji"];
-        emoji = ["Noto Color Emoji"];
+      fontconfig = {
+        subpixel.rgba = "rgb";
+        defaultFonts = {
+          serif = ["Noto Serif" "FZYaSongS-R-GB" "Noto Serif CJK SC" "Noto Serif CJK TC" "Noto Serif CJK JP"];
+          sansSerif = ["Inter" "Noto Sans" "Noto Sans CJK SC" "Noto Sans CJK TC" "Noto Sans CJK JP"];
+          monospace = ["Iosevka Nerd Font Mono" "JetBrainsMono Nerd Font" "Iosevka Term Extended" "Noto Sans Mono" "Noto Sans Mono CJK SC" "Noto Sans Mono CJK TC" "Noto Sans Mono CJK JP"];
+          emoji = ["Noto Color Emoji"];
+        };
       };
     };
 
