@@ -1,7 +1,4 @@
-{
-  pkgs,
-  ...
-}:
+{pkgs, ...}:
 ###########################################################
 #
 # Alacritty Configuration
@@ -25,11 +22,8 @@
 {
   programs.alacritty = {
     enable = true;
-    # https://alacritty.org/config-alacritty.html
-    settings = {
-      general.import = [
-        ./catppuccin-mocha.toml
-      ];
+    settings = { # https://alacritty.org/config-alacritty.html
+      general.import = [./catppuccin-mocha.toml];
       window = {
         opacity = 0.93;
         startup_mode = "Maximized"; # Maximized window

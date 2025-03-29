@@ -25,7 +25,7 @@
         identityFile = "~/sync-work/3keys/private/proteus_ed25519.key";
       };
       "ssh.github.com hf.co" = lib.hm.dag.entryBefore ["*.tailba6c3f.ts.net"] {
-        user = "proteus";
+        user = "git";
         identityFile = "~/sync-work/3keys/private/proteus_ed25519.key";
         identitiesOnly = true; # Required to prevent sending default identity files first.
       };
