@@ -1,5 +1,4 @@
-{makeDesktopItem}:
-makeDesktopItem {
+{makeDesktopItem}: makeDesktopItem {
   name = "firefox";
   desktopName = "firefox";
   exec = "firefox %U";

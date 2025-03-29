@@ -3,18 +3,8 @@
 #   - https://docs.flatpak.org/en/latest/manifests.html
 #   - https://docs.flatpak.org/en/latest/sandbox-permissions.html
 # - Firefox's flatpak manifest: https://hg.mozilla.org/mozilla-central/file/tip/taskcluster/docker/firefox-flatpak/runme.sh#l151
-{
-  lib,
-  pkgs,
-  mkNixPak,
-  ...
-}:
-mkNixPak {
-  config = {
-    config,
-    sloth,
-    ...
-  }: {
+{lib, pkgs, mkNixPak, ...}: mkNixPak {
+  config = {config, sloth, ...}: {
     app = {
       package = pkgs.firefox-wayland;
       binPath = "bin/firefox";

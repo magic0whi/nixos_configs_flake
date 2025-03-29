@@ -8,9 +8,7 @@
   xdg.configFile = {
     "fcitx5/profile" = {
       source = ./fcitx5-profile;
-      # every time fcitx5 switch input method, it will modify ~/.config/fcitx5/profile,
-      # so we need to force replace it in every rebuild to avoid file conflict.
-      force = true;
+      force = true; # every time fcitx5 switch input method, it will modify ~/.config/fcitx5/profile, so we need to force replace it in every rebuild to avoid file conflict.
     };
     "fcitx5/conf/classicui.conf".source = ./fcitx5-classicui.conf;
   };
