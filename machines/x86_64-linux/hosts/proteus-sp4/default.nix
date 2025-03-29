@@ -3,7 +3,7 @@
   hostname = "proteus-sp4";
   specialArgs = inputs // {inherit mylib myvars;};
   nixpkgs_modules = map mylib.relative_to_root [
-    # "modules/secrets"
+    "modules/secrets"
     "modules/nixos/common"
     "modules/nixos/desktop"
     "modules/nixpaks"
@@ -22,14 +22,13 @@ in {
           imports = [
             ./hardware-configuration.nix
             ./secureboot.nix
-            ./configuration.nix
             ./impermanence.nix
+            ./configuration.nix
             # TODO
             # hosts/idols-ai/netdev-mount.nix
           ];
           system.stateVersion = "25.05";
           networking.hostName = hostname;
-          networking.wireless.iwd.enable = true;
         }
       ] ++ (lib.optionals ((lib.lists.length hm_modules) > 0) [
         home-manager.nixosModules.home-manager {

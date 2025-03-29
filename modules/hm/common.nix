@@ -15,8 +15,7 @@
     stateVersion = "25.05";
   };
 
-  # Let Home Manager install and manage itself.
-  programs.home-manager.enable = true;
+  programs.home-manager.enable = true; # Let Home Manager install and manage itself.
   home.packages = with pkgs; [
     # Misc
     tldr
@@ -194,6 +193,7 @@
   programs.helix = {
     enable = true;
     defaultEditor = true;
+    extraPackages = with pkgs; [marksman ltex-ls texlab];
     settings = {
       theme = "catppuccin_mocha";
       editor = {

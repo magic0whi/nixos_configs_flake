@@ -8,27 +8,23 @@
   programs.git = {
     enable = true;
     lfs.enable = true;
-
     userName = myvars.userfullname;
     userEmail = myvars.useremail;
-
     includes = [
       { # use different email & name for work
         condition = "gitdir:~/work/";
         path = "~/work/.gitconfig";
       }
     ];
-
     extraConfig = {
       init.defaultBranch = "main";
       trim.bases = "develop,master,main"; # for git-trim
       push.autoSetupRemote = true;
       pull.rebase = true;
-
       # replace https with ssh
       url = {
-        "ssh://git@github.com/ryan4yin" = {
-          insteadOf = "https://github.com/ryan4yin";
+        "ssh://git@ssh.github.com:443/magic0whi" = {
+          insteadOf = "https://github.com/magic0whi";
         };
         # "ssh://git@gitlab.com/" = {
         #   insteadOf = "https://gitlab.com/";
@@ -38,13 +34,11 @@
         # };
       };
     };
-
     signing = {
       format = "openpgp";
       key = "B58240E2EBC371C7F99D0DAAED347D6CF8E43AF9";
       signByDefault = true;
     };
-
     # A syntax-highlighting pager in Rust(2019 ~ Now)
     delta = {
       enable = true;
@@ -56,7 +50,6 @@
         # features = "";
       };
     };
-
     aliases = { # custom aliases for git
       br = "branch";
       co = "checkout";
@@ -85,4 +78,3 @@
     };
   };
 }
-
