@@ -4,6 +4,7 @@
 # https://github.com/NixOS/nixpkgs/blob/nixos-24.11/nixos/modules/services/networking/tailscale.nix
 {
   environment.systemPackages = lib.mkDefault [pkgs.tailscale];
+  systemd.services.tailscaled.environment.TS_DEBUG_FIREWALL_MODE = lib.mkDefault "auto"; # Auto detect the firewall type (nftables)
   services.tailscale = {
     enable = lib.mkDefault true; # enable the tailscale service
     openFirewall = lib.mkDefault true; # allow the Tailscale UDP port through the firewall

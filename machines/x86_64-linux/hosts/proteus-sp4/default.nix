@@ -9,7 +9,7 @@
     "modules/nixpaks"
   ];
   hm_modules = map mylib.relative_to_root [
-    "modules/hm/common.nix"
+    "modules/hm/common"
     "modules/hm/desktop"
   ];
 in {

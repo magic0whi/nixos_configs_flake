@@ -1,5 +1,5 @@
 {lib, myvars, mylib, pkgs, nur-ryan4yin, config, ...}: {
-  imports = mylib.scan_path ./commons;
+  imports = mylib.scan_path ./.;
   home = { # Home Manager needs a bit of information about you and the paths it should manage.
     inherit (myvars) username;
     homeDirectory = "/home/${myvars.username}";

@@ -96,37 +96,26 @@
   # END i18n.nix
   # START networking.nix
   networking.useNetworkd = lib.mkDefault true;
-  networking.nftables = {
-    enable = lib.mkDefault true;
-    tables = {
-      nixos-fw = {
-        family = "inet";
-        content = ''
-          chain input-allow {
-            ip saddr 192.168.15.0/24 accept comment "Allow from LAN"
-            ip6 saddr { fe80::/16, fd66:06e5:aebe::/48 } accept comment "Allow from Link-Local / ULA-Prefix (IPv6)"
-            tcp dport snapenetio accept comment "Allow Syncthing"
-            udp dport { snapenetio, 21027 } accept comment "Allow Syncthing broadcasts (IPv4) / multicasts (IPv6)"
-            tcp dport 53317 counter accept comment "Allow LocalSend (HTTP/TCP)"
-            udp dport 53317 counter accept comment "Allow LocalSend (Multicast/UDP)"
-            tcp dport 8888 accept comment "Allow Atuin"
-            udp dport bootps accept comment "Allow DHCP server (systemd-nspawn)"
-          }
-        '';
-      };
-      filter2 = {
-        family = "ip6";
-        content = ''
-          chain forward-allow {
-            ip6 saddr { fe80::/16, fd66:06e5:aebe::/48 } counter accept comment "Allow forward from Link-Local / ULA-Prefix (IPv6)"
-            ip6 saddr { 2409:8a20:5063:5c10::/60 } accept comment "Allow forward from SLAAC (IPv6)"
-            ip6 daddr { 2409:8a20:5063:5c10::/60 } accept comment "Allow forward to SLAAC (IPv6)"
-          }
-        '';
-      };
-    };
+  networking.nftables.enable = lib.mkDefault true;
+  networking.firewall = {
+    # enable = lib.mkDefault false;
+    extraInputRules = ''
+      ip saddr 192.168.15.0/24 accept comment "Allow from LAN"
+      ip6 saddr { fe80::/16, fd66:06e5:aebe::/48 } accept comment "Allow from Link-Local / ULA-Prefix (IPv6)"
+      tcp dport snapenetio accept comment "Allow Syncthing"
+      udp dport { snapenetio, 21027 } accept comment "Allow Syncthing broadcasts (IPv4) / multicasts (IPv6)"
+      tcp dport 53317 counter accept comment "Allow LocalSend (HTTP/TCP)"
+      udp dport 53317 counter accept comment "Allow LocalSend (Multicast/UDP)"
+      tcp dport 8888 accept comment "Allow Atuin"
+      udp dport bootps accept comment "Allow DHCP server (systemd-nspawn)"
+    '';
+    filterForward = true;
+    extraForwardRules = ''
+      ip6 saddr { fe80::/16, fd66:06e5:aebe::/48 } counter accept comment "Allow forward from Link-Local / ULA-Prefix (IPv6)"
+      ip6 saddr { 2409:8a20:5063:5c10::/60 } accept comment "Allow forward from SLAAC (IPv6)"
+      ip6 daddr { 2409:8a20:5063:5c10::/60 } accept comment "Allow forward to SLAAC (IPv6)"
+    '';
   };
-  # networking.firewall.enable = lib.mkDefault false; # Disable the firefall
   networking.timeServers = lib.mkDefault [ # Or
   # services.timesyncd.servers = [
     "ntp.aliyun.com" # Aliyun NTP Server
