@@ -3,11 +3,8 @@ let
     "zj" = "zellij";
   };
 in {
-  programs.zellij = {
-    enable = true;
-  };
-  # only works in bash/zsh, not nushell
-  home.shellAliases = shellAliases;
+  # programs.zellij.enable = true;
+  home.shellAliases = shellAliases; # only works in bash/zsh, not nushell
   programs.nushell.shellAliases = shellAliases;
   xdg.configFile."zellij/config.kdl".source = ./zellij.kdl;
   # auto start zellij in nushell TODO

@@ -3,15 +3,34 @@
     k = "kubectl";
     urldecode = "python3 -c 'import sys, urllib.parse as ul; print(ul.unquote_plus(sys.stdin.read()))'";
     urlencode = "python3 -c 'import sys, urllib.parse as ul; print(ul.quote_plus(sys.stdin.read()))'";
+    ls = "ls --color=auto -v";
+    ll = "ls -l --color=auto -v";
+    la = "ls -la --color=auto -v";
+    lh = "ls -lah --color=auto -v";
+    grep = "grep --color=auto";
+    ip = "ip --color=auto";
+    cp = "cp -i --reflink=auto";
+    ssh = "TERM=xterm-256color ssh";
+    bc = "bc -lq";
+    Ci = "wl-copy";
+    Co = "wl-paste";
+    Coimg = "Co --type image";
+    mpv = "mpv --player-operation-mode=pseudo-gui";
     cpr = "rsync --archive -hh --partial --info=stats1,progress2 --modify-window=1 \"$@\"";
+    mvr = "rsync --archive -hh --partial --info=stats1,progress2 --modify-window=1 --remove-source-files \"$@\"";
+    diff = "command diff --text --unified --new-file --color=auto \"$@\"";
+    man = ''
+      MANPAGER="less -R --use-color -Dd+r -Du+b" \
+      MANROFFOPT="-P-c" \
+      command man "$@"
+    ''; # Set boldface -> red color, underline -> blue color
   };
   local_bin = "${config.home.homeDirectory}/.local/bin";
   go_bin = "${config.home.homeDirectory}/go/bin";
   rust_bin = "${config.home.homeDirectory}/.cargo/bin";
 in {
-  # environment variables that always set at login
-  home.sessionVariables = {
-    # clean up ~
+  home.sessionVariables = { # environment variables that always set at login
+    LESS = "-R -N";
     LESSHISTFILE = config.xdg.cacheHome + "/less/history";
     LESSKEY = config.xdg.configHome + "/less/lesskey";
     WINEPREFIX = config.xdg.dataHome + "/wine";
@@ -25,10 +44,12 @@ in {
 
   home.shellAliases = shell_aliases; # only works in bash/zsh, not nushell
 
+  programs.zsh.enable = true;
+
   programs.nushell = {
     enable = true;
     configFile.source = ./config.nu;
-    shellAliases = shell_aliases;
+    # shellAliases = shell_aliases;
     # load the alias file for work
     # the file must exist, otherwise nushell will complain about it!
     #

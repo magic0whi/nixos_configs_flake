@@ -1,4 +1,6 @@
-{lib, ...}: {
+{lib, ...}: let
+  dpi_scale = lib.strings.substring 0 3 (lib.strings.floatToString 1.5);
+in {
   modules.desktop = {
     hyprland = {
       enable = true;
@@ -8,7 +10,8 @@
         #   auto:         position automatically
         #   1.5:          scale to 1.5 times
         #   bitdepth,10:  enable 10 bit support
-        monitor = "eDP-1,highres,auto,1.5,bitdepth,10";
+        monitor = "eDP-1,highres,auto,${dpi_scale},bitdepth,10";
+        env = ["GDK_DPI_SCALE,${dpi_scale}"];
       };
     };
   };

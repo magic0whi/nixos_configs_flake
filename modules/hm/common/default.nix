@@ -14,7 +14,6 @@
     # changes in each release.
     stateVersion = "25.05";
   };
-
   programs.home-manager.enable = true; # Let Home Manager install and manage itself.
   home.packages = with pkgs; [
     # Misc
@@ -99,7 +98,7 @@
     fzf = { # Interactively filter its input using fuzzy searching, not limit to filenames.
       enable = true;
       defaultOptions = [ "-m" ];
-      defaultCommand = "rg --files";
+      defaultCommand = "rg --files"; # Using ripgrep in fzf
       # https://github.com/catppuccin/fzf
       # catppuccin-mocha
       colors = {
@@ -142,6 +141,18 @@
     # Additionally, it provides optional and fully encrypted
     # synchronisation of your history between machines, via an Atuin server.
     atuin.enable = true;
+
+    # tmux = { # I use zellij instead
+    #   enable = true;
+    #   keyMode = "vi";
+    #   customPaneNavigationAndResize = true;
+    #   shortcut = "a";
+    # };
+
+    rofi = {
+      enable = true;
+      package = pkgs.rofi-wayland;
+    };
   };
   ## START yazi.nix
   programs.yazi = { # terminal file manager
@@ -154,7 +165,6 @@
       };
     };
   };
-
   xdg.configFile."yazi/theme.toml".source = "${nur-ryan4yin.packages.${pkgs.system}.catppuccin-yazi}/mocha.toml";
   ## END yazi.nix
   ## START starship.nix
