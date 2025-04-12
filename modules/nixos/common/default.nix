@@ -286,7 +286,7 @@
   users = {
     defaultUserShell = lib.mkOverride 999 pkgs.zsh; # set users' default shell system-wide
     mutableUsers = lib.mkDefault false; # Don't allow mutate users outside the config.
-    groups = lib.mkDefault {
+    groups = {
       "${myvars.username}" = {};
       docker = {};
     };
@@ -308,12 +308,12 @@
       initialHashedPassword = lib.mkDefault myvars.initial_hashed_password;
       home = lib.mkDefault "/home/${myvars.username}";
       isNormalUser = lib.mkDefault true;
-      extraGroups = lib.mkDefault [
-        # myvars.username # TODO may unnecessary
-        # "users"
-        "wheel"
+      extraGroups = [
+        myvars.username
         "docker"
         "libvirtd"
+        "video"
+        "wheel"
       ];
     };
     # root's ssh key are mainly used for remote deployment

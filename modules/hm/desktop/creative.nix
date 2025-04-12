@@ -33,7 +33,7 @@
         wlrobs
         # obs-ndi
         obs-vaapi
-        obs-nvfbc
+        # obs-nvfbc
         obs-teleport
         # obs-hyperion
         droidcam-obs

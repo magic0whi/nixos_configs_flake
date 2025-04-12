@@ -1,4 +1,4 @@
-{config, pkgs, ...}: let
+{config, pkgs, lib, ...}: let
   shell_aliases = {
     k = "kubectl";
     urldecode = "python3 -c 'import sys, urllib.parse as ul; print(ul.unquote_plus(sys.stdin.read()))'";
@@ -9,7 +9,7 @@
     lh = "ls -lah --color=auto -v";
     grep = "grep --color=auto";
     ip = "ip --color=auto";
-    cp = "cp -i --reflink=auto";
+    cp = "cp -i";
     ssh = "TERM=xterm-256color ssh";
     bc = "bc -lq";
     Ci = "wl-copy";
@@ -19,11 +19,10 @@
     cpr = "rsync --archive -hh --partial --info=stats1,progress2 --modify-window=1 \"$@\"";
     mvr = "rsync --archive -hh --partial --info=stats1,progress2 --modify-window=1 --remove-source-files \"$@\"";
     diff = "command diff --text --unified --new-file --color=auto \"$@\"";
-    man = ''
-      MANPAGER="less -R --use-color -Dd+r -Du+b" \
-      MANROFFOPT="-P-c" \
-      command man "$@"
-    ''; # Set boldface -> red color, underline -> blue color
+    # Set boldface -> red color, underline -> blue color
+    man = "MANPAGER=\"less -R --use-color -Dd+r -Du+b\""
+      + " MANROFFOPT=\"-P-c\""
+      + " command man \"$@\"";
   };
   local_bin = "${config.home.homeDirectory}/.local/bin";
   go_bin = "${config.home.homeDirectory}/go/bin";
@@ -42,14 +41,16 @@ in {
     DELTA_PAGER = "less -R";
   };
 
-  home.shellAliases = shell_aliases; # only works in bash/zsh, not nushell
+  home.shellAliases = shell_aliases;
 
   programs.zsh.enable = true;
 
   programs.nushell = {
     enable = true;
     configFile.source = ./config.nu;
-    # shellAliases = shell_aliases;
+    shellAliases = lib.mkForce (builtins.removeAttrs shell_aliases [
+      "ls" "ll" "lh" "la" "man" "ssh" "cpr" "mvr" "diff"
+    ]);
     # load the alias file for work
     # the file must exist, otherwise nushell will complain about it!
     #

@@ -30,9 +30,6 @@
       url = "github:Kirottu/anyrun";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    ghostty = {
-      url = "github:ghostty-org/ghostty";
-    };
     wallpapers = {
       url = "github:ryan4yin/wallpapers";
       flake = false;

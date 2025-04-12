@@ -102,10 +102,10 @@ repair-store *paths:
 
 [linux]
 [group('desktop')]
-hypr mode="default":
+sp4 mode="default":
   #!/usr/bin/env nu
   use {{utils_nu}} *;
-  nixos-switch ai-hyprland {{mode}}
+  nixos-switch proteus-sp4 {{mode}}
 
 [linux]
 [group('desktop')]

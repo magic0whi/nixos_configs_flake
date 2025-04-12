@@ -1,4 +1,3 @@
-{mylib, pkgs, ...}: {
+{mylib, ...}: {
   imports = mylib.scan_path ./.;
-  home.packages = with pkgs; [localsend];
 }

@@ -1,12 +1,11 @@
 {pkgs, ...}: {
   home.packages = with pkgs; [
     # GUI apps
-    # e-book viewer(.epub/.mobi/...)
-    # do not support .pdf
-    foliate
+    foliate # e-book viewer(.epub/.mobi/...),do not support .pdf
 
-    # instant messaging
-    telegram-desktop
+    localsend
+
+    telegram-desktop # instant messaging
     # discord # update too frequently, use the web version instead
 
     # remote desktop(rdp connect)
@@ -27,9 +26,7 @@
   ];
 
   # GitHub CLI tool
-  programs.gh = {
-    enable = true;
-  };
+  programs.gh.enable = true;
 
   # allow fontconfig to discover fonts and configurations installed through home.packages
   fonts.fontconfig.enable = false; # Install fonts at system-level, not user-level

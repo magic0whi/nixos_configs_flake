@@ -112,7 +112,7 @@ in {
         subpixel.rgba = "rgb";
         defaultFonts = {
           serif = ["Noto Serif" "FZYaSongS-R-GB" "Noto Serif CJK SC" "Noto Serif CJK TC" "Noto Serif CJK JP"];
-          sansSerif = ["Inter" "Noto Sans" "Noto Sans CJK SC" "Noto Sans CJK TC" "Noto Sans CJK JP"];
+          sansSerif = ["Inter Nerd Font" "Noto Sans" "Noto Sans CJK SC" "Noto Sans CJK TC" "Noto Sans CJK JP"];
           monospace = ["Iosevka Nerd Font Mono" "JetBrainsMono Nerd Font" "Iosevka Term Extended" "Noto Sans Mono" "Noto Sans Mono CJK SC" "Noto Sans Mono CJK TC" "Noto Sans Mono CJK JP"];
           emoji = ["Noto Color Emoji"];
         };
@@ -128,8 +128,8 @@ in {
       enable = true;
       fonts = [
         {
-          name = "Source Code Pro";
-          package = pkgs.source-code-pro;
+          name = "Iosevka Nerd Font Mono";
+          package = pkgs.nerd-fonts.iosevka;
         }
       ];
       extraOptions = "--term xterm-256color";

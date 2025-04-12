@@ -1,11 +1,11 @@
-let
+{lib, ...}: let
   shellAliases = {
     "zj" = "zellij";
   };
 in {
-  # programs.zellij.enable = true;
-  home.shellAliases = shellAliases; # only works in bash/zsh, not nushell
-  programs.nushell.shellAliases = shellAliases;
+  programs.zellij.enable = true;
+  home.shellAliases = shellAliases;
+  programs.nushell.shellAliases = lib.mkForce shellAliases;
   xdg.configFile."zellij/config.kdl".source = ./zellij.kdl;
   # auto start zellij in nushell TODO
   # programs.nushell.extraConfig = ''
