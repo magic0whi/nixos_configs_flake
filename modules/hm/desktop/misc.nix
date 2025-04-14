@@ -13,7 +13,6 @@
     freerdp # required by remmina
 
     # misc
-    flameshot
     ventoy # multi-boot usb creator
 
     # my custom hardened packages

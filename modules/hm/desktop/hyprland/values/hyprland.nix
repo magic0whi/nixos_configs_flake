@@ -6,6 +6,32 @@ in {
     enable = true;
     settings = {
       source = "${nur-ryan4yin.packages.${pkgs.system}.catppuccin-hyprland}/themes/mocha.conf"; # Import color codes
+      animations = {
+        bezier = [
+          "easeOutQuint,0.23,1,0.32,1" # https://easings.net/#easeOutQuint
+          "linear,0,0,1,1" # https://cubic-bezier.com/#0,0,1,1
+          "almostLinear,0.5,0.5,0.75,1.0" # https://cubic-bezier.com/#.5,.5,.75,1
+          "quick,0.15,0,0.1,1" # https://cubic-bezier.com/#.15,0,.1,1
+        ];
+        animation = [
+          "global,1,10,default"
+          "border,1,5.39,easeOutQuint"
+          "windows,1,4.79,easeOutQuint"
+          "windowsIn,1,4.1,easeOutQuint,popin 87%"
+          "windowsOut,1,1.49,linear,popin 87%"
+          "fade,1,3.03,quick"
+          "fadeIn,1,1.73,almostLinear"
+          "fadeOut,1,1.46,almostLinear"
+          "layers,1,3.81,easeOutQuint"
+          "layersIn,1,4,easeOutQuint,fade"
+          "layersOut,1,1.5,linear,fade"
+          "fadeLayersIn,1,1.79,almostLinear"
+          "fadeLayersOut,1,1.39,almostLinear"
+          "workspaces,1,1.94,almostLinear,fade"
+          "workspacesIn,1,1.21,almostLinear,fade"
+          "workspacesOut,1,1.94,almostLinear,fade"
+        ];
+      };
       "$terminal" = "systemd-run --user --scope alacritty";
       "$menu" = "systemd-run --user --scope rofi -show combi";
       "$clipManager" = "systemd-run --user --scope sh -c 'cliphist list | rofi -dmenu | cliphist decode | wl-copy'";
@@ -20,6 +46,7 @@ in {
         "$mainMod SHIFT,F,togglefloating"
         "$mainMod,T,togglesplit," # dwindle
         "$mainMod SHIFT,P,pseudo" # dwindle"
+
         # Special workspace (scratchpad)
         "$mainMod,S,togglespecialworkspace,magic"
         "$mainMod SHIFT,S,movetoworkspace,special:magic"
@@ -65,12 +92,30 @@ in {
         # Scroll through existing workspaces with mainMod + scroll
         "$mainMod,mouse_down,workspace,e+1"
         "$mainMod,mouse_up,workspace,e-1"
+
+        # Functional keys
+        ",Print,exec,hyprshot -m output -o ~/Pictures/Screenshots -- imv"
+        "ALT,Print,exec,hyprshot -m window -o ~/Pictures/Screenshots -- imv"
       ];
       binde = [
         "$mainMod ALT,H,resizeactive,-5% 0"
         "$mainMod ALT,L,resizeactive,5% 0"
         "$mainMod ALT,J,resizeactive,0 5%"
         "$mainMod ALT,K,resizeactive,0 -5%"
+      ];
+      "$backlight" = "~/.config/hypr/scripts/brightness";
+      "$volume" = "~/.config/hypr/scripts/volume";
+      bindel = [ # Multimedia keys for volume and brightness
+        ",XF86AudioRaiseVolume,exec,$volume -inc"
+        ",XF86AudioLowerVolume,exec,$volume -dec"
+        ",XF86AudioMute,exec,$volume --toggle"
+        ",XF86AudioMicMute,exec,$volume --toggle-mic"
+        ",XF86MonBrightnessUp,exec,$backlight --inc"
+        ",XF86MonBrightnessDown,exec,$backlight --dec"
+        ",XF86AudioNext,exec,mpc next"
+        ",XF86AudioPrev,exec,mpc prev"
+        ",XF86AudioPlay,exec,mpc toggle"
+        ",XF86AudioStop,exec,mpc stop"
       ];
       bindl = [
         "$mainMod,Z,exec,loginctl lock-session; sleep 0.6; hyprctl dispatch dpms off"
@@ -79,6 +124,10 @@ in {
         "$mainMod ALT,C,exec,systemctl hibernate" # Hibernate
         "$mainMod ALT,R,exec,systemctl reboot" # Reboot
         "$mainMod ALT,S,exec,systemctl poweroff" # Shutdown
+        # TODO: Lid Switch
+        ",switch:Lid Switch, exec, yad --text=\"Lid Switch trigged!\""
+        ",switch:on:Lid Switch, exec, yad --text=\"Lid Switch On\""
+        ",switch:off:Lid Switch, exec, yad --text=\"Lid Switch Off\""
       ];
       bindm = [ # LMB/RMB and dragging to move/resize windows
         "$mainMod,mouse:272,movewindow"
@@ -96,6 +145,10 @@ in {
         # "blur:size" = 3;
         # "blur:ignore_opacity" = false;
         "shadow:enabled" = false;
+      };
+      dwindle = {
+        pseudotile = true; # Master switch for pseudotiling
+        preserve_split = true; # The split (side/top) will not change regardless of what happens to the container
       };
       env = [
         # "NIXOS_OZONE_WL,1" # for any ozone-based browser & electron apps to run on wayland TODO may be unnecessary
@@ -117,33 +170,39 @@ in {
         "col.active_border" = "rgba(33ccffee) rgba(00ff99ee) 45deg";
         "col.inactive_border" = "rgba(595959aa)";
       };
+      gestures.workspace_swipe = true;
       misc = {
-        mouse_move_enables_dpms = false;
         key_press_enables_dpms = true;
         vrr = 1;
       };
-      windowrulev2 = [
+      windowrule = [
+        "float,class:^(yad|org\.pulseaudio\.pavucontrol|imv|qemu)$"
+
         "idleinhibit focus,class:^(firefox)$"
         "float,class:^(firefox)$,title:^(Picture-in-Picture)$"
         "pin,class:^(firefox)$,title:^(Picture-in-Picture)$"
         "size 480 270,class:^(firefox)$,title:^(Picture-in-Picture)$"
         "move 100%-w-5 100%-w-5,class:^(firefox)$,title:^(Picture-in-Picture)$"
+
+        "float, class:^(anki)$, title:(HyperTTS: Add Audio \(Collection\))"
+        "size 1090 640, class:(anki), title:(HyperTTS: Add Audio \(Collection\))"
+
+        "float, class:^(org\.inkscape\.Inkscape)$, title:^(Function Plotter)$"
+        "float, class:^(org\.inkscape\.Inkscape)$, title:^(Function Plotter)$"
       ];
+      xwayland.force_zero_scaling = true; # This will get rid of the pixelated look, but will not scale applications properly. To do this, each toolkit has its own mechanism.
     };
     # extraConfig = builtins.readFile ../conf/hyprland.conf;
     systemd.variables = ["--all"];
   };
   services.cliphist.enable = true;
-
   # NOTE: this executable is used by greetd to start a wayland session when system boot up
   # with such a vendor-no-locking script, we can switch to another wayland compositor without modifying greetd's config in NixOS module
   home.file.".wayland-session" = {
     source = "${package}/bin/Hyprland";
     executable = true;
   };
-
-  # hyprland configs, based on https://github.com/notwidow/hyprland
-  xdg.configFile = {
+  xdg.configFile = { # hyprland configs, based on https://github.com/notwidow/hyprland
     "hypr/mako" = {
       source = ../conf/mako;
       recursive = true;
@@ -160,9 +219,7 @@ in {
       source = ../conf/wlogout;
       recursive = true;
     };
-
-    # music player - mpd
-    "mpd" = {
+    "mpd" = { # music player - mpd
       source = ../conf/mpd;
       recursive = true;
     };

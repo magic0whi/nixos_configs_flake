@@ -11,7 +11,10 @@ in {
         #   1.5:          scale to 1.5 times
         #   bitdepth,10:  enable 10 bit support
         monitor = "eDP-1,highres,auto,${dpi_scale},bitdepth,10";
-        env = ["GDK_DPI_SCALE,${dpi_scale}"];
+        env = [
+          "GDK_DPI_SCALE,${dpi_scale}"
+          "STEAM_FORCE_DESKTOPUI_SCALING,${dpi_scale}"
+        ];
       };
     };
   };

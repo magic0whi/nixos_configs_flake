@@ -1,22 +1,4 @@
-{pkgs, nur-ryan4yin, ...}: {
-  # refer to https://codeberg.org/dnkl/foot/src/branch/master/foot.ini
-  xdg.configFile."foot/foot.ini".text =
-    ''
-      [main]
-      dpi-aware=yes
-      font=JetBrainsMono Nerd Font:size=8
-      shell=${pkgs.bash}/bin/bash --login -c 'nu --login --interactive'
-      term=foot
-      initial-window-size-pixels=3840x2160
-      initial-window-mode=windowed
-      pad=0x0                             # optionally append 'center'
-      resize-delay-ms=10
-
-      [mouse]
-      hide-when-typing=yes
-    ''
-    + (builtins.readFile "${nur-ryan4yin.packages.${pkgs.system}.catppuccin-foot}/catppuccin-mocha.conf");
-
+{pkgs, ...}: {
   home.packages = [
     # pkgs.firefox-wayland
     pkgs.nixpaks.firefox

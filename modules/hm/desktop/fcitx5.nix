@@ -1,8 +1,4 @@
-{
-  pkgs,
-  nur-ryan4yin,
-  ...
-}: {
+{pkgs, nur-ryan4yin, ...}: {
   home.file.".local/share/fcitx5/themes".source = "${nur-ryan4yin.packages.${pkgs.system}.catppuccin-fcitx5}/src";
 
   xdg.configFile = {
@@ -15,6 +11,7 @@
 
   i18n.inputMethod = {
     enabled = "fcitx5";
+    fcitx5.waylandFrontend = true; # TODO
     fcitx5.addons = with pkgs; [
       fcitx5-configtool # needed enable rime using configtool after installed
       fcitx5-chinese-addons fcitx5-chewing fcitx5-mozc fcitx5-rime

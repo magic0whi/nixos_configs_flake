@@ -362,8 +362,4 @@
   programs.nix-ld.enable = lib.mkDefault true;
   programs.nix-ld.libraries = lib.mkDefault [pkgs.stdenv.cc.cc];
   ## END fhs.nix
-  ## START misc.nix
-  # fix for `sudo xxx` in kitty/wezterm/foot and other modern terminal emulators
-  # security.sudo.keepTerminfo = true;
-  ## END misc.nix
 }
