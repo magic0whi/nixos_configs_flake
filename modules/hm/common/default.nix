@@ -148,11 +148,6 @@
     #   customPaneNavigationAndResize = true;
     #   shortcut = "a";
     # };
-
-    rofi = {
-      enable = true;
-      package = pkgs.rofi-wayland;
-    };
   };
   ## START yazi.nix
   programs.yazi = { # terminal file manager
