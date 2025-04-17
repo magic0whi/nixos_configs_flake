@@ -7,16 +7,15 @@
         randr
         rink
         shell
+        stdin
         symbols
         translate
       ];
-
       width.fraction = 0.3;
       y.absolute = 15;
       hidePluginInfo = true;
       closeOnClick = true;
     };
-
     # custom css for anyrun, based on catppuccin-mocha
     extraCss = ''
       @define-color bg-col  rgba(30, 30, 46, 0.7);
