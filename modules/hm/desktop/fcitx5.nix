@@ -11,7 +11,7 @@
 
   i18n.inputMethod = {
     enabled = "fcitx5";
-    fcitx5.waylandFrontend = true; # TODO
+    fcitx5.waylandFrontend = true; # Hyprland supports it
     fcitx5.addons = with pkgs; [
       fcitx5-configtool # needed enable rime using configtool after installed
       fcitx5-chinese-addons fcitx5-chewing fcitx5-mozc fcitx5-rime

@@ -92,12 +92,10 @@ in {
     fonts = { # all fonts are linked to /nix/var/nix/profiles/system/sw/share/X11/fonts
       enableDefaultPackages = lib.mkOverride 999 false; # use fonts specified by user rather than default ones
       fontDir.enable = lib.mkDefault true;
-
       packages = with pkgs; [
         # icon fonts
         material-design-icons # TODO: Remove
         font-awesome # TODO: Remove
-
         noto-fonts noto-fonts-emoji noto-fonts-cjk-sans noto-fonts-cjk-serif
         inter-nerdfont # NerdFont patch of the Inter font
         # nerdfonts
@@ -108,33 +106,30 @@ in {
         nerd-fonts.iosevka
       ];
       fontconfig = {
-        subpixel.rgba = "rgb";
+        subpixel.rgba = lib.mkDefault "rgb";
         defaultFonts = {
-          serif = ["Noto Serif" "FZYaSongS-R-GB" "Noto Serif CJK SC" "Noto Serif CJK TC" "Noto Serif CJK JP"];
-          sansSerif = ["Inter Nerd Font" "Noto Sans" "Noto Sans CJK SC" "Noto Sans CJK TC" "Noto Sans CJK JP"];
-          monospace = ["Iosevka Nerd Font Mono" "JetBrainsMono Nerd Font" "Iosevka Term Extended" "Noto Sans Mono" "Noto Sans Mono CJK SC" "Noto Sans Mono CJK TC" "Noto Sans Mono CJK JP"];
-          emoji = ["Noto Color Emoji"];
+          serif = lib.mkDefault ["Noto Serif" "FZYaSongS-R-GB" "Noto Serif CJK SC" "Noto Serif CJK TC" "Noto Serif CJK JP"];
+          sansSerif = lib.mkDefault ["Inter Nerd Font" "Noto Sans" "Noto Sans CJK SC" "Noto Sans CJK TC" "Noto Sans CJK JP"];
+          monospace = lib.mkDefault ["Iosevka Nerd Font Mono" "JetBrainsMono Nerd Font" "Iosevka Term Extended" "Noto Sans Mono" "Noto Sans Mono CJK SC" "Noto Sans Mono CJK TC" "Noto Sans Mono CJK JP"];
+          emoji = lib.mkDefault ["Noto Color Emoji"];
         };
       };
     };
-
-    # https://wiki.archlinux.org/title/KMSCON
-    services.kmscon = {
+    services.kmscon = { # https://wiki.archlinux.org/title/KMSCON
       # Use kmscon as the virtual console instead of gettys.
       # kmscon is a kms/dri-based userspace virtual terminal implementation.
       # It supports a richer feature set than the standard linux console VT,
       # including full unicode support, and when the video card supports drm should be much faster.
-      enable = true;
+      enable = lib.mkDefault true;
       fonts = [
         {
           name = "Iosevka Nerd Font Mono";
           package = pkgs.nerd-fonts.iosevka;
         }
       ];
-      extraOptions = "--term xterm-256color";
+      extraOptions = lib.mkDefault "--term xterm-256color";
+      hwRender = lib.mkDefault true; # Whether to use 3D hardware acceleration to render the console.
       extraConfig = "font-size=12";
-      # Whether to use 3D hardware acceleration to render the console.
-      hwRender = true;
     };
     ## END fonts.nix
     ## START misc.nix
@@ -144,27 +139,27 @@ in {
     # so that you don’t have to type in passphrases every time you make an SSH connection.
     # Use `ssh-add` to add a key to the agent.
     programs = {
-      ssh.startAgent = true;
-      dconf.enable = true;
+      ssh.startAgent = lib.mkDefault true;
+      dconf.enable = lib.mkDefault true;
       thunar = { # thunar file manager(part of xfce)
-        enable = true;
+        enable = lib.mkDefault true;
         plugins = with pkgs.xfce; [
           thunar-archive-plugin
           thunar-volman
         ];
       };
-      light.enable = true;
+      light.enable = lib.mkDefault true;
     };
     ## END misc.nix
     ## START security.nix
-    security.polkit.enable = true; # security with polkit
+    security.polkit.enable = lib.mkDefault true; # security with polkit
     # security with gnome-kering
-    services.gnome.gnome-keyring.enable = true;
-    security.pam.services.greetd.enableGnomeKeyring = true;
+    services.gnome.gnome-keyring.enable = lib.mkDefault true;
+    security.pam.services.greetd.enableGnomeKeyring = lib.mkDefault true;
     programs.gnupg.agent = { # gpg agent with pinentry
-      enable = true;
-      pinentryPackage = pkgs.pinentry-qt;
-      enableSSHSupport = false;
+      enable = lib.mkDefault true;
+      pinentryPackage = lib.mkDefault pkgs.pinentry-qt;
+      enableSSHSupport = lib.mkDefault false;
       settings.default-cache-ttl = 4 * 60 * 60; # 4 hours
     };
     ## END security.nix

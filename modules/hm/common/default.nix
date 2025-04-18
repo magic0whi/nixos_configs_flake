@@ -2,7 +2,7 @@
   imports = mylib.scan_path ./.;
   home = { # Home Manager needs a bit of information about you and the paths it should manage.
     inherit (myvars) username;
-    homeDirectory = "/home/${myvars.username}";
+    homeDirectory = lib.mkDefault "/home/${myvars.username}";
 
     # This value determines the Home Manager release that your
     # configuration is compatible with. This helps avoid breakage
@@ -12,7 +12,7 @@
     # You can update Home Manager without changing this value. See
     # the Home Manager release notes for a list of state version
     # changes in each release.
-    stateVersion = "25.05";
+    stateVersion = lib.mkDefault "25.05";
   };
   programs.home-manager.enable = true; # Let Home Manager install and manage itself.
   home.packages = with pkgs; [
@@ -72,18 +72,16 @@
 
   programs = { # A modern replacement for ‘ls’, useful in bash/zsh prompt, but not in nushell.
     eza = {
-      enable = true;
-      enableNushellIntegration = false; # do not enable aliases in nushell!
-      git = true;
-      icons = "auto";
+      enable = lib.mkDefault true;
+      enableNushellIntegration = lib.mkDefault false; # do not enable aliases in nushell!
+      git = lib.mkDefault true;
+      icons = lib.mkDefault "auto";
     };
-
-    # a cat(1) clone with syntax highlighting and Git integration.
-    bat = {
-      enable = true;
+    bat = { # a cat(1)-like with syntax highlighting and Git integration.
+      enable = lib.mkDefault true;
       config = {
-        pager = "less -FR";
-        theme = "catppuccin-mocha";
+        pager = lib.mkDefault "less -FR";
+        theme = lib.mkDefault "catppuccin-mocha";
       };
       themes = {
         # https://raw.githubusercontent.com/catppuccin/bat/main/Catppuccin-mocha.tmTheme
@@ -96,9 +94,9 @@
 
     # A command-line fuzzy finder
     fzf = { # Interactively filter its input using fuzzy searching, not limit to filenames.
-      enable = true;
-      defaultOptions = [ "-m" ];
-      defaultCommand = "rg --files"; # Using ripgrep in fzf
+      enable = lib.mkDefault true;
+      defaultOptions = ["-m"];
+      defaultCommand = lib.mkDefault "rg --files"; # Using ripgrep in fzf
       # https://github.com/catppuccin/fzf
       # catppuccin-mocha
       colors = {
@@ -134,13 +132,13 @@
     #   zi foo             # cd with interactive selection (using fzf)
     #
     #   z foo<SPACE><TAB>  # show interactive completions (zoxide v0.8.0+, bash 4.4+/fish/zsh only)
-    zoxide.enable = true;
+    zoxide.enable = lib.mkDefault true;
 
     # Atuin replaces your existing shell history with a SQLite database,
     # and records additional context for your commands.
     # Additionally, it provides optional and fully encrypted
     # synchronisation of your history between machines, via an Atuin server.
-    atuin.enable = true;
+    atuin.enable = lib.mkDefault true;
 
     # tmux = { # I use zellij instead
     #   enable = true;
@@ -151,12 +149,12 @@
   };
   ## START yazi.nix
   programs.yazi = { # terminal file manager
-    enable = true;
+    enable = lib.mkDefault true;
     # Changing working directory when exiting Yazi
     settings = {
       manager = {
-        show_hidden = true;
-        sort_dir_first = true;
+        show_hidden = lib.mkDefault true;
+        sort_dir_first = lib.mkDefault true;
       };
     };
   };
@@ -196,34 +194,34 @@
   # https://github.com/catppuccin/helix
   xdg.configFile."helix/themes".source = "${nur-ryan4yin.packages.${pkgs.system}.catppuccin-helix}/themes/default";
   programs.helix = {
-    enable = true;
-    defaultEditor = true;
+    enable = lib.mkDefault true;
+    defaultEditor = lib.mkDefault true;
     extraPackages = with pkgs; [marksman ltex-ls texlab];
     settings = {
       theme = "catppuccin_mocha";
       editor = {
-        bufferline = "multiple";
-        color-modes = true;
-        cursorline = true;
-        line-number = "relative";
-        rulers = [80 120];
-        true-color = true;
-        soft-wrap.enable = true;
-        cursor-shape.insert = "bar";
-        file-picker.hidden = false;
-        indent-guides.render = true;
+        bufferline = lib.mkDefault "multiple";
+        color-modes = lib.mkDefault true;
+        cursorline = lib.mkDefault true;
+        line-number = lib.mkDefault "relative";
+        rulers = lib.mkDefault [80 120];
+        true-color = lib.mkDefault true;
+        soft-wrap.enable = lib.mkDefault true;
+        cursor-shape.insert = lib.mkDefault "bar";
+        file-picker.hidden = lib.mkDefault false;
+        indent-guides.render = lib.mkDefault true;
         statusline = {
-          left = ["mode" "spinner" "file-name" "read-only-indicator" "file-modification-indicator"];
-          right = ["diagnostics" "version-control" "selections" "position" "file-encoding" "file-line-ending" "file-type"];
+          left = lib.mkDefault ["mode" "spinner" "file-name" "read-only-indicator" "file-modification-indicator"];
+          right = lib.mkDefault ["diagnostics" "version-control" "selections" "position" "file-encoding" "file-line-ending" "file-type"];
         };
         whitespace.render = {
-          space = "all";
-          tab = "all";
-          nbsp = "all";
-          newline = "none";
+          space = lib.mkDefault "all";
+          tab = lib.mkDefault "all";
+          nbsp = lib.mkDefault "all";
+          newline = lib.mkDefault "none";
         };
       };
-      keys = {
+      keys = lib.mkDefault {
         insert."C-c" = "normal_mode";
         normal."F5" = [":config-reload" ":lsp-restart"];
       };
@@ -270,88 +268,46 @@
   ## START neovim.nix
   programs = {
     neovim = {
-      enable = true;
-      viAlias = true;
-      vimAlias = true;
+      enable = lib.mkDefault true;
+      viAlias = lib.mkDefault true;
+      vimAlias = lib.mkDefault true;
     };
   };
   ## END neovim.nix
   ## START gpg.nix
   programs.gpg = {
-    enable = true;
-    homedir = "${config.home.homeDirectory}/.gnupg";
-    #  $GNUPGHOME/trustdb.gpg stores all the trust level you specified in `programs.gpg.publicKeys` option.
-    #
-    # If set `mutableTrust` to false, the path $GNUPGHOME/trustdb.gpg will be overwritten on each activation.
-    # Thus we can only update trsutedb.gpg via home-manager.
-    mutableTrust = false;
+    enable = lib.mkDefault true;
+    # $GNUPGHOME/trustdb.gpg stores all the trust level you specified in `programs.gpg.publicKeys` option. If set `mutableTrust` to false, the path $GNUPGHOME/trustdb.gpg will be overwritten on each activation. Thus we can only update trsutedb.gpg via home-manager.
+    mutableTrust = lib.mkDefault false;
 
-    # $GNUPGHOME/pubring.kbx stores all the public keys you specified in `programs.gpg.publicKeys` option.
-    #
-    # If set `mutableKeys` to false, the path $GNUPGHOME/pubring.kbx will become an immutable link to the Nix store, denying modifications.
+    # $GNUPGHOME/pubring.kbx stores all the public keys you specified in `programs.gpg.publicKeys` option. If set `mutableKeys` to false, the path $GNUPGHOME/pubring.kbx will become an immutable link to the Nix store, denying modifications.
     # Thus we can only update pubring.kbx via home-manager
-    mutableKeys = false;
-    publicKeys = [
-      # https://www.gnupg.org/gph/en/manual/x334.html
-      # { TODO
-        # source = "${mysecrets}/public/ryan4yin-gpg-keys-2014-01-27.pub";
-        # trust = 5;
-      # } # ultimate trust, my own keys.
-    ];
+    mutableKeys = lib.mkDefault false;
+    settings = { # This configuration is based on the tutorial https://blog.eleven-labs.com/en/openpgp-almost-perfect-key-pair-part-1, it allows for a robust setup
+      no-greeting = lib.mkDefault true; # Get rid of the copyright notice
+      no-emit-version = lib.mkDefault true; # Disable inclusion of the version string in ASCII armored output
+      no-comments = lib.mkOverride 999 false; # Do not write comment packets
+      export-options = lib.mkDefault "export-minimal"; # Export the smallest key possible. This removes all signatures except the most recent self-signature on each user ID
+      keyid-format = lib.mkDefault "0xlong"; # Display long key IDs
+      with-fingerprint = lib.mkDefault true; # List all keys (or the specified ones) along with their fingerprints
+      list-options = lib.mkDefault "show-uid-validity"; # Display the calculated validity of user IDs during key listings
+      verify-options = lib.mkOverride 999 "show-uid-validity show-keyserver-urls";
+      personal-cipher-preferences = lib.mkOverride 999 "AES256"; # Select the strongest cipher
+      personal-digest-preferences = lib.mkOverride 999 "SHA512"; # Select the strongest digest
+      default-preference-list = lib.mkOverride 999 "SHA512 SHA384 SHA256 RIPEMD160 AES256 TWOFISH BLOWFISH ZLIB BZIP2 ZIP Uncompressed"; # This preference list is used for new keys and becomes the default for "setpref" in the edit menu
 
-    # This configuration is based on the tutorial below, it allows for a robust setup
-    # https://blog.eleven-labs.com/en/openpgp-almost-perfect-key-pair-part-1
-    # ~/.gnupg/gpg.conf
-    settings = {
-      # Get rid of the copyright notice
-      no-greeting = true;
+      cipher-algo = lib.mkDefault "AES256"; # Use the strongest cipher algorithm
+      digest-algo = lib.mkDefault "SHA512"; # Use the strongest digest algorithm
+      cert-digest-algo = lib.mkDefault "SHA512"; # Message digest algorithm used when signing a key
+      compress-algo = lib.mkDefault "ZLIB"; # Use RFC-1950 ZLIB compression
 
-      # Disable inclusion of the version string in ASCII armored output
-      no-emit-version = true;
-      # Do not write comment packets
-      no-comments = false;
-      # Export the smallest key possible
-      # This removes all signatures except the most recent self-signature on each user ID
-      export-options = "export-minimal";
+      disable-cipher-algo = lib.mkDefault "3DES"; # Disable weak algorithm
+      weak-digest = lib.mkDefault "SHA1"; # Treat the specified digest algorithm as weak
 
-      # Display long key IDs
-      keyid-format = "0xlong";
-      # List all keys (or the specified ones) along with their fingerprints
-      with-fingerprint = true;
-
-      # Display the calculated validity of user IDs during key listings
-      list-options = "show-uid-validity";
-      verify-options = "show-uid-validity show-keyserver-urls";
-
-      # Select the strongest cipher
-      personal-cipher-preferences = "AES256";
-      # Select the strongest digest
-      personal-digest-preferences = "SHA512";
-      # This preference list is used for new keys and becomes the default for "setpref" in the edit menu
-      default-preference-list = "SHA512 SHA384 SHA256 RIPEMD160 AES256 TWOFISH BLOWFISH ZLIB BZIP2 ZIP Uncompressed";
-
-      # Use the strongest cipher algorithm
-      cipher-algo = "AES256";
-      # Use the strongest digest algorithm
-      digest-algo = "SHA512";
-      # Message digest algorithm used when signing a key
-      cert-digest-algo = "SHA512";
-      # Use RFC-1950 ZLIB compression
-      compress-algo = "ZLIB";
-
-      # Disable weak algorithm
-      disable-cipher-algo = "3DES";
-      # Treat the specified digest algorithm as weak
-      weak-digest = "SHA1";
-
-      # The cipher algorithm for symmetric encryption for symmetric encryption with a passphrase
-      s2k-cipher-algo = "AES256";
-      # The digest algorithm used to mangle the passphrases for symmetric encryption
-      s2k-digest-algo = "SHA512";
-      # Selects how passphrases for symmetric encryption are mangled
-      s2k-mode = "3";
-      # Specify how many times the passphrases mangling for symmetric encryption is repeated
-      s2k-count = "65011712";
+      s2k-cipher-algo = lib.mkDefault "AES256"; # The cipher algorithm for symmetric encryption for symmetric encryption with a passphrase
+      s2k-digest-algo = lib.mkDefault "SHA512"; # The digest algorithm used to mangle the passphrases for symmetric encryption
+      s2k-mode = lib.mkDefault "3"; # Selects how passphrases for symmetric encryption are mangled
+      s2k-count = lib.mkDefault "65011712"; # Specify how many times the passphrases mangling for symmetric encryption is repeated
     };
   };
   ## END gpg.nix

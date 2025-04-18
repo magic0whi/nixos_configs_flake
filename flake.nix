@@ -41,6 +41,7 @@
       # url = "github:ryan4yin/ragenix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    # TODO
     # my private secrets, it's a private repository, you need to replace it with your own. TODO
     # use ssh protocol to authenticate via ssh-agent/ssh-key, and shallow clone to save time
     # mysecrets = {

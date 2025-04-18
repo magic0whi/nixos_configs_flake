@@ -151,7 +151,6 @@ in {
         preserve_split = true; # The split (side/top) will not change regardless of what happens to the container
       };
       env = [
-        # "NIXOS_OZONE_WL,1" # for any ozone-based browser & electron apps to run on wayland TODO may be unnecessary
         "_JAVA_AWT_WM_NONREPARENTING,1"
         "QT_WAYLAND_DISABLE_WINDOWDECORATION,1" # Disables window decorations on Qt applications
         # "QT_QPA_PLATFORMTHEME,qt6ct"

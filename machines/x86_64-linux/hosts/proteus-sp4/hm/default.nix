@@ -1,4 +1,4 @@
-{lib, ...}: let
+{lib, mylib, ...}: let
   dpi_scale = lib.strings.substring 0 3 (lib.strings.floatToString 1.5);
 in {
   modules.desktop = {
@@ -44,6 +44,14 @@ in {
         identitiesOnly = true; # Specifies that ssh should only use the identity file. Required to prevent sending default identity files first.
       };
     };
+  };
+  programs.gpg = {
+    publicKeys = [ # https://www.gnupg.org/gph/en/manual/x334.html
+      {
+        source = mylib.relative_to_root "custom_files/proteus_pub.gpg";
+        trust = 5; # ultimate trust, my own keys
+      }
+    ];
   };
   services.syncthing = {
     key = "${./syncthing_key.pem}";
