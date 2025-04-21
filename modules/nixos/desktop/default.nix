@@ -12,13 +12,10 @@ in {
         xdg-desktop-portal-wlr
         xdg-desktop-portal-gtk # For GTK
       ];
-      config = {
-        common = {
-          # Use xdg-desktop-portal-gtk for every portal interface...
-          default = ["gtk"];
-          # except the secret portal, which is handled by gnome-keyring
-          "org.freedesktop.impl.portal.Secret" = ["gnome-keyring"];
-        };
+      config.common = {
+        default = ["gtk"]; # Use xdg-desktop-portal-gtk for every portal interface...
+        "org.freedesktop.impl.portal.Secret" = ["gnome-keyring"]; # except the secret portal, which is handled by gnome-keyring
+        "org.freedesktop.impl.portal.Settings" = ["gtk"];
       };
     };
     services = {

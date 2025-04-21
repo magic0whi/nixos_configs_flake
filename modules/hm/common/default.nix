@@ -198,7 +198,7 @@
     defaultEditor = lib.mkDefault true;
     extraPackages = with pkgs; [marksman ltex-ls texlab];
     settings = {
-      theme = "catppuccin_mocha";
+      theme = lib.mkDefault "catppuccin_mocha";
       editor = {
         bufferline = lib.mkDefault "multiple";
         color-modes = lib.mkDefault true;

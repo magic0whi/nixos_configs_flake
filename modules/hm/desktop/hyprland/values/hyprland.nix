@@ -35,6 +35,7 @@ in {
       "$terminal" = "systemd-run --user --scope alacritty";
       "$menu" = "systemd-run --user --scope ~/.config/hypr/scripts/menu";
       "$clipManager" = "systemd-run --user --scope sh -c 'cliphist list | anyrun --show-results-immediately true --plugins ${anyrun.packages.${pkgs.system}.stdin}/lib/libstdin.so | cliphist decode | wl-copy'";
+      "$fileManager" = "systemd-run --user --scope thunar";
       "$backlight" = "~/.config/hypr/scripts/brightness";
       "$volume" = "~/.config/hypr/scripts/volume";
       "$mainMod" = "SUPER";
@@ -124,10 +125,7 @@ in {
         "$mainMod ALT,C,exec,systemctl hibernate" # Hibernate
         "$mainMod ALT,R,exec,systemctl reboot" # Reboot
         "$mainMod ALT,S,exec,systemctl poweroff" # Shutdown
-        # TODO: Lid Switch
-        ",switch:Lid Switch, exec, yad --text=\"Lid Switch trigged!\""
-        ",switch:on:Lid Switch, exec, yad --text=\"Lid Switch On\""
-        ",switch:off:Lid Switch, exec, yad --text=\"Lid Switch Off\""
+        ",switch:Lid Switch,exec,loginctl lock-session" # Lock when lid switch triggered
       ];
       bindm = [ # LMB/RMB and dragging to move/resize windows
         "$mainMod,mouse:272,movewindow"
@@ -296,9 +294,7 @@ in {
     };
   };
   services.cliphist.enable = true;
-  # NOTE: this executable is used by greetd to start a wayland session when system boot up
-  # with such a vendor-no-locking script, we can switch to another wayland compositor without modifying greetd's config in NixOS module
-  home.file.".wayland-session" = {
+  home.file.".wayland-session" = { # NOTE: this executable is used by greetd to start a wayland session when system boot up. With such a vendor-no-locking script, we can switch to another wayland compositor without modifying greetd's config in NixOS module
     source = "${package}/bin/Hyprland";
     executable = true;
   };

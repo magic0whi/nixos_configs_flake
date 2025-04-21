@@ -10,44 +10,40 @@
     name = "Bibata-Modern-Ice";
     size = 24;
   };
-
-  # set dpi for 4k monitor
-  xresources.properties = {
-    # dpi for Xorg's font
-    "Xft.dpi" = 150;
-    # or set a generic dpi
-    "*.dpi" = 150;
+  xresources.properties = { # set dpi for 4k monitor
+    # "Xft.dpi" = 150; # dpi for Xorg's font
+    "*.dpi" = 150; # or set a generic dpi
   };
-
+  dconf.settings."org/gnome/desktop/interface".color-scheme = "prefer-dark";
   # gtk's theme settings, generate files:
   #   1. ~/.gtkrc-2.0
   #   2. ~/.config/gtk-3.0/settings.ini
   #   3. ~/.config/gtk-4.0/settings.ini
   gtk = {
     enable = true;
-
     font = {
-      name = "Noto Sans";
-      package = pkgs.noto-fonts;
+      name = "Inter Nerd Font";
+      package = pkgs.inter-nerdfont;
       size = 11;
     };
-
     gtk2.configLocation = "${config.xdg.configHome}/gtk-2.0/gtkrc";
-
+    gtk3.extraConfig.gtk-application-prefer-dark-theme = true;
+    gtk4.extraConfig.gtk-application-prefer-dark-theme = true;
     iconTheme = {
       name = "Papirus-Dark";
       package = pkgs.papirus-icon-theme;
     };
-
     theme = {
-      # https://github.com/catppuccin/gtk
-      name = "catppuccin-macchiato-pink-compact";
-      package = pkgs.catppuccin-gtk.override {
-        # https://github.com/NixOS/nixpkgs/blob/nixos-23.05/pkgs/data/themes/catppuccin-gtk/default.nix
+      name = "catppuccin-macchiato-pink-compact"; # https://github.com/catppuccin/gtk
+      package = pkgs.catppuccin-gtk.override { # https://github.com/NixOS/nixpkgs/blob/nixos-unstable/pkgs/by-name/ca/catppuccin-gtk/package.nix
         accents = ["pink"];
         size = "compact";
         variant = "macchiato";
       };
     };
+  };
+  qt = {
+    enable = true;
+    style.name = "gtk2";
   };
 }

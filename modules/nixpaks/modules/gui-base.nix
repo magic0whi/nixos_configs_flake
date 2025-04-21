@@ -62,6 +62,7 @@ in {
         (sloth.concat' sloth.xdgConfigHome "/gtk-3.0")
         (sloth.concat' sloth.xdgConfigHome "/gtk-4.0")
         (sloth.concat' sloth.xdgConfigHome "/fontconfig")
+        (sloth.concat' sloth.xdgConfigHome "/dconf")
 
         "/etc/fonts" # for fontconfig
         "/etc/machine-id"

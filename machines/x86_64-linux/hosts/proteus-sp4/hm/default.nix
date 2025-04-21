@@ -1,21 +1,24 @@
 {lib, mylib, ...}: let
   dpi_scale = lib.strings.substring 0 3 (lib.strings.floatToString 1.5);
+  main_monitor = "eDP-1";
+  modeline = "highres,auto,${dpi_scale},bitdepth,10";
 in {
-  modules.desktop = {
-    hyprland = {
-      enable = true;
-      settings = {
-        # Configure your Display resolution, offset, scale and Monitors here, use `hyprctl monitors` to get the info.
-        #   highres:      get the best possible resolution
-        #   auto:         position automatically
-        #   1.5:          scale to 1.5 times
-        #   bitdepth,10:  enable 10 bit support
-        monitor = "eDP-1,highres,auto,${dpi_scale},bitdepth,10";
-        env = [
-          "GDK_DPI_SCALE,${dpi_scale}"
-          "STEAM_FORCE_DESKTOPUI_SCALING,${dpi_scale}"
-        ];
-      };
+  modules.desktop.hyprland = {
+    enable = true;
+    settings = {
+      # Configure your Display resolution, offset, scale and Monitors here, use `hyprctl monitors` to get the info.
+      #   highres:      get the best possible resolution
+      #   auto:         position automatically
+      #   bitdepth,10:  enable 10 bit support
+      monitor = "${main_monitor},${modeline}";
+      env = [
+        "GDK_DPI_SCALE,${dpi_scale}"
+        "STEAM_FORCE_DESKTOPUI_SCALING,${dpi_scale}"
+      ];
+      bindl = [
+        ",switch:on:Lid Switch,exec,[ $(hyprctl monitors -j | jq '.[].name' | wc -w) -ne 1 ] && hyprctl keyword monitor \"${main_monitor},disable\"" # Going to dock mode if has external monitor connected
+        ",switch:off:Lid Switch,exec,hyprctl keyword monitor \"${main_monitor},${modeline}\"" # Restore internal monitor
+      ];
     };
   };
   # modules.editors.emacs = {
