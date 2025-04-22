@@ -19,10 +19,10 @@ done
 # systemctl --user restart wallpaper.service
 
 # Launch notification daemon (mako)
-~/.config/hypr/scripts/notifications &
+systemd-run --user --scope ~/.config/hypr/scripts/notifications &
 
 # Launch statusbar (waybar)
-~/.config/hypr/scripts/statusbar &
+systemd-run --user --scope ~/.config/hypr/scripts/statusbar &
 
 # Start mpd
 exec mpd &

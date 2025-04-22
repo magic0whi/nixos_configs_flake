@@ -102,6 +102,7 @@
     extraInputRules = ''
       ip saddr 192.168.15.0/24 accept comment "Allow from LAN"
       ip6 saddr { fe80::/16, fd66:06e5:aebe::/48 } accept comment "Allow from Link-Local / ULA-Prefix (IPv6)"
+      iifname tun0 accept comment "Allow sing-box"
       tcp dport snapenetio accept comment "Allow Syncthing"
       udp dport { snapenetio, 21027 } accept comment "Allow Syncthing broadcasts (IPv4) / multicasts (IPv6)"
       tcp dport 53317 counter accept comment "Allow LocalSend (HTTP/TCP)"
@@ -114,6 +115,8 @@
       ip6 saddr { fe80::/16, fd66:06e5:aebe::/48 } counter accept comment "Allow forward from Link-Local / ULA-Prefix (IPv6)"
       ip6 saddr { 2409:8a20:5063:5c10::/60 } accept comment "Allow forward from SLAAC (IPv6)"
       ip6 daddr { 2409:8a20:5063:5c10::/60 } accept comment "Allow forward to SLAAC (IPv6)"
+      iifname { tun0, "ve-*" } accept comment "Allow sing-box, systemd-nspawn container"
+      oifname { tun0, "ve-*" } accept comment "Allow sing-box, systemd-nspawn container"
     '';
   };
   networking.timeServers = lib.mkDefault [ # Or
@@ -362,4 +365,6 @@
   programs.nix-ld.enable = lib.mkDefault true;
   programs.nix-ld.libraries = lib.mkDefault [pkgs.stdenv.cc.cc];
   ## END fhs.nix
+  services.sing-box.enable = true;
+  services.sing-box.settings = lib.importJSON config.age.secrets."config.json".path; # TODO unsafe
 }

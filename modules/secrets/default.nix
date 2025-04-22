@@ -36,8 +36,8 @@ in {
     {
       environment.systemPackages = [agenix.packages."${pkgs.system}".default];
       age.identityPaths = if config.environment.persistence != {} then [
-        "/persistent/etc/ssh/ssh_host_ed25519_key"
-      ] else ["/etc/ssh/ssh_host_ed25519_key"];
+        "/persistent/home/${myvars.username}/sync-work/3keys/private/proteus_ed25519.key"
+      ] else ["/home/${myvars.username}/sync-work/3keys/private/proteus_ed25519.key"];
       assertions = [{
         assertion = !(cfg.desktop.enable && enabled_server_secrets);
         message = "Enable either desktop or server's secrets, not both!";
@@ -45,10 +45,7 @@ in {
     }
     (mkIf cfg.desktop.enable {
       age.secrets = {
-        "test.key" = {
-          file = "${mysecrets}/test.key.age";
-          path = "/etc/test.key";
-        } // noaccess;
+        "config.json" = {file = "${mysecrets}/config.json.age";} // noaccess;
       };
     })
   ]);

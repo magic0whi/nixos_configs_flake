@@ -46,7 +46,7 @@
     # the following directories will be passed to /persistent/home/$USER
     users."${myvars.username}" = {
       directories = [
-        "codes"
+        "sync-work"
         "nix-config"
         "tmp"
 
