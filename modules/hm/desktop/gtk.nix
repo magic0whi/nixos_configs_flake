@@ -1,8 +1,7 @@
-{pkgs, config, ...}: {
+{pkgs, lib, config, ...}: {
   # If your themes for mouse cursor, icons or windows don’t load correctly,
   # try setting them with home.pointerCursor and gtk.theme,
   # which enable a bunch of compatibility options that should make the themes load in all situations.
-
   home.pointerCursor = {
     gtk.enable = true;
     x11.enable = true;
@@ -14,11 +13,9 @@
     # "Xft.dpi" = 150; # dpi for Xorg's font
     "*.dpi" = 150; # or set a generic dpi
   };
-  dconf.settings."org/gnome/desktop/interface".color-scheme = "prefer-dark";
   # gtk's theme settings, generate files:
-  #   1. ~/.gtkrc-2.0
-  #   2. ~/.config/gtk-3.0/settings.ini
-  #   3. ~/.config/gtk-4.0/settings.ini
+  #  ~/.gtkrc-2.0
+  #  ~/.config/gtk-3.0/settings.ini
   gtk = {
     enable = true;
     font = {
@@ -28,7 +25,6 @@
     };
     gtk2.configLocation = "${config.xdg.configHome}/gtk-2.0/gtkrc";
     gtk3.extraConfig.gtk-application-prefer-dark-theme = true;
-    gtk4.extraConfig.gtk-application-prefer-dark-theme = true;
     iconTheme = {
       name = "Papirus-Dark";
       package = pkgs.papirus-icon-theme;
@@ -38,8 +34,17 @@
       package = pkgs.catppuccin-gtk;
     };
   };
+  dconf.settings."org/gnome/desktop/interface" = { # GTK4
+    color-scheme = "prefer-dark";
+    gtk-theme = "catppuccin-macchiato-pink-compact";
+  };
   qt = {
     enable = true;
-    style.name = "gtk2";
+    platformTheme.name = "qtct";
+    style.name = "kvantum";
+  };
+  xdg.configFile = {
+    "Kvantum/kvantum.kvconfig".text = lib.generators.toINI {} {General.theme = "Catppuccin-Macchiato-Pink";};
+    "Kvantum/Catppuccin-Macchiato-Pink".source = "${pkgs.catppuccin-kvantum.override {variant = "macchiato"; accent="pink";}}/share/Kvantum/catppuccin-macchiato-pink";
   };
 }

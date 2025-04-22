@@ -2,7 +2,6 @@
   home.packages = [
     # pkgs.firefox-wayland
     pkgs.nixpaks.firefox
-    # pkgs.firefox
     pkgs.nixpaks.firefox-desktop-item
   ];
 
