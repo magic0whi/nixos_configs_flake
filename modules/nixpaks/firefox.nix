@@ -2,11 +2,11 @@
 # - Flatpak manifest's docs:
 #   - https://docs.flatpak.org/en/latest/manifests.html
 #   - https://docs.flatpak.org/en/latest/sandbox-permissions.html
-# - Firefox's flatpak manifest: https://hg.mozilla.org/mozilla-central/file/tip/taskcluster/docker/firefox-flatpak/runme.sh#l151
-{lib, pkgs, mkNixPak, ...}: mkNixPak {
+# - Firefox's flatpak manifest: https://hg-edge.mozilla.org/mozilla-central/file/tip/browser/installer/linux/app/flatpak
+{pkgs, mkNixPak, ...}: mkNixPak {
   config = {config, sloth, ...}: {
     app = {
-      package = pkgs.firefox-wayland;
+      package = pkgs.firefox;
       binPath = "bin/firefox";
     };
     flatpak.appId = "org.mozilla.firefox";
@@ -18,12 +18,13 @@
 
     # list all dbus services:
     #   ls -al /run/current-system/sw/share/dbus-1/services/
-    #   ls -al /etc/profiles/per-user/ryan/share/dbus-1/services/
+    #   ls -al /etc/profiles/per-user/${myvar.username}/share/dbus-1/services/
     dbus.policies = {
-      "org.mozilla.firefox.*" = "own"; # firefox
       "org.mozilla.firefox_beta.*" = "own"; # firefox beta
       "org.mpris.MediaPlayer2.firefox.*" = "own";
       "org.freedesktop.NetworkManager" = "talk";
+      "org.freedesktop.ScreenSaver" = "talk";
+      "org.freedesktop.FileManager1" = "talk";
     };
 
     bubblewrap = {
@@ -34,6 +35,7 @@
         # given the read write permission to the following directories.
         # NOTE: sloth.mkdir is used to create the directory if it does not exist!
         (sloth.mkdir (sloth.concat' sloth.homeDir "/.mozilla"))
+        (sloth.mkdir (sloth.concat' sloth.xdgCacheHome "/mozilla"))
 
         sloth.xdgDownloadDir
         # ================ for externsions ===============================
@@ -41,12 +43,8 @@
         (sloth.concat' sloth.homeDir "/.local/share/password-store") # pass
       ];
       bind.ro = [
-        # To actually make Firefox run
-        "/sys/bus/pci"
+        "/sys/bus/pci" # To actually make Firefox run
         ["${config.app.package}/lib/firefox" "/app/etc/firefox"]
-
-        # Unsure
-        (sloth.concat' sloth.xdgConfigHome "/dconf")
       ];
 
       sockets = {

@@ -2,12 +2,12 @@
   home.packages = [
     # pkgs.firefox-wayland
     pkgs.nixpaks.firefox
+    # pkgs.firefox
     pkgs.nixpaks.firefox-desktop-item
   ];
 
   programs = {
-    # source code: https://github.com/nix-community/home-manager/blob/master/modules/programs/chromium.nix
-    google-chrome = {
+    google-chrome = { # https://github.com/nix-community/home-manager/blob/master/modules/programs/chromium.nix
       enable = true;
       commandLineArgs = [ # https://wiki.archlinux.org/title/Chromium#Native_Wayland_support
         "--ozone-platform-hint=auto"
@@ -22,7 +22,6 @@
         # "--enable-features=Vulkan"
       ];
     };
-
     vscode = {
       enable = true;
       # let vscode sync and update its configuration & extensions across devices, using github account.

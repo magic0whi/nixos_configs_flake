@@ -4,6 +4,7 @@
   specialArgs = inputs // {inherit mylib myvars;};
   nixpkgs_modules = map mylib.relative_to_root [
     "modules/secrets"
+    "overlays"
     "modules/nixos/common"
     "modules/nixos/desktop"
     "modules/nixpaks"

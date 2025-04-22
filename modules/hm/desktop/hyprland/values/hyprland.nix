@@ -35,9 +35,11 @@ in {
       "$terminal" = "systemd-run --user --scope alacritty";
       "$menu" = "systemd-run --user --scope ~/.config/hypr/scripts/menu";
       "$clipManager" = "systemd-run --user --scope sh -c 'cliphist list | anyrun --show-results-immediately true --plugins ${anyrun.packages.${pkgs.system}.stdin}/lib/libstdin.so | cliphist decode | wl-copy'";
+      "$colorpicker" = "~/.config/hypr/scripts/colorpicker"; # TODO use Hyprpicker instead
       "$fileManager" = "systemd-run --user --scope thunar";
       "$backlight" = "~/.config/hypr/scripts/brightness";
       "$volume" = "~/.config/hypr/scripts/volume";
+      "$wlogout" = "~/.config/hypr/scripts/wlogout";
       "$mainMod" = "SUPER";
       bind = [
         "$mainMod,E,exec,$fileManager"
@@ -45,6 +47,8 @@ in {
         "$mainMod,W,killactive,"
         "$mainMod,SPACE,exec,$menu"
         "$mainMod,V,exec,$clipManager"
+        "$mainMod CTRL,P,exec,$colorpicker"
+        "$mainMod,X,exec,$wlogout"
         "$mainMod,F,fullscreen,"
         "$mainMod SHIFT,F,togglefloating"
         "$mainMod,T,togglesplit," # dwindle

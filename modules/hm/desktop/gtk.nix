@@ -35,11 +35,7 @@
     };
     theme = {
       name = "catppuccin-macchiato-pink-compact"; # https://github.com/catppuccin/gtk
-      package = pkgs.catppuccin-gtk.override { # https://github.com/NixOS/nixpkgs/blob/nixos-unstable/pkgs/by-name/ca/catppuccin-gtk/package.nix
-        accents = ["pink"];
-        size = "compact";
-        variant = "macchiato";
-      };
+      package = pkgs.catppuccin-gtk;
     };
   };
   qt = {

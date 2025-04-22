@@ -1,25 +1,18 @@
 # https://github.com/nixpak/pkgs/blob/master/pkgs/modules/gui-base.nix
-{
-  config,
-  lib,
-  pkgs,
-  sloth,
-  ...
-}: let
+{config, lib, pkgs, sloth, ...}: let
   envSuffix = envKey: suffix: sloth.concat' (sloth.env envKey) suffix;
   # cursor & icon's theme should be the same as the host's one.
-  cursorTheme = pkgs.bibata-cursors;
-  iconTheme = pkgs.papirus-icon-theme;
+  cursor_theme = pkgs.bibata-cursors;
 in {
   config = {
     dbus.policies = {
-      "${config.flatpak.appId}" = "own";
+      "${config.flatpak.appId}.*" = "own"; # A name of "org.foo.*" matches "org.foo", org.foo.bar", and "org.foo.bar.gazonk", but not "org.foobar".
       "org.freedesktop.DBus" = "talk";
       "org.gtk.vfs.*" = "talk";
-      "org.gtk.vfs" = "talk";
       "ca.desrt.dconf" = "talk";
-      "org.freedesktop.portal.*" = "talk";
       "org.a11y.Bus" = "talk";
+      "org.freedesktop.portal.*" = "talk";
+      "org.freedesktop.Notifications" = "talk";
     };
     # https://github.com/nixpak/nixpak/blob/master/modules/gpu.nix
     # 1. bind readonly - /run/opengl-driver
@@ -62,7 +55,7 @@ in {
         (sloth.concat' sloth.xdgConfigHome "/gtk-3.0")
         (sloth.concat' sloth.xdgConfigHome "/gtk-4.0")
         (sloth.concat' sloth.xdgConfigHome "/fontconfig")
-        (sloth.concat' sloth.xdgConfigHome "/dconf")
+        (sloth.concat' sloth.xdgConfigHome "/mimeapps.list")
 
         "/etc/fonts" # for fontconfig
         "/etc/machine-id"
@@ -81,14 +74,15 @@ in {
       ];
 
       env = {
-        XDG_DATA_DIRS = lib.mkForce (lib.makeSearchPath "share" [
-          iconTheme
-          cursorTheme
-          pkgs.shared-mime-info
-        ]);
+        XDG_DATA_DIRS = lib.mkForce (lib.makeSearchPath "share" (with pkgs; [
+          cursor_theme
+          papirus-icon-theme
+          catppuccin-gtk
+          shared-mime-info
+        ]));
         XCURSOR_PATH = lib.mkForce (lib.concatStringsSep ":" [
-          "${cursorTheme}/share/icons"
-          "${cursorTheme}/share/pixmaps"
+          "${cursor_theme}/share/icons"
+          "${cursor_theme}/share/pixmaps"
         ]);
       };
     };

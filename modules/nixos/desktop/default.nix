@@ -15,7 +15,6 @@ in {
       config.common = {
         default = ["gtk"]; # Use xdg-desktop-portal-gtk for every portal interface...
         "org.freedesktop.impl.portal.Secret" = ["gnome-keyring"]; # except the secret portal, which is handled by gnome-keyring
-        "org.freedesktop.impl.portal.Settings" = ["gtk"];
       };
     };
     services = {
