@@ -1,6 +1,6 @@
 {pkgs, ...}: {
   home.packages = [
-    # pkgs.firefox-wayland
+    # pkgs.firefox
     pkgs.nixpaks.firefox
     pkgs.nixpaks.firefox-desktop-item
   ];

@@ -47,7 +47,6 @@
       ];
 
       sockets = {
-        x11 = false;
         wayland = true;
         pipewire = true;
       };

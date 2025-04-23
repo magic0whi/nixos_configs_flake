@@ -1,8 +1,5 @@
 # https://github.com/nixpak/pkgs/blob/master/pkgs/modules/network.nix
-{
+{ # Current QUIC is broken
   etc.sslCertificates.enable = true;
-  bubblewrap = {
-    bind.ro = ["/etc/resolv.conf"];
-    network = true;
-  };
+  bubblewrap.network = true;
 }

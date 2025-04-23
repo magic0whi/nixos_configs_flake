@@ -12,7 +12,7 @@
   nixos_systems_values = builtins.attrValues nixos_systems;
 in {
   # Add attribute sets into outputs for debugging
-  debug_attrs = {inherit mylib myvars nixos_systems;};
+  debug_attrs = {inherit args nixos_systems;};
   # evalTests = lib.lists.all (i: i.evalTests == {}) nixos_system_values;
   # NixOS Hosts
   nixosConfigurations = lib.mergeAttrsList (map (i: i.nixos_configurations or {}) nixos_systems_values);

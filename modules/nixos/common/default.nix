@@ -365,6 +365,6 @@
   programs.nix-ld.enable = lib.mkDefault true;
   programs.nix-ld.libraries = lib.mkDefault [pkgs.stdenv.cc.cc];
   ## END fhs.nix
-  services.sing-box.enable = true;
+  services.sing-box.enable = lib.mkDefault true;
   services.sing-box.settings = lib.importJSON config.age.secrets."config.json".path; # TODO unsafe
 }
