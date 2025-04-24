@@ -1,9 +1,9 @@
 {lib, mylib, ...}@args: let
-  hosts = map (i: import i args) (mylib.scan_path ./${args.system}/hosts);
+  machines = map (i: import i args) (mylib.scan_path ./${args.system});
 in {
-  # Merge all the machine's data into a single attribute set.
+  # Merge all the same arch machines into a single attribute set
   nixos_configurations = lib.mergeAttrsList (
-    map (i: i.nixos_configurations or {}) hosts
+    map (i: i.nixos_configurations or {}) machines
   );
-  packages = lib.attrsets.mergeAttrsList (map (i: i.packages or {}) hosts);
+  packages = lib.attrsets.mergeAttrsList (map (i: i.packages or {}) machines);
 }

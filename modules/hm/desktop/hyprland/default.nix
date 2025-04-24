@@ -1,9 +1,9 @@
-{pkgs, config, lib, mylib, anyrun, ...}@args:
+{pkgs, config, lib, mylib, ...}@args:
 with lib; let
   cfg = config.modules.desktop.hyprland;
 in {
   imports = [
-    anyrun.homeManagerModules.default
+    # anyrun.homeManagerModules.default
     ./options
   ];
   options.modules.desktop.hyprland = {

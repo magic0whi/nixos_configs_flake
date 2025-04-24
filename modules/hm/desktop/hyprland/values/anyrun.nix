@@ -1,15 +1,24 @@
-{pkgs, anyrun, ...}: {
+{pkgs, ...}: {
   programs.anyrun = {
     enable = true;
     config = {
-      plugins = with anyrun.packages.${pkgs.system}; [
-        applications
-        randr
-        rink
-        shell
-        stdin
-        symbols
-        translate
+      # plugins = with anyrun.packages.${pkgs.system}; [
+      #   applications
+      #   randr
+      #   rink
+      #   shell
+      #   stdin
+      #   symbols
+      #   translate
+      # ];
+      plugins = [
+        "${pkgs.anyrun}/lib/libapplications.so"
+        "${pkgs.anyrun}/lib/librandr.so"
+        "${pkgs.anyrun}/lib/librink.so"
+        "${pkgs.anyrun}/lib/libshell.so"
+        "${pkgs.anyrun}/lib/libstdin.so"
+        "${pkgs.anyrun}/lib/libsymbols.so"
+        # "${pkgs.anyrun}/lib/libwebsearch.so"
       ];
       width.fraction = 0.3;
       y.absolute = 15;

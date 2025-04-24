@@ -1,11 +1,6 @@
 {pkgs, ...}: {
-  home.packages = [
-    # pkgs.firefox
-    pkgs.nixpaks.firefox
-    pkgs.nixpaks.firefox-desktop-item
-  ];
-
   programs = {
+    firefox.enable = true;
     google-chrome = { # https://github.com/nix-community/home-manager/blob/master/modules/programs/chromium.nix
       enable = true;
       commandLineArgs = [ # https://wiki.archlinux.org/title/Chromium#Native_Wayland_support

@@ -9,7 +9,6 @@
   #     2. per-project, using https://github.com/the-nix-way/dev-templates
   #
   #############################################################
-
   home.packages = with pkgs; [
     colmena # nixos's remote deployment tool
 
@@ -47,15 +46,10 @@
     nil
     android-tools
   ];
-
   programs = {
     direnv = {
       enable = true;
       nix-direnv.enable = true;
-
-      enableZshIntegration = true;
-      enableBashIntegration = true;
-      enableNushellIntegration = true;
     };
   };
 }
