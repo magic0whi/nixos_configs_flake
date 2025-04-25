@@ -25,11 +25,6 @@
       url = "github:nix-community/nixos-generators";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    # anyrun - a wayland launcher
-    # anyrun = {
-      # url = "github:Kirottu/anyrun";
-      # inputs.nixpkgs.follows = "nixpkgs";
-    # };
     wallpapers = {
       url = "github:ryan4yin/wallpapers";
       flake = false;

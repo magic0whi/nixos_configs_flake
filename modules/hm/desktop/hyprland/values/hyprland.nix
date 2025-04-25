@@ -34,7 +34,7 @@ in {
       };
       "$terminal" = "systemd-run --user --scope alacritty";
       "$menu" = "systemd-run --user --scope ~/.config/hypr/scripts/menu";
-      # "$clipManager" = "systemd-run --user --scope sh -c 'cliphist list | anyrun --show-results-immediately true --plugins ${anyrun.packages.${pkgs.system}.stdin}/lib/libstdin.so | cliphist decode | wl-copy'";
+      "$clipManager" = "systemd-run --user --scope sh -c 'cliphist list | anyrun --show-results-immediately true | cliphist decode | wl-copy'";
       "$colorpicker" = "~/.config/hypr/scripts/colorpicker"; # TODO use Hyprpicker instead
       "$fileManager" = "systemd-run --user --scope thunar";
       "$backlight" = "~/.config/hypr/scripts/brightness";

@@ -1,7 +1,7 @@
 {pkgs, ...}: {
   home.packages = with pkgs; [
     # GUI apps
-    foliate # e-book viewer(.epub/.mobi/...),do not support .pdf
+    # foliate # e-book viewer(.epub/.mobi/...),do not support .pdf
 
     localsend
 
@@ -16,10 +16,10 @@
     ventoy # multi-boot usb creator
 
     # my custom hardened packages
-    pkgs.nixpaks.qq
-    pkgs.nixpaks.qq-desktop-item
+    # pkgs.nixpaks.qq
+    # pkgs.nixpaks.qq-desktop-item
 
-    wechat-uos
+    # wechat-uos
     # pkgs.nixpaks.wechat-uos
     # pkgs.nixpaks.wechat-uos-desktop-item
   ];

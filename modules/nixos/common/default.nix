@@ -5,7 +5,7 @@
   boot.loader.efi.canTouchEfiVariables = lib.mkDefault true; # Allow installation process to modify EFI boot variables
   boot.loader.systemd-boot = {
     enable = lib.mkDefault true;
-    configurationLimit = lib.mkDefault 10; # Limit the boot loader entries
+    configurationLimit = lib.mkDefault 3; # Limit the boot loader entries
     consoleMode = lib.mkDefault "max";
   };
   services = {

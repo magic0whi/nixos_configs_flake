@@ -3,7 +3,6 @@ with lib; let
   cfg = config.modules.desktop.hyprland;
 in {
   imports = [
-    # anyrun.homeManagerModules.default
     ./options
   ];
   options.modules.desktop.hyprland = {
