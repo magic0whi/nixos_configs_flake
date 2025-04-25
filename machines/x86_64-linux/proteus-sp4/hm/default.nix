@@ -1,8 +1,9 @@
-{lib, mylib, ...}: let
+{lib, mylib, pkgs, ...}: let
   dpi_scale = lib.strings.substring 0 3 (lib.strings.floatToString 1.5);
   main_monitor = "eDP-1";
   modeline = "highres,auto,${dpi_scale},bitdepth,10";
 in {
+  home.packages = [pkgs.nvtopPackages.intel];
   modules.desktop.hyprland = {
     enable = true;
     settings = {
