@@ -14,7 +14,6 @@
       url = "github:nix-community/lanzaboote/v0.4.2";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    nur-ryan4yin.url = "github:ryan4yin/nur-packages";
     impermanence.url = "github:nix-community/impermanence";
     nixpak = {
       url = "github:nixpak/nixpak";

@@ -1,4 +1,4 @@
-{pkgs, nur-ryan4yin, ... }: {
+{pkgs, ... }: {
   home.packages = with pkgs; [
     # creative
     blender # 3d modeling
@@ -21,7 +21,6 @@
     # yosys # fpga synthesis
     # nextpnr # fpga place and route
     # openfpgaloader # fpga programming
-    # nur-ryan4yin.packages.${pkgs.system}.gowin-eda-edu-ide # app: `gowin-env` => `gw_ide` / `gw_pack` / ...
   ];
 
   programs = {

@@ -1,4 +1,4 @@
-{pkgs, nur-ryan4yin, ...}: {
+{pkgs, ...}: {
   # home.packages = with pkgs; [
   #   docker-compose
   #   dive # explore docker layers

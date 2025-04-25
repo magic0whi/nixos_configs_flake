@@ -1,5 +1,4 @@
-{pkgs, nur-ryan4yin, ...}: # media - control and enjoy audio/video
-{
+{pkgs, ...}: { # media - control and enjoy audio/video
   home.packages = with pkgs; [
     # audio control
     pavucontrol
@@ -17,12 +16,9 @@
     glxinfo
   ];
 
-  # https://github.com/catppuccin/cava
-  xdg.configFile."cava/config".text =
-    ''
-      # custom cava config
-    ''
-    + builtins.readFile "${nur-ryan4yin.packages.${pkgs.system}.catppuccin-cava}/mocha.cava";
+  # # https://github.com/catppuccin/cava
+  # xdg.configFile."cava/config".text = "# Custom cava config\n"
+  #   + builtins.readFile "${nur-ryan4yin.packages.${pkgs.system}.catppuccin-cava}/mocha.cava";
 
   programs = {
     mpv = {

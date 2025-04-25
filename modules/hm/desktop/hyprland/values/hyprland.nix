@@ -1,11 +1,11 @@
-{pkgs, nur-ryan4yin, config, ...}: let
+{pkgs, config, myvars, ...}: let
   package = pkgs.hyprland;
 in {
   wayland.windowManager.hyprland = {
     inherit package;
     enable = true;
     settings = {
-      source = "${nur-ryan4yin.packages.${pkgs.system}.catppuccin-hyprland}/themes/mocha.conf"; # Import color codes
+      source = "${myvars.catppuccin}/hyprland/${myvars.catppuccin_variant}.conf"; # Import color codes
       animations = {
         bezier = [
           "easeOutQuint,0.23,1,0.32,1" # https://easings.net/#easeOutQuint

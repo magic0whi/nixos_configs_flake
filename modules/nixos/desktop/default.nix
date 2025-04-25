@@ -18,9 +18,9 @@ in {
       };
     };
     services = {
-      xserver.enable = false; # disable xorg server
+      xserver.enable = lib.mkDefault false; # disable xorg server
       greetd = { # https://wiki.archlinux.org/title/Greetd
-        enable = true;
+        enable = lib.mkDefault true;
         settings = {
           default_session = { # Wayland Desktop Manager is installed only for user via home-manager!
             user = myvars.username;
@@ -31,8 +31,8 @@ in {
           };
         };
       };
-      gvfs.enable = true; # Mount, trash, and other functionalities
-      tumbler.enable = true; # Thumbnail support for images
+      gvfs.enable = lib.mkDefault true; # Mount, trash, and other functionalities
+      tumbler.enable = lib.mkDefault true; # Thumbnail support for images
     };
     security.pam.services.swaylock = {}; # fix https://github.com/ryan4yin/nix-config/issues/10
 
@@ -56,14 +56,13 @@ in {
       wireplumber.enable = lib.mkDefault true;
     };
     security.rtkit.enable = lib.mkDefault true; # rtkit is optional but recommended
-    services.pulseaudio.enable = false; # Disable pulseaudio, it conflicts with pipewire.
     # Bluetooth
-    hardware.bluetooth.enable = true;
-    services.blueman.enable = true;
+    hardware.bluetooth.enable = lib.mkDefault true;
+    services.blueman.enable = lib.mkDefault true;
     # Misc
     services = {
       printing.enable = lib.mkDefault true; # Enable CUPS to print documents.
-      geoclue2.enable = true; # Enable geolocation services.
+      geoclue2.enable = lib.mkDefault true; # Enable geolocation services.
       udev.packages = with pkgs; [
         gnome-settings-daemon
         platformio # udev rules for platformio
@@ -74,7 +73,7 @@ in {
       # A key remapping daemon for linux.
       # https://github.com/rvaiya/keyd
       keyd = {
-        enable = true;
+        enable = lib.mkDefault true;
         keyboards.default.settings = {
           main = { # overloads the capslock key to function as both escape (when tapped) and control (when held)
             capslock = "overload(control, esc)";
@@ -97,8 +96,6 @@ in {
         # nerdfonts
         # https://github.com/NixOS/nixpkgs/blob/nixos-unstable-small/pkgs/data/fonts/nerd-fonts/manifests/fonts.json
         nerd-fonts.symbols-only # symbols icon only
-        nerd-fonts.fira-code
-        nerd-fonts.jetbrains-mono
         nerd-fonts.iosevka
       ];
       fontconfig = {
@@ -156,7 +153,7 @@ in {
       enable = lib.mkDefault true;
       pinentryPackage = lib.mkDefault pkgs.pinentry-qt;
       enableSSHSupport = lib.mkDefault false;
-      settings.default-cache-ttl = 4 * 60 * 60; # 4 hours
+      settings.default-cache-ttl = lib.mkDefault (4 * 60 * 60); # 4 hours
     };
     ## END security.nix
   });

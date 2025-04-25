@@ -1,5 +1,6 @@
-{mylib, myvars, lib, config, pkgs, ...}: {
+{mylib, myvars, lib, config, pkgs, ...}: with lib; {
   imports = mylib.scan_path ./.;
+  system.stateVersion = mkDefault myvars.state_version;
   environment.variables.EDITOR = lib.mkOverride 999 "hx";
   # START boot_loader.nix
   boot.loader.efi.canTouchEfiVariables = lib.mkDefault true; # Allow installation process to modify EFI boot variables
@@ -366,5 +367,19 @@
   programs.nix-ld.libraries = lib.mkDefault [pkgs.stdenv.cc.cc];
   ## END fhs.nix
   services.sing-box.enable = lib.mkDefault true;
-  services.sing-box.settings = lib.importJSON config.age.secrets."config.json".path; # TODO unsafe
+  systemd.services.sing-box = lib.mkOverride 100 {
+    serviceConfig = {
+      StateDirectory = "sing-box";
+      StateDirectoryMode = "0700";
+      RuntimeDirectory = "sing-box";
+      RuntimeDirectoryMode = "0700";
+      LoadCredential = [ ("config.json:" + config.age.secrets."config.json".path) ];
+      ExecStart = [
+        ""
+        (let configArgs = "-c $\{CREDENTIALS_DIRECTORY}/config.json";
+          in "${lib.getExe config.services.sing-box.package} -D \${STATE_DIRECTORY} ${configArgs} run")
+      ];
+    };
+    wantedBy = [ "multi-user.target" ];
+  };
 }

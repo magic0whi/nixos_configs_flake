@@ -3,9 +3,8 @@
   # $ nix search wget
   environment.systemPackages = with pkgs; [
     # core tools
-    keepassxc
+    keepassxc # Provides both CLI and GUI
     fastfetch
-    neovim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
     just # justfile
     git # used by nix flakes
     git-lfs # used by huggingface models
@@ -27,11 +26,11 @@
     # networking tools
     mtr # A network diagnostic tool
     iperf3
-    dnsutils # `dig` + `nslookup`
+    # dnsutils # `dig` + `nslookup`
     ldns # replacement of `dig`, it provide the command `drill`
     wget
     curl
-    aria2 # A lightweight multi-protocol & multi-source command-line download utility
+    # aria2 # A lightweight multi-protocol & multi-source command-line download utility
     socat # replacement of openbsd-netcat
     nmap # A utility for network discovery and security auditing
     ipcalc # it is a calculator for the IPv4/v6 addresses
@@ -47,7 +46,7 @@
     # system call monitoring
     strace # system call monitoring
     ltrace # library call monitoring
-    tcpdump # network sniffer
+    # tcpdump # network sniffer
     lsof # list open files
 
     # ebpf related tools
@@ -57,17 +56,17 @@
     bpfmon # BPF based visual packet rate monitor
 
     # system monitoring
-    sysstat
-    iotop
-    iftop
+    # sysstat
+    # iotop
+    # iftop
     btop
-    nmon
-    sysbench
+    # nmon
+    # sysbench
 
     # system tools
     psmisc # killall/pstree/prtstat/fuser/...
     lm_sensors # for `sensors` command
-    ethtool
+    # ethtool
     pciutils # lspci
     usbutils # lsusb
     hdparm # for disk performance, command

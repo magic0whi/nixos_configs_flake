@@ -1,6 +1,5 @@
-{pkgs, nur-ryan4yin, ...}: {
-  home.file.".local/share/fcitx5/themes".source = "${nur-ryan4yin.packages.${pkgs.system}.catppuccin-fcitx5}/src";
-
+{pkgs, lib, ...}: with lib; {
+  home.packages = [pkgs.catppuccin-fcitx5];
   xdg.configFile = {
     "fcitx5/profile" = {
       source = ./fcitx5-profile;
@@ -8,11 +7,10 @@
     };
     "fcitx5/conf/classicui.conf".source = ./fcitx5-classicui.conf;
   };
-
   i18n.inputMethod = {
-    enable = true;
-    type = "fcitx5";
-    fcitx5.waylandFrontend = true; # Hyprland supports it
+    enable = mkDefault true;
+    type = mkDefault "fcitx5";
+    fcitx5.waylandFrontend = mkDefault true; # Hyprland supports it
     fcitx5.addons = with pkgs; [
       fcitx5-configtool # needed enable rime using configtool after installed
       fcitx5-chinese-addons fcitx5-chewing fcitx5-mozc fcitx5-rime

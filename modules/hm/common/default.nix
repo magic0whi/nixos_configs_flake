@@ -1,8 +1,8 @@
-{lib, myvars, mylib, pkgs, nur-ryan4yin, config, ...}: {
+{lib, myvars, mylib, pkgs, config, ...}: with lib; {
   imports = mylib.scan_path ./.;
   home = { # Home Manager needs a bit of information about you and the paths it should manage.
     inherit (myvars) username;
-    homeDirectory = lib.mkDefault "/home/${myvars.username}";
+    homeDirectory = mkDefault "/home/${myvars.username}";
 
     # This value determines the Home Manager release that your
     # configuration is compatible with. This helps avoid breakage
@@ -12,7 +12,7 @@
     # You can update Home Manager without changing this value. See
     # the Home Manager release notes for a list of state version
     # changes in each release.
-    stateVersion = lib.mkDefault "25.05";
+    stateVersion = mkDefault myvars.state_version;
   };
   programs.home-manager.enable = true; # Let Home Manager install and manage itself.
   home.packages = with pkgs; [
@@ -72,22 +72,22 @@
 
   programs = { # A modern replacement for ‘ls’, useful in bash/zsh prompt, but not in nushell.
     eza = {
-      enable = lib.mkDefault true;
-      enableNushellIntegration = lib.mkDefault false; # do not enable aliases in nushell!
-      git = lib.mkDefault true;
+      enable = mkDefault true;
+      enableNushellIntegration = mkDefault false; # do not enable aliases in nushell!
+      git = mkDefault true;
       icons = lib.mkDefault "auto";
     };
     bat = { # a cat(1)-like with syntax highlighting and Git integration.
       enable = lib.mkDefault true;
       config = {
         pager = lib.mkDefault "less -FR";
-        theme = lib.mkDefault "catppuccin-mocha";
+        theme = lib.mkDefault "catppuccin-${myvars.catppuccin_variant}";
       };
       themes = {
         # https://raw.githubusercontent.com/catppuccin/bat/main/Catppuccin-mocha.tmTheme
-        catppuccin-mocha = {
-          src = nur-ryan4yin.packages.${pkgs.system}.catppuccin-bat;
-          file = "Catppuccin-mocha.tmTheme";
+        "catppuccin-${myvars.catppuccin_variant}" = {
+          src = "${myvars.catppuccin}/bat";
+          file = "Catppuccin ${myvars.catppuccin_variant}.tmTheme";
         };
       };
     };
@@ -158,7 +158,7 @@
       };
     };
   };
-  xdg.configFile."yazi/theme.toml".source = "${nur-ryan4yin.packages.${pkgs.system}.catppuccin-yazi}/mocha.toml";
+  # xdg.configFile."yazi/theme.toml".source = "${nur-ryan4yin.packages.${pkgs.system}.catppuccin-yazi}/mocha.toml";
   ## END yazi.nix
   ## START starship.nix
   programs.starship = {
@@ -187,18 +187,17 @@
       username.show_always = lib.mkDefault true;
       palette = lib.mkDefault "catppuccin_mocha";
     }
-    // builtins.fromTOML (builtins.readFile "${nur-ryan4yin.packages.${pkgs.system}.catppuccin-starship}/palettes/mocha.toml");
+    // builtins.fromTOML (builtins.readFile "${myvars.catppuccin}/starship/${myvars.catppuccin_variant}.toml");
   };
   ## END starship.nix
   ## START helix.nix
-  # https://github.com/catppuccin/helix
-  xdg.configFile."helix/themes".source = "${nur-ryan4yin.packages.${pkgs.system}.catppuccin-helix}/themes/default";
+  # xdg.configFile."helix/themes".source = "${nur-ryan4yin.packages.${pkgs.system}.catppuccin-helix}/themes/default"; # https://github.com/catppuccin/helix
   programs.helix = {
     enable = lib.mkDefault true;
     defaultEditor = lib.mkDefault true;
     extraPackages = with pkgs; [marksman ltex-ls texlab];
     settings = {
-      theme = lib.mkDefault "catppuccin_mocha";
+      theme = mkDefault "gruvbox";
       editor = {
         bufferline = lib.mkDefault "multiple";
         color-modes = lib.mkDefault true;

@@ -1,4 +1,4 @@
-{pkgs, lib, config, ...}: {
+{pkgs, lib, config, myvars, ...}: {
   # If your themes for mouse cursor, icons or windows don’t load correctly,
   # try setting them with home.pointerCursor and gtk.theme,
   # which enable a bunch of compatibility options that should make the themes load in all situations.
@@ -30,13 +30,13 @@
       package = pkgs.papirus-icon-theme;
     };
     theme = {
-      name = "catppuccin-macchiato-pink-compact"; # https://github.com/catppuccin/gtk
-      package = pkgs.catppuccin-gtk;
+      name = "catppuccin-${myvars.catppuccin_variant}-${myvars.catppuccin_accent}-compact"; # https://github.com/catppuccin/gtk
+      package = myvars.catppuccin-gtk;
     };
   };
   dconf.settings."org/gnome/desktop/interface" = { # GTK4
     color-scheme = "prefer-dark";
-    gtk-theme = "catppuccin-macchiato-pink-compact";
+    gtk-theme = "catppuccin-${myvars.catppuccin_variant}-${myvars.catppuccin_accent}-compact";
   };
   qt = {
     enable = true;
@@ -44,7 +44,7 @@
     style.name = "kvantum";
   };
   xdg.configFile = {
-    "Kvantum/kvantum.kvconfig".text = lib.generators.toINI {} {General.theme = "Catppuccin-Macchiato-Pink";};
-    "Kvantum/Catppuccin-Macchiato-Pink".source = "${pkgs.catppuccin-kvantum.override {variant = "macchiato"; accent="pink";}}/share/Kvantum/catppuccin-macchiato-pink";
+    "Kvantum/kvantum.kvconfig".text = lib.generators.toINI {} {General.theme = "catppuccin-${myvars.catppuccin_variant}-${myvars.catppuccin_accent}";};
+    "Kvantum/catppuccin-macchiato-pink".source = "${myvars.catppuccin}/share/Kvantum/catppuccin-${myvars.catppuccin_variant}-${myvars.catppuccin_accent}";
   };
 }
