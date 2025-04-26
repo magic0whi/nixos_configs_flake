@@ -147,6 +147,16 @@
     #   shortcut = "a";
     # };
   };
+  ## START btop.nix
+  xdg.configFile."btop/themes".source = "${myvars.catppuccin}/btop/"; # https://github.com/catppuccin/btop/blob/main/themes/catppuccin_mocha.theme
+  programs.btop = { # Alternative to htop/nmon
+    enable = mkDefault true;
+    settings = {
+      color_theme = mkDefault "catppuccin_${myvars.catppuccin_variant}";
+      theme_background = mkDefault false; # Make btop transparent
+    };
+  };
+  ## END btop.nix
   ## START yazi.nix
   programs.yazi = { # terminal file manager
     enable = lib.mkDefault true;
@@ -263,14 +273,16 @@
       };
     };
   };
+  programs.zathura = {
+    enable = mkDefault true;
+    options.selection-clipboard = "clipboard";
+  };
   ## END helix.nix
   ## START neovim.nix
-  programs = {
-    neovim = {
-      enable = lib.mkDefault true;
-      viAlias = lib.mkDefault true;
-      vimAlias = lib.mkDefault true;
-    };
+  programs.neovim = {
+    enable = mkDefault true;
+    viAlias = mkDefault true;
+    vimAlias = mkDefault true;
   };
   ## END neovim.nix
   ## START gpg.nix

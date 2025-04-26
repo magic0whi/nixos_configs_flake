@@ -1,4 +1,4 @@
-{pkgs, config, lib, mylib, myvars, ...}:
+{pkgs, config, lib, mylib, myvars, ...}: with lib;
 let
   cfg = config.modules.desktop.wayland;
 in {
@@ -132,29 +132,30 @@ in {
     # so that you don’t have to type in passphrases every time you make an SSH connection.
     # Use `ssh-add` to add a key to the agent.
     programs = {
-      ssh.startAgent = lib.mkDefault true;
-      dconf.enable = lib.mkDefault true;
+      ssh.startAgent = mkDefault true;
+      dconf.enable = mkDefault true;
       thunar = { # thunar file manager(part of xfce)
-        enable = lib.mkDefault true;
+        enable = mkDefault true;
         plugins = with pkgs.xfce; [
           thunar-archive-plugin
           thunar-volman
         ];
       };
-      light.enable = lib.mkDefault true;
+      light.enable = mkDefault true;
     };
     ## END misc.nix
     ## START security.nix
-    security.polkit.enable = lib.mkDefault true; # security with polkit
+    security.polkit.enable = mkDefault true; # security with polkit
     # security with gnome-kering
-    services.gnome.gnome-keyring.enable = lib.mkDefault true;
-    security.pam.services.greetd.enableGnomeKeyring = lib.mkDefault true;
+    services.gnome.gnome-keyring.enable = mkDefault true;
+    security.pam.services.greetd.enableGnomeKeyring = mkDefault true;
     programs.gnupg.agent = { # gpg agent with pinentry
-      enable = lib.mkDefault true;
-      pinentryPackage = lib.mkDefault pkgs.pinentry-qt;
-      enableSSHSupport = lib.mkDefault false;
-      settings.default-cache-ttl = lib.mkDefault (4 * 60 * 60); # 4 hours
+      enable = mkDefault true;
+      pinentryPackage = mkDefault pkgs.pinentry-qt;
+      enableSSHSupport = mkDefault false;
+      settings.default-cache-ttl = mkDefault (4 * 60 * 60); # 4 hours
     };
     ## END security.nix
+    fonts.fontconfig.enable = false; # This allows fontconfig to discover fonts and configurations installed through home.packages, but I manage fonts at system-level, not user-level
   });
 }

@@ -1,7 +1,7 @@
 {pkgs, ... }: {
   home.packages = with pkgs; [
     # creative
-    blender # 3d modeling
+    # blender # 3d modeling
     # gimp      # image editing, I prefer using figma in browser instead of this one
     inkscape # vector graphics
     # krita # digital painting
@@ -10,7 +10,7 @@
     # sonic-pi # music programming
 
     # 2d game design
-    ldtk # A modern, versatile 2D level editor
+    # ldtk # A modern, versatile 2D level editor
     # aseprite # Animated sprite editor & pixel art tool
 
     # this app consumes a lot of storage, so do not install it currently

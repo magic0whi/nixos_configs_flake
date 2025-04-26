@@ -34,6 +34,7 @@
       # replaced with a type-safe reimplementation to get a better error message and less bugs.
       # url = "github:ryan4yin/ragenix";
       inputs.nixpkgs.follows = "nixpkgs";
+      inputs.home-manager.follows = "home-manager";
     };
     # TODO
     # my private secrets, it's a private repository, you need to replace it with your own. TODO
