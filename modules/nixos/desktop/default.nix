@@ -4,7 +4,7 @@ let
 in {
   options.modules.desktop.wayland.enable = lib.mkEnableOption "Wayland Display Server";
   imports = mylib.scan_path ./.;
-  config = (lib.mkIf cfg.enable {
+  config = lib.mkIf cfg.enable {
     xdg.portal = {
       enable = true;
       wlr.enable = true;
@@ -35,7 +35,6 @@ in {
       tumbler.enable = lib.mkDefault true; # Thumbnail support for images
     };
     security.pam.services.swaylock = {}; # fix https://github.com/ryan4yin/nix-config/issues/10
-
     ## START peripherals.nix
     # Audio(PipeWire)
     environment.systemPackages = with pkgs; [
@@ -126,8 +125,6 @@ in {
     };
     ## END fonts.nix
     ## START misc.nix
-    # fix for `sudo xxx` in kitty/wezterm/foot and other modern terminal emulators
-    # security.sudo.keepTerminfo = true; # TODO, may be unnecessary
     # The OpenSSH agent remembers private keys for you
     # so that you don’t have to type in passphrases every time you make an SSH connection.
     # Use `ssh-add` to add a key to the agent.
@@ -156,6 +153,5 @@ in {
       settings.default-cache-ttl = mkDefault (4 * 60 * 60); # 4 hours
     };
     ## END security.nix
-    fonts.fontconfig.enable = false; # This allows fontconfig to discover fonts and configurations installed through home.packages, but I manage fonts at system-level, not user-level
-  });
+  };
 }
