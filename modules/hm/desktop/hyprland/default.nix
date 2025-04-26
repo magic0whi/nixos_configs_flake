@@ -1,10 +1,7 @@
-{pkgs, config, lib, mylib, ...}@args:
-with lib; let
+{pkgs, config, lib, mylib, ...}@args: with lib; let
   cfg = config.modules.desktop.hyprland;
 in {
-  imports = [
-    ./options
-  ];
+  imports = [./options];
   options.modules.desktop.hyprland = {
     enable = mkEnableOption "Hyprland compositor";
     settings = lib.mkOption {
@@ -19,13 +16,11 @@ in {
           (listOf valueType)
         ]) // {description = "Hyprland configuration value";};
       in valueType;
-      default = {};
+      default = mkDefault {};
     };
   };
-  config = mkIf cfg.enable (
-    mkMerge (
-      [{wayland.windowManager.hyprland.settings = cfg.settings;}]
-      ++ (map (i: import i args) (mylib.scan_path ./values))
-    )
-  );
+  config = mkIf cfg.enable (mkMerge ( # Merge multiple sets of option definitions together
+    [{wayland.windowManager.hyprland.settings = cfg.settings;}]
+    ++ (map (i: import i args) (mylib.scan_path ./values))
+  ));
 }
