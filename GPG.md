@@ -1,44 +1,43 @@
-# GNU Privacy Guard(GnuPG)
+# GNU Privacy Guard (GnuPG)
 
 > Official Website: https://www.gnupg.org/
 
 The GNU Privacy Guard is a complete and free implementation of the OpenPGP standard as defined by
-RFC4880 (also known as **PGP**). GnuPG allows to encrypt and sign your data and communication,
+RFC4880 (also known as **PGP**). GnuPG allows encrypting and signing your data and communication,
 features a versatile key management system as well as access modules for all kind of public key
 directories.
 
 > In the following content, we will use GPG to refer to GnuPG tool, and PGP to refer to various
-> concepts defined in the OepnPGP standard(e.g. PGP key, PGP key server).
+> concepts defined in the OpenPGP standard (e.g. PGP key, PGP key server).
 
 Key functions of GnuPG:
 
-1. Keypair(keyring) management
+1. Key pair (keyring) management
 2. Sign and Verify your data
 3. Encrypt and Decrypt your data
 
 Main usage scenarios of GnuPG:
 
 1. Sign or encrypt your email
-   1. Verify or decrypt the email you received
+
+   Verify or decrypt the email you received
 2. Sign your git commit
 3. Manage your ssh key
 4. Encrypt your data and store it somewhere.
 
-GnuPG/OpenPGP is complex, so while using it, I have been looking forward to finding an encryption
-tool that is simple enough, functional enough, and widely adopted.
+GnuPG/OpenPGP is complex, so while using it, I have been looking forward to finding an encryption tool that is simple enough, functional enough, and widely adopted.
 
-Currently I use both age & GnuPG:
+Currently, I use both age & GnuPG:
 
 1. Age for secrets encryption(ssh key & other secret files), it's simple and easy to use.
 2. GnuPG for password-store and email encryption.
 
 > At present, the safe and efficient use of GPG is probably combined with hardware keys such as
-> yubikey. but I don't have one, so I won't talk about it here.
+> YubiKey. But I don't have one, so I won't talk about it here.
 
 ## Practical Cryptography for Developers
 
-To use GnuGP without seamlessly, Some Practical Cryptography knowledge is required, here is dome
-tutorials:
+To use GnuPG seamlessly, Some Practical Cryptography knowledge is required, here are some tutorials:
 
 - English version: <https://github.com/nakov/Practical-Cryptography-for-Developers-Book>
 - Chinese version: <https://thiscute.world/tags/cryptography/>
@@ -47,9 +46,9 @@ tutorials:
 
 > GnuPG's Official User Guides: <https://www.gnupg.org/documentation/guides.html>
 
-> ArchWiki's GnuPG page: <https://wiki.archlinux.org/title/GnuPG>
+> Arch Wiki's GnuPG page: <https://wiki.archlinux.org/title/GnuPG>
 
-### 0. How GnuGP generate & protect your keypair?
+### 0. How GnuPG generate & protect your key pair?
 
 Related Docs:
 
@@ -57,16 +56,11 @@ Related Docs:
 - [Predictable, Passphrase-Derived PGP Keys][Predictable, Passphrase-Derived PGP Keys]
 - [OpenPGP - The almost perfect key pair][OpenPGP - The almost perfect key pair]
 
-GnuPG generate every secret key separately, and encrypt them with a symmetric key derived from your
-passphrase. OpenPGP standard defines
-[String-to-Key (S2K)](https://datatracker.ietf.org/doc/html/rfc4880#section-3.7) algorithm to derive
-a symmetric key from your passphrase.
+GnuPG generates every secret key separately, and encrypt them with a symmetric key derived from your passphrase. OpenPGP standard defines [String-to-Key (S2K)](https://datatracker.ietf.org/doc/html/rfc4880#section-3.7) algorithm to derive a symmetric key from your passphrase.
 
-GnuPG's
-[OpenPGP protocol specific options](https://gnupg.org/documentation/manuals/gnupg/OpenPGP-Options.html#OpenPGP-Options)
-shows that:
+GnuPG's [OpenPGP protocol specific options](https://gnupg.org/documentation/manuals/gnupg/OpenPGP-Options.html#OpenPGP-Options) shows that:
 
-```
+```manual
 --s2k-cipher-algo name
 
     Use name as the cipher algorithm for symmetric encryption with a passphrase if --personal-cipher-preferences and --cipher-algo are not given. The default is AES-128.
@@ -83,29 +77,22 @@ shows that:
 
 The strongest options should be:
 
-```
+```bash
 gpg --s2k-mode 3 --s2k-count 65011712 --s2k-digest-algo SHA512 --s2k-cipher-algo AES256 ...
 ```
 
 To use the strongest options globally, you can specify these options in your `~/.gnupg/gpg.conf`.
-I've added them to my Home Manager's `programs.gpg.settings` option.
+I've already added them to my Home Manager's `programs.gpg.settings` option.
 
-### 1. PGP Key(Primary Key) generation
+### 1. PGP Key (Primary Key) generation
 
-Key management is the core of OpenPGP standard / GnuPG.
+Key management is the core of OpenPGP standard/GnuPG.
 
-GnuPG uses public-key cryptography so that users may communicate securely. In a public-key system,
-each user has a pair of keys consisting of a private key and a public key. **A user's private key is
-kept secret; it need NEVER be revealed. The public key may be given to anyone with whom the user
-wants to communicate**. GnuPG uses a somewhat more sophisticated scheme in which a user has a
-primary keypair and then zero or more additional subordinate keypairs. The primary and subordinate
-keypairs are bundled to facilitate key management and the bundle can often be considered simply as
-one keypair, or a keyring/keychain(which contains multiple sub key-pairs).
+GnuPG uses public-key cryptography so that users may communicate securely. In a public-key system, each user has a pair of keys consisting of a private key and a public key. **A user's private key is kept secret; it needs to be NEVER revealed. The public key may be given to any recipients who want to communicate**. GnuPG uses a somewhat more sophisticated scheme in which a user has a primary key pair and zero or more additional subordinate key pair(s). The primary and subordinate key pairs are bundled to facilitate key management and the bundle can often be considered simply as one key pair, or a keyring/keychain (which contains multiple sub key-pairs).
 
-Let's generate a keypair interactively:
+Let's generate a key pair interactively:
 
-> Now in 2024, GnuPG 2.4.1 defaults to ECC algorithm (9) and Curve 25519 for ECC, which is modern
-> and safe, I would recommend to use these defaults directly.
+> In 2024, GnuPG 2.4.1 defaults to ECC algorithm (9) and Curve 25519 for ECC, which is modern and safe, I recommend using these defaults directly.
 
 ```bash
 gpg --full-gen-key
@@ -209,37 +196,27 @@ Home Manager will manage all the things in `~/.gnupg/` EXCEPT `~/.gnupg/openpgp-
 
 ### 3. Sub Key Generation & Best Practice
 
-In PGP, every keys has a **usage flag** to indicate its usage:
+In PGP, each key has a **usage flag** to indicate its usage:
 
 - `C` means this key can be used to **Certify** other keys, which means this key can be used to
   **create/delete/revoke/modify** other keys.
 - `S` means this key can be used to **Sign** data.
 - `E` means this key can be used to **Encrypt** data.
-- `A` means this key can be used to **Authenticate** data with various non-GnuPG programs. The key
-  can be used as e.g. an **SSH key**.
+- `A` means this key can be used to **Authenticate** data with various non-GnuPG programs. Which can be used as e.g. an **SSH key**.
 
 The **best practice** is:
 
-1. Generate a primary key with strong cryptography arguments(such as ECC + Curve 25519).
+1. Generate a primary key with strong cryptography arguments (such as ECC + Curve 25519).
 2. Then generate 3 sub keys with `E`, `S` and `A` usage flag respectively.
-3. **The Primary Key is extremely important**, Backup the primary key to somewhere absolutely
-   safe(such as two encryptd USB drivers, keep them in different places), and then **delete it from
-   your computer immediately**.
-4. The sub key is also important, but you can generate a new one and replace it easily. You can
-   backup it to somewhere else, and import it to another machine to use your keypair.
-5. Backup your Primary key's revocation certificate to somewhere safe, it's the last way to rescure
-   your safety if your primary key is compromised!
-6. It's a big problem if your revocation certificate is compromised, but not the biggest one.
-   because it's only used to revoke your keypair, your data is still safe. But you should generate a
-   new keypair and revoke the old one immediately.
-7. It will be a big problem if your primary key is compromised, and you don't have a revocation
-   certificate to revoke it. But since OpenPGP do not have a good way to distribute revocation
-   certificate, even you have a revocation certificate, it's still hard to distribute it to
-   others...
+3. **The Primary Key is extremely important**, Backup the primary key to somewhere absolutely safe (such as two encrypted USB drivers, keep them in different places), and then **delete it from your computer immediately**.
+4. The sub key is also important, but you can generate a new one and replace it easily. You can back up it to somewhere else, and import it to another machine to use your key pair.
+5. Backup your Primary key's revocation certificate to somewhere safe, it's the last way to rescue your safety if your primary key is compromised!
+6. It's still a big problem if your revocation certificate is compromised, while not the biggest one. Because a revocation key can only be used to revoke your key pair, your data is still safe. But you should generate a new key pair and revoke the old one immediately.
+7. It would be a big problem if your primary key is compromised, and you don't have a revocation certificate to revoke it. But since OpenPGP do not have a good way to distribute revocation certificate, even you have a revocation certificate, it's still hard to distribute it to others...
 
-To keep your keypair safe, you should backup your keypair according to the following steps.
+To keep your key pair safe, you should back up your key pair according to the following steps.
 
-Now let's add the sub keys to the keypair we generated above:
+Now let's add the sub keys to the key pair we generated above:
 
 > `E` sub key is already generated by default, so we only need to generate `S` and `A` sub keys.
 
@@ -412,7 +389,7 @@ ssb   ed25519 2024-01-09 [A] [expires: 2034-01-04]
 
 ### 4. Backup & Restore
 
-Export Public Keys(Both Primary Key & Sub Keys):
+Export Public Keys (Both Primary Key & Sub Keys):
 
 ```bash
 gpg --armor --export ryan4yin@linux.com > ryan4yin-gpg-keys.pub
@@ -420,14 +397,11 @@ gpg --armor --export ryan4yin@linux.com > ryan4yin-gpg-keys.pub
 nix run nixpkgs#pgpdump ryan4yin-gpg-keys.pub
 ```
 
-Export Primary Key(The exported key is still encrypted by your passphrase):
+Export Primary Key (The exported key is still encrypted by your passphrase):
 
-> the `!` at the end of the key ID is to force GnuPG to export only the specified key, not the
-> subkeys.
+> The `!` at the end of the key ID is to force GnuPG to export only the specified key, not the sub keys.
 
-> GnuPG will ask you to input your passphrase to unlock your keypair, because GnuPG need to convert
-> the secret key's format from its internal protection format to the one specified by the OpenPGP
-> protocol.
+> GnuPG will ask you to input your passphrase to unlock your key pair, because GnuPG need to convert the secret key's format from its internal protection format to the one specified by the OpenPGP protocol.
 
 ```bash
 # replace the key ID with your own sec key's ID
@@ -453,14 +427,9 @@ Old: Secret Key Packet(tag 5)(134 bytes)
 ...
 ```
 
-As [Predictable, Passphrase-Derived PGP Keys][Predictable, Passphrase-Derived PGP Keys] says, we'll
-find that gpg ignored the `--s2k-count` option we specified when generating the keypair, and the
-`--s2k` related options we specified in `~/.gnupg/gpg.conf`, the exported primary key is protectd by
-`SHA1` and `AES128`, which is not secure enough!
+As [Predictable, Passphrase-Derived PGP Keys][Predictable, Passphrase-Derived PGP Keys] says, we'll find that GPG ignored the `--s2k-count` option we specified when generating the key pair, and the `--s2k` related options we specified in `~/.gnupg/gpg.conf`, the exported primary key is protected by `SHA1` and `AES128`, which is not secure enough!
 
-So to increase the security of the exported primary key, we need to encrypt it again with a stronger
-algorithm, I choose `age` here(which use `scrypt` to encrypt the file key with a provided
-passphrase):
+So to increase the security of the exported primary key, we need to encrypt it again with a stronger algorithm, I choose `age` here (which use `scrypt` to encrypt the file key with a provided passphrase):
 
 ```bash
 # for simplicity, use the same passphrase as your gpg keypair here
@@ -468,7 +437,7 @@ age --passphrase -o ryan4yin-primary-key.priv.age ryan4yin-primary-key.priv
 rm ryan4yin-primary-key.priv
 ```
 
-Export Sub Keys one by one(The exported keys is still encrypted by your passphrase):
+Export Sub Keys one-by-one (The exported keys is still encrypted by your passphrase):
 
 ```bash
 gpg --armor --export-secret-subkeys > ryan4yin-gpg-subkeys.priv
@@ -476,19 +445,17 @@ gpg --armor --export-secret-subkeys > ryan4yin-gpg-subkeys.priv
 # Check the exported primary key's detail info,
 nix run nixpkgs#pgpdump ryan4yin-gpg-subkeys.priv
 
-# encrypt it again with age(scrypt)
+# encrypt it again with age (scrypt)
 age --passphrase  -o ryan4yin-gpg-subkeys.priv.age ryan4yin-gpg-subkeys.priv
 rm ryan4yin-gpg-subkeys.priv
 ```
 
-Your can import the exported Private Key via `gpg --import <keyfile>` to restore it, but you need to
-decrypt it via age first.
+Your can import the exported private key via `gpg --import <keyfile>` to restore it, but you need to decrypt it via age first.
 
-As for Public Keys, please import your publicKeys via Home Manager's `programs.gpg.publicKeys`
-option, DO NOT import it manually(via `gpg --import <keyfile>`).
+As for public keys, please specify your public keys via Home Manager's `programs.gpg.publicKeys`
+option, DO NOT import it manually (via `gpg --import <keyfile>`).
 
-To ensure security, delete the master key and revoke the certificate immediately after the backup is
-completed:
+To ensure security, delete the primary key and the revocation certificate immediately after the backup is completed:
 
 ```bash
 # delete the primary key and all its sub keys
@@ -507,7 +474,7 @@ Now check the secret keys and public keys again:
 > A `#` at the end of the key ID means that the key is not available, because we have deleted it.
 
 ```bash
-› gpg --list-secret-keys --keyid-format=long
+› gpg --list-secret-keys --keyid-format long
 /home/ryan/.gnupg/pubring.kbx
 -----------------------------
 sec#  ed25519/D1C5FFA3118A41FC 2024-01-09 [SC] [expires: 2034-01-04]
@@ -518,7 +485,7 @@ ssb   ed25519/433A66D63805BD1A 2024-01-09 [S] [expires: 2034-01-04]
 ssb   ed25519/441E3D8FBD313BF2 2024-01-09 [A] [expires: 2034-01-04]
 
 
-› gpg --list-public-keys --keyid-format=long
+› gpg --list-public-keys --keyid-format long
 /home/ryan/.gnupg/pubring.kbx
 -----------------------------
 pub   ed25519/D1C5FFA3118A41FC 2024-01-09 [SC] [expires: 2034-01-04]
@@ -560,8 +527,7 @@ gpg --decrypt <file>
 gpg -d <file>
 ```
 
-If you just want to encrypt/decrypt a file quickly, you can use `age` with a passphrase, `gpg` can
-also do this, but it's not recommended(as age(scrypt)'s more secure):
+If you just want to encrypt/decrypt a file quickly, you can use `age` with a passphrase, `gpg` can also do this, but it's not recommended (as `age` (`scrypt`)'s more secure):
 
 ```bash
 # Encrypt a file via symmetric encryption(AES256), and output cleartext.
@@ -577,43 +543,31 @@ gpg -d <file>
 
 ### 7. Public Key Exchange & Revocation
 
-In the case of many users, it is very difficult to exchange public keys securely and reliably with
-each other. In the Web world, There is a **Chain of Trust\*\*** to resolve this problem:
+In the case of many users, it is very difficult to exchange public keys securely and reliably with each other. In the Web world, There is a **Chain of Trust\*\*** to resolve this problem:
 
-- A Certificate Authority(CA) is responsible to verify & sign all the certificate signing request.
+- A Certificate Authority (CA) is responsible to verify & sign all the certificate signing request.
 - Web Server can safely transmit its Web Certificate to the client via TLS protocol.
-- Client can verify the received Web Certificate via the CA's root certificate(which is built in
-  Browser/OS).
+- Client can verify the received Web Certificate via the CA's root certificate (which is built in Browser/OS).
 
 But in OpenPGP:
 
-- There is key servers to distribute(exchange) public keys, but it **do not verify the identity of
-  the key owner**, and any uploaded data is **not allowed to be deleted**. Which make it **insecure
-  and dangerous**.
+- There are key servers to distribute (exchange) public keys, but it **does not verify the identity of the key owner**, and any uploaded data is **not allowed to be deleted**. Which make it **insecure and dangerous**.
   - Why key server is dangerous?
-    - Many PGP novices follow various tutorials to upload various key with personal privacy (such as
-      real names) to the public key server, and then find that they can't delete them, which is very
-      embarrassing.
+    - Many PGP novices follow various tutorials to upload various key with personal privacy (such as real names) to the public key server, and then find that they can't delete them, which makes very embarrassing.
     - Anyone can upload a key to the key server, and claim that it is the key of a certain
-      person(such as Linus), which is very insecure.
-  - **key server** is not recommend to use.
-- GnuPG will generate revocation certificate when generating
-  keypair(`~/.gnupg/private-keys-v1.d/<Key-ID.rev>`), anyone can import this certificate to revoke
-  the keypair. But OpenPGP standard **DO NOT provide a way to distribute this certificate to
+      person (such as Linus), which is very insecure.
+  - Therefore, **key server** is not recommended to use.
+- GnuPG will generate revocation certificate when generating key pair (`~/.gnupg/private-keys-v1.d/<Key-ID.rev>`), anyone can import this certificate to revoke
+  the key pair. But OpenPGP standard **DO NOT provide a way to distribute this certificate to
   others**.
   - Not to mention some key status query protocol like OCSP in Web PKI.
-  - Users has to pulish their revocation certificate to their blog, github profile or somewhere
-    else, and others has to check it and run `gpg --import <revocation-certificate>` to revoke the
-    keypair manually.
+  - Users has to publish their revocation certificate to their blog, GitHub profile or somewhere else, and others has to check it and run `gpg --import <revocation-certificate>` to revoke the key pair manually.
 
-In summary, **there is no good way to distribute public keys and revoke them in OpenPGP**, which is
-a big problem.
+In summary, **there is no good way to distribute public keys and revoke them in OpenPGP**, which is a big problem.
 
-Currently, You have to distribute your public key or revocation certificate via your blog, github
-profile, or somewhere else, and others has to check it and run `gpg --import` to import your public
-key or revocation certificate manually.
+Currently, You have to distribute your public key or revocation certificate via your blog, GitHub profile, or somewhere else, and others has to check it and run `gpg --import` to import your public key or revocation certificate manually.
 
-Anyway, let's try to revoke a keypair:
+Anyway, let's try to revoke a key pair:
 
 ```bash
 › gpg --list-keys
@@ -700,8 +654,7 @@ gpg: 9E78E897B6490D6B: skipped: Unusable public key
 gpg: README.md: encryption failed: Unusable public key
 ```
 
-But if you delete the `trustdb.gpg` and `pubring.kbx`, then import the revoked public key again, it
-will be valid and usable again... which is very dangerous.
+But if you delete the `trustdb.gpg` and `pubring.kbx`, then import the revoked public key again, it will be valid and usable again... which is very dangerous.
 
 ## References
 
@@ -709,8 +662,6 @@ will be valid and usable again... which is very dangerous.
 - [Predictable, Passphrase-Derived PGP Keys][Predictable, Passphrase-Derived PGP Keys]
 - [OpenPGP - The almost perfect key pair][OpenPGP - The almost perfect key pair]
 
-[2021年，用更现代的方法使用PGP（上）]:
-  https://ulyc.github.io/2021/01/13/2021%E5%B9%B4-%E7%94%A8%E6%9B%B4%E7%8E%B0%E4%BB%A3%E7%9A%84%E6%96%B9%E6%B3%95%E4%BD%BF%E7%94%A8PGP-%E4%B8%8A/
+[2021年，用更现代的方法使用PGP（上）]: https://ulyc.github.io/2021/01/13/2021%E5%B9%B4-%E7%94%A8%E6%9B%B4%E7%8E%B0%E4%BB%A3%E7%9A%84%E6%96%B9%E6%B3%95%E4%BD%BF%E7%94%A8PGP-%E4%B8%8A/
 [Predictable, Passphrase-Derived PGP Keys]: https://nullprogram.com/blog/2019/07/10/
-[OpenPGP - The almost perfect key pair]:
-  https://blog.eleven-labs.com/en/openpgp-almost-perfect-key-pair-part-1/
+[OpenPGP - The almost perfect key pair]: https://blog.eleven-labs.com/en/openpgp-almost-perfect-key-pair-part-1/

@@ -36,7 +36,7 @@
     };
     signing = {
       format = "openpgp";
-      key = "B58240E2EBC371C7F99D0DAAED347D6CF8E43AF9";
+      key = myvars.git_signingkey;
       signByDefault = true;
     };
     # A syntax-highlighting pager in Rust(2019 ~ Now)

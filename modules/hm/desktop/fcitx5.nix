@@ -1,5 +1,4 @@
 {pkgs, lib, ...}: with lib; {
-  home.packages = [pkgs.catppuccin-fcitx5];
   xdg.configFile = {
     "fcitx5/profile" = {
       source = ./fcitx5-profile;
@@ -16,6 +15,7 @@
       fcitx5-chinese-addons fcitx5-chewing fcitx5-mozc fcitx5-rime
       fcitx5-pinyin-zhwiki fcitx5-pinyin-moegirl fcitx5-pinyin-minecraft
       fcitx5-gtk # gtk im module
+      catppuccin-fcitx5
     ];
   };
 }

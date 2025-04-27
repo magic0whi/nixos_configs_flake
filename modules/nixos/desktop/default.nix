@@ -129,7 +129,7 @@ in {
     # so that you don’t have to type in passphrases every time you make an SSH connection.
     # Use `ssh-add` to add a key to the agent.
     programs = {
-      ssh.startAgent = mkDefault true;
+      # ssh.startAgent = mkDefault true; # You can't use ssh-agent and GnuPG agent with SSH support enabled at the same time!
       dconf.enable = mkDefault true;
       thunar = { # thunar file manager(part of xfce)
         enable = mkDefault true;
@@ -146,12 +146,6 @@ in {
     # security with gnome-kering
     services.gnome.gnome-keyring.enable = mkDefault true;
     security.pam.services.greetd.enableGnomeKeyring = mkDefault true;
-    programs.gnupg.agent = { # gpg agent with pinentry
-      enable = mkDefault true;
-      pinentryPackage = mkDefault pkgs.pinentry-qt;
-      enableSSHSupport = mkDefault false;
-      settings.default-cache-ttl = mkDefault (4 * 60 * 60); # 4 hours
-    };
     ## END security.nix
   };
 }

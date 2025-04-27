@@ -22,37 +22,36 @@ in {
       ];
     };
   };
-  # modules.editors.emacs = {
-    # enable = true;
-  # };
-
+  # modules.editors.emacs.enable = true;
   programs.ssh = {
     enable = true;
-    forwardAgent = true; # allow to securely use local SSH agent to authenticate on the remote machine. It has the same effect as adding cli option `ssh -A user@host`
-    addKeysToAgent = "yes";  # a private key that is used during authentication will be added to ssh-agent if it is running
+    forwardAgent = true; # Allow to securely use local SSH agent to authenticate on the remote machine. It has the same effect as adding cli option `ssh -A user@host`
+    addKeysToAgent = "yes";  # A private key that is used during authentication will be added to ssh-agent if it is running
     matchBlocks = {
       "*.tailba6c3f.ts.net" = {
-        identityFile = "~/sync-work/3keys/private/proteus_ed25519.key";
+        # identityFile = "~/sync-work/3keys/private/proteus_ed25519.key";
       };
       "ssh.github.com hf.co" = lib.hm.dag.entryBefore ["*.tailba6c3f.ts.net"] {
         user = "git";
-        identityFile = "~/sync-work/3keys/private/proteus_ed25519.key";
-        identitiesOnly = true; # Required to prevent sending default identity files first.
+        # identityFile = "~/sync-work/3keys/private/proteus_ed25519.key";
+        # identitiesOnly = true; # Required to prevent sending default identity files first.
       };
       "desktop" = {
         hostname = "192.168.15.11";
         port = 22;
       };
       "192.168.*" = {
-        identityFile = "/etc/agenix/ssh-key-romantic"; # romantic holds my homelab~
-        identitiesOnly = true; # Specifies that ssh should only use the identity file. Required to prevent sending default identity files first.
+        # identityFile = "/etc/agenix/ssh-key-romantic"; # romantic holds my homelab~
+        # identitiesOnly = true; # Specifies that ssh should only use the identity file. Required to prevent sending default identity files first.
       };
     };
   };
   programs.gpg = {
+    # mutableTrust = true;
+    # mutableKeys = true;
     publicKeys = [ # https://www.gnupg.org/gph/en/manual/x334.html
       {
-        source = mylib.relative_to_root "custom_files/proteus_pub.gpg";
+        source = mylib.relative_to_root "custom_files/proteus.pub.asc";
         trust = 5; # ultimate trust, my own keys
       }
     ];

@@ -1,4 +1,4 @@
-{lib, myvars, mylib, pkgs, config, ...}: with lib; {
+{lib, myvars, mylib, pkgs, ...}: with lib; {
   imports = mylib.scan_path ./.;
   home = { # Home Manager needs a bit of information about you and the paths it should manage.
     inherit (myvars) username;
@@ -19,7 +19,6 @@
     # Misc
     tldr
     cowsay
-    gnupg
     gnumake
 
     # Modern cli tools, replacement of grep/sed/...
@@ -203,34 +202,34 @@
   ## START helix.nix
   # xdg.configFile."helix/themes".source = "${nur-ryan4yin.packages.${pkgs.system}.catppuccin-helix}/themes/default"; # https://github.com/catppuccin/helix
   programs.helix = {
-    enable = lib.mkDefault true;
-    defaultEditor = lib.mkDefault true;
+    enable = mkDefault true;
+    defaultEditor = mkDefault true;
     extraPackages = with pkgs; [marksman ltex-ls texlab];
     settings = {
       theme = mkDefault "gruvbox";
       editor = {
-        bufferline = lib.mkDefault "multiple";
-        color-modes = lib.mkDefault true;
-        cursorline = lib.mkDefault true;
-        line-number = lib.mkDefault "relative";
-        rulers = lib.mkDefault [80 120];
-        true-color = lib.mkDefault true;
-        soft-wrap.enable = lib.mkDefault true;
-        cursor-shape.insert = lib.mkDefault "bar";
-        file-picker.hidden = lib.mkDefault false;
-        indent-guides.render = lib.mkDefault true;
+        bufferline = mkDefault "multiple";
+        color-modes = mkDefault true;
+        cursorline = mkDefault true;
+        line-number = mkDefault "relative";
+        rulers = mkDefault [80 120];
+        true-color = mkDefault true;
+        soft-wrap.enable = mkDefault true;
+        cursor-shape.insert = mkDefault "bar";
+        file-picker.hidden = mkDefault false;
+        indent-guides.render = mkDefault true;
         statusline = {
-          left = lib.mkDefault ["mode" "spinner" "file-name" "read-only-indicator" "file-modification-indicator"];
-          right = lib.mkDefault ["diagnostics" "version-control" "selections" "position" "file-encoding" "file-line-ending" "file-type"];
+          left = mkDefault ["mode" "spinner" "file-name" "read-only-indicator" "file-modification-indicator"];
+          right = mkDefault ["diagnostics" "version-control" "selections" "position" "file-encoding" "file-line-ending" "file-type"];
         };
         whitespace.render = {
-          space = lib.mkDefault "all";
-          tab = lib.mkDefault "all";
-          nbsp = lib.mkDefault "all";
-          newline = lib.mkDefault "none";
+          space = mkDefault "all";
+          tab = mkDefault "all";
+          nbsp = mkDefault "all";
+          newline = mkDefault "none";
         };
       };
-      keys = lib.mkDefault {
+      keys = mkDefault {
         insert."C-c" = "normal_mode";
         normal."F5" = [":config-reload" ":lsp-restart"];
       };
@@ -251,7 +250,7 @@
           command = "ltex-ls";
           config.ltex = {
             language = "en-US";
-            dictionary = { "en-US" = ["Gamescope" "MangoHud"]; };
+            dictionary = { "en-US" = ["Gamescope" "MangoHud" "keyring"]; };
           };
         };
         texlab.config.texlab = {
@@ -287,45 +286,50 @@
   ## END neovim.nix
   ## START gpg.nix
   programs.gpg = {
-    enable = lib.mkDefault true;
+    enable = mkDefault true;
     # $GNUPGHOME/trustdb.gpg stores all the trust level you specified in `programs.gpg.publicKeys` option. If set `mutableTrust` to false, the path $GNUPGHOME/trustdb.gpg will be overwritten on each activation. Thus we can only update trsutedb.gpg via home-manager.
-    mutableTrust = lib.mkDefault false;
-
-    # $GNUPGHOME/pubring.kbx stores all the public keys you specified in `programs.gpg.publicKeys` option. If set `mutableKeys` to false, the path $GNUPGHOME/pubring.kbx will become an immutable link to the Nix store, denying modifications.
-    # Thus we can only update pubring.kbx via home-manager
+    mutableTrust = mkDefault false;
+    # $GNUPGHOME/pubring.kbx stores all the public keys you specified in `programs.gpg.publicKeys` option. If set `mutableKeys` to false, the path $GNUPGHOME/pubring.kbx will become an immutable link to the Nix store, denying modifications. Thus we can only update pubring.kbx via home-manager
     mutableKeys = lib.mkDefault false;
     settings = { # This configuration is based on the tutorial https://blog.eleven-labs.com/en/openpgp-almost-perfect-key-pair-part-1, it allows for a robust setup
-      no-greeting = lib.mkDefault true; # Get rid of the copyright notice
-      no-emit-version = lib.mkDefault true; # Disable inclusion of the version string in ASCII armored output
-      no-comments = lib.mkOverride 999 false; # Do not write comment packets
-      export-options = lib.mkDefault "export-minimal"; # Export the smallest key possible. This removes all signatures except the most recent self-signature on each user ID
-      keyid-format = lib.mkDefault "0xlong"; # Display long key IDs
-      with-fingerprint = lib.mkDefault true; # List all keys (or the specified ones) along with their fingerprints
-      list-options = lib.mkDefault "show-uid-validity"; # Display the calculated validity of user IDs during key listings
-      verify-options = lib.mkOverride 999 "show-uid-validity show-keyserver-urls";
-      personal-cipher-preferences = lib.mkOverride 999 "AES256"; # Select the strongest cipher
-      personal-digest-preferences = lib.mkOverride 999 "SHA512"; # Select the strongest digest
-      default-preference-list = lib.mkOverride 999 "SHA512 SHA384 SHA256 RIPEMD160 AES256 TWOFISH BLOWFISH ZLIB BZIP2 ZIP Uncompressed"; # This preference list is used for new keys and becomes the default for "setpref" in the edit menu
+      no-greeting = mkDefault true; # Get rid of the copyright notice
+      no-emit-version = mkDefault true; # Disable inclusion of the version string in ASCII armored output
+      no-comments = mkOverride 999 false; # Do not write comment packets
+      export-options = mkDefault "export-minimal"; # Export the smallest key possible. This removes all signatures except the most recent self-signature on each user ID
+      keyid-format = mkDefault "0xlong"; # Display long key IDs
+      with-fingerprint = mkDefault true; # List all keys (or the specified ones) along with their fingerprints
+      list-options = mkDefault "show-uid-validity"; # Display the calculated validity of user IDs during key listings
+      verify-options = mkOverride 999 "show-uid-validity show-keyserver-urls";
+      personal-cipher-preferences = mkOverride 999 "AES256"; # Select the strongest cipher
+      personal-digest-preferences = mkOverride 999 "SHA512"; # Select the strongest digest
+      default-preference-list = mkOverride 999 "SHA512 SHA384 SHA256 RIPEMD160 AES256 TWOFISH BLOWFISH ZLIB BZIP2 ZIP Uncompressed"; # This preference list is used for new keys and becomes the default for "setpref" in the edit menu
 
-      cipher-algo = lib.mkDefault "AES256"; # Use the strongest cipher algorithm
-      digest-algo = lib.mkDefault "SHA512"; # Use the strongest digest algorithm
-      cert-digest-algo = lib.mkDefault "SHA512"; # Message digest algorithm used when signing a key
-      compress-algo = lib.mkDefault "ZLIB"; # Use RFC-1950 ZLIB compression
+      cipher-algo = mkDefault "AES256"; # Use the strongest cipher algorithm
+      digest-algo = mkDefault "SHA512"; # Use the strongest digest algorithm
+      cert-digest-algo = mkDefault "SHA512"; # Message digest algorithm used when signing a key
+      compress-algo = mkDefault "ZLIB"; # Use RFC-1950 ZLIB compression
 
-      disable-cipher-algo = lib.mkDefault "3DES"; # Disable weak algorithm
-      weak-digest = lib.mkDefault "SHA1"; # Treat the specified digest algorithm as weak
+      disable-cipher-algo = mkDefault "3DES"; # Disable weak algorithm
+      weak-digest = mkDefault "SHA1"; # Treat the specified digest algorithm as weak
 
-      s2k-cipher-algo = lib.mkDefault "AES256"; # The cipher algorithm for symmetric encryption for symmetric encryption with a passphrase
-      s2k-digest-algo = lib.mkDefault "SHA512"; # The digest algorithm used to mangle the passphrases for symmetric encryption
-      s2k-mode = lib.mkDefault "3"; # Selects how passphrases for symmetric encryption are mangled
-      s2k-count = lib.mkDefault "65011712"; # Specify how many times the passphrases mangling for symmetric encryption is repeated
+      s2k-cipher-algo = mkDefault "AES256"; # The cipher algorithm for symmetric encryption for symmetric encryption with a passphrase
+      s2k-digest-algo = mkDefault "SHA512"; # The digest algorithm used to mangle the passphrases for symmetric encryption
+      s2k-mode = mkDefault "3"; # Selects how passphrases for symmetric encryption are mangled
+      s2k-count = mkDefault "65011712"; # Specify how many times the passphrases mangling for symmetric encryption is repeated
     };
+  };
+  services.gpg-agent = { # gpg agent with pinentry-qt
+    enable = mkDefault true;
+    pinentryPackage = mkDefault pkgs.pinentry-curses;
+    enableSshSupport = mkDefault true;
+    defaultCacheTtl = mkDefault (4 * 60 * 60); # 4 hours
+    sshKeys = mkDefault myvars.gpg2ssh_keygrip;
   };
   ## END gpg.nix
   systemd.user.services."${myvars.username}".environment.STNODEFAULTFOLDER = lib.mkDefault "true"; # Don't create default ~/Sync folder
   services = {
-    udiskie.enable = lib.mkDefault true; # auto mount usb drives
-    syncthing.enable = lib.mkDefault true;
-    syncthing.tray.enable = lib.mkDefault true;
+    udiskie.enable = mkDefault true; # auto mount usb drives
+    syncthing.enable = mkDefault true;
+    syncthing.tray.enable = mkDefault true;
   };
 }

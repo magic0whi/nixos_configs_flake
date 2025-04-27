@@ -127,8 +127,7 @@
     };
   };
 
-  hostsInterface =
-    lib.attrsets.mapAttrs
+  hostsInterface = lib.attrsets.mapAttrs
     (
       key: val: {
         interfaces."${val.iface}" = {
