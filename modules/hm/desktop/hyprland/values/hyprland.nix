@@ -103,6 +103,7 @@ in {
         # Functional keys
         ",Print,exec,hyprshot -m output -o ~/Pictures/Screenshots -- imv"
         "ALT,Print,exec,hyprshot -m window -o ~/Pictures/Screenshots -- imv"
+        "CTRL,Print,exec,hyprshot -m region -o ~/Pictures/Screenshots -- imv"
       ];
       binde = [
         "$mainMod ALT,H,resizeactive,-5% 0"
