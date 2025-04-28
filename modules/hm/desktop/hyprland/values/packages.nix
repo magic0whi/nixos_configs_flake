@@ -351,7 +351,7 @@ tooltip label {
             "class<waybar>" = "&#xebdc;"; # debug_all
             "class<Alacritty>" = "&#xf018d;"; # console
             "class<Anki>" = "&#xf0638;"; # cards
-            "class<KeePassXC>" = "&#xf0bc4;"; # shield_key
+            "class<org.keepassxc.KeePassXC>" = "&#xf0bc4;"; # shield_key
             "class<Minecraft|modrinth-app>" = "&#xf0373;"; # minecraft
           };
         };
