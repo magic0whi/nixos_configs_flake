@@ -204,7 +204,7 @@
   programs.helix = {
     enable = mkDefault true;
     defaultEditor = mkDefault true;
-    extraPackages = with pkgs; [marksman ltex-ls texlab];
+    extraPackages = with pkgs; [marksman ltex-ls texlab nodePackages.vscode-json-languageserver];
     settings = {
       theme = mkDefault "gruvbox";
       editor = {

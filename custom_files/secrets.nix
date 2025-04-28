@@ -6,7 +6,7 @@ let
   #    cat /etc/ssh/ssh_host_ed25519_key.pub
   # If you do not have this file, you can generate all the host keys by command:
   #    sudo ssh-keygen -A
-  proteus-sp4 = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIClFmzSjsfApgmBto1ejpI7trvfHKzECHAVIFh1hSKGR root@proteus-sp4";
+  proteus-sp4 = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIClFmzSjsfApgmBto1ejpI7trvfHKzECHAVIFh1hSKGR lollipop.studio.cn@gmail.com";
   # idol_ai = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAINHZtzeaQyXwuRMLzoOAuTu8P9bu5yc5MBwo5LI3iWBV root@ai";
   # harmonica = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAINT7Pgy/Yl+t6UkHp5+8zfeyJqeJ8EndyR1Vjf/XBe5f root@harmonica";
   # fern = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMokXUYcUy7tysH4tRR6pevFjyOP4cXMjpBSgBZggm9X root@fern";

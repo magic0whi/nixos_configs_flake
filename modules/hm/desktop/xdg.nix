@@ -2,7 +2,7 @@
 # It's a bunch of specifications from freedesktop.org intended to standardize desktops and
 # other GUI applications on various systems (primarily Unix-like) to be interoperable:
 #   https://www.freedesktop.org/wiki/Specifications/
-{config, pkgs, lib, ...}: {
+{config, pkgs, lib, ...}: with lib; {
   home.packages = with pkgs; [
     xdg-utils # provides cli tools such as `xdg-mime` `xdg-open`
     xdg-user-dirs
@@ -10,12 +10,12 @@
 
   xdg.configFile."mimeapps.list".force = true;
   xdg = {
-    enable = lib.mkDefault true;
+    enable = mkDefault true;
 
-    cacheHome = lib.mkDefault "${config.home.homeDirectory}/.cache";
-    configHome = lib.mkDefault "${config.home.homeDirectory}/.config";
-    dataHome = lib.mkDefault "${config.home.homeDirectory}/.local/share";
-    stateHome = lib.mkDefault "${config.home.homeDirectory}/.local/state";
+    cacheHome = mkDefault "${config.home.homeDirectory}/.cache";
+    configHome = mkDefault "${config.home.homeDirectory}/.config";
+    dataHome = mkDefault "${config.home.homeDirectory}/.local/share";
+    stateHome = mkDefault "${config.home.homeDirectory}/.local/state";
 
     # manage $XDG_CONFIG_HOME/mimeapps.list
     # xdg search all desktop entries from $XDG_DATA_DIRS, check it by command:
@@ -25,14 +25,14 @@
     # the user-level desktop entries can be list by command(user ryan):
     #  ls /etc/profiles/per-user/ryan/share/applications/
     mimeApps = {
-      enable = lib.mkDefault true;
+      enable = mkDefault true;
       # let `xdg-open` to open the url with the correct application.
       defaultApplications = let
         browser = ["firefox.desktop"];
         editor = ["nvim.desktop" "Helix.desktop" "code.desktop" "code-insiders.desktop"];
       in {
         "application/json" = browser;
-        "application/pdf" = browser; # TODO: pdf viewer
+        "application/pdf" = "org.pwmt.zathura.desktop";
 
         "text/html" = browser;
         "text/xml" = browser;

@@ -102,7 +102,7 @@ in {
         defaultFonts = {
           serif = lib.mkDefault ["Noto Serif" "FZYaSongS-R-GB" "Noto Serif CJK SC" "Noto Serif CJK TC" "Noto Serif CJK JP"];
           sansSerif = lib.mkDefault ["Inter Nerd Font" "Noto Sans" "Noto Sans CJK SC" "Noto Sans CJK TC" "Noto Sans CJK JP"];
-          monospace = lib.mkDefault ["Iosevka Nerd Font Mono" "JetBrainsMono Nerd Font" "Iosevka Term Extended" "Noto Sans Mono" "Noto Sans Mono CJK SC" "Noto Sans Mono CJK TC" "Noto Sans Mono CJK JP"];
+          monospace = lib.mkDefault ["Iosevka Nerd Font Mono" "Noto Sans Mono" "Noto Sans Mono CJK SC" "Noto Sans Mono CJK TC" "Noto Sans Mono CJK JP"];
           emoji = lib.mkDefault ["Noto Color Emoji"];
         };
       };
