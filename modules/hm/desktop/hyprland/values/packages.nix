@@ -1,5 +1,6 @@
-{pkgs, lib, myvars, ...}: with lib; {
+{pkgs, lib, myvars, config, ...}: with lib; {
   home.packages = with pkgs; [
+    sound-theme-freedesktop
     swaybg # the wallpaper
     swaylock # locking the screen
     wlogout # logout menu
@@ -11,296 +12,298 @@
     slurp # selecting a region to screenshot
     wf-recorder # screen recording
 
-    mako # the notification daemon, the same as dunst
+    # mako # the notification daemon, the same as dunst
 
     yad # a fork of zenity, for creating dialogs
 
     # audio
     alsa-utils # provides amixer/alsamixer/...
-    mpd # for playing system sounds
     mpc-cli # command-line mpd client
     ncmpcpp # a mpd client with a UI
   ];
   # xdg.configFile."waybar/catppuccin.css".source = "${myvars.catppuccin}/waybar/${myvars.catppuccin_variant}.css";
+  systemd.user.services.waybar.Service.RestartSec=3;
   programs.waybar = {
     enable = true;
     systemd.enable = true;
+    # systemd.enableInspect = true; # GTK Inspector
     style = ''
-/* Run 'waybar -l debug' to viewing the widget tree */
-/* https://www.w3.org/TR/selectors-3 */
-/* https://docs.gtk.org/gtk3/css-properties.html */
-/* https://docs.gtk.org/gtk3/css-overview.html#colors */
-/* Specificity
-a = Number of ID selectors
-b = number of class selectors
-c = number of type selectors
-*/
-@define-color gruvbox-bg #282828;
-@define-color gruvbox-fg #ebdbb2;
-@define-color gruvbox-red #cc241d;
-@define-color gruvbox-green #98971a;
-@define-color gruvbox-yellow #d79921;
-@define-color gruvbox-blue #458588;
-@define-color gruvbox-purple #b16286;
-@define-color gruvbox-gray #a89984;
+      /* Run 'waybar -l debug' to viewing the widget tree */
+      /* https://www.w3.org/TR/selectors-3 */
+      /* https://docs.gtk.org/gtk3/css-properties.html */
+      /* https://docs.gtk.org/gtk3/css-overview.html#colors */
+      /* Specificity
+      a = Number of ID selectors
+      b = number of class selectors
+      c = number of type selectors
+      */
+      @define-color gruvbox-bg #282828;
+      @define-color gruvbox-fg #ebdbb2;
+      @define-color gruvbox-red #cc241d;
+      @define-color gruvbox-green #98971a;
+      @define-color gruvbox-yellow #d79921;
+      @define-color gruvbox-blue #458588;
+      @define-color gruvbox-purple #b16286;
+      @define-color gruvbox-gray #a89984;
 
-window#waybar {
-  background-color: transparent;
-  font-family: Symbols Nerd Font, Iosevka Nerd Font Mono, sans-serif;
-  font-size: 16px; /* TODO HIDPI */
-}
+      window#waybar {
+        background-color: transparent;
+        font-family: Symbols Nerd Font, Iosevka Nerd Font Mono, sans-serif;
+        font-size: 16px; /* TODO HIDPI */
+      }
 
-tooltip {
-  background: @gruvbox-bg;
-  border: 2px solid @gruvbox-gray;
-  font-size: 16px; /* TODO HIDPI */
-}
+      tooltip {
+        background: @gruvbox-bg;
+        border: 2px solid @gruvbox-gray;
+        font-size: 16px; /* TODO HIDPI */
+      }
 
-tooltip label {
-  color: @gruvbox-fg;
-}
+      tooltip label {
+        color: @gruvbox-fg;
+      }
 
-.module {
-  margin-left: 2px; /* TODO HIDPI */
-  margin-right: 2px; /* TODO HIDPI */
-}
+      .module {
+        margin-left: 2px; /* TODO HIDPI */
+        margin-right: 2px; /* TODO HIDPI */
+      }
 
-/* If workspaces is the leftmost module, omit left margin */
-/* .modules-left>widget:first-child>#workspaces {
-  margin-left: 0;
-} */
+      /* If workspaces is the leftmost module, omit left margin */
+      /* .modules-left>widget:first-child>#workspaces {
+        margin-left: 0;
+      } */
 
-/* If workspaces is the rightmost module, omit right margin */
-/* .modules-right>widget:last-child>#workspaces {
-  margin-right: 0;
-} */
+      /* If workspaces is the rightmost module, omit right margin */
+      /* .modules-right>widget:last-child>#workspaces {
+        margin-right: 0;
+      } */
 
-#backlight,
-#battery,
-#clock,
-#cpu,
-#idle_inhibitor,
-#keyboard-state,
-#memory,
-#mpd,
-#network,
-#power-profiles-daemon,
-#privacy,
-#pulseaudio,
-#submap,
-#temperature,
-#tray,
-#window,
-#workspaces {
-  background-color: @gruvbox-bg;
-  border-radius: 8px;
-  color: @gruvbox-fg;
-  padding: 0 5px; /* TODO HIDPI */
-  transition-property: background-color;
-  transition-duration: .5s;
-}
+      #backlight,
+      #battery,
+      #clock,
+      #cpu,
+      #idle_inhibitor,
+      #keyboard-state,
+      #memory,
+      #mpd,
+      #network,
+      #power-profiles-daemon,
+      #privacy,
+      #pulseaudio,
+      #submap,
+      #temperature,
+      #tray,
+      #window,
+      #workspaces {
+        background-color: @gruvbox-bg;
+        border-radius: 8px;
+        color: @gruvbox-fg;
+        padding: 0 5px; /* TODO HIDPI */
+        transition-property: background-color;
+        transition-duration: .5s;
+      }
 
-#battery.charging,
-#battery.plugged {
-  color: @gruvbox-bg;
-  background-color: @gruvbox-green;
-}
+      #battery.charging,
+      #battery.plugged {
+        color: @gruvbox-bg;
+        background-color: @gruvbox-green;
+      }
 
-#battery:hover,
-#clock:hover,
-#idle_inhibitor:hover,
-#network:hover,
-#pulseaudio:hover {
-  background-color: @gruvbox-yellow;
-  color: @gruvbox-bg;
-}
+      #battery:hover,
+      #clock:hover,
+      #idle_inhibitor:hover,
+      #network:hover,
+      #pulseaudio:hover {
+        background-color: @gruvbox-yellow;
+        color: @gruvbox-bg;
+      }
 
-@keyframes blink {
-  to {
-    background-color: @gruvbox-bg;
-    color: @gruvbox-fg;
-  }
-}
+      @keyframes blink {
+        to {
+          background-color: @gruvbox-bg;
+          color: @gruvbox-fg;
+        }
+      }
 
-/* Using steps() instead of linear as a timing function to limit cpu usage */
-#battery.critical:not(.charging) {
-  background-color: @gruvbox-red;
-  color: @gruvbox-fg;
-  animation-name: blink;
-  animation-duration: 0.5s;
-  animation-timing-function: steps(12);
-  animation-iteration-count: infinite;
-  animation-direction: alternate;
-}
+      /* Using steps() instead of linear as a timing function to limit cpu usage */
+      #battery.critical:not(.charging) {
+        background-color: @gruvbox-red;
+        color: @gruvbox-fg;
+        animation-name: blink;
+        animation-duration: 0.5s;
+        animation-timing-function: steps(12);
+        animation-iteration-count: infinite;
+        animation-direction: alternate;
+      }
 
-#idle_inhibitor.activated {
-  background-color: @gruvbox-fg;
-  color: @gruvbox-bg;
-}
+      #idle_inhibitor.activated {
+        background-color: @gruvbox-fg;
+        color: @gruvbox-bg;
+      }
 
-/* Remove parent box's padding */
-#keyboard-state {
-  padding: 0;
-  transition-duration: 0;
-}
+      /* Remove parent box's padding */
+      #keyboard-state {
+        padding: 0;
+        transition-duration: 0;
+      }
 
-#keyboard-state>label {
-  padding: 0 5px; /* TODO HIDPI */
-}
+      #keyboard-state>label {
+        padding: 0 5px; /* TODO HIDPI */
+      }
 
-#keyboard-state>label.locked {
-  background: @gruvbox-fg;
-  border-radius: inherit;
-  color: @gruvbox-bg;
-}
+      #keyboard-state>label.locked {
+        background: @gruvbox-fg;
+        border-radius: inherit;
+        color: @gruvbox-bg;
+      }
 
-#mpd {
-  background-color: @gruvbox-bg;
-  color: @gruvbox-fg;
-}
+      #mpd {
+        background-color: @gruvbox-bg;
+        color: @gruvbox-fg;
+      }
 
-#mpd.disconnected {
-  background-color: @gruvbox-red;
-}
+      #mpd.disconnected {
+        background-color: @gruvbox-red;
+      }
 
-#mpd.paused {
-  background-color: @gruvbox-gray;
-}
+      #mpd.paused {
+        background-color: @gruvbox-gray;
+      }
 
-#mpd.stopped {
-  background-color: @gruvbox-fg;
-  color: @gruvbox-bg;
-}
+      #mpd.stopped {
+        background-color: @gruvbox-fg;
+        color: @gruvbox-bg;
+      }
 
-#network.disconnected {
-  background-color: @gruvbox-red;
-}
+      #network.disconnected {
+        background-color: @gruvbox-red;
+      }
 
-#power-profiles-daemon.performance {
-  background-color: @gruvbox-red;
-  color: @gruvbox-fg;
-}
+      #power-profiles-daemon.performance {
+        background-color: @gruvbox-red;
+        color: @gruvbox-fg;
+      }
 
-#power-profiles-daemon.balanced {
-  background-color: @gruvbox-blue;
-  color: @gruvbox-fg;
-}
+      #power-profiles-daemon.balanced {
+        background-color: @gruvbox-blue;
+        color: @gruvbox-fg;
+      }
 
-#power-profiles-daemon.power-saver {
-  background-color: @gruvbox-green;
-  color: @gruvbox-bg;
-}
+      #power-profiles-daemon.power-saver {
+        background-color: @gruvbox-green;
+        color: @gruvbox-bg;
+      }
 
-#pulseaudio.muted {
-  color: @gruvbox-gray;
-}
+      #pulseaudio.muted {
+        color: @gruvbox-gray;
+      }
 
-#temperature.critical {
-  background-color: @gruvbox-red;
-}
+      #temperature.critical {
+        background-color: @gruvbox-red;
+      }
 
-#tray {
-  background-color: @gruvbox-fg;
-}
+      #tray {
+        background-color: @gruvbox-fg;
+      }
 
-#tray>.passive {
-  -gtk-icon-effect: dim;
-}
+      #tray>.passive {
+        -gtk-icon-effect: dim;
+      }
 
-#tray>.needs-attention {
-  -gtk-icon-effect: highlight;
-  background-color: @gruvbox-red;
-}
+      #tray>.needs-attention {
+        -gtk-icon-effect: highlight;
+        background-color: @gruvbox-red;
+      }
 
-#window,
-#workspaces {
-  background-color: transparent;
-  /* Remove parent box's padding */
-  padding: 0;
-}
+      #window,
+      #workspaces {
+        background-color: transparent;
+        /* Remove parent box's padding */
+        padding: 0;
+      }
 
-#workspaces button {
-  background-color: @gruvbox-bg;
-  color: @gruvbox-fg;
-  padding: 0 5px; /* TODO HIDPI */
-}
+      #workspaces button {
+        background-color: @gruvbox-bg;
+        color: @gruvbox-fg;
+        padding: 0 5px; /* TODO HIDPI */
+      }
 
-#workspaces button:not(:first-child):not(:last-child) {
-  border-radius: 0;
-}
+      #workspaces button:not(:first-child):not(:last-child) {
+        border-radius: 0;
+      }
 
-#workspaces button:first-child {
-  border-top-right-radius: 0;
-  border-bottom-right-radius: 0;
-}
+      #workspaces button:first-child {
+        border-top-right-radius: 0;
+        border-bottom-right-radius: 0;
+      }
 
-#workspaces button:last-child {
-  border-top-left-radius: 0;
-  border-bottom-left-radius: 0;
-}
+      #workspaces button:last-child {
+        border-top-left-radius: 0;
+        border-bottom-left-radius: 0;
+      }
 
-#workspaces button:only-child {
-  border-radius: 8px;
-}
+      #workspaces button:only-child {
+        border-radius: 8px;
+      }
 
-#workspaces button:hover {
-  background: @gruvbox-yellow;
-  box-shadow: inset 0 -3px @gruvbox-fg;
-  color: @gruvbox-bg;
-}
+      #workspaces button:hover {
+        background: @gruvbox-yellow;
+        box-shadow: inset 0 -3px @gruvbox-fg;
+        color: @gruvbox-bg;
+      }
 
-/* focused */
-#workspaces button.active {
-  background-color: @gruvbox-gray;
-  color: @gruvbox-bg;
-}
+      /* focused */
+      #workspaces button.active {
+        background-color: @gruvbox-gray;
+        color: @gruvbox-bg;
+      }
 
-#workspaces button.urgent {
-  background-color: @gruvbox-purple;
-}
+      #workspaces button.urgent {
+        background-color: @gruvbox-purple;
+      }
 
-/* When no windows are in the workspace */
-/* window#waybar.empty {
-    background-color: transparent;
-} */
+      /* When no windows are in the workspace */
+      /* window#waybar.empty {
+          background-color: transparent;
+      } */
 
-/* When one tiled window is visible in the workspace (floating windows may be present) */
-/* window#waybar.solo {
-    background-color: #FFFFFF;
-} */
+      /* When one tiled window is visible in the workspace (floating windows may be present) */
+      /* window#waybar.solo {
+          background-color: #FFFFFF;
+      } */
 
-#privacy {
-  /* Privacy is missing class .module */
-  margin-left: 2px; /* TODO HIDPI */
-  margin-right: 2px; /* TODO HIDPI */
-  /* Remove parent box's padding */
-  padding: 0;
-  background-color: @gruvbox-fg;
-  color: @gruvbox-bg;
-}
+      #privacy {
+        /* Privacy is missing class .module */
+        margin-left: 2px; /* TODO HIDPI */
+        margin-right: 2px; /* TODO HIDPI */
+        /* Remove parent box's padding */
+        padding: 0;
+        background-color: @gruvbox-fg;
+        color: @gruvbox-bg;
+      }
 
-#privacy-item {
-  padding: 0 5px; /* TODO HIDPI */
-}
+      #privacy-item {
+        padding: 0 5px; /* TODO HIDPI */
+      }
 
-/* Concatnate modules CPU, Memory, Temperature */
-#cpu {
-  margin-right: 0;
-  border-top-right-radius: 0;
-  border-bottom-right-radius: 0;
-}
+      /* Concatnate modules CPU, Memory, Temperature */
+      #cpu {
+        margin-right: 0;
+        border-top-right-radius: 0;
+        border-bottom-right-radius: 0;
+      }
 
-#memory {
-  margin-left: 0;
-  margin-right: 0;
-  border-radius: 0;
-}
+      #memory {
+        margin-left: 0;
+        margin-right: 0;
+        border-radius: 0;
+      }
 
-#temperature {
-  margin-left: 0;
-  border-top-left-radius: 0;
-  border-bottom-left-radius: 0;
-}'';
+      #temperature {
+        margin-left: 0;
+        border-top-left-radius: 0;
+        border-bottom-left-radius: 0;
+      }
+    '';
     settings = [
       {
         margin-left = 4;
@@ -554,5 +557,51 @@ tooltip label {
         };
       }
     ];
+  };
+  services.mako = {
+    enable = true; # mako is trigged by dbus
+    maxHistory = 100;
+    padding = "5";
+    borderRadius = 8;
+    maxIconSize = 48;
+    defaultTimeout = 5000;
+    layer = "overlay";
+    backgroundColor = "#1e1e2e";
+    textColor = "#d9e0ee";
+    borderColor = "#313244";
+    progressColor = "over #89b4fa";
+    extraConfig = ''
+      on-button-middle=none
+      on-button-right=dismiss-all
+      on-notify=exec mpv /usr/share/sounds/freedesktop/stereo/message.oga
+
+      [urgency=low]
+      border-color=#313244
+      default-timeout=2000
+
+      [urgency=normal]
+      border-color=#313244
+
+      [urgency=high]
+      border-color=#f38ba8
+      text-color=#f38ba8
+      default-timeout=0
+
+      [category=mpd]
+      border-color=#f9e2af
+      default-timeout=2000
+      group-by=category
+    '';
+  };
+  services.mpd = {
+    enable = true;
+    dbFile = "${config.xdg.dataHome}/mpd/database";
+    extraConfig = ''
+      auto_update "yes"
+      audio_output {
+        type "pipewire"
+        name "PipeWire Sound Server"
+      }
+    '';
   };
 }

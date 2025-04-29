@@ -1,6 +1,10 @@
 {pkgs, config, myvars, ...}: let
   package = pkgs.hyprland;
 in {
+  home.file.".wayland-session" = { # NOTE: this executable is used by greetd to start a wayland session when system boot up. With such a vendor-no-locking script, we can switch to another wayland compositor without modifying greetd's config in NixOS module
+    source = "${package}/bin/Hyprland";
+    executable = true;
+  };
   wayland.windowManager.hyprland = {
     inherit package;
     enable = true;
@@ -162,9 +166,6 @@ in {
         "GDK_BACKEND,wayland"
         "QT_ENABLE_HIGHDPI_SCALING,1"
       ];
-      exec-once = [
-        "~/.config/hypr/scripts/startup"
-      ];
       general = {
         border_size = 2;
         gaps_in = 2; # gaps between windows
@@ -299,10 +300,6 @@ in {
     };
   };
   services.cliphist.enable = true;
-  home.file.".wayland-session" = { # NOTE: this executable is used by greetd to start a wayland session when system boot up. With such a vendor-no-locking script, we can switch to another wayland compositor without modifying greetd's config in NixOS module
-    source = "${package}/bin/Hyprland";
-    executable = true;
-  };
   xdg.configFile = { # hyprland configs, based on https://github.com/notwidow/hyprland
     "hypr/mako" = {
       source = ../conf/mako;
@@ -312,16 +309,12 @@ in {
       source = ../conf/scripts;
       recursive = true;
     };
-    "hypr/waybar" = {
-      source = ../conf/waybar;
-      recursive = true;
-    };
+    # "hypr/waybar" = { TODO
+    #   source = ../conf/waybar;
+    #   recursive = true;
+    # };
     "hypr/wlogout" = {
       source = ../conf/wlogout;
-      recursive = true;
-    };
-    "mpd" = { # music player - mpd
-      source = ../conf/mpd;
       recursive = true;
     };
   };
