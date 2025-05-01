@@ -20,6 +20,13 @@
     alsa-utils # provides amixer/alsamixer/...
     mpc-cli # command-line mpd client
     ncmpcpp # a mpd client with a UI
+
+    ffmpeg-full
+
+    # images
+    # viu # Terminal image viewer with native support for iTerm and Kitty
+    imagemagick # Provides 'convert'
+    graphviz
   ];
   # xdg.configFile."waybar/catppuccin.css".source = "${myvars.catppuccin}/waybar/${myvars.catppuccin_variant}.css";
   systemd.user.services.waybar.Service.RestartSec=3;
