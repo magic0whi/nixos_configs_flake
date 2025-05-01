@@ -46,6 +46,7 @@ in {
     (mkIf cfg.desktop.enable {
       age.secrets = {
         "config.json" = {file = "${mysecrets}/config.json.age";} // noaccess;
+        "proteus.smb" = {file = "${mysecrets}/proteus.smb.age";} // high_security;
       };
     })
   ]);

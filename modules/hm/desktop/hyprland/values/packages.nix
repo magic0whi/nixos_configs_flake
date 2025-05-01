@@ -55,7 +55,7 @@
 
       window#waybar {
         background-color: transparent;
-        font-family: Symbols Nerd Font, Iosevka Nerd Font Mono, sans-serif;
+        font-family: Symbols Nerd Font, Inter Nerd Font, sans-serif;
         font-size: 16px; /* TODO HIDPI */
       }
 
@@ -136,7 +136,7 @@
         background-color: @gruvbox-red;
         color: @gruvbox-fg;
         animation-name: blink;
-        animation-duration: 0.5s;
+        animation-duration: .5s;
         animation-timing-function: steps(12);
         animation-iteration-count: infinite;
         animation-direction: alternate;
@@ -351,7 +351,7 @@
             "class<localsend>" = "&#xf04b8;"; # soccer
             "class<mpv>" = "&#xf36e;"; # linux-mpv
             "class<org.fcitx.fcitx5-config-qt>" = "&#xf09f9;"; # keyboard_settings
-            "class<org.gnome.Nautilus>" = "&#xf024b;"; # folder
+            "class<org.gnome.Nautilus|Thunar>" = "&#xf024b;"; # folder
             "class<org.inkscape.Inkscape>" = "&#xf33b;"; # linux-inkscape
             "class<org.pwmt.zathura>" = "&#xf292;"; # hashtag
             "class<org.remmina.Remmina>" = "&#xeb39;"; # nf-md-remote
@@ -580,7 +580,7 @@
     extraConfig = ''
       on-button-middle=none
       on-button-right=dismiss-all
-      on-notify=exec mpv /usr/share/sounds/freedesktop/stereo/message.oga
+      on-notify=exec mpv ${pkgs.sound-theme-freedesktop}/share/sounds/freedesktop/stereo/message.oga
 
       [urgency=low]
       border-color=#313244

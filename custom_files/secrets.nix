@@ -23,5 +23,6 @@ let
   ];
 in {
   "config.json.age".publicKeys = machines;
+  "proteus.smb.age".publicKeys = machines;
   # "test.key.age".publicKeys = machines;
 }

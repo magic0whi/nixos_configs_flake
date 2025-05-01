@@ -28,7 +28,7 @@
 
       * {
         transition: 200ms ease;
-        font-family: "JetBrainsMono Nerd Font";
+        font-family: Symbols Nerd Font, Inter Nerd Font, sans-serif;
         font-size: 1.3rem;
       }
 

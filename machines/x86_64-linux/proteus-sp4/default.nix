@@ -39,8 +39,7 @@ in {
             ./secureboot.nix
             ./impermanence.nix
             ./configuration.nix
-            # TODO
-            # hosts/idols-ai/netdev-mount.nix
+            ./netdev-mount.nix
           ];
           networking.hostName = hostname;
         }

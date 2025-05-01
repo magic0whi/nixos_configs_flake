@@ -87,9 +87,6 @@ in {
       enableDefaultPackages = lib.mkOverride 999 false; # use fonts specified by user rather than default ones
       fontDir.enable = lib.mkDefault true;
       packages = with pkgs; [
-        # icon fonts
-        material-design-icons # TODO: Remove
-        font-awesome # TODO: Remove
         noto-fonts noto-fonts-emoji noto-fonts-cjk-sans noto-fonts-cjk-serif
         inter-nerdfont # NerdFont patch of the Inter font
         # nerdfonts

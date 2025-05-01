@@ -315,6 +315,7 @@
       extraGroups = [
         myvars.username
         "docker"
+        "input"
         "libvirtd"
         "video"
         "wheel"
