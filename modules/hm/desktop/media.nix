@@ -82,7 +82,7 @@
         vo = "gpu-next";
         # vo = "dmabuf-wayland";
         gpu-api = "vulkan";
-        vulkan-device = "Intel(R) HD Graphics 520 (SKL GT2)";
+        # vulkan-device = ""; # See 'mpv --vulkan-device=help'
         hwdec = "auto";
         ao = "pipewire";
       };

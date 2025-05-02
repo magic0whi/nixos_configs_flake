@@ -56,6 +56,7 @@ in {
       }
     ];
   };
+  programs.mpv.profiles.common.vulkan-device = "Intel(R) HD Graphics 520 (SKL GT2)";
   services.syncthing = {
     key = "${./syncthing_key.pem}";
     cert = "${./syncthing_cert.pem}";

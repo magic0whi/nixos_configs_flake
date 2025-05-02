@@ -16,24 +16,6 @@
     "custom/powermenu",
     "tray"
   ],
-  "hyprland/workspaces": {
-    "format": "{icon}",
-    "on-click": "activate",
-    "format-icons": {
-      "1": "",
-      "2": "",
-      "3": "",
-      "4": "",
-      "5": "",
-      "6": "",
-      "7": "",
-      "8": "",
-      "9": "",
-      "10": "〇",
-      "focused": "",
-      "default": ""
-    }
-  },
   "clock": {
     "interval": 60,
     "align": 0,
@@ -47,13 +29,6 @@
     "interval": 1,
     "on-click-middle": "alacritty btop",
     "on-click-right": "alacritty btop"
-  },
-  "custom/launcher": {
-    "format": "\uf313 ",
-    "on-click": "$HOME/.config/hypr/scripts/menu",
-    "on-click-middle": "exec default_wall",
-    "on-click-right": "exec wallpaper_random",
-    "tooltip": false
   },
   "custom/powermenu": {
     "format": "\uf011",
