@@ -337,6 +337,7 @@
     (mylib.relative_to_root "custom_files/proteus_ca.pem")
   ];
   ## START fhs.nix
+  security.sudo.extraConfig = "Defaults passwd_timeout=0"; # Disable timeout for sudo prompt
   # create a fhs environment by command `fhs`, so we can run non-nixos packages in nixos!
   environment.systemPackages = [(
   let
