@@ -9,7 +9,7 @@ export def nixos-switch [
         nom build $".#nixosConfigurations.($name).config.system.build.toplevel" --show-trace --verbose
         nixos-rebuild switch --use-remote-sudo --flake $".#($name)" --show-trace --verbose
     } else {
-        sudo nixos-rebuild switch --use-remote-sudo --flake $".#($name)"
+        nixos-rebuild switch --use-remote-sudo --flake $".#($name)"
     }
 }
 
