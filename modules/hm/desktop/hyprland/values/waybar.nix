@@ -6,7 +6,7 @@
     systemd.enable = mkDefault true;
     # systemd.enableInspect = true; # DEBUG: GTK Inspector
     settings = mkDefault [{
-      modules-left = ["custom/launcher" "hyprland/workspaces" "hyprland/submap"];
+      modules-left = ["custom/launcher" "custom/powermenu" "hyprland/workspaces" "hyprland/submap"];
       modules-center = ["hyprland/window"];
       modules-right = [
         "mpd"
@@ -37,11 +37,16 @@
         # on-click-middle = ""; # TODO: Impl random wallpaper
         # on-click-right = ""; # TODO: Impl next wallpaper
       };
+      "custom/powermenu" = {
+        "format" = "&#xf011;"; # nf-fa-power_off
+        "on-click" = "$HOME/.config/hypr/scripts/wlogout";
+        "tooltip" = false;
+      };
       "hyprland/workspaces" = {
         format = "{name}{windows}";
         show-special = true;
         special-visible-only = true; # special workspaces will be shown only if visible.
-        window-rewrite-default = "&#xf059"; # nf-fa-question_circle
+        window-rewrite-default = "&#xf059;"; # nf-fa-question_circle
         window-rewrite = {
           "class<ario>" = "&#xf0386;"; # music_circle
           "class<blender>" = "&#xf00ab;"; # blender_software
@@ -101,10 +106,11 @@
       };
       memory = {
         format = "{percentage}% &#xf035b;"; # memory
+        states = {warning = 85;};
       };
       temperature = {
         # hwmon-path = "/sys/class/hwmon/hwmon5/temp1_input"; # Vary on different devices
-        critical-threshold = 80;
+        critical-threshold = 85;
         format-critical = "{temperatureC}&#xb0;C &#xf0e01;"; # thermometer_alert
         format = "{temperatureC}&#xb0;C {icon}";
         format-icons = [
@@ -141,8 +147,8 @@
       battery = {
         states = {
           # good = 95;
-          warning = 30;
-          critical = 15;
+          warning = 20;
+          critical = 10;
         };
         format = "{capacity}% {icon}";
         format-full = "{capacity}% {icon}";
@@ -182,8 +188,8 @@
         format-ethernet = "{ipaddr}/{cidr} &#xf0200;"; # ethernet
         format-linked = "{ifname} (no ip) &#xf0318;"; # lan_connect
         format-disconnected = "disconnected &#xf0319;"; # lan_disconnect
-        format-alt = "{ifname}: {ipaddr}/{cidr}";
-        tooltip-format = "{ifname} via {gwaddr} &#xf11e2;"; # router
+        format-alt = "&#xf106; {bandwidthUpBytes} | &#xf107; {bandwidthDownBytes}"; # nf-fa-angle_up, nf-fa-angle_down
+        tooltip-format = "{ifname} via {gwaddr} &#xf11e2;\n{ipaddr}/{cidr}"; # router
         tooltip-format-wifi = "{essid} ({signalStrength}%)\n{ifname} via {gwaddr} &#xf11e2;"; # router
         format-icons = [
           "&#xf092f;" # wifi_strength_outline
@@ -192,6 +198,7 @@
           "&#xf0925;" # wifi_strength_3
           "&#xf0928;" # wifi_strength_4
         ];
+        on-click-right = "alacritty -e pkexec iwctl";
       };
       pulseaudio = {
         # scroll-step = 1, # %, can be a float
@@ -215,6 +222,7 @@
           ];
         };
         on-click = "pactl set-sink-mute @DEFAULT_SINK@ toggle";
+        on-click-middle = "pavucontrol";
         on-click-right = "pactl set-source-mute @DEFAULT_SOURCE@ toggle";
       };
       privacy = {
@@ -241,10 +249,14 @@
       };
       mpd = {
         title-len = 10;
+        on-click = "mpc toggle";
+        on-click-middle = "mpc prev";
+        on-click-right = "mpc next";
+        on-scroll-down = "mpc seek -00:00:01";
+        on-scroll-up = "mpc seek +00:00:01";
         format = "{stateIcon}{consumeIcon}{randomIcon}{repeatIcon}{singleIcon}{artist} - {album} - {title} ({elapsedTime:%M:%S}/{totalTime:%M:%S}) &#xf075a;"; # music
         format-disconnected = "Disconnected &#xf0319;"; # lan_disconnect
         format-stopped = "{consumeIcon}{randomIcon}{repeatIcon}{singleIcon}Stopped &#xf075b;"; # music_off
-        interval = 10;
         consume-icons = {
           on = "&#xf0190;"; # content_cut
         };
@@ -307,6 +319,7 @@
       #clock,
       #cpu,
       #custom-launcher,
+      #custom-powermenu,
       #idle_inhibitor,
       #keyboard-state,
       #memory,
@@ -331,7 +344,7 @@
 
       #battery:hover,
       #clock:hover,
-      #custom-launcher:hover,
+      #custom-launcher:hover, #custom-powermenu:hover,
       #idle_inhibitor:hover,
       #network:hover,
       #pulseaudio:hover,
@@ -349,7 +362,8 @@
       }
 
       /* Using steps() instead of linear as a timing function to limit cpu usage */
-      #battery.critical:not(.charging) {
+      #battery.critical:not(.charging),
+      #temperature.critical {
         background-color: @red;
         color: @base;
         animation-name: blink;
@@ -358,6 +372,9 @@
         animation-iteration-count: infinite;
         animation-direction: alternate;
       }
+
+      #battery.warning:not(.charging),
+      #memory.warning {background-color: @peach; color: @base;}
 
       #keyboard-state, #privacy, #window, #workspaces {padding: 0;} /* Remove parent box's padding */
       #keyboard-state>label, #privacy-item, #workspaces button {padding: 0 5px;}
@@ -376,8 +393,6 @@
 
       #pulseaudio.muted {color: @overlay2;}
 
-      #temperature.critical {background-color: @red;}
-
       #tray>.passive {-gtk-icon-effect: dim;}
       #tray>.needs-attention {-gtk-icon-effect: highlight; background-color: @red;}
 
@@ -387,7 +402,7 @@
         color: inherit;
         transition-duration: inherit;
       }
-      #workspaces button.urgent {background-color: @red;}
+      #workspaces button.urgent {background-color: @red; color: @base;}
 
       /* Concatnate modules in a module group */
       #hw_info widget:not(:first-child):not(:last-child) .module,
