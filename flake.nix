@@ -18,6 +18,7 @@
     nixpak = {
       url = "github:nixpak/nixpak";
       inputs.nixpkgs.follows = "nixpkgs";
+      inputs.flake-parts.follows = "lanzaboote/flake-parts";
     };
     # generate iso/qcow2/docker/... image from nixos configuration
     nixos-generators = {

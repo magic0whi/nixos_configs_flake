@@ -320,7 +320,7 @@
   };
   services.gpg-agent = { # gpg agent with pinentry-qt
     enable = mkDefault true;
-    pinentryPackage = mkDefault pkgs.pinentry-curses;
+    pinentry.package = mkDefault pkgs.pinentry-curses;
     enableSshSupport = mkDefault true;
     defaultCacheTtl = mkDefault (4 * 60 * 60); # 4 hours
     sshKeys = mkDefault myvars.gpg2ssh_keygrip;

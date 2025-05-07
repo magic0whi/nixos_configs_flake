@@ -301,7 +301,7 @@ in {
   };
   services.cliphist.enable = true;
   xdg.configFile = { # hyprland configs, based on https://github.com/notwidow/hyprland
-    "hypr/mako" = {
+    "hypr/mako" = { # Keep icon files
       source = ../conf/mako;
       recursive = true;
     };

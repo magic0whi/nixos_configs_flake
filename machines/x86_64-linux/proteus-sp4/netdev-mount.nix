@@ -1,4 +1,4 @@
-{config, ...}: let
+{config, pkgs, ...}: let
   cifs_opts = {
     fsType = "cifs";
     options = [
@@ -7,7 +7,8 @@
     ];
   };
 in {
-  boot.supportedFilesystems = ["cifs"];
+  environment.systemPackages = [pkgs.btrfs-progs];
+  boot.supportedFilesystems = ["btrfs" "cifs"];
   fileSystems = {
     "/mnt/smb_cold_backup" = {device = "//proteusdesktop.tailba6c3f.ts.net/storage2";} // cifs_opts;
     "/mnt/storage3" = {device = "//proteusdesktop.tailba6c3f.ts.net/storage3";} // cifs_opts;
