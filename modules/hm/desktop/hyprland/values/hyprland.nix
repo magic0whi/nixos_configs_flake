@@ -180,6 +180,7 @@ in {
       };
       windowrule = [
         "float,class:^(yad|org\.pulseaudio\.pavucontrol|imv|qemu)$"
+        "float,class:^(thunar)$,title:^(File Operation Progress)$"
 
         "idleinhibit focus,class:^(firefox)$"
         "float,class:^(firefox)$,title:^(Picture-in-Picture)$"
