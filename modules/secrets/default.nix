@@ -35,7 +35,7 @@ in {
   config = mkIf (cfg.desktop.enable || enabled_server_secrets) (mkMerge [
     {
       environment.systemPackages = [agenix.packages."${pkgs.system}".default];
-      age.identityPaths = if config.environment.persistence != {} then [
+      age.identityPaths = if config.environment ? persistence && config.environment.persistence != {} then [
         "/persistent/home/${myvars.username}/sync-work/3keys/private/legacy/proteus_ed25519.key"
       ] else ["/home/${myvars.username}/sync-work/3keys/private/legacy/proteus_ed25519.key"];
       assertions = [{

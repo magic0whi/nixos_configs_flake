@@ -12,7 +12,7 @@
   fileSystems."/" =
     { device = "/dev/disk/by-uuid/9de6d78b-8617-4aa3-b317-62d6312d8eea";
       fsType = "btrfs";
-      options = [ "subvol=@" ];
+      options = ["subvol=@" "compress=zstd" "discard=async"];
     };
 
   boot.initrd.luks.devices."cryptroot".device = "/dev/disk/by-uuid/494c9374-0502-495a-a39d-4b8b1365dbd4";
@@ -26,29 +26,30 @@
   fileSystems."/.snapshots" =
     { device = "/dev/disk/by-uuid/9de6d78b-8617-4aa3-b317-62d6312d8eea";
       fsType = "btrfs";
-      options = [ "subvol=@snapshots" "compress=zstd" "discard=async"];
+      neededForBoot = true;
+      options = ["subvol=@snapshots" "compress=zstd" "discard=async"];
     };
 
   fileSystems."/persistent" =
     { device = "/dev/disk/by-uuid/9de6d78b-8617-4aa3-b317-62d6312d8eea";
       fsType = "btrfs";
       neededForBoot = true;
-      options = [ "subvol=@persistent" "compress=zstd" "discard=async"];
+      options = ["subvol=@persistent" "compress=zstd" "discard=async"];
     };
 
   fileSystems."/nix" =
     { device = "/dev/disk/by-uuid/9de6d78b-8617-4aa3-b317-62d6312d8eea";
       fsType = "btrfs";
-      options = [ "subvol=@nix" "compress=zstd" "discard=async"];
+      options = ["subvol=@nix" "compress=zstd" "discard=async"];
     };
 
   fileSystems."/boot" =
     { device = "/dev/disk/by-uuid/81EC-E52B";
       fsType = "vfat";
-      options = [ "discard" "fmask=0077" "dmask=0077" ];
+      options = ["discard" "fmask=0077" "dmask=0077"];
     };
 
-  swapDevices = [ ];
+  swapDevices = [{device="/.snapshots/swapfile";}];
 
   # Enables DHCP on each ethernet and wireless interface. In case of scripted networking
   # (the default) this is the recommended approach. When using systemd-networkd it's

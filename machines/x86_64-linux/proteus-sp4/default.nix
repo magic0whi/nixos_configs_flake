@@ -37,7 +37,7 @@ in {
           imports = [
             ./hardware-configuration.nix
             ./secureboot.nix
-            ./impermanence.nix
+            ./impermanence.nix # Disable if generating bootable iso files
             ./configuration.nix
             ./netdev-mount.nix
           ];
