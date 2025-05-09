@@ -12,6 +12,7 @@
     # vdpauinfo
     vulkan-tools
     glxinfo
+    clinfo
   ];
   # # https://github.com/catppuccin/cava
   # xdg.configFile."cava/config".text = "# Custom cava config\n"

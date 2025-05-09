@@ -6,7 +6,7 @@
   boot.loader.efi.canTouchEfiVariables = lib.mkDefault true; # Allow installation process to modify EFI boot variables
   boot.loader.systemd-boot = {
     enable = lib.mkDefault true;
-    configurationLimit = lib.mkDefault 3; # Limit the boot loader entries
+    configurationLimit = lib.mkDefault 4; # Limit the boot loader entries
     consoleMode = lib.mkDefault "max";
   };
   services = {
@@ -375,13 +375,25 @@
       StateDirectoryMode = "0700";
       RuntimeDirectory = "sing-box";
       RuntimeDirectoryMode = "0700";
-      LoadCredential = [ ("config.json:" + config.age.secrets."config.json".path) ];
+      LoadCredential = [("config.json:" + config.age.secrets."config.json".path)];
       ExecStart = [
-        ""
+        "" # Empty value remove previous value
         (let configArgs = "-c $\{CREDENTIALS_DIRECTORY}/config.json";
           in "${lib.getExe config.services.sing-box.package} -D \${STATE_DIRECTORY} ${configArgs} run")
       ];
     };
-    wantedBy = [ "multi-user.target" ];
+    wantedBy = ["multi-user.target"];
+  };
+  systemd.services.console-blanking = mkDefault { # Let monitor become blank after 2min, and 3min inactive to poweroff
+    description = "Enable virtual console blanking and dpms off";
+    after = ["display-manager.service"];
+    environment = {TERM = "linux";};
+    serviceConfig = {
+      Type = "oneshot";
+      StandardOutput = "tty";
+      TTYPath = "/dev/console";
+      ExecStart = "${getExe' pkgs.util-linux "setterm"} --blank 2 --powerdown 3";
+    };
+    wantedBy = ["multi-user.target"];
   };
 }
