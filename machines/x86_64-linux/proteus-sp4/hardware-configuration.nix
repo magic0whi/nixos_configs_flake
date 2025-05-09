@@ -4,25 +4,51 @@
 {config, lib, pkgs, modulesPath, ...}: {
   imports = [(modulesPath + "/installer/scan/not-detected.nix")];
 
-  boot.initrd.availableKernelModules = [ "xhci_pci" "nvme" ];
-  boot.initrd.kernelModules = [ ];
+  boot.initrd.availableKernelModules = [ "xhci_pci" "nvme" "uas" "sd_mod" ];
+  boot.initrd.kernelModules = [];
   boot.kernelModules = [ "kvm-intel" ];
-  boot.extraModulePackages = [ ];
+  boot.extraModulePackages = [];
 
   fileSystems."/" =
-    { device = "/dev/disk/by-uuid/abc0ff2f-cb69-497b-8a7a-8db6f5757b8b";
-      fsType = "ext4";
+    { device = "/dev/disk/by-uuid/9de6d78b-8617-4aa3-b317-62d6312d8eea";
+      fsType = "btrfs";
+      options = [ "subvol=@" ];
+    };
+
+  boot.initrd.luks.devices."cryptroot".device = "/dev/disk/by-uuid/494c9374-0502-495a-a39d-4b8b1365dbd4";
+
+  fileSystems."/home" =
+    { device = "/dev/disk/by-uuid/9de6d78b-8617-4aa3-b317-62d6312d8eea";
+      fsType = "btrfs";
+      options = ["subvol=@home" "compress=zstd" "discard=async"];
+    };
+
+  fileSystems."/.snapshots" =
+    { device = "/dev/disk/by-uuid/9de6d78b-8617-4aa3-b317-62d6312d8eea";
+      fsType = "btrfs";
+      options = [ "subvol=@snapshots" "compress=zstd" "discard=async"];
+    };
+
+  fileSystems."/persistent" =
+    { device = "/dev/disk/by-uuid/9de6d78b-8617-4aa3-b317-62d6312d8eea";
+      fsType = "btrfs";
+      neededForBoot = true;
+      options = [ "subvol=@persistent" "compress=zstd" "discard=async"];
+    };
+
+  fileSystems."/nix" =
+    { device = "/dev/disk/by-uuid/9de6d78b-8617-4aa3-b317-62d6312d8eea";
+      fsType = "btrfs";
+      options = [ "subvol=@nix" "compress=zstd" "discard=async"];
     };
 
   fileSystems."/boot" =
-    { device = "/dev/disk/by-uuid/7C5D-157D";
+    { device = "/dev/disk/by-uuid/81EC-E52B";
       fsType = "vfat";
-      options = [ "fmask=0077" "dmask=0077" ];
+      options = [ "discard" "fmask=0077" "dmask=0077" ];
     };
 
-  swapDevices =
-    [ { device = "/dev/disk/by-uuid/c6289363-6f24-416a-94c3-81cd10d8045d"; }
-    ];
+  swapDevices = [ ];
 
   # Enables DHCP on each ethernet and wireless interface. In case of scripted networking
   # (the default) this is the recommended approach. When using systemd-networkd it's

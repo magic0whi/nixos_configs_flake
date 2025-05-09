@@ -26,7 +26,7 @@
       }).overrideAttrs (oldAttrs: { # Use VSCode Insiders to fix crash: https://github.com/NixOS/nixpkgs/issues/246509
         src = builtins.fetchTarball {
           url = "https://update.code.visualstudio.com/latest/linux-x64/insider";
-          sha256 = "1x3bakpn6h6nb2gwn698bwkgw8w4cqcxgq098rynrpphpy503sl8";
+          sha256 = "1mx36rn758wl5mcl3ryd5jqf8ls5an26j0i0g95ksb3hm2606k1m";
         };
         version = "latest";
       });
