@@ -80,7 +80,7 @@
   };
   # END ssh.nix
   # START i18n.nix
-  time.timeZone = mkDefault "Asia/Shanghai";
+  time.timeZone = mkDefault "Europe/London";
   # Select internationalisation properties.
   i18n.defaultLocale = mkDefault "en_US.UTF-8";
   # i18n.extraLocaleSettings = {
