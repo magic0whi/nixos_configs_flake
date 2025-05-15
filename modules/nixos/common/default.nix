@@ -1,42 +1,42 @@
 {mylib, myvars, lib, config, pkgs, ...}: with lib; {
   imports = mylib.scan_path ./.;
   system.stateVersion = mkDefault myvars.state_version;
-  environment.variables.EDITOR = lib.mkOverride 999 "hx";
+  environment.variables.EDITOR = mkOverride 999 "hx";
   # START boot_loader.nix
-  boot.loader.efi.canTouchEfiVariables = lib.mkDefault true; # Allow installation process to modify EFI boot variables
+  boot.loader.efi.canTouchEfiVariables = mkDefault true; # Allow installation process to modify EFI boot variables
   boot.loader.systemd-boot = {
-    enable = lib.mkDefault true;
-    configurationLimit = lib.mkDefault 4; # Limit the boot loader entries
-    consoleMode = lib.mkDefault "max";
+    enable = mkDefault true;
+    configurationLimit = mkDefault 4; # Limit the boot loader entries
+    consoleMode = mkDefault "max";
   };
   services = {
-    power-profiles-daemon.enable = lib.mkDefault true;
-    upower.enable = lib.mkDefault true;
+    power-profiles-daemon.enable = mkDefault true;
+    upower.enable = mkDefault true;
   };
   # END boot_loader.nix
   # START nix.nix
-  nixpkgs.config.allowUnfree = lib.mkDefault true; # Allow chrome, vscode to install
-  nix.package = lib.mkDefault pkgs.nixVersions.latest; # Use latest nix, default is pkgs.nix
+  nixpkgs.config.allowUnfree = mkDefault true; # Allow chrome, vscode to install
+  nix.package = mkDefault pkgs.nixVersions.latest; # Use latest nix, default is pkgs.nix
   nix.gc = {
-    automatic = lib.mkDefault true;
-    dates = lib.mkDefault "weekly";
-    options = lib.mkDefault "--delete-older-than 7d";
+    automatic = mkDefault true;
+    dates = mkDefault "weekly";
+    options = mkDefault "--delete-older-than 7d";
   };
-  nix.channel.enable = lib.mkDefault false; # remove nix-channel related tools & configs, use flakes instead.
+  nix.channel.enable = mkDefault false; # remove nix-channel related tools & configs, use flakes instead.
   nix.settings = {
     # Manual optimise storage: nix-store --optimise
     # https://nixos.org/manual/nix/stable/command-ref/conf-file.html#conf-auto-optimise-store
-    auto-optimise-store = lib.mkDefault true;
+    auto-optimise-store = mkDefault true;
     # enable flakes globally
-    experimental-features = lib.mkDefault ["nix-command" "flakes"];
+    experimental-features = mkDefault ["nix-command" "flakes"];
 
     # given the users in this list the right to specify additional substituters via:
     #    1. `nixConfig.substituers` in `flake.nix`
     #    2. command line args `--options substituers http://xxx`
-    trusted-users = lib.mkDefault [myvars.username];
+    trusted-users = mkDefault [myvars.username];
 
     # substituers that will be considered before the official ones(https://cache.nixos.org)
-    substituters = lib.mkDefault [
+    substituters = mkDefault [
       # cache mirror located in China
       # status: https://mirrors.ustc.edu.cn/status/
       # "https://mirrors.ustc.edu.cn/nix-channels/store"
@@ -51,11 +51,11 @@
       # "https://ryan4yin.cachix.org"
     ];
 
-    trusted-public-keys = lib.mkDefault [
+    trusted-public-keys = mkDefault [
       "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
       "ryan4yin.cachix.org-1:Gbk27ZU5AYpGS9i3ssoLlwdvMIh0NxG0w8it/cv9kbU="
     ];
-    builders-use-substitutes = lib.mkDefault true;
+    builders-use-substitutes = mkDefault true;
   };
 
   # nix.extraOptions = ''
@@ -64,7 +64,7 @@
   # END nix.nix
   # START ssh.nix
   programs.ssh = {
-    extraConfig = lib.mkDefault (''
+    extraConfig = mkDefault (''
       Compression yes
       ControlMaster auto
       ControlPath ~/.ssh/master-%r@%n:%p
@@ -72,17 +72,17 @@
       ServerAliveInterval 30
       ServerAliveCountMax 5
     '' + myvars.networking.ssh.extra_config);
-    knownHosts = lib.mkDefault myvars.networking.ssh.known_hosts;
+    knownHosts = mkDefault myvars.networking.ssh.known_hosts;
   };
   services.openssh = {
-    enable = lib.mkDefault true;
-    settings.PasswordAuthentication = lib.mkDefault false; # disable password login
+    enable = mkDefault true;
+    settings.PasswordAuthentication = mkDefault false; # disable password login
   };
   # END ssh.nix
   # START i18n.nix
-  time.timeZone = lib.mkDefault "Asia/Shanghai";
+  time.timeZone = mkDefault "Asia/Shanghai";
   # Select internationalisation properties.
-  i18n.defaultLocale = lib.mkDefault "en_US.UTF-8";
+  i18n.defaultLocale = mkDefault "en_US.UTF-8";
   # i18n.extraLocaleSettings = {
     # LC_ADDRESS = "zh_CN.UTF-8";
     # LC_IDENTIFICATION = "zh_CN.UTF-8";
@@ -96,10 +96,10 @@
   # };
   # END i18n.nix
   # START networking.nix
-  networking.useNetworkd = lib.mkDefault true;
-  networking.nftables.enable = lib.mkDefault true;
+  networking.useNetworkd = mkDefault true;
+  networking.nftables.enable = mkDefault true;
   networking.firewall = {
-    # enable = lib.mkDefault false;
+    # enable = mkDefault false;
     extraInputRules = ''
       ip saddr 192.168.15.0/24 accept comment "Allow from LAN"
       ip6 saddr { fe80::/16, fd66:06e5:aebe::/48 } accept comment "Allow from Link-Local / ULA-Prefix (IPv6)"
@@ -120,12 +120,12 @@
       oifname { tun0, "ve-*" } accept comment "Allow sing-box, systemd-nspawn container"
     '';
   };
-  networking.timeServers = lib.mkDefault [ # Or
+  networking.timeServers = mkDefault [ # Or
   # services.timesyncd.servers = [
     "ntp.aliyun.com" # Aliyun NTP Server
     "ntp.tencent.com" # Tencent NTP Server
   ];
-  services.resolved.enable = lib.mkDefault true;
+  services.resolved.enable = mkDefault true;
   # END networking.nix
   # START remote-building.nix
   #  NixOS's Configuration for Remote Building / Distributed Building
@@ -139,7 +139,7 @@
 
   # set local's max-job to 0 to force remote building(disable local building)
   # nix.settings.max-jobs = 0;
-  nix.distributedBuilds = lib.mkDefault true;
+  nix.distributedBuilds = mkDefault true;
   nix.buildMachines = let # TODO
     sshUser = myvars.username;
     # ssh key's path on local machine
@@ -192,13 +192,13 @@
     # }
   ];
   # optional, useful when the builder has a faster internet connection than yours
-  nix.extraOptions = lib.mkDefault ''
+  nix.extraOptions = mkDefault ''
     builders-use-substitutes = true
   '';
   # END remote-building.nix
   # START users-n-groups.nix
   programs.zsh = {
-    enable = lib.mkDefault true;
+    enable = mkDefault true;
     autosuggestions = {
       enable = true;
       highlightStyle = "fg=60";
@@ -288,14 +288,14 @@
   };
 
   users = {
-    defaultUserShell = lib.mkOverride 999 pkgs.zsh; # set users' default shell system-wide
-    mutableUsers = lib.mkDefault false; # Don't allow mutate users outside the config.
+    defaultUserShell = mkOverride 999 pkgs.zsh; # set users' default shell system-wide
+    mutableUsers = mkDefault false; # Don't allow mutate users outside the config.
     groups = {
-      "${myvars.username}" = {};
+      "${myvars.username}" = {gid = 1000;};
       docker = {};
     };
     users."${myvars.username}" = {
-      description = lib.mkDefault myvars.userfullname;
+      description = mkDefault myvars.userfullname;
       # Public Keys that can be used to login to all my PCs, Macbooks, and servers.
       #
       # Since its authority is so large, we must strengthen its security:
@@ -308,10 +308,11 @@
       #     ```
       #   2. Never leave the device and never sent over the network.
       # - Or just use hardware security keys like Yubikey/CanoKey.
-      openssh.authorizedKeys.keys = lib.mkDefault myvars.ssh_authorized_keys;
-      initialHashedPassword = lib.mkDefault myvars.initial_hashed_password;
-      home = lib.mkDefault "/home/${myvars.username}";
-      isNormalUser = lib.mkDefault true;
+      uid = 1000;
+      home = mkDefault "/home/${myvars.username}";
+      initialHashedPassword = mkDefault myvars.initial_hashed_password;
+      isNormalUser = mkDefault true;
+      openssh.authorizedKeys.keys = mkDefault myvars.ssh_authorized_keys;
       extraGroups = [
         myvars.username
         "docker"
@@ -324,16 +325,16 @@
     # root's ssh key are mainly used for remote deployment
     users.root = {
       # An example to prevent use the recursive attribute set
-      initialHashedPassword = lib.mkDefault config.users.users."${myvars.username}".initialHashedPassword;
-      openssh.authorizedKeys.keys = lib.mkDefault config.users.users."${myvars.username}".openssh.authorizedKeys.keys;
+      initialHashedPassword = mkDefault config.users.users."${myvars.username}".initialHashedPassword;
+      openssh.authorizedKeys.keys = mkDefault config.users.users."${myvars.username}".openssh.authorizedKeys.keys;
     };
   };
   # END users-n-groups.nix
   # START zram.nix
-  zramSwap.enable = lib.mkDefault true;
+  zramSwap.enable = mkDefault true;
   # END zram.nix
   # Add my self-signed CA certificate to the system-wide trust store.
-  security.pki.certificateFiles = lib.mkDefault [
+  security.pki.certificateFiles = mkDefault [
     (mylib.relative_to_root "custom_files/proteus_ca.pem")
   ];
   ## START fhs.nix
@@ -365,11 +366,11 @@
   #
   # You can overwrite `NIX_LD_LIBRARY_PATH` in the environment where you run the non-NixOS binaries to customize the
   # search path for shared libraries.
-  programs.nix-ld.enable = lib.mkDefault true;
-  programs.nix-ld.libraries = lib.mkDefault [pkgs.stdenv.cc.cc];
+  programs.nix-ld.enable = mkDefault true;
+  programs.nix-ld.libraries = mkDefault [pkgs.stdenv.cc.cc];
   ## END fhs.nix
-  services.sing-box.enable = lib.mkDefault true;
-  systemd.services.sing-box = lib.mkOverride 100 {
+  services.sing-box.enable = mkDefault true;
+  systemd.services.sing-box = mkOverride 100 {
     serviceConfig = {
       StateDirectory = "sing-box";
       StateDirectoryMode = "0700";

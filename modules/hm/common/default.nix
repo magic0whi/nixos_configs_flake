@@ -137,7 +137,8 @@
     # and records additional context for your commands.
     # Additionally, it provides optional and fully encrypted
     # synchronisation of your history between machines, via an Atuin server.
-    atuin.enable = lib.mkDefault true;
+    atuin.enable = mkDefault true;
+    atuin.settings.sync_address = mkDefault "https://proteusdesktop.tailba6c3f.ts.net:8888";
 
     # tmux = { # I use zellij instead
     #   enable = true;
