@@ -318,6 +318,7 @@
         "docker"
         "input"
         "libvirtd"
+        "network"
         "video"
         "wheel"
       ];

@@ -1,4 +1,5 @@
 {pkgs, ...}: {
+  home.packages = [pkgs.anki-bin];
   programs = {
     firefox.enable = true;
     google-chrome = { # https://github.com/nix-community/home-manager/blob/master/modules/programs/chromium.nix
