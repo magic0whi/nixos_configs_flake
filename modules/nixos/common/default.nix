@@ -398,4 +398,43 @@
     };
     wantedBy = ["multi-user.target"];
   };
+    ## START fonts.nix
+    fonts = { # all fonts are linked to /nix/var/nix/profiles/system/sw/share/X11/fonts
+      enableDefaultPackages = lib.mkOverride 999 false; # use fonts specified by user rather than default ones
+      fontDir.enable = lib.mkDefault true;
+      packages = with pkgs; [
+        noto-fonts noto-fonts-emoji noto-fonts-cjk-sans noto-fonts-cjk-serif
+        inter-nerdfont # NerdFont patch of the Inter font
+        # nerdfonts
+        # https://github.com/NixOS/nixpkgs/blob/nixos-unstable-small/pkgs/data/fonts/nerd-fonts/manifests/fonts.json
+        nerd-fonts.symbols-only # symbols icon only
+        nerd-fonts.iosevka
+      ];
+      fontconfig = {
+        subpixel.rgba = lib.mkDefault "rgb";
+        defaultFonts = {
+          serif = lib.mkDefault ["Noto Serif" "FZYaSongS-R-GB" "Noto Serif CJK SC" "Noto Serif CJK TC" "Noto Serif CJK JP"];
+          sansSerif = lib.mkDefault ["Inter Nerd Font" "Noto Sans" "Noto Sans CJK SC" "Noto Sans CJK TC" "Noto Sans CJK JP"];
+          monospace = lib.mkDefault ["Iosevka Nerd Font Mono" "Noto Sans Mono" "Noto Sans Mono CJK SC" "Noto Sans Mono CJK TC" "Noto Sans Mono CJK JP"];
+          emoji = lib.mkDefault ["Noto Color Emoji"];
+        };
+      };
+    };
+    services.kmscon = { # https://wiki.archlinux.org/title/KMSCON
+      # Use kmscon as the virtual console instead of gettys.
+      # kmscon is a kms/dri-based userspace virtual terminal implementation.
+      # It supports a richer feature set than the standard linux console VT,
+      # including full unicode support, and when the video card supports drm should be much faster.
+      enable = lib.mkDefault true;
+      fonts = [
+        {
+          name = "Iosevka Nerd Font Mono";
+          package = pkgs.nerd-fonts.iosevka;
+        }
+      ];
+      extraOptions = lib.mkDefault "--term xterm-256color";
+      hwRender = lib.mkDefault true; # Whether to use 3D hardware acceleration to render the console.
+      extraConfig = "font-size=12";
+    };
+    ## END fonts.nix
 }

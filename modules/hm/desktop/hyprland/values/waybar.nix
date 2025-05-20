@@ -54,6 +54,7 @@
           "class<com.obsproject.Studio>" = "&#xf0210;"; # fan
           "class<firefox>" = "&#xf0239;"; # firefox
           "class<gamescope>" = "&#xf0297;"; # gamepad_variant
+          "class<google-chrome>" = "&#xf268;"; # nf-fa-chrome
           "class<hyprland-share-picker>" = "&#xf0496;"; # share
           "class<imv>" = "&#xf02e9;"; # image
           "class<localsend>" = "&#xf04b8;"; # soccer
