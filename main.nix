@@ -18,5 +18,8 @@ in {
   packages = lib.genAttrs
     (builtins.attrNames nixos_systems)
     (system: nixos_systems.${system}.packages or {});
-  colmenaHive = inputs.colmena.lib.makeHive (lib.attrsets.mergeAttrsList (map (i: i.colmena or {}) nixos_systems_values));
+  colmenaHive = inputs.colmena.lib.makeHive (lib.recursiveUpdate
+    {meta.nixpkgs = import inputs.nixpkgs {system = "x86_64-linux";};} # meta.nixpkgs is required
+    (lib.attrsets.mergeAttrsList (map (i: i.colmena or {}) nixos_systems_values))
+  );
 }
