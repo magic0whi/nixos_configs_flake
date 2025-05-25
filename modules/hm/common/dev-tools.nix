@@ -1,4 +1,4 @@
-{pkgs, ...}: {
+{pkgs, colmena, ...}: {
   #############################################################
   #
   #  Basic settings for development environment
@@ -10,7 +10,7 @@
   #
   #############################################################
   home.packages = with pkgs; [
-    colmena # nixos's remote deployment tool
+    colmena.packages.${pkgs.system}.colmena # nixos's remote deployment tool
 
     # db related
     # mycli

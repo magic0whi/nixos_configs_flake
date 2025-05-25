@@ -2,7 +2,7 @@
   name = "proteus-sp4";
   nixos_modules = map mylib.relative_to_root [
     "modules/secrets"
-    "overlays/nixpaks"
+    "overlays"
     "modules/nixos/common"
     "modules/nixos/desktop"
   ];

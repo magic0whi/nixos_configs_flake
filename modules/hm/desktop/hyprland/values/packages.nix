@@ -51,8 +51,6 @@
       on-button-middle = "none";
       on-button-right = "dismiss-all";
       on-notify = "exec mpv ${pkgs.sound-theme-freedesktop}/share/sounds/freedesktop/stereo/message.oga";
-    };
-    criteria = {
       "urgency=low" = {
         border-color = surface0;
         default-timeout = 2000;
