@@ -17,7 +17,7 @@
   programs.home-manager.enable = true; # Let Home Manager install and manage itself.
   home.packages = with pkgs; [
     # Misc
-    tldr
+    tlrc # tldr written in Rust
     cowsay
     gnumake
 
@@ -65,7 +65,7 @@
     libnotify # notify-send
     wireguard-tools # manage wireguard vpn manually, via wg-quick
 
-    ventoy # create bootable usb
+    # ventoy # create bootable usb
     virt-viewer # vnc connect to VM, used by kubevirt
   ];
 
@@ -227,6 +227,7 @@
           space = mkDefault "all";
           tab = mkDefault "all";
           nbsp = mkDefault "all";
+          nnbsp = mkDefault "all";
           newline = mkDefault "none";
         };
       };
@@ -238,36 +239,36 @@
     languages = {
       language = [{
         name = "cpp";
-        auto-format = true;
+        auto-format = mkDefault true;
       }{
         name = "markdown";
-        language-servers = ["marksman" "ltex"];
+        language-servers = mkDefault ["marksman" "ltex"];
       }{
         name = "latex";
-        language-servers = ["texlab" "ltex"];
+        language-servers = mkDefault ["texlab" "ltex"];
       }];
       language-server = {
         ltex = {
-          command = "ltex-ls";
+          command = mkDefault "ltex-ls";
           config.ltex = {
-            language = "en-US";
-            dictionary = { "en-US" = ["Gamescope" "MangoHud" "keyring"]; };
+            language = mkDefault "en-US";
+            dictionary = { "en-US" = ["Gamescope" "MangoHud" "keyring"]; }; # TODO separate
           };
         };
         texlab.config.texlab = {
           chktex = {
-            onOpenAndSave = true;
-            onEdit = true;
+            onOpenAndSave = mkDefault true;
+            onEdit = mkDefault true;
           };
           forwardSearch = {
-            executable = "zathura";
-            args = ["--synctex-forward" "%l:1:%f" "%p"];
+            executable = mkDefault "zathura";
+            args = mkDefault ["--synctex-forward" "%l:1:%f" "%p"];
           };
           build = {
-            executable = "latexmk";
-            args = ["-cd" "-pdflua" "-halt-on-error" "-interaction=nonstopmode" "-synctex=1" "%f"];
-            onSave = true;
-            forwardSearchAfter = true;
+            executable = mkDefault "latexmk";
+            args = mkDefault ["-cd" "-pdflua" "-halt-on-error" "-interaction=nonstopmode" "-synctex=1" "%f"];
+            onSave = mkDefault true;
+            forwardSearchAfter = mkDefault true;
           };
         };
       };
@@ -275,7 +276,7 @@
   };
   programs.zathura = {
     enable = mkDefault true;
-    options.selection-clipboard = "clipboard";
+    options.selection-clipboard = mkDefault "clipboard";
   };
   ## END helix.nix
   ## START neovim.nix

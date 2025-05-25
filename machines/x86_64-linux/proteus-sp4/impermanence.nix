@@ -1,4 +1,4 @@
-{impermanence, pkgs, myvars, ...}: {
+{impermanence, pkgs, myvars, ...}: { # Disable if generating bootable iso files
   imports = [impermanence.nixosModules.impermanence];
   environment.systemPackages = [
     pkgs.ncdu # `sudo ncdu -x /`

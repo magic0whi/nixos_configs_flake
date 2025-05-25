@@ -437,4 +437,33 @@
       extraConfig = "font-size=12";
     };
     ## END fonts.nix
+    ## START sssd.nix
+    security.sudo.package = pkgs.sudo.override { withSssd = true; };
+    system.nssDatabases.sudoers = ["sss"]; # Use LDAP to distribute configuration of sudo as well
+    services.sssd = {
+      enable = true;
+      config = ''
+      [sssd]
+      config_file_version = 2
+      services = nss, pam, sudo
+      domains = LDAP
+
+      [domain/LDAP]
+      cache_credentials = true
+      entry_cache_timeout = 600
+      enumerate = true
+
+      id_provider = ldap
+      auth_provider = ldap
+      chpass_provider = ldap
+
+      ldap_uri = ldaps://proteusdesktop.tailba6c3f.ts.net:636
+      ldap_search_base = dc=tailba6c3f,dc=ts,dc=net
+      ldap_sudo_search_base = ou=Sudoers,dc=tailba6c3f,dc=ts,dc=net
+      ldap_tls_reqcert = demand
+      ldap_network_timeout = 2
+      ldap_schema = rfc2307bis
+      '';
+    };
+    ## END sssd.nix
 }

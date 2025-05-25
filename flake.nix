@@ -37,6 +37,11 @@
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.home-manager.follows = "home-manager";
     };
+    colmena = {
+      url = "github:zhaofengli/colmena";
+      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.flake-compat.follows = "lanzaboote/flake-compat";
+    };
     # TODO
     # my private secrets, it's a private repository, you need to replace it with your own. TODO
     # use ssh protocol to authenticate via ssh-agent/ssh-key, and shallow clone to save time
