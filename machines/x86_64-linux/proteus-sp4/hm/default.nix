@@ -20,6 +20,10 @@ in {
         ",switch:on:Lid Switch,exec,[ $(hyprctl monitors -j | jq '.[].name' | wc -w) -ne 1 ] && hyprctl keyword monitor \"${main_monitor},disable\"" # Going to dock mode if has external monitor connected
         ",switch:off:Lid Switch,exec,hyprctl keyword monitor \"${main_monitor},${modeline}\"" # Restore internal monitor
       ];
+      device = {
+        name = "microsoft-surface-type-cover-touchpad";
+        sensitivity = 0.3;
+      };
     };
   };
   # modules.editors.emacs.enable = true;
