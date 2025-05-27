@@ -47,13 +47,14 @@
       "https://mirrors.tuna.tsinghua.edu.cn/nix-channels/store"
 
       "https://nix-community.cachix.org"
-      # my own cache server, currently not used.
-      # "https://ryan4yin.cachix.org"
+      # "https://ryan4yin.cachix.org" # my own cache server, currently not used.
+      "https://colmena.cachix.org/"
     ];
 
     trusted-public-keys = mkDefault [
       "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
-      "ryan4yin.cachix.org-1:Gbk27ZU5AYpGS9i3ssoLlwdvMIh0NxG0w8it/cv9kbU="
+      # "ryan4yin.cachix.org-1:Gbk27ZU5AYpGS9i3ssoLlwdvMIh0NxG0w8it/cv9kbU="
+      "colmena.cachix.org-1:7BzpDnjjH8ki2CT3f6GdOk7QAzPOl+1t3LvTLXqYcSg="
     ];
     builders-use-substitutes = mkDefault true;
   };

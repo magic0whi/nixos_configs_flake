@@ -1,6 +1,6 @@
 {myvars, lib, config, ...}: with lib; {
   # xdg.configFile."waybar/catppuccin.css".source = "${myvars.catppuccin}/waybar/${myvars.catppuccin_variant}.css";
-  systemd.user.services.waybar.Service.RestartSec = mkIf config.programs.waybar.enable (mkDefault 3);
+  systemd.user.services.waybar.Service.RestartSec = mkIf config.programs.waybar.enable (mkDefault "3.01s");
   programs.waybar = {
     enable = mkDefault true;
     systemd.enable = mkDefault true;
