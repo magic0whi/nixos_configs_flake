@@ -39,6 +39,24 @@ in {
       }
     ]);
   };
+  gen_darwin_system_args = {name, mylib, myvars, darwin_modules, hm_modules, machine_path}: let
+    inherit (inputs) home-manager;
+    specialArgs = inputs // {inherit mylib myvars;};
+  in {
+    inherit system specialArgs;
+    modules = darwin_modules ++ [
+      {imports = mylib.scan_path machine_path;}
+    ] ++ (lib.optionals ((lib.lists.length hm_modules) > 0) [
+      home-manager.nixosModules.home-manager {
+        home-manager.backupFileExtension = "home-manager.backup";
+        home-manager.extraSpecialArgs = specialArgs;
+        home-manager.useGlobalPkgs = true;
+        home-manager.useUserPackages = true;
+        home-manager.users."${myvars.username}".imports = hm_modules ++
+          [(machine_path + "/hm")];
+      }
+    ]);
+  };
   colmena_system = {
     tags ? [],
     ssh_user ? "root",

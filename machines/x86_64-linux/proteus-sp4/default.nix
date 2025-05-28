@@ -1,5 +1,5 @@
 {inputs, mylib, myvars, system, ...}: let
-  name = "proteus-sp4";
+  name = baseNameOf ./.;
   nixos_modules = map mylib.relative_to_root [
     "modules/secrets"
     "overlays"
@@ -15,7 +15,7 @@
     machine_path = ./.;
   };
 in {
-  debug_attrs = {inherit nixos_modules hm_modules nixos_system_args;};
+  debug_attrs = {inherit name nixos_modules hm_modules nixos_system_args;};
   nixos_configurations.${name} = inputs.nixpkgs.lib.nixosSystem nixos_system_args;
   # generate iso image
   packages.${name} = inputs.self.nixosConfigurations.${name}.config.formats.iso;

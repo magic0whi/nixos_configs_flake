@@ -250,6 +250,26 @@
         "type": "github"
       }
     },
+    "nix-darwin": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1748352827,
+        "narHash": "sha256-sNUUP6qxGkK9hXgJ+p362dtWLgnIWwOCmiq72LAWtYo=",
+        "owner": "nix-darwin",
+        "repo": "nix-darwin",
+        "rev": "44a7d0e687a87b73facfe94fba78d323a6686a90",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nix-darwin",
+        "repo": "nix-darwin",
+        "type": "github"
+      }
+    },
     "nix-github-actions": {
       "inputs": {
         "nixpkgs": [
@@ -398,6 +418,7 @@
         "home-manager": "home-manager",
         "impermanence": "impermanence",
         "lanzaboote": "lanzaboote",
+        "nix-darwin": "nix-darwin",
         "nixos-generators": "nixos-generators",
         "nixpak": "nixpak",
         "nixpkgs": "nixpkgs",
