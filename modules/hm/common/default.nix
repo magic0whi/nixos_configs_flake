@@ -325,7 +325,7 @@
     pinentry.package = mkDefault pkgs.pinentry-curses;
     enableSshSupport = mkDefault true;
     defaultCacheTtl = mkDefault (4 * 60 * 60); # 4 hours
-    sshKeys = mkDefault myvars.gpg2ssh_keygrip;
+    sshKeys = mkDefault myvars.gpg2ssh_keygrip; # Run 'gpg --export-ssh-key gpg-key!' to export public key
   };
   ## END gpg.nix
   systemd.user.services."${myvars.username}".environment.STNODEFAULTFOLDER = lib.mkDefault "true"; # Don't create default ~/Sync folder
