@@ -51,8 +51,6 @@ in {
     };
   };
   programs.gpg = {
-    # mutableTrust = true;
-    # mutableKeys = true;
     publicKeys = [ # https://www.gnupg.org/gph/en/manual/x334.html
       {
         source = mylib.relative_to_root "custom_files/proteus.pub.asc";
