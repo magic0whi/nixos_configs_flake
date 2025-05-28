@@ -38,16 +38,16 @@
   in with cuppuccin-mocha; {
     enable = true; # mako is trigged by dbus
     settings = {
-      maxHistory = 100;
-      padding = "5";
-      borderRadius = 8;
-      maxIconSize = 48;
-      defaultTimeout = 5000;
+      max-history = 100;
+      padding = 5;
+      border-radius = 8;
+      max-icon-size = 48;
+      default-timeout = 5000;
       layer = "overlay";
-      backgroundColor = base;
-      textColor = text;
-      borderColor = surface0;
-      progressColor = "over ${blue}";
+      background-color = base;
+      text-color = text;
+      border-color = surface0;
+      progress-color = "over ${blue}";
       on-button-middle = "none";
       on-button-right = "dismiss-all";
       on-notify = "exec mpv ${pkgs.sound-theme-freedesktop}/share/sounds/freedesktop/stereo/message.oga";
