@@ -1,5 +1,15 @@
-{pkgs, ...}: {
-  home.packages = [pkgs.anki-bin];
+{pkgs, lib, ...}: {
+  home.packages = [(pkgs.anki-bin.overrideAttrs (_: prev: {
+    # TIPS: 'builtins.trace <string> {}' is useful for debug
+    buildCommand = lib.strings.concatLines [ # Add environment 'QT_IM_MODULE=fcitx' for anki
+      prev.buildCommand
+      ''unpacked=$(grep -Po '(?<=cp -R )\/nix\/store\/\S+(?=\/share\/applications)' <<< '${prev.buildCommand}')''
+      ''perm_bak=$(stat -c '%a' $out/share/applications/anki.desktop)''
+      ''chmod 644 $out/share/applications/anki.desktop''
+      ''sed 's/^Exec=\(anki\)/Exec=env QT_IM_MODULE=fcitx \1/' $unpacked/share/applications/anki.desktop > $out/share/applications/anki.desktop''
+      ''chmod $perm_bak $out/share/applications/anki.desktop''
+    ];
+  }))];
   services.psd.enable = true;
   programs = {
     firefox.enable = true;
