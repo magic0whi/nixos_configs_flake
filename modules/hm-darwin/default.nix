@@ -1,4 +1,4 @@
-{myvars, mylib, lib, pkgs, ...}: with lib; {
+{myvars, mylib, lib, pkgs, config, ...}: with lib; {
   home.stateVersion = mkDefault myvars.state_version;
   programs.home-manager.enable = mkDefault true;
   imports = mylib.scan_path ./.;
@@ -240,6 +240,10 @@
       s2k-count = mkDefault "65011712"; # Specify how many times the passphrases mangling for symmetric encryption is repeated
     };
   };
+  # I cannot bootout the 'system/com.openssh.ssh-agent', as it seizes the '$SSH_AUTH_SOCK'
+  home.sessionVariablesExtra = ''
+    export SSH_AUTH_SOCK="$(${config.programs.gpg.package}/bin/gpgconf --list-dirs agent-ssh-socket)"
+  '';
   services.gpg-agent = { # gpg agent with pinentry-qt
     enable = mkDefault true;
     pinentry.package = mkDefault pkgs.pinentry-curses;
