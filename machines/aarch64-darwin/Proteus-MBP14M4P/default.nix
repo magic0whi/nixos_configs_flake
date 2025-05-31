@@ -5,6 +5,7 @@
     "modules/darwin"
   ];
   hm_modules = map mylib.relative_to_root [
+    "modules/hm-darwin"
   ];
   darwin_system_args = mylib.gen_darwin_system_args {
     inherit name mylib myvars darwin_modules hm_modules;

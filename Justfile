@@ -4,9 +4,9 @@
 # To use this justfile, you need to enter a shell with just & nushell installed:
 # 
 #   nix shell nixpkgs#just nixpkgs#nushell
-set shell := ["nu", "-c"]
+set shell := ["zsh", "-c"]
 
-utils_nu := absolute_path("utils.nu")
+utils := absolute_path("utils.sh")
 
 ############################################################################
 #
@@ -104,14 +104,14 @@ repair-store *paths:
 [group('desktop')]
 sp4 mode="default":
   #!/usr/bin/env nu
-  use {{utils_nu}} *;
+  use {{utils}} *;
   nixos-switch proteus-sp4 {{mode}}
 
 [linux]
 [group('desktop')]
 s-hypr mode="default":
   #!/usr/bin/env nu
-  use {{utils_nu}} *;
+  use {{utils}} *;
   nixos-switch shoukei-hyprland {{mode}}
 
 ############################################################################
@@ -130,7 +130,7 @@ darwin-set-proxy:
 [group('desktop')]
 darwin-rollback:
   #!/usr/bin/env nu
-  use {{utils_nu}} *;
+  use {{utils}} *;
   darwin-rollback
 
 # Deploy to harmonica(macOS host)
@@ -138,18 +138,18 @@ darwin-rollback:
 [group('desktop')]
 ha mode="default":
   #!/usr/bin/env nu
-  use {{utils_nu}} *;
+  use {{utils}} *;
   darwin-build "harmonica" {{mode}};
   darwin-switch "harmonica" {{mode}}
 
-# Depoly to fern(macOS host)
+# Depoly to Proteus-MBP14M4P(macOS host)
 [macos]
 [group('desktop')]
-fe mode="default": 
-  #!/usr/bin/env nu
-  use {{utils_nu}} *;
-  darwin-build "fern" {{mode}};
-  darwin-switch "fern" {{mode}}
+proteus-mbp mode="default": 
+  #!/usr/bin/env bash
+  . {{utils}}
+  darwin-build "Proteus-MBP14M4P" {{mode}};
+  darwin-switch "Proteus-MBP14M4P" {{mode}}
 
 # Reset launchpad to force it to reindex Applications
 [macos]
@@ -174,7 +174,7 @@ col tag:
 [group('homelab')]
 local name mode="default":
   #!/usr/bin/env nu
-  use {{utils_nu}} *;
+  use {{utils}} *;
   nixos-switch {{name}} {{mode}}
 
 # Build and upload a vm image
@@ -182,7 +182,7 @@ local name mode="default":
 [group('homelab')]
 upload-vm name mode="default":
   #!/usr/bin/env nu
-  use {{utils_nu}} *;
+  use {{utils}} *;
   upload-vm {{name}} {{mode}}
 
 # Deploy all the KubeVirt nodes(Physical machines running KubeVirt)
@@ -200,7 +200,7 @@ shoryu:
 [group('homelab')]
 shoryu-local mode="default":
   #!/usr/bin/env nu
-  use {{utils_nu}} *; 
+  use {{utils}} *; 
   nixos-switch kubevirt-shoryu {{mode}}
 
 [linux]
@@ -212,7 +212,7 @@ shushou:
 [group('homelab')]
 shushou-local mode="default":
   #!/usr/bin/env nu
-  use {{utils_nu}} *; 
+  use {{utils}} *; 
   nixos-switch kubevirt-shushou {{mode}}
 
 [linux]
@@ -224,7 +224,7 @@ youko:
 [group('homelab')]
 youko-local mode="default":
   #!/usr/bin/env nu
-  use {{utils_nu}} *; 
+  use {{utils}} *; 
   nixos-switch kubevirt-youko {{mode}}
 
 ############################################################################
@@ -238,7 +238,7 @@ youko-local mode="default":
 [group('homelab')]
 upload-idols mode="default":
   #!/usr/bin/env nu
-  use {{utils_nu}} *; 
+  use {{utils}} *; 
   upload-vm aquamarine {{mode}}
   upload-vm ruby {{mode}}
   upload-vm kana {{mode}}
@@ -252,7 +252,7 @@ aqua:
 [group('homelab')]
 aqua-local mode="default":
   #!/usr/bin/env nu
-  use {{utils_nu}} *; 
+  use {{utils}} *; 
   nixos-switch aquamarine {{mode}}
 
 [linux]
@@ -264,7 +264,7 @@ ruby:
 [group('homelab')]
 ruby-local mode="default":
   #!/usr/bin/env nu
-  use {{utils_nu}} *; 
+  use {{utils}} *; 
   nixos-switch ruby {{mode}}
 
 [linux]
@@ -276,7 +276,7 @@ kana:
 [group('homelab')]
 kana-local mode="default":
   #!/usr/bin/env nu
-  use {{utils_nu}} *; 
+  use {{utils}} *; 
   nixos-switch kana {{mode}}
 
 ############################################################################
@@ -290,7 +290,7 @@ kana-local mode="default":
 [group('homelab')]
 upload-k3s-prod mode="default":
   #!/usr/bin/env nu
-  use {{utils_nu}} *; 
+  use {{utils}} *; 
   upload-vm k3s-prod-1-master-1 {{mode}}; 
   upload-vm k3s-prod-1-master-2 {{mode}}; 
   upload-vm k3s-prod-1-master-3 {{mode}}; 
@@ -302,7 +302,7 @@ upload-k3s-prod mode="default":
 [group('homelab')]
 upload-k3s-test mode="default":
   #!/usr/bin/env nu
-  use {{utils_nu}} *; 
+  use {{utils}} *; 
   upload-vm k3s-test-1-master-1 {{mode}}; 
   upload-vm k3s-test-1-master-2 {{mode}}; 
   upload-vm k3s-test-1-master-3 {{mode}};

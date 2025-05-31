@@ -43,7 +43,7 @@
     # conda is not available for MacOS
     # conda
 
-    nil
+    # nil
     # android-tools
   ];
   # programs = {

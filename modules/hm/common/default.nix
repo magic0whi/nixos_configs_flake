@@ -1,20 +1,15 @@
 {lib, myvars, mylib, pkgs, ...}: with lib; {
   imports = mylib.scan_path ./.;
-  home = { # Home Manager needs a bit of information about you and the paths it should manage.
-    inherit (myvars) username;
-    homeDirectory = mkDefault "/home/${myvars.username}";
-
-    # This value determines the Home Manager release that your
-    # configuration is compatible with. This helps avoid breakage
-    # when a new Home Manager release introduces backwards
-    # incompatible changes.
-    #
-    # You can update Home Manager without changing this value. See
-    # the Home Manager release notes for a list of state version
-    # changes in each release.
-    stateVersion = mkDefault myvars.state_version;
-  };
-  programs.home-manager.enable = true; # Let Home Manager install and manage itself.
+  # This value determines the Home Manager release that your
+  # configuration is compatible with. This helps avoid breakage
+  # when a new Home Manager release introduces backwards
+  # incompatible changes.
+  #
+  # You can update Home Manager without changing this value. See
+  # the Home Manager release notes for a list of state version
+  # changes in each release.
+  home.stateVersion = mkDefault myvars.state_version;
+  programs.home-manager.enable = mkDefault true; # Let Home Manager install and manage itself.
   home.packages = with pkgs; [
     # Misc
     tlrc # tldr written in Rust
@@ -69,12 +64,12 @@
     virt-viewer # vnc connect to VM, used by kubevirt
   ];
 
-  programs = { # A modern replacement for ‘ls’, useful in bash/zsh prompt, but not in nushell.
-    eza = {
+  programs = {
+    eza = { # A modern replacement for ‘ls’, useful in bash/zsh prompt, but not in nushell
       enable = mkDefault true;
       enableNushellIntegration = mkDefault false; # do not enable aliases in nushell!
       git = mkDefault true;
-      icons = lib.mkDefault "auto";
+      icons = mkDefault "auto";
     };
     bat = { # a cat(1)-like with syntax highlighting and Git integration.
       enable = lib.mkDefault true;
@@ -91,11 +86,10 @@
       };
     };
 
-    # A command-line fuzzy finder
-    fzf = { # Interactively filter its input using fuzzy searching, not limit to filenames.
-      enable = lib.mkDefault true;
+    fzf = { # A command-line fuzzy finder.Interactively filter its input using fuzzy searching, not limit to filenames.
+      enable = mkDefault true;
       defaultOptions = ["-m"];
-      defaultCommand = lib.mkDefault "rg --files"; # Using ripgrep in fzf
+      defaultCommand = mkDefault "rg --files"; # Using ripgrep in fzf
       # https://github.com/catppuccin/fzf
       # catppuccin-mocha
       colors = {
@@ -131,7 +125,7 @@
     #   zi foo             # cd with interactive selection (using fzf)
     #
     #   z foo<SPACE><TAB>  # show interactive completions (zoxide v0.8.0+, bash 4.4+/fish/zsh only)
-    zoxide.enable = lib.mkDefault true;
+    zoxide.enable = mkDefault true;
 
     # Atuin replaces your existing shell history with a SQLite database,
     # and records additional context for your commands.
@@ -159,12 +153,12 @@
   ## END btop.nix
   ## START yazi.nix
   programs.yazi = { # terminal file manager
-    enable = lib.mkDefault true;
+    enable = mkDefault true;
     # Changing working directory when exiting Yazi
     settings = {
       manager = {
-        show_hidden = lib.mkDefault true;
-        sort_dir_first = lib.mkDefault true;
+        show_hidden = mkDefault true;
+        sort_dir_first = mkDefault true;
       };
     };
   };
@@ -172,30 +166,30 @@
   ## END yazi.nix
   ## START starship.nix
   programs.starship = {
-    enable = lib.mkDefault true;
+    enable = mkDefault true;
     settings = {
-      add_newline = lib.mkDefault false;
-      line_break.disabled = lib.mkDefault true;
-      status.disabled = lib.mkDefault false;
-      character.success_symbol = lib.mkDefault "[➜ ](bold green)";
-      character.error_symbol = lib.mkDefault "[✗ ](bold red)";
-      aws.disabled = lib.mkDefault true;
-      aws.symbol = lib.mkDefault "🅰 ";
+      add_newline = mkDefault false;
+      line_break.disabled = mkDefault true;
+      status.disabled = mkDefault false;
+      character.success_symbol = mkDefault "[➜ ](bold green)";
+      character.error_symbol = mkDefault "[✗ ](bold red)";
+      aws.disabled = mkDefault true;
+      aws.symbol = mkDefault "🅰 ";
       gcloud = {
-        disabled = lib.mkDefault true;
+        disabled = mkDefault true;
         # do not show the account/project's info
         # to avoid the leak of sensitive information when sharing the terminal
-        format = lib.mkDefault "on [$symbol$active(\($region\))]($style) ";
-        symbol = lib.mkDefault "🅶 ️";
+        format = mkDefault "on [$symbol$active(\($region\))]($style) ";
+        symbol = mkDefault "🅶 ️";
       };
-      hostname.ssh_only = lib.mkDefault false;
-      hostname.format = lib.mkDefault "[$ssh_symbol$hostname]($style) ";
-      time.disabled = lib.mkDefault false;
-      time.format = lib.mkDefault "[$time]($style)";
-      right_format = lib.mkDefault "[$status$time]($style)";
-      username.format = lib.mkDefault "[$user]($style) @ ";
-      username.show_always = lib.mkDefault true;
-      palette = lib.mkDefault "catppuccin_mocha";
+      hostname.ssh_only = mkDefault false;
+      hostname.format = mkDefault "[$ssh_symbol$hostname]($style) ";
+      time.disabled = mkDefault false;
+      time.format = mkDefault "[$time]($style)";
+      right_format = mkDefault "[$status$time]($style)";
+      username.format = mkDefault "[$user]($style) @ ";
+      username.show_always = mkDefault true;
+      palette = mkDefault "catppuccin_mocha";
     }
     // builtins.fromTOML (builtins.readFile "${myvars.catppuccin}/starship/${myvars.catppuccin_variant}.toml");
   };
@@ -205,7 +199,7 @@
   programs.helix = {
     enable = mkDefault true;
     defaultEditor = mkDefault true;
-    extraPackages = with pkgs; [marksman ltex-ls texlab nodePackages.vscode-json-languageserver];
+    extraPackages = with pkgs; [nil marksman ltex-ls texlab nodePackages.vscode-json-languageserver];
     settings = {
       theme = mkDefault "gruvbox";
       editor = {

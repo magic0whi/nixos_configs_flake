@@ -201,9 +201,9 @@
   programs.zsh = {
     enable = mkDefault true;
     autosuggestions = {
-      enable = true;
-      highlightStyle = "fg=60";
-      strategy = ["match_prev_cmd" "history" "completion"];
+      enable = mkDefault true;
+      highlightStyle = mkDefault "fg=60";
+      strategy = mkDefault ["match_prev_cmd" "history" "completion"];
     };
     syntaxHighlighting.enable = true;
     interactiveShellInit = ''
