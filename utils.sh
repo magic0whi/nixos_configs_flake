@@ -1,4 +1,20 @@
 #!/usr/bin/env bash
+# Function: nixos-switch
+# Args:
+#   $1: name (string)
+#   $2: mode (string)
+nixos-switch() {
+  local name="$1"
+  local mode="$2"
+  if [[ "$mode" == "debug" ]]; then
+    # show details via nix-output-monitor
+    nom build ".#nixosConfigurations.$name.config.system.build.toplevel" --show-trace --verbose
+    nixos-rebuild switch --use-remote-sudo --flake ".#$name" --show-trace --verbose
+  else
+    nixos-rebuild switch --use-remote-sudo --flake ".#$name"
+  fi
+}
+
 # Function: darwin-build
 # Args:
 #   $1: name (string)
