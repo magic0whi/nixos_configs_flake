@@ -18,6 +18,7 @@
   # xdg.configFile."cava/config".text = "# Custom cava config\n"
   #   + builtins.readFile "${nur-ryan4yin.packages.${pkgs.system}.catppuccin-cava}/mocha.cava";
   services.playerctld.enable = true;
+  home.shellAliases = {"mpv" = "mpv --player-operation-mode=pseudo-gui";};
   programs.mpv = with pkgs; {
     enable = mkDefault true;
     defaultProfiles = ["common" "gpu-hq"];

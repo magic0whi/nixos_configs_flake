@@ -22,7 +22,7 @@
       menuExtraClock.ShowSeconds = mkDefault true;
       dock = {
         autohide = mkDefault true;
-        show-recents = mkDefault true; # do not show recent apps in dock
+        show-recents = mkDefault false; # do not show recent apps in dock
         mru-spaces = mkDefault false; # do not automatically rearrange spaces based on most recent use
         expose-group-apps = mkDefault true; # Group windows by apps in Mission Control
         # Hot corner action for corners, see https://github.com/nix-darwin/nix-darwin/blob/44a7d0e687a87b73facfe94fba78d323a6686a90/modules/system/defaults/dock.nix#L308

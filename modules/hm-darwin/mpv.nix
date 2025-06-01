@@ -1,8 +1,9 @@
-{pkgs, ...}: {
+{pkgs, lib, ...}: with lib; {
+  home.shellAliases = {"mpv" = "mpv --player-operation-mode=pseudo-gui";};
   programs.mpv = with pkgs; {
     enable = mkDefault true;
+    # package = pkgs.emptyDirectory;
     defaultProfiles = ["common" "gpu-hq"];
-    scripts = [mpvScripts.mpris];
     config = {
       # log-file = "${config.xdg.cacheHome}";
 

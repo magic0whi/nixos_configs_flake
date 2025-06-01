@@ -15,7 +15,6 @@
     Ci = "wl-copy";
     Co = "wl-paste";
     Coimg = "Co --type image";
-    mpv = "mpv --player-operation-mode=pseudo-gui";
     cpr = "rsync --archive -hh --partial --info=stats1,progress2 --modify-window=1 \"$@\"";
     mvr = "rsync --archive -hh --partial --info=stats1,progress2 --modify-window=1 --remove-source-files \"$@\"";
     diff = "command diff --text --unified --new-file --color=auto \"$@\"";
