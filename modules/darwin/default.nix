@@ -80,13 +80,18 @@ in {
     iproute2mac
     git
     git-lfs
+    git-trim
     tree
     helix
     gnugrep
     gnutar
+    curl
+    aria2
 
-    utm # darwin only
     winetricks
+
+    utm # Virtual machine manager for Apple platforms
+    m-cli # Swiss Army Knife for macOS, https://github.com/rgcr/m-cli
   ];
   environment.variables = {
     TERMINFO_DIRS = (map (path: path + "/share/terminfo") config.environment.profiles) ++
@@ -214,31 +219,13 @@ in {
       "gcenx/wine" # homebrew-wine - game-porting-toolkit & wine-crossover
     ];
 
-    brews = [
-      # `brew install`
-      "wget" # download tool
-      "curl" # no not install curl via nixpkgs, it's not working well on macOS!
-      "aria2" # download tool
-      "httpie" # http client
-      "wireguard-tools" # wireguard
-
+    brews = [ # `brew install`
       # Usage:
       #  https://github.com/tailscale/tailscale/wiki/Tailscaled-on-macOS#run-the-tailscaled-daemon
       # 1. `sudo tailscaled install-system-daemon`
       # 2. `tailscale up --accept-routes`
       "tailscale" # tailscale
 
-      # https://github.com/rgcr/m-cli
-      "m-cli" #  Swiss Army Knife for macOS
-
-      # commands like `gsed` `gtar` are required by some tools
-      "gnu-sed"
-      "gnu-tar"
-
-      # misc that nix do not have cache for.
-      "git-trim"
-      "terraform"
-      "terraformer"
     ];
 
     # `brew install --cask`
