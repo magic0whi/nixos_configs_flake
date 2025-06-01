@@ -256,4 +256,22 @@
   #   StandardOutPath = "${config.home.homeDirectory}/Library/Logs/gnupg-agent.stdout.log";
   # };
   ## END gpg.nix
+  ## ghostty.nix
+  programs.ghostty = {
+    enable = true;
+    package = null; # As of Jun 1, 2025, it's still marked as broken on MacOS, use pkgs.emptyFile (or pkgs.emptyDirectory or null if formers don't work) as a dummy package
+    settings = { # https://ghostty.org/docs/config/reference
+      macos-option-as-alt = "left";
+      keybind = [
+        "alt+left=unbind"
+        "alt+right=unbind"
+      ];
+      font-family = "Iosevka Nerd Font Mono";
+      font-size = 13;
+      background-opacity = 0.93;
+      background-blur = true;
+      scrollback-limit = 20000;
+    };
+  };
+  ## END ghostty.nix
 }
