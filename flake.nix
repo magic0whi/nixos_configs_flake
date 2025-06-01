@@ -14,6 +14,7 @@
     lanzaboote = {
       url = "github:nix-community/lanzaboote/v0.4.2";
       inputs.nixpkgs.follows = "nixpkgs";
+      inputs.flake-compat.follows = "mac-app-util/flake-compat";
     };
     impermanence.url = "github:nix-community/impermanence";
     nixpak = {
@@ -37,14 +38,20 @@
       # url = "github:ryan4yin/ragenix";
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.home-manager.follows = "home-manager";
+      inputs.systems.follows = "mac-app-util/systems";
     };
     colmena = {
       url = "github:zhaofengli/colmena";
       inputs.nixpkgs.follows = "nixpkgs";
-      inputs.flake-compat.follows = "lanzaboote/flake-compat";
+      inputs.flake-compat.follows = "mac-app-util/flake-compat";
+      inputs.flake-utils.follows = "mac-app-util/flake-utils";
     };
     nix-darwin = {
       url = "github:nix-darwin/nix-darwin";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    mac-app-util = { # Fix .app programs installed by Nix on Mac 
+      url = "github:hraban/mac-app-util";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     # TODO

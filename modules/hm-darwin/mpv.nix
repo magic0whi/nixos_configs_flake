@@ -2,6 +2,7 @@
   home.shellAliases = {"mpv" = "mpv --player-operation-mode=pseudo-gui";};
   programs.mpv = with pkgs; {
     enable = mkDefault true;
+    package = pkgs.mpv-unwrapped; # https://github.com/NixOS/nixpkgs/issues/356860
     # package = pkgs.emptyDirectory;
     defaultProfiles = ["common" "gpu-hq"];
     config = {

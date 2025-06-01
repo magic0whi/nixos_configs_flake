@@ -40,11 +40,12 @@ in {
     ]);
   };
   gen_darwin_system_args = {name, mylib, myvars, darwin_modules, hm_modules, machine_path}: let
-    inherit (inputs) home-manager;
+    inherit (inputs) home-manager mac-app-util;
     specialArgs = inputs // {inherit mylib myvars;};
   in {
     inherit system specialArgs;
     modules = darwin_modules ++ [
+      mac-app-util.darwinModules.default
       {imports = mylib.scan_path machine_path;}
     ] ++ (lib.optionals ((lib.lists.length hm_modules) > 0) [
       home-manager.darwinModules.home-manager {
@@ -52,8 +53,10 @@ in {
         home-manager.extraSpecialArgs = specialArgs;
         home-manager.useGlobalPkgs = true;
         home-manager.useUserPackages = true;
-        home-manager.users."${myvars.username}".imports = hm_modules ++
-          [(machine_path + "/hm")];
+        home-manager.users."${myvars.username}".imports = hm_modules ++ [
+          mac-app-util.homeManagerModules.default
+          (machine_path + "/hm")
+        ];
       }
     ]);
   };
