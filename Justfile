@@ -102,7 +102,7 @@ repair-store *paths:
 
 [linux]
 [group('desktop')]
-sp4 mode="default":
+proteus-sp4 mode="default":
   #!/usr/bin/env bash
   . {{utils}}
   nixos-switch proteus-sp4 {{mode}}

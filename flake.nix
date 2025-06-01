@@ -38,7 +38,6 @@
       # url = "github:ryan4yin/ragenix";
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.home-manager.follows = "home-manager";
-      inputs.systems.follows = "mac-app-util/systems";
     };
     colmena = {
       url = "github:zhaofengli/colmena";
