@@ -251,5 +251,9 @@
     defaultCacheTtl = mkDefault (4 * 60 * 60); # 4 hours
     sshKeys = mkDefault myvars.gpg2ssh_keygrip; # Run 'gpg --export-ssh-key gpg-key!' to export public key
   };
+  # launchd.agents.gpg-agent.config = { # enable logs for debugging
+  #   StandardErrorPath = "${config.home.homeDirectory}/Library/Logs/gnupg-agent.stderr.log";
+  #   StandardOutPath = "${config.home.homeDirectory}/Library/Logs/gnupg-agent.stdout.log";
+  # };
   ## END gpg.nix
 }

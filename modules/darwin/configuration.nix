@@ -26,16 +26,30 @@
         mru-spaces = mkDefault false; # do not automatically rearrange spaces based on most recent use
         expose-group-apps = mkDefault true; # Group windows by apps in Mission Control
         # Hot corner action for corners, see https://github.com/nix-darwin/nix-darwin/blob/44a7d0e687a87b73facfe94fba78d323a6686a90/modules/system/defaults/dock.nix#L308
-        wvous-tl-corner = 2; # top-left - Mission Control
-        wvous-tr-corner = 4; # top-right - Desktop
-        wvous-bl-corner = 3; # bottom-left - Application Windows
-        wvous-br-corner = 13; # bottom-right - Lock Screen
+        wvous-tl-corner = mkDefault 2; # top-left - Mission Control
+        wvous-tr-corner = mkDefault 4; # top-right - Desktop
+        wvous-bl-corner = mkDefault 3; # bottom-left - Application Windows
+        wvous-br-corner = mkDefault 13; # bottom-right - Lock Screen
       };
       trackpad = {
         Clicking = mkDefault true; # Tap (without vibration feedback) to click, may need restart to take affect
         TrackpadRightClick = mkDefault true; # Two finger right click
         TrackpadThreeFingerDrag = mkDefault true; # Three finger drag
       };
+      finder = {
+        _FXShowPosixPathInTitle = true;
+        _FXSortFoldersFirst = true;
+        AppleShowAllExtensions = true;
+        AppleShowAllFiles = true;
+        FXDefaultSearchScope = "SCcf"; # Search scope to current folder
+        FXEnableExtensionChangeWarning = false;
+        FXPreferredViewStyle = "Nlsv"; # List view
+        QuitMenuItem = true; # Allow quitting of the Finder
+        ShowMountedServersOnDesktop = true;
+        ShowPathbar = true; # Show path breadcrumbs in finder windows
+        ShowStatusBar = true; # show status bar
+      };
+      NSGlobalDomain.AppleKeyboardUIMode = mkDefault 3; # Configures the keyboard control behavior. Mode 3 enables full keyboard control
     };
     keyboard = {
       enableKeyMapping = mkDefault true;

@@ -16,19 +16,13 @@
     HOMEBREW_CORE_GIT_REMOTE = "https://mirror.nju.edu.cn/git/homebrew/homebrew-core.git";
     HOMEBREW_PIP_INDEX_URL = "https://pypi.tuna.tsinghua.edu.cn/simple";
   };
-
-  local_proxy_env = {
-    # HTTP_PROXY = "http://127.0.0.1:7890";
-    # HTTPS_PROXY = "http://127.0.0.1:7890";
-  };
-
   homebrew_env_script =
     attrsets.foldlAttrs
     (acc: name: value: acc + "\nexport ${name}=${value}")
     ""
-    (homebrew_mirror_env // local_proxy_env);
+    homebrew_mirror_env;
 in {
-  imports = (mylib.scan_path ./.);
+  imports = mylib.scan_path ./.;
   system.stateVersion = 6;
   system.primaryUser = myvars.username;
   security.pki.certificateFiles = mkDefault [
@@ -92,6 +86,7 @@ in {
     gnutar
 
     utm # darwin only
+    winetricks
   ];
   environment.variables = {
     TERMINFO_DIRS = (map (path: path + "/share/terminfo") config.environment.profiles) ++
@@ -186,16 +181,19 @@ in {
     ''; # Fallback prompt if starship doesn't work
   };
   environment.shells = [pkgs.zsh];
-  # homebrew need to be installed manually, see https://brew.sh
-  # https://github.com/LnL7/nix-darwin/blob/master/modules/homebrew.nix
-  homebrew = {
-    enable = true; # disable homebrew for fast deploy
+  ## BEGIN brew.nix
+  # homebrew need to be installed manually, see https://github.com/nix-darwin/nix-darwin/blob/44a7d0e687a87b73facfe94fba78d323a6686a90/modules/homebrew.nix#L541
+  environment.etc.zprofile.text = mkAfter ''
+    eval "$(/opt/homebrew/bin/brew shellenv)"
+  '';
+  homebrew = { # homebrew need to be installed manually, see https://brew.sh
+    enable = mkDefault true; # disable homebrew for fast deploy
 
     onActivation = {
-      autoUpdate = true; # Fetch the newest stable branch of Homebrew's git repo
-      upgrade = true; # Upgrade outdated casks, formulae, and App Store apps
+      autoUpdate = mkDefault true; # Fetch the newest stable branch of Homebrew's git repo
+      upgrade = mkDefault true; # Upgrade outdated casks, formulae, and App Store apps
       # 'zap': uninstalls all formulae(and related files) not listed in the generated Brewfile
-      cleanup = "zap";
+      cleanup = mkDefault "zap";
     };
 
     # Applications to install from Mac App Store using mas.
@@ -213,6 +211,7 @@ in {
       "hashicorp/tap"
       "nikitabobko/tap" # aerospace - an i3-like tiling window manager for macOS
       "FelixKratz/formulae" # janky borders - highlight active window borders
+      "gcenx/wine" # homebrew-wine - game-porting-toolkit & wine-crossover
     ];
 
     brews = [
@@ -244,7 +243,6 @@ in {
 
     # `brew install --cask`
     casks = [
-      "squirrel" # input method for Chinese, rime-squirrel
       "firefox"
       "google-chrome"
       "visual-studio-code"
@@ -282,8 +280,13 @@ in {
 
       # Setup macfuse: https://github.com/macfuse/macfuse/wiki/Getting-Started
       "macfuse" # for rclone to mount a fuse filesystem
+
+      # "game-porting-toolkit"
+      "gcenx/wine/wine-crossover" # Conflicts with game-porting-toolkit
+      "crossover"
     ];
   };
+  ## END brew.nix
   ## START users.nix
   users.users.${myvars.username}.home = "/Users/${myvars.username}"; # home-manager needs it
   ## END users.nix
