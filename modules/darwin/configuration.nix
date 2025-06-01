@@ -17,7 +17,7 @@
 {lib, ...}: with lib; {
   time.timeZone = mkDefault "Asia/Hong_Kong";
   system = {
-    defaults = {
+    defaults = { ## NOTE: https://github.com/nix-darwin/nix-darwin/issues/1207#issuecomment-2510402916
       menuExtraClock.Show24Hour = mkDefault true;
       menuExtraClock.ShowSeconds = mkDefault true;
       dock = {

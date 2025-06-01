@@ -286,7 +286,7 @@
     # $GNUPGHOME/trustdb.gpg stores all the trust level you specified in `programs.gpg.publicKeys` option. If set `mutableTrust` to false, the path $GNUPGHOME/trustdb.gpg will be overwritten on each activation. Thus we can only update trsutedb.gpg via home-manager.
     mutableTrust = mkDefault false;
     # $GNUPGHOME/pubring.kbx stores all the public keys you specified in `programs.gpg.publicKeys` option. If set `mutableKeys` to false, the path $GNUPGHOME/pubring.kbx will become an immutable link to the Nix store, denying modifications. Thus we can only update pubring.kbx via home-manager
-    mutableKeys = lib.mkDefault false;
+    mutableKeys = mkDefault false;
     settings = { # This configuration is based on the tutorial https://blog.eleven-labs.com/en/openpgp-almost-perfect-key-pair-part-1, it allows for a robust setup
       no-greeting = mkDefault true; # Get rid of the copyright notice
       no-emit-version = mkDefault true; # Disable inclusion of the version string in ASCII armored output

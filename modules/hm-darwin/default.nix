@@ -1,4 +1,22 @@
-{myvars, mylib, lib, pkgs, config, ...}: with lib; {
+{myvars, mylib, lib, pkgs, config, ...}: let
+  shell_aliases = {
+    grep = "grep --color=auto";
+    ip = "ip --color=auto";
+    cp = "cp -i";
+    ssh = "TERM=xterm-256color ssh";
+    bc = "bc -lq";
+    Ci = "wl-copy";
+    Co = "wl-paste";
+    Coimg = "Co --type image";
+    cpr = "rsync --archive -hh --partial --info=stats1,progress2 --modify-window=1 \"$@\"";
+    mvr = "rsync --archive -hh --partial --info=stats1,progress2 --modify-window=1 --remove-source-files \"$@\"";
+    diff = "command diff --text --unified --new-file --color=auto \"$@\"";
+    # Set boldface -> red color, underline -> blue color
+    man = "MANPAGER=\"less -R --use-color -Dd+r -Du+b\""
+      + " MANROFFOPT=\"-P-c\""
+      + " command man \"$@\"";
+  };
+in with lib; {
   home.stateVersion = mkDefault myvars.state_version;
   programs.home-manager.enable = mkDefault true;
   imports = mylib.scan_path ./.;
@@ -8,9 +26,8 @@
     (ripgrep.override {withPCRE2 = true;})
     just
 
-    # nix related
-    #
-    # it provides the command `nom` works just like `nix
+    ## Nix Related
+    # It provides the command `nom` works just like `nix
     # with more details log output
     nix-output-monitor
     hydra-check # check hydra(nix's build farm) for the build status of a package
@@ -20,8 +37,24 @@
     nix-melt # A TUI flake.lock viewer
     # https://github.com/utdemir/nix-tree
     nix-tree # A TUI to visualize the dependency graph of a nix derivation
+
+    anki-bin
+    blender # 3D creation suite
+    firefox
+    google-chrome
+    moonlight # Remote desktop client
+    winetricks
+
+    vscode
+    joplin-desktop # Note taking app, https://joplinapp.org/help/
+    code-cursor # An AI code editor
+    utm # Virtual machine manager for Apple platforms
+    insomnia # REST client
+    wireshark # Network analyzer
   ];
   xdg.enable = mkDefault true; # enable management of XDG base directories on macOS
+  home.shellAliases = shell_aliases;
+  services.syncthing.enable = mkDefault true;
   programs = {
     zsh = {
       enable = mkDefault true;
@@ -72,18 +105,18 @@
       # https://github.com/catppuccin/fzf
       # catppuccin-mocha
       colors = {
-        "bg+" = "#313244";
-        "bg" = "#1e1e2e";
-        "spinner" = "#f5e0dc";
-        "hl" = "#f38ba8";
-        "fg" = "#cdd6f4";
-        "header" = "#f38ba8";
-        "info" = "#cba6f7";
-        "pointer" = "#f5e0dc";
-        "marker" = "#f5e0dc";
-        "fg+" = "#cdd6f4";
-        "prompt" = "#cba6f7";
-        "hl+" = "#f38ba8";
+        "bg+" = mkDefault "#313244";
+        "bg" = mkDefault "#1e1e2e";
+        "spinner" = mkDefault "#f5e0dc";
+        "hl" = mkDefault "#f38ba8";
+        "fg" = mkDefault "#cdd6f4";
+        "header" = mkDefault "#f38ba8";
+        "info" = mkDefault "#cba6f7";
+        "pointer" = mkDefault "#f5e0dc";
+        "marker" = mkDefault "#f5e0dc";
+        "fg+" = mkDefault "#cdd6f4";
+        "prompt" = mkDefault "#cba6f7";
+        "hl+" = mkDefault "#f38ba8";
       };
     };
     # zoxide is a smarter cd command, inspired by z and autojump.
@@ -212,7 +245,7 @@
     # $GNUPGHOME/trustdb.gpg stores all the trust level you specified in `programs.gpg.publicKeys` option. If set `mutableTrust` to false, the path $GNUPGHOME/trustdb.gpg will be overwritten on each activation. Thus we can only update trsutedb.gpg via home-manager.
     mutableTrust = mkDefault false;
     # $GNUPGHOME/pubring.kbx stores all the public keys you specified in `programs.gpg.publicKeys` option. If set `mutableKeys` to false, the path $GNUPGHOME/pubring.kbx will become an immutable link to the Nix store, denying modifications. Thus we can only update pubring.kbx via home-manager
-    mutableKeys = lib.mkDefault false;
+    mutableKeys = mkDefault false;
     settings = { # This configuration is based on the tutorial https://blog.eleven-labs.com/en/openpgp-almost-perfect-key-pair-part-1, it allows for a robust setup
       no-greeting = mkDefault true; # Get rid of the copyright notice
       no-emit-version = mkDefault true; # Disable inclusion of the version string in ASCII armored output
@@ -257,20 +290,20 @@
   # };
   ## END gpg.nix
   ## ghostty.nix
-  programs.ghostty = {
-    enable = true;
-    package = null; # As of Jun 1, 2025, it's still marked as broken on MacOS, use pkgs.emptyFile (or pkgs.emptyDirectory or null if formers don't work) as a dummy package
+  programs.ghostty = { # terminal emulator
+    enable = mkDefault true;
+    package = mkDefault pkgs.ghostty-bin; # As of Jun 1, 2025, it's still marked as broken on MacOS, use pkgs.emptyFile (or pkgs.emptyDirectory or null if formers don't work) as a dummy package
     settings = { # https://ghostty.org/docs/config/reference
-      macos-option-as-alt = "left";
+      macos-option-as-alt = mkDefault "left";
       keybind = [
         "alt+left=unbind"
         "alt+right=unbind"
       ];
-      font-family = "Iosevka Nerd Font Mono";
-      font-size = 13;
-      background-opacity = 0.93;
-      background-blur = true;
-      scrollback-limit = 20000;
+      font-family = mkDefault "Iosevka Nerd Font Mono";
+      font-size = mkDefault 13;
+      background-opacity = mkDefault 0.93;
+      background-blur = mkDefault true;
+      scrollback-limit = mkDefault 20000;
     };
   };
   ## END ghostty.nix

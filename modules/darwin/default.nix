@@ -34,6 +34,7 @@ in {
     KbdInteractiveAuthentication no
   '';
   services.openssh.enable = mkDefault true;
+  services.tailscale.enable = mkDefault true;
   security.pam.services.sudo_local.touchIdAuth = true; # Add ability to used TouchID for sudo authentication
   nixpkgs.config.allowUnfree = mkDefault true; # Allow chrome, vscode to install
   nix.package = mkDefault pkgs.nixVersions.latest; # Use latest nix, default is pkgs.nix
@@ -88,16 +89,16 @@ in {
     curl
     aria2
 
-    winetricks
-
-    utm # Virtual machine manager for Apple platforms
     m-cli # Swiss Army Knife for macOS, https://github.com/rgcr/m-cli
+    mas # Mac App Store command line interface
+
+    raycast # (HotKey: alt/option + space)search, calculate and run scripts(with many plugins)
+    stats # beautiful system status monitor in menu bar
   ];
   environment.variables = {
-    TERMINFO_DIRS = (map (path: path + "/share/terminfo") config.environment.profiles) ++
-      ["/usr/share/terminfo"];
+    TERMINFO_DIRS = (map (path: path + "/share/terminfo") config.environment.profiles) ++ ["/usr/share/terminfo"];
   };
-  system.activationScripts.homebrew.text = lib.mkBefore ''
+  system.activationScripts.homebrew.text = mkBefore ''
     echo >&2 '${homebrew_env_script}'
     ${homebrew_env_script}
   '';
@@ -201,15 +202,20 @@ in {
       cleanup = mkDefault "zap";
     };
 
-    # Applications to install from Mac App Store using mas.
-    # You need to install all these Apps manually first so that your apple account have records for them.
-    # otherwise Apple Store will refuse to install them.
-    # For details, see https://github.com/mas-cli/mas
-    masApps = {
-      # Xcode = 497799835;
-      Wechat = 836500024;
+    masApps = { # Applications to install from Mac App Store using mas. You need to install all these Apps manually first so that your apple account have records for them. otherwise Apple Store will refuse to install them. For details, see https://github.com/mas-cli/mas
+      "GeoGebra Calculator Suite" = 1504416652;
+      LocalSend = 1661733229;
+      "Microsoft Excel" = 462058435;
+      "Microsoft Outlook" = 985367838;
+      "Microsoft PowerPoint" = 462062816;
+      "Microsoft Word" = 462054704;
+      OneDrive = 823766827;
+      "Parallels Desktop" = 1085114709;
       QQ = 451108668;
-      # WeCom = 1189898970; # Wechat for Work
+      # "sing-box" = 6673731168; # Older than sfm in brew cask
+      # Tailscale = 1475387142; # Poorly
+      Telegram = 747648890;
+      WeChat = 836500024;
     };
 
     taps = [
@@ -218,52 +224,29 @@ in {
       "FelixKratz/formulae" # janky borders - highlight active window borders
       "gcenx/wine" # homebrew-wine - game-porting-toolkit & wine-crossover
     ];
-
-    brews = [ # `brew install`
-      # Usage:
-      #  https://github.com/tailscale/tailscale/wiki/Tailscaled-on-macOS#run-the-tailscaled-daemon
-      # 1. `sudo tailscaled install-system-daemon`
-      # 2. `tailscale up --accept-routes`
-      "tailscale" # tailscale
-
+    brews = [ # 'brew install'
     ];
+    casks = [ # 'brew install --cask'
+      # "tailscale" # Usage: https://github.com/tailscale/tailscale/wiki/Tailscaled-on-macOS#run-the-tailscaled-daemon
+      # 1. 'sudo tailscaled install-system-daemon'
+      # 2. `tailscale up --accept-routes`
+      # Or use darwin-nix's built-in support 'services.tailscale.*'
+      # "aerospace" # an i3-like tiling window manager for macOS # TODO: Use 'services.aerospace.*'
+      "keepassxc" # gpgme is marked as broken, use casks temporally
+      "sfm" # Standalone client for sing-box
 
-    # `brew install --cask`
-    casks = [
-      "firefox"
-      "google-chrome"
-      "visual-studio-code"
-      "cursor" # an AI code editor
-      "aerospace" # an i3-like tiling window manager for macOS
-      "ghostty" # terminal emulator
-
-      # https://joplinapp.org/help/
-      "joplin" # note taking app
-
-      # IM & audio & remote desktop & meeting
-      "telegram"
       # "discord" # update too frequently, use the web version instead
       "microsoft-remote-desktop"
-      "moonlight" # remote desktop client
 
       # Misc
-      # "shadowsocksx-ng" # proxy tool
-      "raycast" # (HotKey: alt/option + space)search, calculate and run scripts(with many plugins)
-      "stats" # beautiful system status monitor in menu bar
       # "reaper"  # audio editor
       "sonic-pi" # music programming
       "tencent-lemon" # macOS cleaner
       "neteasemusic" # music
-      "blender@lts" # 3D creation suite
       "mihomo-party" # transparent proxy tool
 
       # Development
-      "mitmproxy" # HTTP/HTTPS traffic inspector
-      "insomnia" # REST client
-      "wireshark" # network analyzer
-      # "jdk-mission-control" # Java Mission Control
-      # "google-cloud-sdk" # Google Cloud SDK
-      "miniforge" # Miniconda's community-driven distribution
+      # "miniforge" # Miniconda's community-driven distribution
 
       # Setup macfuse: https://github.com/macfuse/macfuse/wiki/Getting-Started
       "macfuse" # for rclone to mount a fuse filesystem
@@ -271,11 +254,12 @@ in {
       # "game-porting-toolkit"
       "gcenx/wine/wine-crossover" # Conflicts with game-porting-toolkit
       "crossover"
+      "steam"
     ];
   };
   ## END brew.nix
   ## START users.nix
-  users.users.${myvars.username}.home = "/Users/${myvars.username}"; # home-manager needs it
+  users.users.${myvars.username}.home = mkForce "/Users/${myvars.username}"; # home-manager needs it
   ## END users.nix
   ## START fonts.nix
   fonts.packages = with pkgs; [
