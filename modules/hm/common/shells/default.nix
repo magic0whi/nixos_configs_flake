@@ -29,9 +29,9 @@
 in with lib; {
   home.sessionVariables = { # environment variables that always set at login
     LESS = mkDefault "-R -N";
-    LESSHISTFILE = mkDefault config.xdg.cacheHome + "/less/history";
-    LESSKEY = mkDefault config.xdg.configHome + "/less/lesskey";
-    WINEPREFIX = mkDefault config.xdg.dataHome + "/wine";
+    LESSHISTFILE = mkDefault (config.xdg.cacheHome + "/less/history");
+    LESSKEY = mkDefault (config.xdg.configHome + "/less/lesskey");
+    WINEPREFIX = mkDefault (config.xdg.dataHome + "/wine");
     BROWSER = mkDefault "firefox"; # set default applications
     DELTA_PAGER = mkDefault "less -R"; # enable scrolling in git diff
   };

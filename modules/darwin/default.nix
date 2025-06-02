@@ -220,8 +220,8 @@ in {
 
     taps = [
       "hashicorp/tap"
-      "nikitabobko/tap" # aerospace - an i3-like tiling window manager for macOS
-      "FelixKratz/formulae" # janky borders - highlight active window borders
+      # "nikitabobko/tap" # aerospace - an i3-like tiling window manager for macOS
+      # "FelixKratz/formulae" # janky borders - highlight active window borders
       "gcenx/wine" # homebrew-wine - game-porting-toolkit & wine-crossover
     ];
     brews = [ # 'brew install'

@@ -145,7 +145,7 @@ ha mode="default":
 # Depoly to Proteus-MBP14M4P(macOS host)
 [macos]
 [group('desktop')]
-proteus-mbp mode="default": 
+proteus-mbp mode="default":
   #!/usr/bin/env bash
   . {{utils}}
   darwin-build "Proteus-MBP14M4P" {{mode}};
