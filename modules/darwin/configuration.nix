@@ -20,6 +20,7 @@
     defaults = { ## NOTE: https://github.com/nix-darwin/nix-darwin/issues/1207#issuecomment-2510402916
       menuExtraClock.Show24Hour = mkDefault true;
       menuExtraClock.ShowSeconds = mkDefault true;
+      menuExtraClock.ShowAMPM = mkDefault false;
       dock = {
         autohide = mkDefault true;
         show-recents = mkDefault false; # do not show recent apps in dock
