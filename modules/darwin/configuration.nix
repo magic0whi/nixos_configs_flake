@@ -49,7 +49,10 @@
         ShowPathbar = true; # Show path breadcrumbs in finder windows
         ShowStatusBar = true; # show status bar
       };
-      NSGlobalDomain.AppleKeyboardUIMode = mkDefault 3; # Configures the keyboard control behavior. Mode 3 enables full keyboard control
+      NSGlobalDomain = {
+        AppleKeyboardUIMode = mkDefault 3; # Configures the keyboard control behavior. Mode 3 enables full keyboard control
+        NSAutomaticQuoteSubstitutionEnabled = mkDefault false; # Disable auto quote substitution
+      };
     };
     keyboard = {
       enableKeyMapping = mkDefault true;

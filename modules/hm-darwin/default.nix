@@ -54,6 +54,12 @@ in with lib; {
   ];
   xdg.enable = mkDefault true; # enable management of XDG base directories on macOS
   home.shellAliases = shell_aliases;
+  home.sessionVariables = { # environment variables that always set at login
+    LESS = mkDefault "-R -N";
+    LESSHISTFILE = mkDefault config.xdg.cacheHome + "/less/history";
+    LESSKEY = mkDefault config.xdg.configHome + "/less/lesskey";
+    DELTA_PAGER = mkDefault "less -R"; # enable scrolling in git diff
+  };
   services.syncthing.enable = mkDefault true;
   programs = {
     zsh = {

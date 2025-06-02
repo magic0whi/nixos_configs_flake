@@ -46,7 +46,7 @@ in {
     inherit system specialArgs;
     modules = darwin_modules ++ [
       mac-app-util.darwinModules.default
-      {imports = mylib.scan_path machine_path;}
+      {imports = mylib.scan_path machine_path; networking.hostName = name;}
     ] ++ (lib.optionals ((lib.lists.length hm_modules) > 0) [
       home-manager.darwinModules.home-manager {
         home-manager.backupFileExtension = "home-manager.backup";

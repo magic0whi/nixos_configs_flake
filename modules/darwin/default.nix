@@ -23,8 +23,8 @@
     homebrew_mirror_env;
 in {
   imports = mylib.scan_path ./.;
-  system.stateVersion = 6;
-  system.primaryUser = myvars.username;
+  system.stateVersion = mkDefault 6;
+  system.primaryUser = mkDefault myvars.username;
   security.pki.certificateFiles = mkDefault [
     (mylib.relative_to_root "custom_files/proteus_ca.pem")
   ];

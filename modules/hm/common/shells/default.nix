@@ -26,27 +26,23 @@
   local_bin = "${config.home.homeDirectory}/.local/bin";
   go_bin = "${config.home.homeDirectory}/go/bin";
   rust_bin = "${config.home.homeDirectory}/.cargo/bin";
-in {
+in with lib; {
   home.sessionVariables = { # environment variables that always set at login
-    LESS = "-R -N";
-    LESSHISTFILE = config.xdg.cacheHome + "/less/history";
-    LESSKEY = config.xdg.configHome + "/less/lesskey";
-    WINEPREFIX = config.xdg.dataHome + "/wine";
-
-    # set default applications
-    BROWSER = "firefox";
-
-    # enable scrolling in git diff
-    DELTA_PAGER = "less -R";
+    LESS = mkDefault "-R -N";
+    LESSHISTFILE = mkDefault config.xdg.cacheHome + "/less/history";
+    LESSKEY = mkDefault config.xdg.configHome + "/less/lesskey";
+    WINEPREFIX = mkDefault config.xdg.dataHome + "/wine";
+    BROWSER = mkDefault "firefox"; # set default applications
+    DELTA_PAGER = mkDefault "less -R"; # enable scrolling in git diff
   };
 
   home.shellAliases = shell_aliases;
 
-  programs.zsh.enable = true;
+  programs.zsh.enable = mkDefault true;
 
   programs.nushell = {
-    enable = true;
-    configFile.source = ./config.nu;
+    enable = mkDefault true;
+    configFile.source = mkDefault ./config.nu;
     shellAliases = lib.mkForce (builtins.removeAttrs shell_aliases [
       "ls" "ll" "lh" "la" "man" "ssh" "cpr" "mvr" "diff"
     ]);
@@ -73,8 +69,8 @@ in {
   };
 
   programs.bash = {
-    enable = true;
-    enableCompletion = true;
+    enable = mkDefault true;
+    enableCompletion = mkDefault true;
     bashrcExtra = ''
       export PATH="$PATH:${local_bin}:${go_bin}:${rust_bin}"
     '';
