@@ -210,7 +210,6 @@ in {
       "Microsoft PowerPoint" = 462062816;
       "Microsoft Word" = 462054704;
       OneDrive = 823766827;
-      "Parallels Desktop" = 1085114709;
       QQ = 451108668;
       # "sing-box" = 6673731168; # Older than sfm in brew cask
       # Tailscale = 1475387142; # Poorly

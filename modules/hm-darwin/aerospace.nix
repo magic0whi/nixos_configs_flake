@@ -1,5 +1,36 @@
-{...}: {
+{config, ...}: {
   services.jankyborders.enable = true;
+  xdg.configFile."aerospace/ghostty-actions.js".text = ''
+  #!/usr/bin/osascript -l JavaScript
+  ObjC.import('Foundation')
+  const argv = $.NSProcessInfo.processInfo.arguments.js
+  const system_events = Application('System Events');
+  const term_path = '/nix/store/s8cwz1gr50bp09dqs1wjdharfsxryp6z-ghostty-bin-1.1.3/Applications/Ghostty.app';
+  function quick_term() {
+    const ghostty = system_events.processes.byName('Ghostty');
+    const menu_bar_view_quick_term = ghostty.menuBars[0].menuBarItems['View'].menus[0].menuItems['Quick Terminal'];
+    menu_bar_view_quick_term.click();
+  }
+  function new_window() {
+    const ghostty = system_events.processes.byName('Ghostty');
+    const menu_bar_file_new_window = ghostty.menuBars[0].menuBarItems['File'].menus[0].menuItems['New Window'];
+    menu_bar_file_new_window.click();
+  }
+  function run(argv) {
+    var ghostty = null;
+    switch (Application(term_path).running()) { // Assure Ghostty is running
+      case false: ghostty = Application(term_path); delay(0.2); break; // Short delay to wait for the Ghostty launch
+      case true: ghostty = Application(term_path); // Launch Ghostty
+    }
+    argv.forEach((arg, idx) => {
+      switch(arg) {
+        case "1": ghostty.activate(); break; // Focus Ghostty
+        case "2": quick_term(); break; // Quich Terminal
+        case "3": new_window();
+      }
+    });
+  }
+  '';
   programs.aerospace = {
     enable = true;
     userSettings = { # See https://nikitabobko.github.io/AeroSpace/guide#configuring-aerospace
@@ -18,7 +49,9 @@
       };
       mode.main.binding = {
         # Run terminal
-        alt-enter = "exec-and-forget osascript -e 'tell application \"Ghostty\" to activate'";
+        alt-enter = "exec-and-forget osascript -lJavaScript ${config.xdg.configHome}/aerospace/ghostty-actions.js 1";
+        alt-shift-enter = "exec-and-forget osascript -lJavaScript ${config.xdg.configHome}/aerospace/ghostty-actions.js 2";
+        ctrl-alt-enter = "exec-and-forget osascript -lJavaScript ${config.xdg.configHome}/aerospace/ghostty-actions.js 3";
         # See: https://nikitabobko.github.io/AeroSpace/commands#layout
         alt-slash = "layout tiles horizontal vertical";
         alt-comma = "layout accordion horizontal vertical";
