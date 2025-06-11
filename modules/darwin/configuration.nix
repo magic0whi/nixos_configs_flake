@@ -1,21 +1,10 @@
-###################################################################################
-#
-#  macOS's System configuration
-#
-#  All the configuration options are documented here:
-#    https://daiderd.com/nix-darwin/manual/index.html#sec-options
-#  Incomplete list of macOS `defaults` commands :
-#    https://github.com/yannbertrand/macos-defaults
-#
-#
 # NOTE: Some options are not supported by nix-darwin directly, manually set them:
 #   1. To avoid conflicts with neovim, disable ctrl + up/down/left/right to switch spaces in:
 #     [System Preferences] -> [Keyboard] -> [Keyboard Shortcuts] -> [Mission Control]
 #   2. Disable use Caps Lock as 中/英 switch in:
 #     [System Preferences] -> [Keyboard] -> [Input Sources] -> [Edit] -> [Use 中/英 key to switch ] -> [Disable]
-###################################################################################
 {lib, ...}: with lib; {
-  time.timeZone = mkDefault "Asia/Hong_Kong";
+  time.timeZone = mkDefault "Asia/Hong_Kong"; # Please set 'Set time zone automatically using your current location' to false in 'System Settings'
   system = {
     defaults = { ## NOTE: https://github.com/nix-darwin/nix-darwin/issues/1207#issuecomment-2510402916
       menuExtraClock.Show24Hour = mkDefault true;
@@ -41,7 +30,7 @@
         _FXShowPosixPathInTitle = true;
         _FXSortFoldersFirst = true;
         AppleShowAllExtensions = true;
-        AppleShowAllFiles = true;
+        AppleShowAllFiles = true; # Show hidden files
         FXDefaultSearchScope = "SCcf"; # Search scope to current folder
         FXEnableExtensionChangeWarning = false;
         FXPreferredViewStyle = "Nlsv"; # List view

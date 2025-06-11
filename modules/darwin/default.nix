@@ -233,6 +233,7 @@ in {
       # "aerospace" # an i3-like tiling window manager for macOS # TODO: Use 'services.aerospace.*'
       "keepassxc" # gpgme is marked as broken, use casks temporally
       "sfm" # Standalone client for sing-box
+      "jordanbaird-ice" # Powerful menu bar manager
 
       # "discord" # update too frequently, use the web version instead
       "microsoft-remote-desktop"
@@ -254,6 +255,8 @@ in {
       "gcenx/wine/wine-crossover" # Conflicts with game-porting-toolkit
       "crossover"
       "steam"
+      "mythic"
+      "obs"
     ];
   };
   ## END brew.nix

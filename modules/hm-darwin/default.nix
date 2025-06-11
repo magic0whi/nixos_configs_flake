@@ -43,6 +43,7 @@ in with lib; {
     firefox
     google-chrome
     moonlight # Remote desktop client
+    modrinth-app
     winetricks
 
     vscode

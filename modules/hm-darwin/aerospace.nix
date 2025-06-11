@@ -71,6 +71,7 @@
         # See: https://nikitabobko.github.io/AeroSpace/commands#resize
         alt-shift-minus = "resize smart -50";
         alt-shift-equal = "resize smart +50";
+        alt-shift-r = "mode resize";
 
         # See: https://nikitabobko.github.io/AeroSpace/commands#workspace
         alt-1 = "workspace 1";
@@ -103,10 +104,10 @@
       mode.service.binding = { # See: https://nikitabobko.github.io/AeroSpace/guide#binding-modes
         esc = ["reload-config" "mode main"];
         r = ["flatten-workspace-tree" "mode main"]; # reset layout
-        f = [
+        f = [ # Toggle between floating and tiling layout
           "layout floating tiling"
           "mode main"
-        ]; # Toggle between floating and tiling layout
+        ];
         backspace = ["close-all-windows-but-current" "mode main"];
 
         alt-shift-h = ["join-with left" "mode main"];
