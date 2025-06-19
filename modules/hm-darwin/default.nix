@@ -314,4 +314,5 @@ in with lib; {
     };
   };
   ## END ghostty.nix
+  programs.yt-dlp.enable = mkDefault true;
 }

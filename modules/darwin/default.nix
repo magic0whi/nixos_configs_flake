@@ -76,6 +76,7 @@ in {
       "colmena.cachix.org-1:7BzpDnjjH8ki2CT3f6GdOk7QAzPOl+1t3LvTLXqYcSg="
     ];
     builders-use-substitutes = mkDefault true;
+    sandbox = mkDefault true;
   };
   environment.systemPackages= with pkgs; [
     iproute2mac
@@ -257,6 +258,7 @@ in {
       "steam"
       "mythic"
       "obs"
+      "bit-slicer"
     ];
   };
   ## END brew.nix
