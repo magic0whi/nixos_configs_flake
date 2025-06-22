@@ -19,7 +19,7 @@
         wvous-tl-corner = mkDefault 2; # top-left - Mission Control
         wvous-tr-corner = mkDefault 4; # top-right - Desktop
         wvous-bl-corner = mkDefault 3; # bottom-left - Application Windows
-        wvous-br-corner = mkDefault 13; # bottom-right - Lock Screen
+        wvous-br-corner = mkDefault 11; # bottom-right - Launchpad
       };
       trackpad = {
         Clicking = mkDefault true; # Tap (without vibration feedback) to click, may need restart to take affect

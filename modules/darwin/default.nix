@@ -258,7 +258,6 @@ in {
       "steam"
       "mythic"
       "obs"
-      "bit-slicer"
     ];
   };
   ## END brew.nix

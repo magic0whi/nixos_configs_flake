@@ -83,7 +83,7 @@
         alt-7 = "workspace 7";
         alt-8 = "workspace 8";
         alt-9 = "workspace 9";
-        alt-0 = "workspace 10";
+        alt-0 = "workspace 0";
 
         alt-shift-1 = "move-node-to-workspace 1";
         alt-shift-2 = "move-node-to-workspace 2";
@@ -94,7 +94,7 @@
         alt-shift-7 = "move-node-to-workspace 7";
         alt-shift-8 = "move-node-to-workspace 8";
         alt-shift-9 = "move-node-to-workspace 9";
-        alt-shift-0 = "move-node-to-workspace 10";
+        alt-shift-0 = "move-node-to-workspace 0";
 
         alt-tab = "workspace-back-and-forth";
         alt-shift-tab = "move-workspace-to-monitor --wrap-around next"; # See: https://nikitabobko.github.io/AeroSpace/commands#move-workspace-to-monitor
@@ -103,11 +103,8 @@
       };
       mode.service.binding = { # See: https://nikitabobko.github.io/AeroSpace/guide#binding-modes
         esc = ["reload-config" "mode main"];
+        f = [ "layout floating tiling" "mode main" ]; # Toggle between floating and tiling layout
         r = ["flatten-workspace-tree" "mode main"]; # reset layout
-        f = [ # Toggle between floating and tiling layout
-          "layout floating tiling"
-          "mode main"
-        ];
         backspace = ["close-all-windows-but-current" "mode main"];
 
         alt-shift-h = ["join-with left" "mode main"];
@@ -128,6 +125,10 @@
         esc = "mode main";
       };
       exec.inherit-env-vars = true;
+      workspace-to-monitor-force-assignment = {
+        "9" = ["RTK UHD HDR"];
+        "0" = ["RTK UHD HDR"];
+      };
     };
   };
 }
