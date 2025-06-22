@@ -85,6 +85,7 @@ in {
     git-trim
     tree
     helix
+    findutils
     gnugrep
     gnutar
     curl
@@ -269,6 +270,8 @@ in {
     inter-nerdfont
     nerd-fonts.symbols-only # symbols icon only
     nerd-fonts.iosevka
+    noto-fonts-cjk-sans-static
+    noto-fonts-cjk-serif-static
   ];
   ## END fonts.nix
 }

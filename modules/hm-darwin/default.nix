@@ -52,6 +52,8 @@ in with lib; {
     utm # Virtual machine manager for Apple platforms
     insomnia # REST client
     wireshark # Network analyzer
+
+    xmrig
   ];
   xdg.enable = mkDefault true; # enable management of XDG base directories on macOS
   home.shellAliases = shell_aliases;
@@ -222,6 +224,10 @@ in with lib; {
           };
         };
       };
+    };
+    zathura = {
+      enable = mkDefault true;
+      options.selection-clipboard = mkDefault "clipboard";
     };
     ## END helix.nix
     yazi = { # terminal file manager
