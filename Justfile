@@ -116,34 +116,17 @@ s-hypr mode="default":
 
 ############################################################################
 #
-#  Darwin related commands, harmonica is my macbook pro's hostname
+#  Darwin related commands
 #
 ############################################################################
-
-[macos]
-[group('desktop')]
-darwin-set-proxy:
-  sudo python3 scripts/darwin_set_proxy.py
-  sleep 1sec
-
 [macos]
 [group('desktop')]
 darwin-rollback:
-  #!/usr/bin/env nu
-  use {{utils}} *;
+  #!/usr/bin/env bash
+  . {{utils}} *;
   darwin-rollback
 
-# Deploy to harmonica(macOS host)
-[macos]
-[group('desktop')]
-ha mode="default":
-  #!/usr/bin/env nu
-  use {{utils}} *;
-  darwin-build "harmonica" {{mode}};
-  darwin-switch "harmonica" {{mode}}
-
-# Depoly to Proteus-MBP14M4P(macOS host)
-[macos]
+[macos] # Depoly to Proteus-MBP14M4P(macOS host)
 [group('desktop')]
 proteus-mbp mode="default":
   #!/usr/bin/env bash
