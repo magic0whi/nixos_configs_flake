@@ -90,6 +90,7 @@ in {
     gnutar
     curl
     aria2
+    rsync
 
     m-cli # Swiss Army Knife for macOS, https://github.com/rgcr/m-cli
     mas # Mac App Store command line interface
@@ -264,7 +265,11 @@ in {
   };
   ## END brew.nix
   ## START users.nix
-  users.users.${myvars.username}.home = mkForce "/Users/${myvars.username}"; # home-manager needs it
+  users.users.${myvars.username} = {
+    description = mkDefault myvars.userfullname;
+    home = mkDefault "/Users/${myvars.username}"; # home-manager needs it
+    openssh.authorizedKeys.keys = mkDefault myvars.ssh_authorized_keys;
+  };
   ## END users.nix
   ## START fonts.nix
   fonts.packages = with pkgs; [
