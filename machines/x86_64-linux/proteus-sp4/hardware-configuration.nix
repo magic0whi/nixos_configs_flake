@@ -20,45 +20,45 @@ in{
     # "quiet"
   ];
 
-  fileSystems."/" =
-    { device = "/dev/disk/by-uuid/9de6d78b-8617-4aa3-b317-62d6312d8eea";
-      fsType = "btrfs";
-      options = ["subvol=@" "compress=zstd" "discard=async"];
-    };
-
   boot.initrd.luks.devices."${cryptroot_name}".device = "/dev/disk/by-uuid/494c9374-0502-495a-a39d-4b8b1365dbd4";
 
-  fileSystems."/home" =
-    { device = "/dev/disk/by-uuid/9de6d78b-8617-4aa3-b317-62d6312d8eea";
-      fsType = "btrfs";
-      options = ["subvol=@home" "compress=zstd" "discard=async"];
-    };
+  fileSystems."/" = {
+    device = "/dev/disk/by-uuid/9de6d78b-8617-4aa3-b317-62d6312d8eea";
+    fsType = "btrfs";
+    options = ["subvol=@" "compress=zstd" "discard=async"];
+  };
 
-  fileSystems."/.snapshots" =
-    { device = "/dev/disk/by-uuid/9de6d78b-8617-4aa3-b317-62d6312d8eea";
-      fsType = "btrfs";
-      neededForBoot = true;
-      options = ["subvol=@snapshots" "compress=zstd" "discard=async"];
-    };
+  fileSystems."/home" = {
+    device = "/dev/disk/by-uuid/9de6d78b-8617-4aa3-b317-62d6312d8eea";
+    fsType = "btrfs";
+    options = ["subvol=@home" "compress=zstd" "discard=async"];
+  };
 
-  fileSystems."/persistent" =
-    { device = "/dev/disk/by-uuid/9de6d78b-8617-4aa3-b317-62d6312d8eea";
-      fsType = "btrfs";
-      neededForBoot = true;
-      options = ["subvol=@persistent" "compress=zstd" "discard=async"];
-    };
+  fileSystems."/.snapshots" = {
+    device = "/dev/disk/by-uuid/9de6d78b-8617-4aa3-b317-62d6312d8eea";
+    fsType = "btrfs";
+    neededForBoot = true;
+    options = ["subvol=@snapshots" "compress=zstd" "discard=async"];
+  };
 
-  fileSystems."/nix" =
-    { device = "/dev/disk/by-uuid/9de6d78b-8617-4aa3-b317-62d6312d8eea";
-      fsType = "btrfs";
-      options = ["subvol=@nix" "compress=zstd" "discard=async"];
-    };
+  fileSystems."/persistent" = {
+    device = "/dev/disk/by-uuid/9de6d78b-8617-4aa3-b317-62d6312d8eea";
+    fsType = "btrfs";
+    neededForBoot = true;
+    options = ["subvol=@persistent" "compress=zstd" "discard=async"];
+  };
 
-  fileSystems."/boot" =
-    { device = "/dev/disk/by-uuid/81EC-E52B";
-      fsType = "vfat";
-      options = ["discard" "fmask=0077" "dmask=0077"];
-    };
+  fileSystems."/nix" = {
+    device = "/dev/disk/by-uuid/9de6d78b-8617-4aa3-b317-62d6312d8eea";
+    fsType = "btrfs";
+    options = ["subvol=@nix" "compress=zstd" "discard=async"];
+  };
+
+  fileSystems."/boot" = {
+    device = "/dev/disk/by-uuid/81EC-E52B";
+    fsType = "vfat";
+    options = ["discard" "fmask=0022" "dmask=0022"];
+  };
 
   swapDevices = [{device="/.snapshots/swapfile";}];
 
@@ -67,7 +67,6 @@ in{
   # still possible to use this option, but it's recommended to use it in conjunction
   # with explicit per-interface declarations with `networking.interfaces.<interface>.useDHCP`.
   networking.useDHCP = lib.mkDefault true;
-  # networking.interfaces.tailscale0.useDHCP = lib.mkDefault true;
   # networking.interfaces.wlp2s0.useDHCP = lib.mkDefault true;
 
   nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";

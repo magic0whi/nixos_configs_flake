@@ -1,7 +1,7 @@
 {inputs, mylib, myvars, system, ...}: let
   name = baseNameOf ./.;
   darwin_modules = map mylib.relative_to_root [
-    "modules/secrets"
+    "modules/secrets/darwin.nix"
     "modules/darwin"
   ];
   hm_modules = map mylib.relative_to_root [

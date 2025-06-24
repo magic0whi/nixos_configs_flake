@@ -49,11 +49,10 @@
       url = "github:nix-darwin/nix-darwin";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    mac-app-util = { # Fix .app programs installed by Nix on Mac 
+    mac-app-util = { # Fix .app programs installed by Nix on Mac not verified
       url = "github:hraban/mac-app-util";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    # TODO
     # my private secrets, it's a private repository, you need to replace it with your own. TODO
     # use ssh protocol to authenticate via ssh-agent/ssh-key, and shallow clone to save time
     # mysecrets = {

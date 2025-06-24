@@ -24,5 +24,6 @@ let
 in {
   "config.json.age".publicKeys = machines;
   "proteus.smb.age".publicKeys = machines;
-  # "test.key.age".publicKeys = machines;
+  "syncthing_key_Proteus-MBP14M4P.pem.age".publicKeys = machines;
+  "syncthing_key_proteus-sp4.pem.age".publicKeys = machines;
 }

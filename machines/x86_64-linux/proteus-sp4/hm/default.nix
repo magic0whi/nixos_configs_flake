@@ -1,7 +1,8 @@
-{lib, mylib, pkgs, ...}: let
+{agenix, config, lib, mylib, myvars, pkgs, ...}: let
   dpi_scale = lib.strings.substring 0 3 (lib.strings.floatToString 1.5);
   main_monitor = "eDP-1";
   modeline = "highres,auto,${dpi_scale},bitdepth,10";
+  custom_files_dir = mylib.relative_to_root "custom_files";
 in {
   home.packages = [pkgs.nvtopPackages.intel];
   modules.desktop.hyprland = {
@@ -59,9 +60,19 @@ in {
     ];
   };
   programs.mpv.profiles.common.vulkan-device = "Intel(R) HD Graphics 520 (SKL GT2)";
+  ## START secrets.nix
+  imports = [agenix.homeManagerModules.default];
+  age.identityPaths = ["/home/${myvars.username}/sync-work/3keys/private/legacy/proteus_ed25519.key"];
+  age.secrets = let
+    noaccess = {mode = "0000";};
+    high_security = {mode = "0500";};
+  in {
+    "syncthing_key_proteus-sp4.pem" = {file = "${custom_files_dir}/syncthing_key_proteus-sp4.pem.age";} // high_security;
+  };
+  ## END secrets.nix
   services.syncthing = {
-    key = "${./syncthing_key.pem}"; # TODO use agenix
-    cert = "${./syncthing_cert.pem}";
+    key = config.age.secrets."syncthing_key_proteus-sp4.pem".path;
+    cert = "${custom_files_dir}/syncthing_cert_proteus-sp4.pem";
     settings = {
       devices = {
         "LGE-AN00" = { id = "T2V6DJB-243NJGD-5B63LUP-DSLNFBD-U72KGD2-AZVTIHL-HEUMBTI-HAVD7A2"; };
