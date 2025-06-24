@@ -67,12 +67,12 @@ in {
     noaccess = {mode = "0000";};
     high_security = {mode = "0500";};
   in {
-    "syncthing_key_proteus-sp4.pem" = {file = "${custom_files_dir}/syncthing_key_proteus-sp4.pem.age";} // high_security;
+    "syncthing_proteus-sp4.key.pem" = {file = "${custom_files_dir}/syncthing_proteus-sp4.key.pem.age";} // high_security;
   };
   ## END secrets.nix
   services.syncthing = {
-    key = config.age.secrets."syncthing_key_proteus-sp4.pem".path;
-    cert = "${custom_files_dir}/syncthing_cert_proteus-sp4.pem";
+    key = config.age.secrets."syncthing_proteus-sp4.key.pem".path;
+    cert = "${custom_files_dir}/syncthing_proteus-sp4.crt.pem";
     settings = {
       devices = {
         "LGE-AN00" = { id = "T2V6DJB-243NJGD-5B63LUP-DSLNFBD-U72KGD2-AZVTIHL-HEUMBTI-HAVD7A2"; };

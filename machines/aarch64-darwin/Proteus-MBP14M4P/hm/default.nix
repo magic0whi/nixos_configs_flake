@@ -12,7 +12,7 @@ in {
     noaccess = {mode = "0000";};
     high_security = {mode = "0500";};
   in {
-    "syncthing_key_Proteus-MBP14M4P.pem" = {file = "${custom_files_dir}/syncthing_key_Proteus-MBP14M4P.pem.age";} // high_security;
+    "syncthing_Proteus-MBP14M4P.key.pem" = {file = "${custom_files_dir}/syncthing_Proteus-MBP14M4P.key.pem.age";} // high_security;
   };
   ## END secrets.nix
   launchd.agents.syncthing.config = {
@@ -20,8 +20,8 @@ in {
     StandardOutPath = "/Users/${myvars.username}/Library/Logs/syncthing/stdout";
   };
   services.syncthing = {
-    key = config.age.secrets."syncthing_key_Proteus-MBP14M4P.pem".path;
-    cert = "${custom_files_dir}/syncthing_cert_Proteus-MBP14M4P.pem";
+    key = config.age.secrets."syncthing_Proteus-MBP14M4P.key.pem".path;
+    cert = "${custom_files_dir}/syncthing_Proteus-MBP14M4P.crt.pem";
     settings = {
       devices = {
         "LGE-AN00" = { id = "T2V6DJB-243NJGD-5B63LUP-DSLNFBD-U72KGD2-AZVTIHL-HEUMBTI-HAVD7A2"; };
