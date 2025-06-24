@@ -36,8 +36,8 @@ in {
     {
       environment.systemPackages = [agenix.packages."${pkgs.system}".default];
       age.identityPaths = if config.environment ? persistence && config.environment.persistence != {} then [
-        "/persistent/home/${myvars.username}/sync-work/3keys/private/legacy/proteus_ed25519.key"
-      ] else ["/home/${myvars.username}/sync-work/3keys/private/legacy/proteus_ed25519.key"];
+        "/persistent${config.users.users.${myvars.username}.home}/sync-work/3keys/private/legacy/proteus_ed25519.key"
+      ] else ["${config.users.users.${myvars.username}.home}/sync-work/3keys/private/legacy/proteus_ed25519.key"];
       assertions = [{
         assertion = !(cfg.desktop.enable && enabled_server_secrets);
         message = "Enable either desktop or server's secrets, not both!";
