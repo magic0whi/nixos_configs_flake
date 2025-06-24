@@ -25,6 +25,7 @@ in with lib; {
     tlrc
     (ripgrep.override {withPCRE2 = true;})
     just
+    xmrig # Benchmark
 
     ## Nix Related
     # It provides the command `nom` works just like `nix
@@ -53,7 +54,6 @@ in with lib; {
     insomnia # REST client
     wireshark # Network analyzer
 
-    xmrig
   ];
   xdg.enable = mkDefault true; # enable management of XDG base directories on macOS
   home.shellAliases = shell_aliases;

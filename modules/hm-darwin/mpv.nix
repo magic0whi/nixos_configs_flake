@@ -1,5 +1,12 @@
 {pkgs, lib, ...}: with lib; {
   home.shellAliases = {"mpv" = mkDefault "mpv --player-operation-mode=pseudo-gui";};
+  home.activation.set_mpv_associations = mkDefault (hm.dag.entryAfter ["writeBoundary"] ''
+    # Set UTIs
+    ${getExe' pkgs.duti "duti"} -s io.mpv public.movie viewer
+    # Set file extensions
+    ${getExe' pkgs.duti "duti"} -s io.mpv .mkv viewer
+    ${getExe' pkgs.duti "duti"} -s io.mpv .mp4 viewer
+  '');
   programs.mpv = with pkgs; {
     enable = mkDefault true;
     package = mkDefault pkgs.mpv-unwrapped; # https://github.com/NixOS/nixpkgs/issues/356860

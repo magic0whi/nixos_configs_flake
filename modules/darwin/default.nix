@@ -259,6 +259,7 @@ in {
       "steam"
       "mythic"
       "obs"
+      "inkscape"
     ];
   };
   ## END brew.nix
@@ -270,8 +271,10 @@ in {
     inter-nerdfont
     nerd-fonts.symbols-only # symbols icon only
     nerd-fonts.iosevka
-    noto-fonts-cjk-sans-static
-    noto-fonts-cjk-serif-static
+    noto-fonts-cjk-sans
+    noto-fonts-cjk-serif
+    # noto-fonts-cjk-sans-static
+    # noto-fonts-cjk-serif-static
   ];
   ## END fonts.nix
 }
