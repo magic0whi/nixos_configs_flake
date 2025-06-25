@@ -35,7 +35,7 @@ in {
   '';
   services.openssh.enable = mkDefault true;
   services.tailscale.enable = mkDefault true; # Usage: https://github.com/tailscale/tailscale/wiki/Tailscaled-on-macOS#run-the-tailscaled-daemon
-  services.sing-box.enable = mkDefault true;
+  # services.sing-box.enable = mkDefault true; # Current DNS hijack doesn't work
   # 1. 'sudo tailscaled install-system-daemon'
   # 2. `tailscale up --accept-routes`
   security.pam.services.sudo_local.touchIdAuth = true; # Add ability to used TouchID for sudo authentication
@@ -230,11 +230,11 @@ in {
     ];
     casks = [ # 'brew install --cask'
       "keepassxc" # gpgme is marked as broken, use casks temporally
-      # "sfm" # Standalone client for sing-box, it lacks some features compares to its cli version
+      "sfm" # Standalone client for sing-box, it lacks some features compares to its cli version
       "jordanbaird-ice" # Powerful menu bar manager
 
       # "discord" # update too frequently, use the web version instead
-      "microsoft-remote-desktop"
+      "windows-app" # Formerly microsoft-remote-desktop
 
       # Misc
       # "reaper"  # audio editor
