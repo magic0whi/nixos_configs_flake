@@ -21,6 +21,7 @@ in {
       mode = "0500";
       owner = myvars.username;
     };
-  in { # TODO
+  in {
+    "config.json" = {file = "${mysecrets}/config.json.age";} // noaccess;
   };
 }

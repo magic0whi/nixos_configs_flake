@@ -34,7 +34,10 @@ in {
     KbdInteractiveAuthentication no
   '';
   services.openssh.enable = mkDefault true;
-  services.tailscale.enable = mkDefault true;
+  services.tailscale.enable = mkDefault true; # Usage: https://github.com/tailscale/tailscale/wiki/Tailscaled-on-macOS#run-the-tailscaled-daemon
+  services.sing-box.enable = mkDefault true;
+  # 1. 'sudo tailscaled install-system-daemon'
+  # 2. `tailscale up --accept-routes`
   security.pam.services.sudo_local.touchIdAuth = true; # Add ability to used TouchID for sudo authentication
   nixpkgs.config.allowUnfree = mkDefault true; # Allow chrome, vscode to install
   nix.package = mkDefault pkgs.nixVersions.latest; # Use latest nix, default is pkgs.nix
@@ -215,27 +218,19 @@ in {
       OneDrive = 823766827;
       QQ = 451108668;
       # "sing-box" = 6673731168; # Older than sfm in brew cask
-      # Tailscale = 1475387142; # Poorly
       Telegram = 747648890;
       WeChat = 836500024;
     };
 
     taps = [
       "hashicorp/tap"
-      # "nikitabobko/tap" # aerospace - an i3-like tiling window manager for macOS
-      # "FelixKratz/formulae" # janky borders - highlight active window borders
       "gcenx/wine" # homebrew-wine - game-porting-toolkit & wine-crossover
     ];
     brews = [ # 'brew install'
     ];
     casks = [ # 'brew install --cask'
-      # "tailscale" # Usage: https://github.com/tailscale/tailscale/wiki/Tailscaled-on-macOS#run-the-tailscaled-daemon
-      # 1. 'sudo tailscaled install-system-daemon'
-      # 2. `tailscale up --accept-routes`
-      # Or use darwin-nix's built-in support 'services.tailscale.*'
-      # "aerospace" # an i3-like tiling window manager for macOS # TODO: Use 'services.aerospace.*'
       "keepassxc" # gpgme is marked as broken, use casks temporally
-      "sfm" # Standalone client for sing-box TODO write launchd, SFM doesn't support process_name
+      # "sfm" # Standalone client for sing-box, it lacks some features compares to its cli version
       "jordanbaird-ice" # Powerful menu bar manager
 
       # "discord" # update too frequently, use the web version instead
@@ -278,8 +273,6 @@ in {
     nerd-fonts.iosevka
     noto-fonts-cjk-sans
     noto-fonts-cjk-serif
-    # noto-fonts-cjk-sans-static
-    # noto-fonts-cjk-serif-static
   ];
   ## END fonts.nix
 }
