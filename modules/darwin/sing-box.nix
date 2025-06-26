@@ -8,22 +8,23 @@ in with lib; {
   };
   config = mkIf cfg.enable {
     environment.systemPackages = [cfg.package];
-    launchd.daemons.sing-box = {
-      # command = mkDefault ''${lib.getExe cfg.package} -c ${config.age.secrets."config.json".path} -D "${sing-box_dir}" run'';
-      serviceConfig = {
-        Label = mkOverride 999 "io.nekohasekai.sing-box";
-        RunAtLoad = mkDefault true;
-        StandardErrorPath = mkDefault "/Library/Logs/org.nixos.sing-box.stderr.log";
-        StandardOutPath = mkDefault "/Library/Logs/org.nixos.sing-box.stdout.log";
-        ProgramArguments = [
-          "/bin/sh"
-          "-c"
-          ("/bin/wait4path /nix/store"
-            + " && install -dm700 \"${sing-box_dir}\""
-            + " && exec ${lib.getExe cfg.package} -c ${config.age.secrets."config.json".path} -D \"${sing-box_dir}\" run"
-          )
-        ];
+    launchd.daemons.sing-box.serviceConfig = {
+      KeepAlive = {
+        Crashed = mkDefault true;
+        SuccessfulExit = mkDefault false;
       };
+      Label = mkOverride 999 "io.nekohasekai.sing-box";
+      ProgramArguments = [
+        "/bin/sh"
+        "-c"
+        ("/bin/wait4path /nix/store"
+          + " && install -dm700 \"${sing-box_dir}\""
+          + " && exec ${lib.getExe cfg.package} -c ${config.age.secrets."config.json".path} -D \"${sing-box_dir}\" run"
+        )
+      ];
+      RunAtLoad = mkDefault true;
+      StandardErrorPath = mkDefault "/Library/Logs/org.nixos.sing-box.stderr.log";
+      StandardOutPath = mkDefault "/Library/Logs/org.nixos.sing-box.stdout.log";
     };
   };
 }

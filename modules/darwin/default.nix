@@ -35,7 +35,7 @@ in {
   '';
   services.openssh.enable = mkDefault true;
   services.tailscale.enable = mkDefault true; # Usage: https://github.com/tailscale/tailscale/wiki/Tailscaled-on-macOS#run-the-tailscaled-daemon
-  # services.sing-box.enable = mkDefault true; # Current DNS hijack doesn't work
+  services.sing-box.enable = mkDefault true; # Current DNS hijack doesn't work
   # 1. 'sudo tailscaled install-system-daemon'
   # 2. `tailscale up --accept-routes`
   security.pam.services.sudo_local.touchIdAuth = true; # Add ability to used TouchID for sudo authentication
