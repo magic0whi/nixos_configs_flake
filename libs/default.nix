@@ -46,25 +46,6 @@ in {
       }
     ]);
   };
-  gen_nixos_system_args = {name, mylib, myvars, nixos_modules, hm_modules, machine_path}: let
-    inherit (inputs) home-manager nixos-generators;
-    specialArgs = inputs // {inherit mylib myvars;};
-  in {
-    inherit system specialArgs;
-    modules = nixos_modules ++ [
-      nixos-generators.nixosModules.all-formats
-      {imports = mylib.scan_path machine_path; networking.hostName = name;}
-    ] ++ (lib.optionals ((lib.lists.length hm_modules) > 0) [
-      home-manager.nixosModules.home-manager {
-        home-manager.backupFileExtension = "home-manager.backup";
-        home-manager.extraSpecialArgs = specialArgs;
-        home-manager.useGlobalPkgs = true;
-        home-manager.useUserPackages = true;
-        home-manager.users."${myvars.username}".imports = hm_modules ++
-          [(machine_path + "/hm")];
-      }
-    ]);
-  };
   colmena_system = {
     tags ? [],
     ssh_user ? "root",

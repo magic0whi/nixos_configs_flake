@@ -2,7 +2,7 @@
   cfg = config.services.sing-box;
   sing-box_dir = "/Library/Application Support/sing-box";
 in with lib; {
-  options.services.sing-box = {
+  options.services.sing-box2 = {
     enable = mkEnableOption "sing-box universal proxy platform";
     package = mkPackageOption pkgs "sing-box" {};
   };

@@ -24,7 +24,7 @@ in {
     tags = ["main-laptop"];
   };
   colmena_meta = {
-    node_nixpkgs.${name} = import inputs.nixpkgs {inherit system;};
+    node_nixpkgs.${name} = inputs.nixpkgs.legacyPackages.${system};
     node_specialArgs.${name} = nixos_system_args.specialArgs;
   };
 }

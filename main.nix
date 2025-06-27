@@ -15,7 +15,7 @@
 in {
   debug_attrs = {inherit args_fn mylib_fn nixos_systems darwin_systems_values;}; # Add attribute sets into outputs for debugging
   # Merge all the machines into a single attribute set (Multi-arch)
-  nixosConfigurations = lib.attrsets.mergeAttrsList
+  nixosConfigurations = lib.mergeAttrsList
     (map (i: i.nixos_configurations or {}) nixos_systems_values);
   # Packages: iso
   packages = lib.genAttrs
@@ -23,8 +23,8 @@ in {
     (system: nixos_systems.${system}.packages or {});
   colmenaHive = inputs.colmena.lib.makeHive (lib.recursiveUpdate
     {meta.nixpkgs = import inputs.nixpkgs {system = "x86_64-linux";};} # meta.nixpkgs is required
-    (lib.attrsets.mergeAttrsList (map (i: i.colmena or {}) both_systems_values))
+    (lib.mergeAttrsList (map (i: i.colmena or {}) darwin_systems_values))
   );
-  darwinConfigurations = lib.attrsets.mergeAttrsList
+  darwinConfigurations = lib.mergeAttrsList
     (map (i: i.darwin_configurations or {}) darwin_systems_values);
 }
