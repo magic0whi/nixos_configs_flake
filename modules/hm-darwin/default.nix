@@ -1,4 +1,4 @@
-{myvars, mylib, lib, pkgs, config, ...}: let
+{config, colmena, lib, mylib, myvars, pkgs, ...}: let
   shell_aliases = {
     grep = "grep --color=auto";
     ip = "ip --color=auto";
@@ -53,7 +53,7 @@ in with lib; {
     utm # Virtual machine manager for Apple platforms
     insomnia # REST client
     wireshark # Network analyzer
-
+    colmena.packages.${pkgs.system}.colmena # nixos's remote deployment tool
   ];
   xdg.enable = mkDefault true; # enable management of XDG base directories on macOS
   home.shellAliases = shell_aliases;

@@ -1,6 +1,6 @@
 {inputs, mylib, myvars, system, ...}: let
   name = baseNameOf ./.;
-  nixos_modules = map mylib.relative_to_root [
+  nixpkgs_modules = map mylib.relative_to_root [
     "modules/secrets/linux.nix"
     "overlays"
     "modules/nixos/common"
@@ -10,12 +10,12 @@
     "modules/hm/common"
     "modules/hm/desktop"
   ];
-  nixos_system_args = mylib.gen_nixos_system_args {
-    inherit name mylib myvars nixos_modules hm_modules;
+  nixos_system_args = mylib.gen_system_args {
+    inherit name mylib myvars nixpkgs_modules hm_modules;
     machine_path = ./.;
   };
 in {
-  debug_attrs = {inherit name nixos_modules hm_modules nixos_system_args;};
+  debug_attrs = {inherit name nixpkgs_modules hm_modules nixos_system_args;};
   nixos_configurations.${name} = inputs.nixpkgs.lib.nixosSystem nixos_system_args;
   # generate iso image
   packages.${name} = inputs.self.nixosConfigurations.${name}.config.formats.iso;
@@ -24,7 +24,7 @@ in {
     tags = ["main-laptop"];
   };
   colmena_meta = {
-    node_nixpkgs = {${name} = import inputs.nixpkgs {inherit system;};};
-    node_specialArgs = {${name} = nixos_system_args.specialArgs;};
+    node_nixpkgs.${name} = import inputs.nixpkgs {inherit system;};
+    node_specialArgs.${name} = nixos_system_args.specialArgs;
   };
 }

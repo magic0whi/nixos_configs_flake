@@ -8,9 +8,10 @@
     # aarch64-linux = import ../machines/aarch64-linux (args // {system = "aarch64-linux";});
     # riscv64-linux = import ../machines/riscv64-linux (args // {system = "riscv64-linux";});
   };
-  darwinSystems.aarch64-darwin = import ./machines (args_fn "aarch64-darwin");
+  darwin_systems.aarch64-darwin = import ./machines (args_fn "aarch64-darwin");
   nixos_systems_values = builtins.attrValues nixos_systems;
-  darwin_systems_values = builtins.attrValues darwinSystems;
+  darwin_systems_values = builtins.attrValues darwin_systems;
+  both_systems_values = nixos_systems_values ++ darwin_systems_values;
 in {
   debug_attrs = {inherit args_fn mylib_fn nixos_systems darwin_systems_values;}; # Add attribute sets into outputs for debugging
   # Merge all the machines into a single attribute set (Multi-arch)
@@ -22,7 +23,7 @@ in {
     (system: nixos_systems.${system}.packages or {});
   colmenaHive = inputs.colmena.lib.makeHive (lib.recursiveUpdate
     {meta.nixpkgs = import inputs.nixpkgs {system = "x86_64-linux";};} # meta.nixpkgs is required
-    (lib.attrsets.mergeAttrsList (map (i: i.colmena or {}) nixos_systems_values))
+    (lib.attrsets.mergeAttrsList (map (i: i.colmena or {}) both_systems_values))
   );
   darwinConfigurations = lib.attrsets.mergeAttrsList
     (map (i: i.darwin_configurations or {}) darwin_systems_values);
