@@ -27,19 +27,20 @@
         TrackpadThreeFingerDrag = mkDefault true; # Three finger drag
       };
       finder = {
-        _FXShowPosixPathInTitle = true;
-        _FXSortFoldersFirst = true;
-        AppleShowAllExtensions = true;
-        AppleShowAllFiles = true; # Show hidden files
-        FXDefaultSearchScope = "SCcf"; # Search scope to current folder
-        FXEnableExtensionChangeWarning = false;
-        FXPreferredViewStyle = "Nlsv"; # List view
-        QuitMenuItem = true; # Allow quitting of the Finder
-        ShowMountedServersOnDesktop = true;
-        ShowPathbar = true; # Show path breadcrumbs in finder windows
-        ShowStatusBar = true; # show status bar
+        _FXShowPosixPathInTitle = mkDefault true;
+        _FXSortFoldersFirst = mkDefault true;
+        AppleShowAllExtensions = mkDefault true;
+        AppleShowAllFiles = mkDefault true; # Show hidden files
+        FXDefaultSearchScope = mkDefault "SCcf"; # Search scope to current folder
+        FXEnableExtensionChangeWarning = mkDefault false;
+        FXPreferredViewStyle = mkDefault "Nlsv"; # List view
+        QuitMenuItem = mkDefault true; # Allow quitting of the Finder
+        ShowMountedServersOnDesktop = mkDefault true;
+        ShowPathbar = mkDefault true; # Show path breadcrumbs in info bar
+        ShowStatusBar = mkDefault true; # show status bar
       };
       NSGlobalDomain = {
+        AppleICUForce24HourTime = mkDefault true; # Use 24-hour instead of based on region settings.
         AppleKeyboardUIMode = mkDefault 3; # Configures the keyboard control behavior. Mode 3 enables full keyboard control
         NSAutomaticQuoteSubstitutionEnabled = mkDefault false; # Disable auto quote substitution
       };
