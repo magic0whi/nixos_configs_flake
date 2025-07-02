@@ -336,7 +336,7 @@
   zramSwap.enable = mkDefault true;
   # END zram.nix
   # Add my self-signed CA certificate to the system-wide trust store.
-  security.pki.certificateFiles = mkDefault [
+  security.pki.certificateFiles = [
     (mylib.relative_to_root "custom_files/proteus_ca.pem")
   ];
   ## START fhs.nix

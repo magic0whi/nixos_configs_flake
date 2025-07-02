@@ -25,7 +25,7 @@ in {
   imports = mylib.scan_path ./.;
   system.stateVersion = mkDefault 6;
   system.primaryUser = mkDefault myvars.username;
-  security.pki.certificateFiles = mkDefault [
+  security.pki.certificateFiles = [
     (mylib.relative_to_root "custom_files/proteus_ca.pem")
   ];
   # Disable password authentication for SSH
@@ -94,6 +94,7 @@ in {
     curl
     aria2
     rsync
+    doggo
 
     m-cli # Swiss Army Knife for macOS, https://github.com/rgcr/m-cli
     mas # Mac App Store command line interface
@@ -231,6 +232,7 @@ in {
     casks = [ # 'brew install --cask'
       "keepassxc" # gpgme is marked as broken, use casks temporally
       "sfm" # Standalone client for sing-box, it lacks some features compares to its cli version
+      "clash-verge-rev"
       "jordanbaird-ice" # Powerful menu bar manager
 
       # "discord" # update too frequently, use the web version instead
