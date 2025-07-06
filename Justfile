@@ -131,7 +131,7 @@ darwin-rollback:
 proteus-mbp mode="default":
   #!/usr/bin/env bash
   . {{utils}}
-  darwin-build "Proteus-MBP14M4P" {{mode}};
+  darwin-build "Proteus-MBP14M4P" {{mode}} && \
   darwin-switch "Proteus-MBP14M4P" {{mode}}
 
 # Reset launchpad to force it to reindex Applications

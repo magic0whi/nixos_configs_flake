@@ -1,6 +1,6 @@
-{config, ...}: {
-  services.jankyborders.enable = true;
-  xdg.configFile."aerospace/ghostty-actions.js".text = ''
+{config, lib, ...}: with lib; {
+  services.jankyborders.enable = mkDefault true;
+  xdg.configFile."aerospace/ghostty-actions.js".text = mkDefault ''
   #!/usr/bin/osascript -l JavaScript
   ObjC.import('Foundation')
   const argv = $.NSProcessInfo.processInfo.arguments.js
@@ -32,102 +32,102 @@
   }
   '';
   programs.aerospace = {
-    enable = true;
+    enable = mkDefault true;
     userSettings = { # See https://nikitabobko.github.io/AeroSpace/guide#configuring-aerospace
-      start-at-login = true;
+      start-at-login = mkDefault true;
       after-startup-command = [ # Available commands https://nikitabobko.github.io/AeroSpace/commands
         "exec-and-forget borders active_color=0xffe1e3e4 inactive_color=0xff494d64 width=5.0" # Highlight focused windows with colored borders TODO: move to services.jankyborders.settings
       ];
-      automatically-unhide-macos-hidden-apps = false; # Turn off macOS "Hide application" (cmd-h) feature
+      automatically-unhide-macos-hidden-apps = mkDefault true; # Turn off macOS "Hide application" (cmd-h) feature
       gaps = {
-        inner.horizontal = 3;
-        inner.vertical = 3;
-        outer.left = 3;
-        outer.bottom = 3;
-        outer.top = 3;
-        outer.right = 3;
+        inner.horizontal = mkDefault 3;
+        inner.vertical = mkDefault 3;
+        outer.left = mkDefault 3;
+        outer.bottom = mkDefault 3;
+        outer.top = mkDefault 3;
+        outer.right = mkDefault 3;
       };
       mode.main.binding = {
         # Run terminal
-        alt-enter = "exec-and-forget osascript -lJavaScript ${config.xdg.configHome}/aerospace/ghostty-actions.js 1";
-        alt-shift-enter = "exec-and-forget osascript -lJavaScript ${config.xdg.configHome}/aerospace/ghostty-actions.js 2";
-        ctrl-alt-enter = "exec-and-forget osascript -lJavaScript ${config.xdg.configHome}/aerospace/ghostty-actions.js 3";
+        alt-enter = mkDefault "exec-and-forget osascript -lJavaScript ${config.xdg.configHome}/aerospace/ghostty-actions.js 1";
+        alt-shift-enter = mkDefault "exec-and-forget osascript -lJavaScript ${config.xdg.configHome}/aerospace/ghostty-actions.js 2";
+        ctrl-alt-enter = mkDefault "exec-and-forget osascript -lJavaScript ${config.xdg.configHome}/aerospace/ghostty-actions.js 3";
         # See: https://nikitabobko.github.io/AeroSpace/commands#layout
-        alt-slash = "layout tiles horizontal vertical";
-        alt-comma = "layout accordion horizontal vertical";
+        alt-slash = mkDefault "layout tiles horizontal vertical";
+        alt-comma = mkDefault "layout accordion horizontal vertical";
 
         # See: https://nikitabobko.github.io/AeroSpace/commands#focus
-        alt-h = "focus left";
-        alt-j = "focus down";
-        alt-k = "focus up";
-        alt-l = "focus right";
+        alt-h = mkDefault "focus left";
+        alt-j = mkDefault "focus down";
+        alt-k = mkDefault "focus up";
+        alt-l = mkDefault "focus right";
 
         # See: https://nikitabobko.github.io/AeroSpace/commands#move
-        alt-shift-h = "move left";
-        alt-shift-j = "move down";
-        alt-shift-k = "move up";
-        alt-shift-l = "move right";
+        alt-shift-h = mkDefault "move left";
+        alt-shift-j = mkDefault "move down";
+        alt-shift-k = mkDefault "move up";
+        alt-shift-l = mkDefault "move right";
 
         # See: https://nikitabobko.github.io/AeroSpace/commands#resize
-        alt-shift-minus = "resize smart -50";
-        alt-shift-equal = "resize smart +50";
-        alt-shift-r = "mode resize";
+        alt-shift-minus = mkDefault "resize smart -50";
+        alt-shift-equal = mkDefault "resize smart +50";
+        alt-shift-r = mkDefault "mode resize";
 
         # See: https://nikitabobko.github.io/AeroSpace/commands#workspace
-        alt-1 = "workspace 1";
-        alt-2 = "workspace 2";
-        alt-3 = "workspace 3";
-        alt-4 = "workspace 4";
-        alt-5 = "workspace 5";
-        alt-6 = "workspace 6";
-        alt-7 = "workspace 7";
-        alt-8 = "workspace 8";
-        alt-9 = "workspace 9";
-        alt-0 = "workspace 0";
+        alt-1 = mkDefault "workspace 1";
+        alt-2 = mkDefault "workspace 2";
+        alt-3 = mkDefault "workspace 3";
+        alt-4 = mkDefault "workspace 4";
+        alt-5 = mkDefault "workspace 5";
+        alt-6 = mkDefault "workspace 6";
+        alt-7 = mkDefault "workspace 7";
+        alt-8 = mkDefault "workspace 8";
+        alt-9 = mkDefault "workspace 9";
+        alt-0 = mkDefault "workspace 0";
 
-        alt-shift-1 = "move-node-to-workspace 1";
-        alt-shift-2 = "move-node-to-workspace 2";
-        alt-shift-3 = "move-node-to-workspace 3";
-        alt-shift-4 = "move-node-to-workspace 4";
-        alt-shift-5 = "move-node-to-workspace 5";
-        alt-shift-6 = "move-node-to-workspace 6";
-        alt-shift-7 = "move-node-to-workspace 7";
-        alt-shift-8 = "move-node-to-workspace 8";
-        alt-shift-9 = "move-node-to-workspace 9";
-        alt-shift-0 = "move-node-to-workspace 0";
+        alt-shift-1 = mkDefault "move-node-to-workspace 1";
+        alt-shift-2 = mkDefault "move-node-to-workspace 2";
+        alt-shift-3 = mkDefault "move-node-to-workspace 3";
+        alt-shift-4 = mkDefault "move-node-to-workspace 4";
+        alt-shift-5 = mkDefault "move-node-to-workspace 5";
+        alt-shift-6 = mkDefault "move-node-to-workspace 6";
+        alt-shift-7 = mkDefault "move-node-to-workspace 7";
+        alt-shift-8 = mkDefault "move-node-to-workspace 8";
+        alt-shift-9 = mkDefault "move-node-to-workspace 9";
+        alt-shift-0 = mkDefault "move-node-to-workspace 0";
 
-        alt-tab = "workspace-back-and-forth";
-        alt-shift-tab = "move-workspace-to-monitor --wrap-around next"; # See: https://nikitabobko.github.io/AeroSpace/commands#move-workspace-to-monitor
+        alt-tab = mkDefault "workspace-back-and-forth";
+        alt-shift-tab = mkDefault "move-workspace-to-monitor --wrap-around next"; # See: https://nikitabobko.github.io/AeroSpace/commands#move-workspace-to-monitor
 
-        alt-shift-semicolon = "mode service"; # See: https://nikitabobko.github.io/AeroSpace/commands#mode
+        alt-shift-semicolon = mkDefault "mode service"; # See: https://nikitabobko.github.io/AeroSpace/commands#mode
       };
       mode.service.binding = { # See: https://nikitabobko.github.io/AeroSpace/guide#binding-modes
-        esc = ["reload-config" "mode main"];
-        f = [ "layout floating tiling" "mode main" ]; # Toggle between floating and tiling layout
-        r = ["flatten-workspace-tree" "mode main"]; # reset layout
-        backspace = ["close-all-windows-but-current" "mode main"];
+        esc = mkDefault ["reload-config" "mode main"];
+        f = mkDefault [ "layout floating tiling" "mode main" ]; # Toggle between floating and tiling layout
+        r = mkDefault ["flatten-workspace-tree" "mode main"]; # reset layout
+        backspace = mkDefault ["close-all-windows-but-current" "mode main"];
 
-        alt-shift-h = ["join-with left" "mode main"];
-        alt-shift-j = ["join-with down" "mode main"];
-        alt-shift-k = ["join-with up" "mode main"];
-        alt-shift-l = ["join-with right" "mode main"];
+        alt-shift-h = mkDefault ["join-with left" "mode main"];
+        alt-shift-j = mkDefault ["join-with down" "mode main"];
+        alt-shift-k = mkDefault ["join-with up" "mode main"];
+        alt-shift-l = mkDefault ["join-with right" "mode main"];
 
-        down = "volume down";
-        up = "volume up";
-        shift-down = ["volume set 0" "mode main"];
+        down = mkDefault "volume down";
+        up = mkDefault "volume up";
+        shift-down = mkDefault ["volume set 0" "mode main"];
       };
       mode.resize.binding = { # 'resize' binding mode
-        h = "resize width -50";
-        j = "resize height +50";
-        k = "resize height -50";
-        l = "resize width +50";
-        enter = "mode main";
-        esc = "mode main";
+        h = mkDefault "resize width -50";
+        j = mkDefault "resize height +50";
+        k = mkDefault "resize height -50";
+        l = mkDefault "resize width +50";
+        enter = mkDefault "mode main";
+        esc = mkDefault "mode main";
       };
-      exec.inherit-env-vars = true;
+      exec.inherit-env-vars = mkDefault true;
       workspace-to-monitor-force-assignment = {
-        "9" = ["RTK UHD HDR"];
-        "0" = ["RTK UHD HDR"];
+        "9" = mkDefault ["RTK UHD HDR"];
+        "0" = mkDefault ["RTK UHD HDR"];
       };
     };
   };

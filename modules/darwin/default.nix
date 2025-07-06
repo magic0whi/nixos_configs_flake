@@ -95,6 +95,7 @@ in {
     aria2
     rsync
     doggo
+    python312
 
     m-cli # Swiss Army Knife for macOS, https://github.com/rgcr/m-cli
     mas # Mac App Store command line interface
