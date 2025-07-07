@@ -245,6 +245,9 @@ in {
       "tencent-lemon" # macOS cleaner
       "neteasemusic" # music
       "mihomo-party" # transparent proxy tool
+      "obs"
+      "inkscape"
+      "ibkr"
 
       # Development
       # "miniforge" # Miniconda's community-driven distribution
@@ -256,9 +259,7 @@ in {
       "gcenx/wine/wine-crossover" # Conflicts with game-porting-toolkit
       "crossover"
       "steam"
-      "mythic"
-      "obs"
-      "inkscape"
+      "mythic" # EPIC game launcher
     ];
   };
   ## END brew.nix
