@@ -129,6 +129,12 @@
         "9" = mkDefault ["RTK UHD HDR"];
         "0" = mkDefault ["RTK UHD HDR"];
       };
+      on-window-detected = [
+        {
+          "if".app-id = "io.mpv";
+          run = ["layout floating"];
+        }
+      ];
     };
   };
 }

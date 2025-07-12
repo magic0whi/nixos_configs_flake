@@ -34,6 +34,7 @@
         FXDefaultSearchScope = mkDefault "SCcf"; # Search scope to current folder
         FXEnableExtensionChangeWarning = mkDefault false;
         FXPreferredViewStyle = mkDefault "Nlsv"; # List view
+        NewWindowTarget = mkDefault "Home"; # Change default folder shown to home
         QuitMenuItem = mkDefault true; # Allow quitting of the Finder
         ShowMountedServersOnDesktop = mkDefault true;
         ShowPathbar = mkDefault true; # Show path breadcrumbs in info bar
