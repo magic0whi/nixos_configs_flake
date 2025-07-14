@@ -7,7 +7,7 @@ in {
   };
   ## START secrets.nix
   imports = [agenix.homeManagerModules.default];
-  age.identityPaths = ["${config.home.homeDirectory}/sync-work/3keys/private/legacy/proteus_ed25519.key"];
+  age.identityPaths = ["${config.home.homeDirectory}/sync_work/3keys/private/legacy/proteus_ed25519.key"];
   age.secrets = let
     noaccess = {mode = "0000";};
     high_security = {mode = "0500";};
@@ -31,8 +31,8 @@ in {
         "PROTEUSNOTEBOOK-WIN" = {id = "QAQHY4R-7KAQYI6-3WLUHMF-Y4LG5LR-XJMDYTF-3LUIOX3-VO33BCP-RBDM2A6";};
       };
       folders = {
-        "sync-work" = {
-          path = "~/sync-work";
+        "sync_work" = {
+          path = "~/sync_work";
           devices = ["proteus-sp4" "LGE-AN00" "M2011K2C" "PROTEUSDESKTOP" "PROTEUSNOTEBOOK-WIN"];
         };
       };

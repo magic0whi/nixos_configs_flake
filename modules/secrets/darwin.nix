@@ -7,7 +7,7 @@ in {
     StandardOutPath = "/Library/Logs/org.nixos.activate-agenix.stdout.log";
   };
   environment.systemPackages = [agenix.packages."${pkgs.system}".default]; # For debugging
-  age.identityPaths = ["${config.users.users.${myvars.username}.home}/sync-work/3keys/private/legacy/proteus_ed25519.key"];
+  age.identityPaths = ["${config.users.users.${myvars.username}.home}/sync_work/3keys/private/legacy/proteus_ed25519.key"];
   age.secrets = let
     noaccess = {
       mode = "0000";
