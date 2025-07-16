@@ -213,8 +213,14 @@ in with lib; {
               onEdit = mkDefault true;
             };
             forwardSearch = {
-              executable = mkDefault "zathura";
-              args = mkDefault ["--synctex-forward" "%l:1:%f" "%p"];
+              executable = mkDefault "sioyek";
+              args = mkDefault [
+                "--reuse-window"
+                "--execute-command" "toggle_synctex"
+                "--inverse-search" "texlab inverse-search -i \"%%1\" -l %%2"
+                "--forward-search-file" "%f"
+                "--forward-search-line" "%l"
+                "%p" ];
             };
             build = {
               executable = mkDefault "latexmk";
@@ -226,10 +232,7 @@ in with lib; {
         };
       };
     };
-    zathura = {
-      enable = mkDefault true;
-      options.selection-clipboard = mkDefault "clipboard";
-    };
+    sioyek.enable = mkDefault true;
     ## END helix.nix
     yazi = { # terminal file manager
       enable = mkDefault true;
