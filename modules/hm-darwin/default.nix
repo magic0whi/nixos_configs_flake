@@ -232,7 +232,13 @@ in with lib; {
         };
       };
     };
-    sioyek.enable = mkDefault true;
+    sioyek = {
+      enable = mkDefault true;
+      bindings = {
+        screen_down = "<C-d>";
+        screen_up = "<C-u>";
+      };
+    };
     ## END helix.nix
     yazi = { # terminal file manager
       enable = mkDefault true;
