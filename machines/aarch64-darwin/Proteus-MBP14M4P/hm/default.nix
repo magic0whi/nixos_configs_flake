@@ -24,16 +24,15 @@ in {
     cert = "${custom_files_dir}/syncthing_Proteus-MBP14M4P.crt.pem";
     settings = {
       devices = {
-        "proteus-sp4" = {id = "3P2RWV6-RQMHBFS-L3Z5JTF-O6HOR66-7INJZNM-XW3WUSG-XCIB454-UITNPAF";};
         "LGE-AN00" = {id = "T2V6DJB-243NJGD-5B63LUP-DSLNFBD-U72KGD2-AZVTIHL-HEUMBTI-HAVD7A2";};
         "M2011K2C" = {id = "M3HVW3S-OC32FV6-AHQ7JVU-KY7DQQ4-VF57UYZ-NCJCTU4-M2OXF4H-CY3HYAS";};
         "PROTEUSDESKTOP" = {id = "CLNAXLW-B2DBSV3-PDT246K-4CZQWGP-EE5MSB4-RUFYUKD-4ALXDXT-HZU3WAN";};
         "PROTEUSNOTEBOOK-WIN" = {id = "QAQHY4R-7KAQYI6-3WLUHMF-Y4LG5LR-XJMDYTF-3LUIOX3-VO33BCP-RBDM2A6";};
       };
       folders = {
-        "sync_work" = {
+        "work" = {
           path = "~/sync_work";
-          devices = ["proteus-sp4" "LGE-AN00" "M2011K2C" "PROTEUSDESKTOP" "PROTEUSNOTEBOOK-WIN"];
+          devices = ["LGE-AN00" "M2011K2C" "PROTEUSDESKTOP" "PROTEUSNOTEBOOK-WIN"];
         };
       };
     };

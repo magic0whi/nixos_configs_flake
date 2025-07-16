@@ -54,6 +54,7 @@ in with lib; {
     insomnia # REST client
     wireshark # Network analyzer
     colmena.packages.${pkgs.system}.colmena # nixos's remote deployment tool
+    yarn
   ];
   xdg.enable = mkDefault true; # enable management of XDG base directories on macOS
   home.shellAliases = shell_aliases;
