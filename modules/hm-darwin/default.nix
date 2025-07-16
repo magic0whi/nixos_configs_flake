@@ -218,9 +218,9 @@ in with lib; {
                 "--reuse-window"
                 "--execute-command" "toggle_synctex"
                 "--inverse-search" "texlab inverse-search -i \"%%1\" -l %%2"
-                "--forward-search-file" "%f"
-                "--forward-search-line" "%l"
-                "%p" ];
+                "--forward-search-file" "%f" # %f is the source file
+                "--forward-search-line" "%l" # %l is the line number in the source file
+                "%p" ]; # %p is the path to the generated PDF file
             };
             build = {
               executable = mkDefault "latexmk";
