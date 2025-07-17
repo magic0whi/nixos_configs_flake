@@ -34,25 +34,10 @@ in{
       fsType = "zfs";
     };
 
-  fileSystems."/var/lib" =
-    { device = "zroot/lib";
-      fsType = "zfs";
-    };
-
   fileSystems."/root" =
     { device = "zroot/home/root";
       fsType = "zfs";
     };
-
-  fileSystems."/var/log" =
-    { device = "zroot/log";
-      fsType = "zfs";
-    };
-
-  fileSystems."/persistent" =
-  { device = "zroot/persistent";
-    fsType = "zfs";
-  };
 
   fileSystems."/boot" =
     { device = "/dev/disk/by-partlabel/EFI\\x20system\\x20partition";
@@ -72,6 +57,7 @@ in{
   # with explicit per-interface declarations with `networking.interfaces.<interface>.useDHCP`.
   networking.useDHCP = lib.mkDefault true;
   # networking.interfaces.wlp2s0.useDHCP = lib.mkDefault true;
+  networking.hostId = lib.mkDefault "5736070c";
 
   nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
   hardware.cpu.intel.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
