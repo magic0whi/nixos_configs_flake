@@ -7,6 +7,14 @@
   time.timeZone = mkDefault "Asia/Hong_Kong"; # Please set 'Set time zone automatically using your current location' to false in 'System Settings'
   system = {
     defaults = { ## NOTE: https://github.com/nix-darwin/nix-darwin/issues/1207#issuecomment-2510402916
+      CustomUserPreferences = { # customize settings that not supported by nix-darwin directly
+        # Incomplete list of macOS `defaults` commands :
+        #   https://github.com/yannbertrand/macos-defaults
+        "com.apple.desktopservices" = { # Avoid creating .DS_Store files on network or USB volumes
+          DSDontWriteNetworkStores = true;
+          DSDontWriteUSBStores = true;
+        };
+      };
       menuExtraClock.Show24Hour = mkDefault true;
       menuExtraClock.ShowSeconds = mkDefault true;
       menuExtraClock.ShowAMPM = mkDefault false;
