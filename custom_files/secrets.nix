@@ -6,7 +6,7 @@ let
   #    cat /etc/ssh/ssh_host_ed25519_key.pub
   # If you do not have this file, you can generate all the host keys by command:
   #    sudo ssh-keygen -A
-  proteus-sp4 = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIClFmzSjsfApgmBto1ejpI7trvfHKzECHAVIFh1hSKGR lollipop.studio.cn@gmail.com";
+  proteus-nuc = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIClFmzSjsfApgmBto1ejpI7trvfHKzECHAVIFh1hSKGR lollipop.studio.cn@gmail.com";
   # idol_ai = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAINHZtzeaQyXwuRMLzoOAuTu8P9bu5yc5MBwo5LI3iWBV root@ai";
   # harmonica = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAINT7Pgy/Yl+t6UkHp5+8zfeyJqeJ8EndyR1Vjf/XBe5f root@harmonica";
   # fern = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMokXUYcUy7tysH4tRR6pevFjyOP4cXMjpBSgBZggm9X root@fern";
@@ -15,7 +15,7 @@ let
   # and keeped it offline in a safe place.
   recovery_key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJGhtVHEggEx+kIZlDnUQreFOJYTgHo6i2JKCFpQjYc5 proteus@agenix-recovery";
   machines = [
-    proteus-sp4
+    proteus-nuc
     # idol_ai
     # harmonica
     # fern
@@ -25,5 +25,5 @@ in {
   "config.json.age".publicKeys = machines;
   "proteus.smb.age".publicKeys = machines;
   "syncthing_key_Proteus-MBP14M4P.pem.age".publicKeys = machines;
-  "syncthing_key_proteus-sp4.pem.age".publicKeys = machines;
+  "syncthing_key_proteus-nuc.pem.age".publicKeys = machines;
 }
