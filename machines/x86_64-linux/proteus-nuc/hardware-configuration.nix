@@ -26,7 +26,7 @@
     device = "/dev/mapper/swap";
     encrypted.enable = true;
     encrypted.label = "swap";
-    encrypted.blkDev = "/dev/disk/by-id/nvme-SAMSUNG_MZVL21T0HCLR-00B00_S676NX0T115316-part2";
+    encrypted.blkDev = "/dev/disk/by-id/nvme-eui.002538b121b3218a-part2";
   }];
 
   fileSystems = {

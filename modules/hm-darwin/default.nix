@@ -204,7 +204,10 @@ in with lib; {
             command = mkDefault "ltex-ls";
             config.ltex = {
               language = mkDefault "en-US";
-              dictionary = { "en-US" = ["Gamescope" "MangoHud" "keyring"]; }; # TODO separate
+              dictionary = { "en-US" = [
+                "Gamescope" "MangoHud" "Solaris"
+                "keyring" "zpool" "vdev" "xattrs" "dnodes"
+              ]; };
             };
           };
           texlab.config.texlab = {
