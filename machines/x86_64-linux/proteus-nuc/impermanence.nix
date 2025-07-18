@@ -47,8 +47,8 @@
     # the following directories will be passed to /persistent/home/$USER
     users."${myvars.username}" = {
       directories = [
-        "sync-work"
-        "nix-config"
+        "sync_work"
+        "nixos_configs_flake"
         "tmp"
 
         "Downloads"

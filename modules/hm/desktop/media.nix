@@ -49,7 +49,7 @@
       temporal-dither = mkDefault true;
 
       # Color correction
-      # icc-profile="${config.home.homeDirectory}/sync-work/TPLCD_8AAE_AdobeRGB.icm";
+      # icc-profile="${config.home.homeDirectory}/sync_work/TPLCD_8AAE_AdobeRGB.icm";
       icc-profile-auto = mkDefault true;
       # icc-3dlut-size=256x256x256 # Startup will slightly slow, and will increase RAM usage ~500MiB
 
