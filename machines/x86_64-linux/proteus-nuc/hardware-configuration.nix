@@ -17,6 +17,18 @@
   ];
   boot.resumeDevice = "/dev/mapper/swap";
 
+  boot.initrd.luks.devices = {
+    zroot1.device = "/dev/disk/by-id/nvme-eui.002538b121b3218a-part3";
+    zroot2.device = "/dev/disk/by-id/nvme-eui.0025388981b0cba6-part1";
+  };
+
+  swapDevices = [{
+    device = "/dev/mapper/swap";
+    encrypted.enable = true;
+    encrypted.label = "swap";
+    encrypted.blkDev = "/dev/disk/by-id/nvme-SAMSUNG_MZVL21T0HCLR-00B00_S676NX0T115316-part2";
+  }];
+
   fileSystems = {
     "/" = {device = "zroot/default"; fsType = "zfs";};
     "/home" = {device = "zroot/home"; fsType = "zfs";};
@@ -28,13 +40,6 @@
       options = [ "fmask=0077" "dmask=0077" ];
     };
   };
-
-  swapDevices = [{
-    device = "/dev/mapper/swap";
-    encrypted.enable = true;
-    encrypted.label = "swap";
-    encrypted.blkDev = "/dev/disk/by-id/nvme-SAMSUNG_MZVL21T0HCLR-00B00_S676NX0T115316-part2";
-  }];
 
   # Enables DHCP on each ethernet and wireless interface. In case of scripted networking
   # (the default) this is the recommended approach. When using systemd-networkd it's
