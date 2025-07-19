@@ -204,10 +204,7 @@ in with lib; {
             command = mkDefault "ltex-ls";
             config.ltex = {
               language = mkDefault "en-US";
-              dictionary = { "en-US" = [
-                "Gamescope" "MangoHud" "Solaris"
-                "keyring" "zpool" "vdev" "xattrs" "dnodes"
-              ]; };
+              dictionary = builtins.fromTOML (builtins.readFile (mylib.relative_to_root "custom_files/ltex_dict.toml"));
             };
           };
           texlab.config.texlab = {

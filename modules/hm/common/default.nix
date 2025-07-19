@@ -246,7 +246,7 @@
           command = mkDefault "ltex-ls";
           config.ltex = {
             language = mkDefault "en-US";
-            dictionary = { "en-US" = ["Gamescope" "MangoHud" "keyring"]; }; # TODO separate
+            dictionary = builtins.fromTOML (builtins.readFile (mylib.relative_to_root "custom_files/ltex_dict.toml"));
           };
         };
         texlab.config.texlab = {
