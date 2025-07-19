@@ -51,7 +51,7 @@ in {
       ];
       bind.ro = [
         (envSuffix "XDG_RUNTIME_DIR" "/doc")
-        (sloth.concat' sloth.xdgConfigHome "/dconf") # XCursor doesn't work without is in Firefox
+        (sloth.concat' sloth.xdgConfigHome "/dconf") # XCursor doesn't work without it in Firefox
         (sloth.concat' sloth.xdgConfigHome "/gtk-2.0")
         (sloth.concat' sloth.xdgConfigHome "/gtk-3.0")
         (sloth.concat' sloth.xdgConfigHome "/gtk-4.0")

@@ -23,12 +23,12 @@
     # the system-level desktop entries can be list by command:
     #   ls -l /run/current-system/sw/share/applications/
     # the user-level desktop entries can be list by command(user ryan):
-    #  ls /etc/profiles/per-user/ryan/share/applications/
+    #  ls /etc/profiles/per-user/<username>/share/applications/
     mimeApps = {
       enable = mkDefault true;
       # let `xdg-open` to open the url with the correct application.
       defaultApplications = let
-        browser = ["firefox.desktop"];
+        browser = ["google-chrome.desktop"];
         editor = ["nvim.desktop" "Helix.desktop" "code.desktop" "code-insiders.desktop"];
       in {
         "application/json" = browser;
