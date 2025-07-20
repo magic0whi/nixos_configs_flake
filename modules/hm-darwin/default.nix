@@ -1,4 +1,4 @@
-{config, colmena, lib, mylib, myvars, pkgs, ...}: let
+{config, colmena, lib, mylib, myvars, pkgs, pgp2ssh, ...}: let
   shell_aliases = {
     grep = "grep --color=auto";
     ip = "ip --color=auto";
@@ -29,6 +29,7 @@ in with lib; {
     doggo
     python312
     iproute2mac
+    pgp2ssh.packages.${pkgs.system}.pgp2ssh
 
     ## Nix Related
     # It provides the command `nom` works just like `nix
