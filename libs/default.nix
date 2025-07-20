@@ -8,7 +8,7 @@ in {
   scan_path = p: map (fn: p + "/${fn}") (builtins.attrNames
     (lib.filterAttrs ( # includedirectories (ex named hm), ignore default.nix,
       # include .nix files
-      e: t: (t == "directory" && e != "hm") || ((e != "default.nix") && (lib.hasSuffix ".nix" e))
+      e: t: (t == "directory" && !(lib.hasPrefix "_" e)) || ((e != "default.nix") && (lib.hasSuffix ".nix" e))
     ) (builtins.readDir p))
   );
   mk_out_of_store_symlink = path: let # Create a symlink of dir/file out of
@@ -42,7 +42,7 @@ in {
         home-manager.useUserPackages = true;
         home-manager.users."${myvars.username}".imports = hm_modules
         ++ (lib.optional pkgs.stdenv.isDarwin mac-app-util.homeManagerModules.default)
-        ++ [(machine_path + "/hm")];
+        ++ [(machine_path + "/_hm")];
       }
     ]);
   };
@@ -50,13 +50,14 @@ in {
     tags ? [],
     ssh_user ? "root",
     modules,
+    targetHost ? null,
     ...
   }: {name, ...}: { # There another arg named 'nodes' with can share configs
   # between nodes
     deployment = {
       inherit tags;
       targetUser = ssh_user;
-      targetHost = name; # hostName or IP address
+      targetHost = if !(builtins.isNull targetHost) then targetHost else name; # hostName or IP address
     };
     imports = modules;
   };

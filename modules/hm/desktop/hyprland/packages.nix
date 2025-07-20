@@ -2,7 +2,6 @@
   home.packages = with pkgs; [
     sound-theme-freedesktop
     swaybg # the wallpaper
-    swaylock # locking the screen
     wlogout # logout menu
     wl-clipboard # copying and pasting
     hyprpicker # color picker
@@ -26,6 +25,9 @@
     imagemagick # Provides 'convert'
     graphviz
   ];
+  programs.swaylock = {
+    enable = mkDefault true;
+  };
   services.mako = let
     cuppuccin-mocha = {
       base = "#1e1e2e";
@@ -36,7 +38,7 @@
       yellow = "#f9e2af";
     };
   in with cuppuccin-mocha; {
-    enable = true; # mako is trigged by dbus
+    enable = mkDefault true; # mako is trigged by dbus
     settings = {
       max-history = 100;
       padding = 5;

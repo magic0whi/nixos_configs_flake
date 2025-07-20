@@ -18,6 +18,7 @@ in {
   colmena.${name} = mylib.colmena_system {
     inherit (nixos_system_args) modules;
     tags = ["vps-01"];
+    targetHost = "79.76.120.128";
   };
   colmena_meta = {
     node_nixpkgs.${name} = inputs.nixpkgs.legacyPackages.${system};

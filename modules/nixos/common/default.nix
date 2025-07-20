@@ -372,7 +372,7 @@
   programs.nix-ld.libraries = mkDefault [pkgs.stdenv.cc.cc];
   ## END fhs.nix
   services.sing-box.enable = mkDefault true;
-  systemd.services.sing-box = mkOverride 100 {
+  systemd.services.sing-box = mkIf config.services.sing-box.enable (mkOverride 100 {
     serviceConfig = {
       StateDirectory = "sing-box";
       StateDirectoryMode = "0700";
@@ -386,7 +386,7 @@
       ];
     };
     wantedBy = ["multi-user.target"];
-  };
+  });
   systemd.services.console-blanking = mkDefault { # Let monitor become blank after 2min, and 3min inactive to poweroff
     description = "Enable virtual console blanking and dpms off";
     after = ["display-manager.service"];

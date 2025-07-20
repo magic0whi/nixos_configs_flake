@@ -196,7 +196,6 @@ in {
       ];
       xwayland.force_zero_scaling = true; # This will get rid of the pixelated look, but will not scale applications properly. To do this, each toolkit has its own mechanism.
     };
-    # extraConfig = builtins.readFile ../conf/hyprland.conf;
     systemd.variables = ["--all"];
   };
   services.hypridle = { # For dbus' loginctl lock/unlock
@@ -303,15 +302,15 @@ in {
   services.cliphist.enable = true;
   xdg.configFile = { # hyprland configs, based on https://github.com/notwidow/hyprland
     "hypr/mako" = { # Keep icon files
-      source = ../conf/mako;
+      source = ./_conf/mako;
       recursive = true;
     };
     "hypr/scripts" = {
-      source = ../conf/scripts;
+      source = ./_conf/scripts;
       recursive = true;
     };
     "hypr/wlogout" = {
-      source = ../conf/wlogout;
+      source = ./_conf/wlogout;
       recursive = true;
     };
   };
