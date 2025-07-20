@@ -1,4 +1,4 @@
-{lib, myvars, mylib, pkgs, ...}: with lib; {
+{lib, myvars, mylib, pkgs, pgp2ssh, ...}: with lib; {
   imports = mylib.scan_path ./.;
   # This value determines the Home Manager release that your
   # configuration is compatible with. This helps avoid breakage
@@ -15,6 +15,7 @@
     tlrc # tldr written in Rust
     cowsay
     gnumake
+    pgp2ssh.packages.${pkgs.system}.pgp2ssh
 
     # Modern cli tools, replacement of grep/sed/...
 
@@ -67,7 +68,6 @@
   programs = {
     eza = { # A modern replacement for ‘ls’, useful in bash/zsh prompt, but not in nushell
       enable = mkDefault true;
-      enableNushellIntegration = mkDefault false; # do not enable aliases in nushell!
       git = mkDefault true;
       icons = mkDefault "auto";
     };

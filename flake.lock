@@ -435,6 +435,26 @@
         "type": "github"
       }
     },
+    "pgp2ssh": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1747041850,
+        "narHash": "sha256-V6ODUkLbPKjk99VWeVFDAfpmoR/yBqeoXmerR9KtIBw=",
+        "owner": "pinpox",
+        "repo": "pgp2ssh",
+        "rev": "792e3a3f107e6b4da7b96ded5d46b69efc45d8c1",
+        "type": "github"
+      },
+      "original": {
+        "owner": "pinpox",
+        "repo": "pgp2ssh",
+        "type": "github"
+      }
+    },
     "pre-commit-hooks-nix": {
       "inputs": {
         "flake-compat": [
@@ -474,6 +494,7 @@
         "nixos-generators": "nixos-generators",
         "nixpak": "nixpak",
         "nixpkgs": "nixpkgs",
+        "pgp2ssh": "pgp2ssh",
         "wallpapers": "wallpapers"
       }
     },

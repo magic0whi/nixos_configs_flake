@@ -1,28 +1,7 @@
-{lib, ...}: let
-  shellAliases = {
-    "zj" = "zellij";
-  };
-in {
-  programs.zellij.enable = true;
+{lib, mylib, ...}: let
+  shellAliases = {"zj" = "zellij";};
+in with lib; {
+  programs.zellij.enable = mkDefault true;
   home.shellAliases = shellAliases;
-  programs.nushell.shellAliases = lib.mkForce shellAliases;
-  xdg.configFile."zellij/config.kdl".source = ./zellij.kdl;
-  # auto start zellij in nushell TODO
-  # programs.nushell.extraConfig = ''
-  #   # auto start zellij
-  #   # except when in emacs or zellij itself
-  #   if (not ("ZELLIJ" in $env)) and (not ("INSIDE_EMACS" in $env)) {
-  #     if "ZELLIJ_AUTO_ATTACH" in $env and $env.ZELLIJ_AUTO_ATTACH == "true" {
-  #       ^zellij attach -c
-  #     } else {
-  #       ^zellij
-  #     }
-
-  #     # Auto exit the shell session when zellij exit
-  #     $env.ZELLIJ_AUTO_EXIT = "false" # disable auto exit
-  #     if "ZELLIJ_AUTO_EXIT" in $env and $env.ZELLIJ_AUTO_EXIT == "true" {
-  #       exit
-  #     }
-  #   }
-  # '';
+  xdg.configFile."zellij/config.kdl".source = mkDefault (mylib.relative_to_root "custom_files/zellij.kdl");
 }

@@ -104,7 +104,6 @@ in with lib; {
     };
     eza = { # A modern replacement for ‘ls’, useful in bash/zsh prompt, but not in nushell
       enable = mkDefault true;
-      enableNushellIntegration = mkDefault false; # do not enable aliases in nushell!
       git = mkDefault true;
       icons = mkDefault "auto";
     };

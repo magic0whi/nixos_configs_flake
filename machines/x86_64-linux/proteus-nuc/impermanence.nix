@@ -137,7 +137,6 @@
       ];
       files = [
         ".wakatime.cfg"
-        ".config/nushell/history.txt"
       ];
     };
   };

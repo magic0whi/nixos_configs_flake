@@ -1,10 +1,5 @@
 # just is a command runner, Justfile is very similar to Makefile, but simpler.
-
-# Use nushell for shell commands
-# To use this justfile, you need to enter a shell with just & nushell installed:
-# 
-#   nix shell nixpkgs#just nixpkgs#nushell
-set shell := ["zsh", "-c"]
+set shell := ["zsh", "-c"] # Use zsh for shell commands
 
 utils := absolute_path("utils.sh")
 

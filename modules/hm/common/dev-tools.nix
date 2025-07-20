@@ -12,6 +12,7 @@
   home.packages = with pkgs; [
     colmena.packages.${pkgs.system}.colmena # nixos's remote deployment tool
 
+    python312
     # db related
     # mycli
     # pgcli
@@ -43,7 +44,6 @@
     # conda is not available for MacOS
     # conda
 
-    # nil
     # android-tools
   ];
   # programs = {
