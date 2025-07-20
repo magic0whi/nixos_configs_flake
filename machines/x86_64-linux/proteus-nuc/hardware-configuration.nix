@@ -16,6 +16,8 @@
     # "quiet"
   ];
   boot.resumeDevice = "/dev/mapper/swap";
+  boot.zfs.forceImportRoot = false;
+  boot.zfs.allowHibernation = true; # Make sure not use Swap on ZFS
 
   boot.initrd.luks.devices = {
     zroot1.device = "/dev/disk/by-id/nvme-eui.002538b121b3218a-part3";
