@@ -1,9 +1,17 @@
 {agenix, config, mylib, myvars, ...}: let
   custom_files_dir = mylib.relative_to_root "custom_files";
 in {
-  programs.mpv.profiles.common = {
-    vulkan-device = "Apple M4 Pro";
-    ao = "avfoundation";
+  programs = {
+    aerospace.userSettings.workspace-to-monitor-force-assignment = {
+      "7" = ["C340SCA"];
+      "8" = ["C340SCA"];
+      "9" = ["RTK UHD HDR"];
+      "0" = ["RTK UHD HDR"];
+    };
+    mpv.profiles.common = {
+      vulkan-device = "Apple M4 Pro";
+      ao = "avfoundation";
+    };
   };
   ## START secrets.nix
   imports = [agenix.homeManagerModules.default];
@@ -15,6 +23,7 @@ in {
     "syncthing_Proteus-MBP14M4P.key.pem" = {file = "${custom_files_dir}/syncthing_Proteus-MBP14M4P.key.pem.age";} // high_security;
   };
   ## END secrets.nix
+  ## START syncthing.nix
   launchd.agents.syncthing.config = {
     StandardErrorPath = "/Users/${myvars.username}/Library/Logs/syncthing/stderr";
     StandardOutPath = "/Users/${myvars.username}/Library/Logs/syncthing/stdout";
@@ -38,4 +47,5 @@ in {
       };
     };
   };
+  ## END syncthing.nix
 }

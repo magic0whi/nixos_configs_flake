@@ -26,6 +26,9 @@ in with lib; {
     (ripgrep.override {withPCRE2 = true;})
     just
     xmrig # Benchmark
+    doggo
+    python312
+    iproute2mac
 
     ## Nix Related
     # It provides the command `nom` works just like `nix

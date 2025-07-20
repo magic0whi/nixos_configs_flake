@@ -49,12 +49,14 @@
       };
       mode.main.binding = {
         # Run terminal
-        alt-enter = mkDefault "exec-and-forget osascript -lJavaScript ${config.xdg.configHome}/aerospace/ghostty-actions.js 1";
-        alt-shift-enter = mkDefault "exec-and-forget osascript -lJavaScript ${config.xdg.configHome}/aerospace/ghostty-actions.js 2";
-        ctrl-alt-enter = mkDefault "exec-and-forget osascript -lJavaScript ${config.xdg.configHome}/aerospace/ghostty-actions.js 3";
+        ctrl-alt-q = mkDefault "exec-and-forget osascript -lJavaScript ${config.xdg.configHome}/aerospace/ghostty-actions.js 1";
+        alt-shift-q = mkDefault "exec-and-forget osascript -lJavaScript ${config.xdg.configHome}/aerospace/ghostty-actions.js 2";
+        alt-q = mkDefault "exec-and-forget osascript -lJavaScript ${config.xdg.configHome}/aerospace/ghostty-actions.js 3";
+
         # See: https://nikitabobko.github.io/AeroSpace/commands#layout
         alt-slash = mkDefault "layout tiles horizontal vertical";
         alt-comma = mkDefault "layout accordion horizontal vertical";
+        alt-w = mkDefault "close";
 
         # See: https://nikitabobko.github.io/AeroSpace/commands#focus
         alt-h = mkDefault "focus left";
@@ -126,8 +128,10 @@
       };
       exec.inherit-env-vars = mkDefault true;
       workspace-to-monitor-force-assignment = {
-        "9" = mkDefault ["RTK UHD HDR"];
-        "0" = mkDefault ["RTK UHD HDR"];
+        "1" = mkDefault ["Built-in Retina Display"];
+        "2" = mkDefault ["Built-in Retina Display"];
+        "3" = mkDefault ["Built-in Retina Display"];
+        "4" = mkDefault ["Built-in Retina Display"];
       };
       on-window-detected = [
         {

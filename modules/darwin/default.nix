@@ -82,26 +82,23 @@ in {
     sandbox = mkDefault true;
   };
   environment.systemPackages= with pkgs; [
-    iproute2mac
     git
     git-lfs
     git-trim
     tree
-    helix
     findutils
     gnugrep
     gnutar
     curl
     aria2
     rsync
-    doggo
-    python312
 
     m-cli # Swiss Army Knife for macOS, https://github.com/rgcr/m-cli
     mas # Mac App Store command line interface
 
     raycast # (HotKey: alt/option + space)search, calculate and run scripts(with many plugins)
     stats # beautiful system status monitor in menu bar
+    betterdisplay
   ];
   environment.variables = {
     TERMINFO_DIRS = (map (path: path + "/share/terminfo") config.environment.profiles) ++ ["/usr/share/terminfo"];
