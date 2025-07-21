@@ -25,60 +25,16 @@ in {
   imports = mylib.scan_path ./.;
   system.stateVersion = mkDefault 6;
   system.primaryUser = mkDefault myvars.username;
-  security.pki.certificateFiles = [
-    (mylib.relative_to_root "custom_files/proteus_ca.pem")
-  ];
   # Disable password authentication for SSH
   environment.etc."ssh/sshd_config.d/200-disable-password-auth.conf".text = mkDefault ''
     PasswordAuthentication no
     KbdInteractiveAuthentication no
   '';
-  services.openssh.enable = mkDefault true;
   services.tailscale.enable = mkDefault true; # Usage: https://github.com/tailscale/tailscale/wiki/Tailscaled-on-macOS#run-the-tailscaled-daemon
   services.sing-box.enable = mkDefault true; # Current DNS hijack doesn't work
   # 1. 'sudo tailscaled install-system-daemon'
   # 2. `tailscale up --accept-routes`
   security.pam.services.sudo_local.touchIdAuth = true; # Add ability to used TouchID for sudo authentication
-  nixpkgs.config.allowUnfree = mkDefault true; # Allow chrome, vscode to install
-  nix.package = mkDefault pkgs.nixVersions.latest; # Use latest nix, default is pkgs.nix
-  nix.gc = {
-    automatic = mkDefault true;
-    options = mkDefault "--delete-older-than 7d";
-  };
-  nix.channel.enable = mkDefault false; # remove nix-channel related tools & configs, use flakes instead.
-  # Manual optimise storage: nix-store --optimise
-  nix.optimise.automatic = mkDefault true; # https://nixos.org/manual/nix/stable/command-ref/conf-file.html#conf-auto-optimise-store
-  nix.settings = {
-    # enable flakes globally
-    experimental-features = mkDefault ["nix-command" "flakes"];
-
-    # given the users in this list the right to specify additional substituters via:
-    #    1. `nixConfig.substituers` in `flake.nix`
-    #    2. command line args `--options substituers http://xxx`
-    trusted-users = [myvars.username];
-
-    # substituers that will be considered before the official ones(https://cache.nixos.org)
-    substituters = [
-      # cache mirror located in China
-      # status: https://mirrors.ustc.edu.cn/status/
-      # "https://mirrors.ustc.edu.cn/nix-channels/store"
-      # status: https://mirror.sjtu.edu.cn/
-      # "https://mirror.sjtu.edu.cn/nix-channels/store"
-      # others
-      "https://mirrors.sustech.edu.cn/nix-channels/store"
-      "https://mirrors.tuna.tsinghua.edu.cn/nix-channels/store"
-
-      "https://nix-community.cachix.org"
-      # "https://ryan4yin.cachix.org" # my own cache server, currently not used.
-    ];
-
-    trusted-public-keys = [
-      "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
-      # "ryan4yin.cachix.org-1:Gbk27ZU5AYpGS9i3ssoLlwdvMIh0NxG0w8it/cv9kbU="
-    ];
-    builders-use-substitutes = mkDefault true;
-    sandbox = mkDefault true;
-  };
   environment.systemPackages= with pkgs; [
     git
     git-lfs

@@ -15,68 +15,13 @@
   };
   # END boot_loader.nix
   # START nix.nix
-  nixpkgs.config.allowUnfree = mkDefault true; # Allow chrome, vscode to install
-  nix.package = mkDefault pkgs.nixVersions.latest; # Use latest nix, default is pkgs.nix
-  nix.gc = {
-    automatic = mkDefault true;
-    dates = mkDefault "weekly";
-    options = mkDefault "--delete-older-than 7d";
-  };
-  nix.channel.enable = mkDefault false; # remove nix-channel related tools & configs, use flakes instead.
-  nix.settings = {
-    # Manual optimise storage: nix-store --optimise
-    # https://nixos.org/manual/nix/stable/command-ref/conf-file.html#conf-auto-optimise-store
-    auto-optimise-store = mkDefault true;
-    # enable flakes globally
-    experimental-features = mkDefault ["nix-command" "flakes"];
-
-    # given the users in this list the right to specify additional substituters via:
-    #    1. `nixConfig.substituers` in `flake.nix`
-    #    2. command line args `--options substituers http://xxx`
-    trusted-users = [myvars.username];
-
-    # substituers that will be considered before the official ones(https://cache.nixos.org)
-    substituters = [
-      # cache mirror located in China
-      # status: https://mirrors.ustc.edu.cn/status/
-      # "https://mirrors.ustc.edu.cn/nix-channels/store"
-      # status: https://mirror.sjtu.edu.cn/
-      # "https://mirror.sjtu.edu.cn/nix-channels/store"
-      # others
-      "https://mirrors.sustech.edu.cn/nix-channels/store"
-      "https://mirrors.tuna.tsinghua.edu.cn/nix-channels/store"
-
-      "https://nix-community.cachix.org"
-      # "https://ryan4yin.cachix.org" # my own cache server, currently not used.
-    ];
-
-    trusted-public-keys = [
-      "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
-      # "ryan4yin.cachix.org-1:Gbk27ZU5AYpGS9i3ssoLlwdvMIh0NxG0w8it/cv9kbU="
-    ];
-    builders-use-substitutes = mkDefault true;
-  };
-
+  nix.gc.dates = mkDefault "weekly";
   # nix.extraOptions = ''
     # !include ${config.age.secrets.nix-access-tokens.path}
   # '';
   # END nix.nix
   # START ssh.nix
-  programs.ssh = {
-    extraConfig = mkDefault (''
-      Compression yes
-      ControlMaster auto
-      ControlPath ~/.ssh/master-%r@%n:%p
-      ControlPersist 30m
-      ServerAliveInterval 30
-      ServerAliveCountMax 5
-    '' + myvars.networking.ssh.extra_config);
-    knownHosts = mkDefault myvars.networking.ssh.known_hosts;
-  };
-  services.openssh = {
-    enable = mkDefault true;
-    settings.PasswordAuthentication = mkDefault false; # disable password login
-  };
+  services.openssh.settings.PasswordAuthentication = mkDefault false; # disable password login
   # END ssh.nix
   # START i18n.nix
   time.timeZone = mkDefault "Europe/London";
@@ -331,12 +276,8 @@
   # START zram.nix
   zramSwap.enable = mkDefault true;
   # END zram.nix
-  # Add my self-signed CA certificate to the system-wide trust store.
-  security.pki.certificateFiles = [
-    (mylib.relative_to_root "custom_files/proteus_ca.pem")
-  ];
-  ## START fhs.nix
   security.sudo.extraConfig = "Defaults passwd_timeout=0"; # Disable timeout for sudo prompt
+  ## START fhs.nix
   # create a fhs environment by command `fhs`, so we can run non-nixos packages in nixos!
   environment.systemPackages = [(
   let

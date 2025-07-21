@@ -16,7 +16,7 @@ default:
 # Run eval tests
 [group('nix')]
 test:
-  nom build .#nixosConfigurations.proteus-nuc.config.system.build.toplevel --show-trace --verbose
+  nom build .#nixosConfigurations.Proteus-NUC.config.system.build.toplevel --show-trace --verbose
 
 # Update all the flake inputs
 [group('nix')]
@@ -100,7 +100,7 @@ repair-store *paths:
 proteus-nuc mode="default":
   #!/usr/bin/env bash
   . {{utils}}
-  nixos-switch proteus-nuc {{mode}}
+  nixos-switch Proteus-NUC {{mode}}
 
 [linux]
 [group('desktop')]

@@ -44,6 +44,10 @@ in {
           path = "~/sync_work";
           devices = ["LGE-AN00" "M2011K2C" "PROTEUSDESKTOP" "PROTEUSNOTEBOOK-WIN" "proteus-nuc"];
         };
+        "nixos_configs_flake" = {
+          path = "~/nixos_configs_flake";
+          devices = ["Proteus-MBP14M4P"];
+        };
       };
     };
   };

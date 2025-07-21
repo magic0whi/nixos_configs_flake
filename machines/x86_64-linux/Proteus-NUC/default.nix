@@ -2,9 +2,15 @@
   name = baseNameOf ./.;
   nixpkgs_modules = map mylib.relative_to_root [
     "modules/secrets/linux.nix"
-    "modules/nixos/common"
+    "modules/overlays"
+    "modules/common"
+    "modules/nixos_headless"
+    "modules/nixos_gui"
   ];
-  hm_modules = map mylib.relative_to_root ["modules/hm/common"];
+  hm_modules = map mylib.relative_to_root [
+    "modules/hm_headless"
+    "modules/hm_gui"
+  ];
   nixos_system = inputs.nixpkgs.lib.nixosSystem (mylib.gen_system_args {
     inherit name mylib myvars nixpkgs_modules hm_modules;
     machine_path = ./.;
@@ -15,7 +21,7 @@ in {
   # generate iso image
   packages.${name} = inputs.self.nixosConfigurations.${name}.config.formats.iso;
   deploy-rs_node.${name} = {
-    hostname = "79.76.120.128";
+    hostname = "${name}.tailba6c3f.ts.net";
     profiles.system = {
       path = inputs.deploy-rs.lib.${system}.activate.nixos nixos_system;
       user = "root";

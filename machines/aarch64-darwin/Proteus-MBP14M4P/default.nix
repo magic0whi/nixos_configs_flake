@@ -3,6 +3,7 @@
   nixpkgs_modules = map mylib.relative_to_root [
     "modules/secrets/darwin.nix"
     "modules/overlays/catppuccin.nix"
+    "modules/common"
     "modules/darwin"
   ];
   hm_modules = map mylib.relative_to_root ["modules/hm-darwin"];
