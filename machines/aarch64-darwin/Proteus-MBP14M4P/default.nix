@@ -1,7 +1,8 @@
-{inputs, mylib, myvars, system, ...}: let
+{inputs, mylib, myvars, ...}: let
   name = baseNameOf ./.;
   nixpkgs_modules = map mylib.relative_to_root [
     "modules/secrets/darwin.nix"
+    "modules/overlays/catppuccin.nix"
     "modules/darwin"
   ];
   hm_modules = map mylib.relative_to_root ["modules/hm-darwin"];

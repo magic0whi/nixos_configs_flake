@@ -2,7 +2,7 @@
   name = baseNameOf ./.;
   nixpkgs_modules = map mylib.relative_to_root [
     "modules/secrets/linux.nix"
-    "overlays"
+    "modules/overlays"
     "modules/nixos/common"
     "modules/nixos/desktop"
   ];

@@ -1,5 +1,4 @@
-{mylib, myvars, ...}: {
-  imports = mylib.scan_path ./.;
+{myvars, ...}: {
   # Customizing leaf packages via overlays has minimal impact on the Nix binary
   # cache, as these packages are not widely depended upon.
   nixpkgs.overlays = [(_: super: {
