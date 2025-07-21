@@ -1,5 +1,4 @@
-{myvars, lib, config, ...}: with lib; {
-  # xdg.configFile."waybar/catppuccin.css".source = "${myvars.catppuccin}/waybar/${myvars.catppuccin_variant}.css";
+{myvars, lib, config, pkgs, ...}: with lib; {
   systemd.user.services.waybar.Service.RestartSec = mkIf config.programs.waybar.enable (mkDefault "3.02s");
   programs.waybar = {
     enable = mkDefault true;
@@ -289,7 +288,7 @@
       b = number of class selectors
       c = number of type selectors
       */
-      @import "${myvars.catppuccin}/waybar/${myvars.catppuccin_variant}.css";
+      @import "${pkgs.catppuccin}/waybar/${myvars.catppuccin_variant}.css";
 
       window#waybar {
         background-color: transparent;

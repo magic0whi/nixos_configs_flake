@@ -31,7 +31,7 @@
     };
     theme = {
       name = "catppuccin-${myvars.catppuccin_variant}-${myvars.catppuccin_accent}-compact"; # https://github.com/catppuccin/gtk
-      package = myvars.catppuccin-gtk;
+      package = pkgs.catppuccin-gtk;
     };
   };
   dconf.settings."org/gnome/desktop/interface" = { # GTK4
@@ -44,7 +44,11 @@
     style.name = "kvantum";
   };
   xdg.configFile = {
-    "Kvantum/kvantum.kvconfig".text = lib.generators.toINI {} {General.theme = "catppuccin-${myvars.catppuccin_variant}-${myvars.catppuccin_accent}";};
-    "Kvantum/catppuccin-${myvars.catppuccin_variant}-${myvars.catppuccin_accent}".source = "${myvars.catppuccin}/share/Kvantum/catppuccin-${myvars.catppuccin_variant}-${myvars.catppuccin_accent}"; # https://github.com/tsujan/Kvantum/blob/V1.1.4/Kvantum/INSTALL.md?plain=1#L217
+    "Kvantum/kvantum.kvconfig".text = lib.generators.toINI {} {
+      General.theme = "catppuccin-${myvars.catppuccin_variant}-${myvars.catppuccin_accent}";
+    };
+    # https://github.com/tsujan/Kvantum/blob/V1.1.4/Kvantum/INSTALL.md?plain=1#L217
+    "Kvantum/catppuccin-${myvars.catppuccin_variant}-${myvars.catppuccin_accent}".source =
+      "${pkgs.catppuccin}/share/Kvantum/catppuccin-${myvars.catppuccin_variant}-${myvars.catppuccin_accent}";
   };
 }

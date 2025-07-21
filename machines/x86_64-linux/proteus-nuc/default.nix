@@ -10,21 +10,20 @@
     "modules/hm/common"
     "modules/hm/desktop"
   ];
-  nixos_system_args = mylib.gen_system_args {
+  nixos_system = inputs.nixpkgs.lib.nixosSystem (mylib.gen_system_args {
     inherit name mylib myvars nixpkgs_modules hm_modules;
     machine_path = ./.;
-  };
+  });
 in {
-  debug_attrs = {inherit name nixpkgs_modules hm_modules nixos_system_args;};
-  nixos_configurations.${name} = inputs.nixpkgs.lib.nixosSystem nixos_system_args;
+  _DEBUG = {inherit name nixpkgs_modules hm_modules;};
+  nixos_configurations.${name} = nixos_system;
   # generate iso image
   packages.${name} = inputs.self.nixosConfigurations.${name}.config.formats.iso;
-  colmena.${name} = mylib.colmena_system {
-    inherit (nixos_system_args) modules;
-    tags = ["main-laptop"];
-  };
-  colmena_meta = {
-    node_nixpkgs.${name} = inputs.nixpkgs.legacyPackages.${system};
-    node_specialArgs.${name} = nixos_system_args.specialArgs;
+  deploy-rs_node.${name} = {
+    hostname = "${name}.tailba6c3f.ts.net";
+    profiles.system = {
+      path = inputs.deploy-rs.lib.${system}.activate.nixos nixos_system;
+      user = "root";
+    };
   };
 }

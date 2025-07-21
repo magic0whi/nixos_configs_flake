@@ -23,7 +23,7 @@
   programs.alacritty = {
     enable = true;
     settings = { # https://alacritty.org/config-alacritty.html
-      general.import = ["${myvars.catppuccin}/alacritty/catppuccin-${myvars.catppuccin_variant}.toml"];
+      general.import = ["${pkgs.catppuccin}/alacritty/catppuccin-${myvars.catppuccin_variant}.toml"];
       window = {
         opacity = 0.93;
         startup_mode = "Maximized"; # Maximized window

@@ -80,13 +80,13 @@
       themes = {
         # https://raw.githubusercontent.com/catppuccin/bat/main/Catppuccin-mocha.tmTheme
         "catppuccin-${myvars.catppuccin_variant}" = {
-          src = "${myvars.catppuccin}/bat";
+          src = "${pkgs.catppuccin}/bat";
           file = "Catppuccin ${myvars.catppuccin_variant}.tmTheme";
         };
       };
     };
-
-    fzf = { # A command-line fuzzy finder.Interactively filter its input using fuzzy searching, not limit to filenames.
+    fzf = { # A command-line fuzzy finder. Interactively filter its input using
+    # fuzzy searching, not limit to filenames.
       enable = mkDefault true;
       defaultOptions = ["-m"];
       defaultCommand = mkDefault "rg --files"; # Using ripgrep in fzf
@@ -142,7 +142,7 @@
     # };
   };
   ## START btop.nix
-  xdg.configFile."btop/themes".source = "${myvars.catppuccin}/btop/"; # https://github.com/catppuccin/btop/blob/main/themes/catppuccin_mocha.theme
+  xdg.configFile."btop/themes".source = "${pkgs.catppuccin}/btop/"; # https://github.com/catppuccin/btop/blob/main/themes/catppuccin_mocha.theme
   programs.btop = { # Alternative to htop/nmon
     enable = mkDefault true;
     settings = {
@@ -191,7 +191,7 @@
       username.show_always = mkDefault true;
       palette = mkDefault "catppuccin_mocha";
     }
-    // builtins.fromTOML (builtins.readFile "${myvars.catppuccin}/starship/${myvars.catppuccin_variant}.toml");
+    // builtins.fromTOML (builtins.readFile "${pkgs.catppuccin}/starship/${myvars.catppuccin_variant}.toml");
   };
   ## END starship.nix
   ## START helix.nix

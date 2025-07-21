@@ -87,7 +87,8 @@ in {
     # so that you don’t have to type in passphrases every time you make an SSH connection.
     # Use `ssh-add` to add a key to the agent.
     programs = {
-      # ssh.startAgent = mkDefault true; # You can't use ssh-agent and GnuPG agent with SSH support enabled at the same time!
+      # ssh.startAgent = mkDefault true; # You cannot use ssh-agent and GnuPG
+      # agent with SSH support enabled at the same time
       dconf.enable = mkDefault true;
       thunar = { # thunar file manager(part of xfce)
         enable = mkDefault true;

@@ -1,4 +1,4 @@
-{mylib, myvars, lib, config, pkgs, ...}: with lib; {
+{mylib, myvars, lib, config, pkgs, ...}: with lib; { # TODO: divide some configs into modules/common to share with darwin
   imports = mylib.scan_path ./.;
   system.stateVersion = mkDefault myvars.state_version;
   environment.variables.EDITOR = mkOverride 999 "hx";
@@ -33,10 +33,10 @@
     # given the users in this list the right to specify additional substituters via:
     #    1. `nixConfig.substituers` in `flake.nix`
     #    2. command line args `--options substituers http://xxx`
-    trusted-users = mkDefault [myvars.username];
+    trusted-users = [myvars.username];
 
     # substituers that will be considered before the official ones(https://cache.nixos.org)
-    substituters = mkDefault [
+    substituters = [
       # cache mirror located in China
       # status: https://mirrors.ustc.edu.cn/status/
       # "https://mirrors.ustc.edu.cn/nix-channels/store"
@@ -48,13 +48,11 @@
 
       "https://nix-community.cachix.org"
       # "https://ryan4yin.cachix.org" # my own cache server, currently not used.
-      "https://colmena.cachix.org/"
     ];
 
-    trusted-public-keys = mkDefault [
+    trusted-public-keys = [
       "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
       # "ryan4yin.cachix.org-1:Gbk27ZU5AYpGS9i3ssoLlwdvMIh0NxG0w8it/cv9kbU="
-      "colmena.cachix.org-1:7BzpDnjjH8ki2CT3f6GdOk7QAzPOl+1t3LvTLXqYcSg="
     ];
     builders-use-substitutes = mkDefault true;
   };
@@ -324,9 +322,7 @@
         "wheel"
       ];
     };
-    # root's ssh key are mainly used for remote deployment
-    users.root = {
-      # An example to prevent use the recursive attribute set
+    users.root = { # root's ssh key are heavily used for remote deployment
       initialHashedPassword = mkDefault config.users.users."${myvars.username}".initialHashedPassword;
       openssh.authorizedKeys.keys = mkDefault config.users.users."${myvars.username}".openssh.authorizedKeys.keys;
     };

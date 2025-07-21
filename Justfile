@@ -58,7 +58,7 @@ gc:
 [linux]
 [group('nix')]
 shell:
-  nix shell nixpkgs#git nixpkgs#neovim nixpkgs#colmena
+  nix shell nixpkgs#git nixpkgs#neovim github:serokell/deploy-rs
 
 # Enter a shell session which has all the necessary tools for this flake
 [macos]
@@ -121,13 +121,13 @@ darwin-rollback:
   . {{utils}} *;
   darwin-rollback
 
-[macos] # Depoly to Proteus-MBP14M4P(macOS host)
+# Depoly to Proteus-MBP14M4P(macOS host)
+[macos]
 [group('desktop')]
 proteus-mbp mode="default":
   #!/usr/bin/env bash
   . {{utils}}
-  darwin-build "Proteus-MBP14M4P" {{mode}} && \
-  darwin-switch "Proteus-MBP14M4P" {{mode}}
+  darwin-build "Proteus-MBP14M4P" {{mode}} && darwin-switch "Proteus-MBP14M4P" {{mode}}
 
 # Reset launchpad to force it to reindex Applications
 [macos]
@@ -142,11 +142,11 @@ reset-launchpad:
 #
 ############################################################################
 
-# Remote deployment via colmena
+# Remote deployment via deploy-rs
 [linux]
 [group('homelab')]
-col tag:
-  colmena apply --on '@{{tag}}' --verbose --show-trace
+deploy name:
+  deploy .#{{name}} -- --verbose --show-trace
 
 [linux]
 [group('homelab')]

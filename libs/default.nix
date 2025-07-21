@@ -1,18 +1,17 @@
 {inputs, system}: let
-  inherit (inputs) nixpkgs;
-  inherit (nixpkgs) lib;
-  pkgs = nixpkgs.legacyPackages.${system};
+  inherit (inputs.nixpkgs) lib;
+  pkgs = inputs.nixpkgs.legacyPackages.${system};
 in {
-  relative_to_root = lib.path.append ../.;  # use path relative to the root of
-  # the project
+  relative_to_root = lib.path.append ../.;  # Use path relative to the root of the project
+
   scan_path = p: map (fn: p + "/${fn}") (builtins.attrNames
     (lib.filterAttrs ( # includedirectories (ex named hm), ignore default.nix,
       # include .nix files
       e: t: (t == "directory" && !(lib.hasPrefix "_" e)) || ((e != "default.nix") && (lib.hasSuffix ".nix" e))
     ) (builtins.readDir p))
   );
-  mk_out_of_store_symlink = path: let # Create a symlink of dir/file out of
-  # /nix/store
+
+  mk_out_of_store_symlink = path: let # Create a symlink of dir/file out of /nix/store
     path_str = toString path;
     store_filename = path: let # Filter unsafe chars
       safe_chars = ["+" "." "_" "?" "="] ++ lib.lowerChars ++ lib.upperChars
@@ -25,6 +24,7 @@ in {
       name = store_filename (baseNameOf path_str);
   in pkgs.runCommandLocal name {} "ln -s ${lib.escapeShellArg path_str} $out";
 
+  # Args to generate nixosSystem/darwinSystem
   gen_system_args = {name, mylib, myvars, nixpkgs_modules, hm_modules, machine_path}: let
     inherit (inputs) home-manager nixos-generators mac-app-util;
     specialArgs = inputs // {inherit mylib myvars;};
@@ -45,20 +45,5 @@ in {
         ++ [(machine_path + "/_hm")];
       }
     ]);
-  };
-  colmena_system = {
-    tags ? [],
-    ssh_user ? "root",
-    modules,
-    targetHost ? null,
-    ...
-  }: {name, ...}: { # There another arg named 'nodes' with can share configs
-  # between nodes
-    deployment = {
-      inherit tags;
-      targetUser = ssh_user;
-      targetHost = if !(builtins.isNull targetHost) then targetHost else name; # hostName or IP address
-    };
-    imports = modules;
   };
 }

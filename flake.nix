@@ -14,7 +14,7 @@
     lanzaboote = {
       url = "github:nix-community/lanzaboote/v0.4.2";
       inputs.nixpkgs.follows = "nixpkgs";
-      inputs.flake-compat.follows = "mac-app-util/flake-compat";
+      inputs.flake-compat.follows = "deploy-rs/flake-compat";
     };
     impermanence.url = "github:nix-community/impermanence";
     nixpak = {
@@ -43,11 +43,9 @@
       url = "github:pinpox/pgp2ssh";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    colmena = {
-      url = "github:zhaofengli/colmena";
+    deploy-rs = {
+      url = "github:serokell/deploy-rs";
       inputs.nixpkgs.follows = "nixpkgs";
-      inputs.flake-compat.follows = "mac-app-util/flake-compat";
-      inputs.flake-utils.follows = "mac-app-util/flake-utils";
     };
     nix-darwin = {
       url = "github:nix-darwin/nix-darwin";

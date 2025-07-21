@@ -1,7 +1,4 @@
-{nixpkgs, system, ...}: let
-  inherit (nixpkgs) lib;
-  pkgs = nixpkgs.legacyPackages.${system};
-in rec {
+{lib, ...}: {
   username = "proteus";
   userfullname = "Proteus Qian";
   useremail = "sudaku233@outlook.com";
@@ -30,17 +27,6 @@ in rec {
   gpg2ssh_keygrip = [
     "94BDB192359497927D5AA4AC76D238BA1BFEFE57"
   ];
-
   catppuccin_variant = "mocha";
   catppuccin_accent = "pink";
-  catppuccin = pkgs.catppuccin.override { # https://github.com/NixOS/nixpkgs/blob/nixos-unstable/pkgs/by-name/ca/catppuccin/package.nix
-    accent = catppuccin_accent;
-    themeList = ["alacritty" "bat" "btop" "hyprland" "starship" "kvantum" "waybar"];
-    variant = catppuccin_variant;
-  };
-  catppuccin-gtk = pkgs.catppuccin-gtk.override { # https://github.com/NixOS/nixpkgs/blob/nixos-unstable/pkgs/by-name/ca/catppuccin-gtk/package.nix
-    accents = [catppuccin_accent];
-    size = "compact";
-    variant = catppuccin_variant;
-  };
 }

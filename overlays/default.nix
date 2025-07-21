@@ -1,13 +1,17 @@
-{pkgs, mylib, ...}: {
+{mylib, myvars, ...}: {
   imports = mylib.scan_path ./.;
-  # nixpkgs.overlays = [(_: super: {
-  #   nerd-font-patcher = super.nerd-font-patcher.overrideAttrs (_: _: rec {
-  #     version = "3.3.0";
-  #     src = pkgs.fetchzip {
-  #       url = "https://github.com/ryanoasis/nerd-fonts/releases/download/v${version}/FontPatcher.zip";
-  #       sha256 = "sha256-/LbO8+ZPLFIUjtZHeyh6bQuplqRfR6SZRu9qPfVZ0Mw=";
-  #       stripRoot = false;
-  #     };
-  #   });
-  # })];
+  # Customizing leaf packages via overlays has minimal impact on the Nix binary
+  # cache, as these packages are not widely depended upon.
+  nixpkgs.overlays = [(_: super: {
+    catppuccin = super.catppuccin.override { # https://github.com/NixOS/nixpkgs/blob/nixos-unstable/pkgs/by-name/ca/catppuccin/package.nix
+      accent = myvars.catppuccin_accent;
+      themeList = ["alacritty" "bat" "btop" "hyprland" "starship" "kvantum" "waybar"];
+      variant = myvars.catppuccin_variant;
+    };
+    catppuccin-gtk = super.catppuccin-gtk.override { # https://github.com/NixOS/nixpkgs/blob/nixos-unstable/pkgs/by-name/ca/catppuccin-gtk/package.nix
+      accents = [myvars.catppuccin_accent];
+      size = "compact";
+      variant = myvars.catppuccin_variant;
+    };
+  })];
 }

@@ -1,4 +1,4 @@
-{config, colmena, lib, mylib, myvars, pkgs, pgp2ssh, ...}: let
+{config, lib, mylib, myvars, pkgs, pgp2ssh, ...}: let
   shell_aliases = {
     grep = "grep --color=auto";
     ip = "ip --color=auto";
@@ -57,7 +57,6 @@ in with lib; {
     utm # Virtual machine manager for Apple platforms
     insomnia # REST client
     wireshark # Network analyzer
-    colmena.packages.${pkgs.system}.colmena # nixos's remote deployment tool
     yarn
   ];
   xdg.enable = mkDefault true; # enable management of XDG base directories on macOS
@@ -104,7 +103,7 @@ in with lib; {
         username.show_always = mkDefault true;
         palette = mkDefault "catppuccin_mocha";
       }
-      // builtins.fromTOML (builtins.readFile "${myvars.catppuccin}/starship/${myvars.catppuccin_variant}.toml");
+      // builtins.fromTOML (builtins.readFile "${pkgs.catppuccin}/starship/${myvars.catppuccin_variant}.toml");
     };
     eza = { # A modern replacement for ‘ls’, useful in bash/zsh prompt, but not in nushell
       enable = mkDefault true;
@@ -299,7 +298,7 @@ in with lib; {
       s2k-count = mkDefault "65011712"; # Specify how many times the passphrases mangling for symmetric encryption is repeated
     };
   };
-  # I cannot bootout the 'system/com.openssh.ssh-agent', as it seizes the '$SSH_AUTH_SOCK'
+  # Don't bootout the 'system/com.openssh.ssh-agent', as it seizes the '$SSH_AUTH_SOCK'
   home.sessionVariablesExtra = ''
     export SSH_AUTH_SOCK="$(${config.programs.gpg.package}/bin/gpgconf --list-dirs agent-ssh-socket)"
   '';
