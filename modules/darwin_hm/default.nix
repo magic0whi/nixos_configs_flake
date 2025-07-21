@@ -255,7 +255,7 @@ in with lib; {
     # xdg.configFile."yazi/theme.toml".source = "${nur-ryan4yin.packages.${pkgs.system}.catppuccin-yazi}/mocha.toml";
   };
   ## START btop.nix
-  xdg.configFile."btop/themes".source = "${myvars.catppuccin}/btop/"; # https://github.com/catppuccin/btop/blob/main/themes/catppuccin_mocha.theme
+  xdg.configFile."btop/themes".source = "${pkgs.catppuccin}/btop/"; # https://github.com/catppuccin/btop/blob/main/themes/catppuccin_mocha.theme
   programs.btop = { # Alternative to htop/nmon
     enable = mkDefault true;
     settings = {

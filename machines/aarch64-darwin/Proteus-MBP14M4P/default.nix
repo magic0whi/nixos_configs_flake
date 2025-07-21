@@ -6,7 +6,10 @@
     "modules/common"
     "modules/darwin"
   ];
-  hm_modules = map mylib.relative_to_root ["modules/hm-darwin"];
+  hm_modules = map mylib.relative_to_root [
+    "modules/common_hm"
+    "modules/darwin_hm"
+  ];
   darwin_system = inputs.nix-darwin.lib.darwinSystem (mylib.gen_system_args {
     inherit name mylib myvars nixpkgs_modules hm_modules;
     machine_path = ./.;

@@ -14,9 +14,8 @@
   # https://nixos.org/manual/nix/stable/command-ref/conf-file.html#conf-auto-optimise-store
   nix.optimise.automatic = lib.mkDefault true; # Add a timer to do optimise periodically
   nix.settings = {
-    auto-optimise-store = lib.mkDefault true; # Optimise the store after each build
     # enable flakes globally
-    experimental-features = lib.mkDefault ["nix-command" "flakes"];
+    experimental-features = ["nix-command" "flakes"];
 
     # Given the users in this list the right to specify additional substituters via:
     # 1. `nixConfig.substituers` in `flake.nix`

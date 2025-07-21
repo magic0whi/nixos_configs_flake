@@ -37,16 +37,16 @@ in {
         "M2011K2C".id = "W6ZP2GU-HJ5DM7Q-UXKEKCI-OL3TYHM-LGLLPIN-3MCH7DM-76K3DB5-KNELIA5";
         "PROTEUSDESKTOP".id = "CLNAXLW-B2DBSV3-PDT246K-4CZQWGP-EE5MSB4-RUFYUKD-4ALXDXT-HZU3WAN";
         "PROTEUSNOTEBOOK-WIN".id = "QAQHY4R-7KAQYI6-3WLUHMF-Y4LG5LR-XJMDYTF-3LUIOX3-VO33BCP-RBDM2A6";
-        "proteus-nuc".id = "3P2RWV6-RQMHBFS-L3Z5JTF-O6HOR66-7INJZNM-XW3WUSG-XCIB454-UITNPAF";
+        "Proteus-NUC".id = "3P2RWV6-RQMHBFS-L3Z5JTF-O6HOR66-7INJZNM-XW3WUSG-XCIB454-UITNPAF";
       };
       folders = {
         "work" = {
           path = "~/sync_work";
-          devices = ["LGE-AN00" "M2011K2C" "PROTEUSDESKTOP" "PROTEUSNOTEBOOK-WIN" "proteus-nuc"];
+          devices = ["LGE-AN00" "M2011K2C" "PROTEUSDESKTOP" "PROTEUSNOTEBOOK-WIN" "Proteus-NUC"];
         };
         "nixos_configs_flake" = {
           path = "~/nixos_configs_flake";
-          devices = ["Proteus-MBP14M4P"];
+          devices = ["Proteus-NUC"];
         };
       };
     };

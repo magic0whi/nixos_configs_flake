@@ -16,6 +16,7 @@
   # END boot_loader.nix
   # START nix.nix
   nix.gc.dates = mkDefault "weekly";
+  nix.settings.auto-optimise-store = lib.mkDefault true; # Optimise the store after each build
   # nix.extraOptions = ''
     # !include ${config.age.secrets.nix-access-tokens.path}
   # '';

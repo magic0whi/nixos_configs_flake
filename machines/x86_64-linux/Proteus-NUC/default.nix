@@ -8,8 +8,8 @@
     "modules/nixos_gui"
   ];
   hm_modules = map mylib.relative_to_root [
-    "modules/hm_headless"
-    "modules/hm_gui"
+    "modules/nixos_hm_headless"
+    "modules/nixos_hm_gui"
   ];
   nixos_system = inputs.nixpkgs.lib.nixosSystem (mylib.gen_system_args {
     inherit name mylib myvars nixpkgs_modules hm_modules;
