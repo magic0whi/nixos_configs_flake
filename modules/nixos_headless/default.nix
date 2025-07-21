@@ -1,19 +1,17 @@
 {mylib, myvars, lib, config, pkgs, ...}: with lib; { # TODO: divide some configs into modules/common to share with darwin
   imports = mylib.scan_path ./.;
-  system.stateVersion = mkDefault myvars.state_version;
-  environment.variables.EDITOR = mkOverride 999 "hx";
-  # START boot_loader.nix
-  boot.loader.efi.canTouchEfiVariables = mkDefault true; # Allow installation process to modify EFI boot variables
+  # START bootloader.nix
+  boot.loader.efi.canTouchEfiVariables = lib.mkDefault true; # Allow installation process to modify EFI boot variables
   boot.loader.systemd-boot = {
-    enable = mkDefault true;
-    configurationLimit = mkDefault 4; # Limit the boot loader entries
-    consoleMode = mkDefault "max";
+    enable = lib.mkDefault true;
+    configurationLimit = lib.mkDefault 4; # Limit the boot loader entries
+    consoleMode = lib.mkDefault "max";
   };
   services = {
     power-profiles-daemon.enable = mkDefault true;
     upower.enable = mkDefault true;
   };
-  # END boot_loader.nix
+  # END bootloader.nix
   # START nix.nix
   nix.gc.dates = mkDefault "weekly";
   nix.settings.auto-optimise-store = lib.mkDefault true; # Optimise the store after each build
@@ -25,26 +23,25 @@
   services.openssh.settings.PasswordAuthentication = mkDefault false; # disable password login
   # END ssh.nix
   # START i18n.nix
-  time.timeZone = mkDefault "Europe/London";
   # Select internationalisation properties.
-  i18n.defaultLocale = mkDefault "en_US.UTF-8";
+  i18n.defaultLocale = lib.mkDefault "en_US.UTF-8";
   # i18n.extraLocaleSettings = {
-    # LC_ADDRESS = "zh_CN.UTF-8";
-    # LC_IDENTIFICATION = "zh_CN.UTF-8";
-    # LC_MEASUREMENT = "zh_CN.UTF-8";
-    # LC_MONETARY = "zh_CN.UTF-8";
-    # LC_NAME = "zh_CN.UTF-8";
-    # LC_NUMERIC = "zh_CN.UTF-8";
-    # LC_PAPER = "zh_CN.UTF-8";
-    # LC_TELEPHONE = "zh_CN.UTF-8";
-    # LC_TIME = "zh_CN.UTF-8";
+    # LC_ADDRESS = lib.mkDefault "en_US.UTF-8";
+    # LC_IDENTIFICATION = lib.mkDefault "en_US.UTF-8";
+    # LC_MEASUREMENT = lib.mkDefault "en_US.UTF-8";
+    # LC_MONETARY = lib.mkDefault "en_US.UTF-8";
+    # LC_NAME = lib.mkDefault "en_US.UTF-8";
+    # LC_NUMERIC = lib.mkDefault "en_US.UTF-8";
+    # LC_PAPER = lib.mkDefault "en_US.UTF-8";
+    # LC_TELEPHONE = lib.mkDefault "en_US.UTF-8";
+    # LC_TIME = lib.mkDefault "en_US.UTF-8";
   # };
   # END i18n.nix
   # START networking.nix
-  networking.useNetworkd = mkDefault true;
-  networking.nftables.enable = mkDefault true;
+  networking.useNetworkd = lib.mkDefault true;
+  networking.nftables.enable = lib.mkDefault true;
   networking.firewall = {
-    # enable = mkDefault false;
+    # enable = mkDefaults dns false;
     extraInputRules = ''
       ip saddr 192.168.15.0/24 accept comment "Allow from LAN"
       ip6 saddr { fe80::/16, fd66:06e5:aebe::/48 } accept comment "Allow from Link-Local / ULA-Prefix (IPv6)"
@@ -56,7 +53,7 @@
       tcp dport 8888 accept comment "Allow Atuin"
       udp dport bootps accept comment "Allow DHCP server (systemd-nspawn)"
     '';
-    filterForward = true;
+    filterForward = lib.mkDefault true;
     extraForwardRules = ''
       ip6 saddr { fe80::/16, fd66:06e5:aebe::/48 } counter accept comment "Allow forward from Link-Local / ULA-Prefix (IPv6)"
       ip6 saddr { 2409:8a20:5063:5c10::/60 } accept comment "Allow forward from SLAAC (IPv6)"
@@ -65,14 +62,14 @@
       oifname { tun0, "ve-*" } accept comment "Allow sing-box, systemd-nspawn container"
     '';
   };
-  networking.timeServers = mkDefault [ # Or
+  networking.timeServers = [ # Or
   # services.timesyncd.servers = [
     "ntp.aliyun.com" # Aliyun NTP Server
     "ntp.tencent.com" # Tencent NTP Server
   ];
-  services.resolved.enable = mkDefault true;
+  services.resolved.enable = lib.mkDefault true;
   # END networking.nix
-  # START remote-building.nix
+  # START remote_building.nix
   #  NixOS's Configuration for Remote Building / Distributed Building
   #
   #  Related Docs:
@@ -140,8 +137,8 @@
   nix.extraOptions = mkDefault ''
     builders-use-substitutes = true
   '';
-  # END remote-building.nix
-  # START users-n-groups.nix
+  # END remote_building.nix
+  # START users_and_groups.nix
   programs.zsh = {
     enable = mkDefault true;
     autosuggestions = {

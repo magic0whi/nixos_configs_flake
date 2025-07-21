@@ -17,7 +17,7 @@
       + " command man \"$@\"";
   };
 in with lib; {
-  home.stateVersion = mkDefault myvars.state_version;
+  home.stateVersion = mkDefault myvars.nixos_state_version;
   programs.home-manager.enable = mkDefault true;
   imports = mylib.scan_path ./.;
   home.packages = with pkgs; [

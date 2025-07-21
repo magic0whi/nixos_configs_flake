@@ -1,5 +1,7 @@
 {mylib, lib, pkgs, myvars, ...}: {
   imports = mylib.scan_path ./.;
+  system.stateVersion = lib.mkDefault (
+    if pkgs.stdenv.isDarwin then myvars.darwin_state_version else myvars.nixos_state_version);
   # Add my self-signed CA certificate to the system-wide trust store.
   security.pki.certificateFiles = [(mylib.relative_to_root "custom_files/proteus_ca.pem")];
   nixpkgs.config.allowUnfree = lib.mkDefault true; # Allow chrome, vscode to install
@@ -38,13 +40,13 @@
     sandbox = lib.mkDefault true;
   };
   ## END nix.nix
+  ## START i18n.nix
+  time.timeZone = lib.mkDefault "Asia/Hong_Kong";
+  ## END i18n.nix
   ## START ssh.nix
-  services.openssh = {
-    enable = lib.mkDefault true;
-    # settings.PasswordAuthentication = mkDefault false; # Disable password login (not in darwin-nix yet)
-  };
-    programs.ssh = {
-    extraConfig = lib.mkDefault (''
+  services.openssh.enable = lib.mkDefault true;
+  programs.ssh = {
+    extraConfig = (''
       Compression yes
       ControlMaster auto
       ControlPath ~/.ssh/master-%r@%n:%p
@@ -52,7 +54,7 @@
       ServerAliveInterval 30
       ServerAliveCountMax 5
     '' + myvars.networking.ssh.extra_config);
-    knownHosts = lib.mkDefault myvars.networking.ssh.known_hosts;
+    knownHosts = myvars.networking.ssh.known_hosts;
   };
   ## END ssh.nix
 }

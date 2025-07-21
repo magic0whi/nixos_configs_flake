@@ -2,10 +2,11 @@
   name = baseNameOf ./.;
   nixpkgs_modules = map mylib.relative_to_root [
     "modules/secrets/linux.nix"
+    "modules/overlays/catppuccin.nix"
     "modules/common"
     "modules/nixos_headless"
   ];
-  hm_modules = map mylib.relative_to_root ["modules/hm_headless"];
+  hm_modules = map mylib.relative_to_root ["modules/nixos_hm_headless"];
   nixos_system = inputs.nixpkgs.lib.nixosSystem (mylib.gen_system_args {
     inherit name mylib myvars nixpkgs_modules hm_modules;
     machine_path = ./.;

@@ -23,18 +23,27 @@
     homebrew_mirror_env;
 in {
   imports = mylib.scan_path ./.;
-  system.stateVersion = mkDefault 6;
   system.primaryUser = mkDefault myvars.username;
+  ## START networking.nix
+  networking.knownNetworkServices = ["Wi-Fi"];
+  networking.dns = [ # sing-box requires a non-local address to hijack DNS
+    "223.5.5.5"
+    "2400:3200::1"
+    "8.8.8.8"
+  ];
+  services.tailscale.enable = mkDefault true; # `tailscale up --accept-routes`
+  services.sing-box.enable = mkDefault true;
+  ## END networking.nix
+  ## START ssh.nix
   # Disable password authentication for SSH
   environment.etc."ssh/sshd_config.d/200-disable-password-auth.conf".text = mkDefault ''
     PasswordAuthentication no
     KbdInteractiveAuthentication no
   '';
-  services.tailscale.enable = mkDefault true; # Usage: https://github.com/tailscale/tailscale/wiki/Tailscaled-on-macOS#run-the-tailscaled-daemon
-  services.sing-box.enable = mkDefault true; # Current DNS hijack doesn't work
-  # 1. 'sudo tailscaled install-system-daemon'
-  # 2. `tailscale up --accept-routes`
+  ## END ssh.nix
+  ## START security.nix
   security.pam.services.sudo_local.touchIdAuth = true; # Add ability to used TouchID for sudo authentication
+  ## END security.nix
   environment.systemPackages= with pkgs; [
     git
     git-lfs

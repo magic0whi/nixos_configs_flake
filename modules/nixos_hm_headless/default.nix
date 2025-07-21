@@ -8,7 +8,7 @@
   # You can update Home Manager without changing this value. See
   # the Home Manager release notes for a list of state version
   # changes in each release.
-  home.stateVersion = mkDefault myvars.state_version;
+  home.stateVersion = mkDefault myvars.nixos_state_version;
   programs.home-manager.enable = mkDefault true; # Let Home Manager install and manage itself.
   home.packages = with pkgs; [
     # Misc
