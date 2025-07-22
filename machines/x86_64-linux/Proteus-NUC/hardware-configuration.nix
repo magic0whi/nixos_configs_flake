@@ -27,12 +27,14 @@
     encrypted.label = "swap";
     encrypted.blkDev = "/dev/disk/by-id/nvme-eui.002538b121b3218a-part2";
   }];
-
-  fileSystems = {
-    "/" = {device = "zroot/default"; fsType = "zfs";};
-    "/home" = {device = "zroot/home"; fsType = "zfs";};
-    "/nix" = {device = "zroot/nix"; fsType = "zfs";};
-    "/root" = {device = "zroot/home/root"; fsType = "zfs";};
+  # Disable zfs-mount, use NixOS systemd mount management
+  # Ref: https://wiki.nixos.org/wiki/ZFS#ZFS_conflicting_with_systemd
+  systemd.services.zfs-mount.enable = false;
+  fileSystems = { # The zfsutil option is needed when mounting zfs datasets without `legacy` mountpoints
+    "/" = {device = "zroot/default"; fsType = "zfs"; options = ["zfsutil"];};
+    "/home" = {device = "zroot/home"; fsType = "zfs"; options = ["zfsutil"];};
+    "/nix" = {device = "zroot/nix"; fsType = "zfs"; options = ["zfsutil"];};
+    "/root" = {device = "zroot/home/root"; fsType = "zfs"; options = ["zfsutil"];};
     "/boot" = {
       device = "/dev/disk/by-partlabel/EFI\\x20system\\x20partition";
       fsType = "vfat";
