@@ -55,6 +55,4 @@
       pdftexcmds # Deps of biblatex, hyperref
       xkeyval
     ]);
-in {
-  home.packages = [tex pkgs.ninja];
-}
+in {home.packages = [tex];}

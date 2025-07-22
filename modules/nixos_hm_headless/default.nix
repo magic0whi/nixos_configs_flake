@@ -12,6 +12,7 @@
   programs.home-manager.enable = mkDefault true; # Let Home Manager install and manage itself.
   home.packages = with pkgs; [
     # Misc
+    fastfetch
     tlrc # tldr written in Rust
     cowsay
     gnumake

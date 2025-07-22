@@ -20,6 +20,11 @@
   ## END nix.nix
   ## START ssh.nix
   services.openssh.settings.PasswordAuthentication = lib.mkDefault false; # disable password login
+  # The OpenSSH agent remembers private keys for you
+  # so that you don’t have to type in passphrases every time you make an SSH connection.
+  # Use `ssh-add` to add a key to the agent.
+  # NOTE: You cannot use ssh-agent and GnuPG agent with SSH support at the same time
+  # ssh.startAgent = lib.mkDefault true;
   ## END ssh.nix
   ## START i18n.nix
   # Select internationalisation properties.

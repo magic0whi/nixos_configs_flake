@@ -44,8 +44,6 @@ in {
   ## START packages.nix
   environment.systemPackages= with pkgs; [
     git
-    git-lfs
-    git-trim
     tree
     findutils
     gnugrep

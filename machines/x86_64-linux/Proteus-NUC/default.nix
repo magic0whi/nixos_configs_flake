@@ -8,6 +8,7 @@
     "modules/nixos_gui"
   ];
   hm_modules = map mylib.relative_to_root [
+    "modules/common_hm"
     "modules/nixos_hm_headless"
     "modules/nixos_hm_gui"
   ];

@@ -1,22 +1,4 @@
-{config, lib, mylib, myvars, pkgs, pgp2ssh, ...}: let
-  shell_aliases = {
-    grep = "grep --color=auto";
-    ip = "ip --color=auto";
-    cp = "cp -i";
-    ssh = "TERM=xterm-256color ssh";
-    bc = "bc -lq";
-    Ci = "wl-copy";
-    Co = "wl-paste";
-    Coimg = "Co --type image";
-    cpr = "rsync --archive -hh --partial --info=stats1,progress2 --modify-window=1 \"$@\"";
-    mvr = "rsync --archive -hh --partial --info=stats1,progress2 --modify-window=1 --remove-source-files \"$@\"";
-    diff = "command diff --text --unified --new-file --color=auto \"$@\"";
-    # Set boldface -> red color, underline -> blue color
-    man = "MANPAGER=\"less -R --use-color -Dd+r -Du+b\""
-      + " MANROFFOPT=\"-P-c\""
-      + " command man \"$@\"";
-  };
-in with lib; {
+{config, lib, mylib, myvars, pkgs, pgp2ssh, ...}: with lib; {
   home.stateVersion = mkDefault myvars.nixos_state_version;
   programs.home-manager.enable = mkDefault true;
   imports = mylib.scan_path ./.;
@@ -60,23 +42,14 @@ in with lib; {
     yarn
   ];
   xdg.enable = mkDefault true; # enable management of XDG base directories on macOS
-  home.shellAliases = shell_aliases;
-  home.sessionVariables = { # environment variables that always set at login
-    LESS = mkDefault "-R -N";
-    LESSHISTFILE = mkDefault (config.xdg.cacheHome + "/less/history");
-    LESSKEY = mkDefault (config.xdg.configHome + "/less/lesskey");
-    DELTA_PAGER = mkDefault "less -R"; # enable scrolling in git diff
+  ## START shell.nix
+  home.shellAliases = {
+    Ci = "pbcopy";
+    Co = "pbpaste";
   };
+  ## END shell.nix
   services.syncthing.enable = mkDefault true;
   programs = {
-    zsh = {
-      enable = mkDefault true;
-      autosuggestion = {
-        enable = mkDefault true;
-        highlight = mkDefault "fg=60";
-        strategy = mkDefault ["match_prev_cmd" "history" "completion"];
-      };
-    };
     starship = {
       enable = mkDefault true;
       settings = {

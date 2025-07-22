@@ -1,13 +1,9 @@
-{pkgs, ...}: {
-  # List packages installed in system profile. To search, run:
-  # $ nix search wget
+{pkgs, lib, ...}: { # List packages installed in system profile. To search, run: `nix search wget`
   environment.systemPackages = with pkgs; [
     # core tools
     keepassxc # Provides both CLI and GUI
-    fastfetch
     just # justfile
-    git # used by nix flakes
-    git-lfs # used by huggingface models
+    git # Used by nix flakes
 
     # archives
     zip
@@ -59,7 +55,6 @@
     # sysstat
     # iotop
     # iftop
-    btop
     # nmon
     # sysbench
 
@@ -74,7 +69,6 @@
     parted
     cryptsetup # dm-crypt tools
   ];
-
-  programs.bcc.enable = true; # BCC - Tools for BPF-based Linux IO analysis,
-  # networking, monitoring, and more https://github.com/iovisor/bcc
+  programs.bcc.enable = lib.mkDefault true; # BCC - Tools for BPF-based Linux IO analysis, # networking, monitoring, and more
+  # Ref: https://github.com/iovisor/bcc
 }
