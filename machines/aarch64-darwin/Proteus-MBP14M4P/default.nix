@@ -7,7 +7,8 @@
     "modules/darwin"
   ];
   hm_modules = map mylib.relative_to_root [
-    "modules/common_hm"
+    "modules/common_hm_headless"
+    "modules/common_hm_gui"
     "modules/darwin_hm"
   ];
   darwin_system = inputs.nix-darwin.lib.darwinSystem (mylib.gen_system_args {
