@@ -94,7 +94,7 @@ in {
         "$mainMod SHIFT,9,movetoworkspace,9"
         "$mainMod SHIFT,0,movetoworkspace,10"
 
-        # Move/resize windows
+        # Move windows
         "$mainMod SHIFT,H,movewindow,l"
         "$mainMod SHIFT,J,movewindow,d"
         "$mainMod SHIFT,K,movewindow,u"
@@ -109,7 +109,7 @@ in {
         "ALT,Print,exec,hyprshot -m window -o ~/Pictures/Screenshots -- imv"
         "CTRL,Print,exec,hyprshot -m region -o ~/Pictures/Screenshots -- imv"
       ];
-      binde = [
+      binde = [ # Resize windows
         "$mainMod ALT,H,resizeactive,-5% 0"
         "$mainMod ALT,L,resizeactive,5% 0"
         "$mainMod ALT,J,resizeactive,0 5%"
