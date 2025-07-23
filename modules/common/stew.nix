@@ -1,19 +1,18 @@
 {lib, pkgs, myvars, mylib, ...}: {
-  system.stateVersion = lib.mkDefault (
-    if pkgs.stdenv.isDarwin then myvars.darwin_state_version else myvars.nixos_state_version);
+  system.stateVersion = if pkgs.stdenv.isDarwin then myvars.darwin_state_version else myvars.nixos_state_version;
   # Add my self-signed CA certificate to the system-wide trust store.
   security.pki.certificateFiles = [(mylib.relative_to_root "custom_files/proteus_ca.pem")];
-  nixpkgs.config.allowUnfree = lib.mkDefault true; # Allow chrome, vscode to install
+  nixpkgs.config.allowUnfree = true; # Allow chrome, vscode to install
   ## START nix.nix
-  nix.package = lib.mkDefault pkgs.nixVersions.latest; # Use latest nix, default is pkgs.nix
+  nix.package = pkgs.nixVersions.latest; # Use latest nix, default is pkgs.nix
   nix.gc = {
-    automatic = lib.mkDefault true;
-    options = lib.mkDefault "--delete-older-than 7d";
+    automatic = true;
+    options = "--delete-older-than 7d";
   };
-  nix.channel.enable = lib.mkDefault false; # Remove nix-channel related tools & configs, use flakes instead
+  nix.channel.enable = false; # Remove nix-channel related tools & configs, use flakes instead
   # Manual optimise storage: nix-store --optimise
   # https://nixos.org/manual/nix/stable/command-ref/conf-file.html#conf-auto-optimise-store
-  nix.optimise.automatic = lib.mkDefault true; # Add a timer to do optimise periodically
+  nix.optimise.automatic = true; # Add a timer to do optimise periodically
   nix.settings = {
     # enable flakes globally
     experimental-features = ["nix-command" "flakes"];
@@ -35,8 +34,8 @@
       "https://nix-community.cachix.org"
     ];
     trusted-public-keys = ["nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="];
-    builders-use-substitutes = lib.mkDefault true;
-    sandbox = lib.mkDefault true;
+    builders-use-substitutes = true;
+    sandbox = true;
   };
   ## END nix.nix
   ## START i18n.nix
@@ -44,7 +43,7 @@
   time.timeZone = lib.mkDefault "Asia/Hong_Kong";
   ## END i18n.nix
   ## START ssh.nix
-  services.openssh.enable = lib.mkDefault true;
+  services.openssh.enable = true;
   programs.ssh = {
     extraConfig = ''
     Compression yes
@@ -60,7 +59,7 @@
   ## END ssh.nix
   ## START shell.nix
   programs.zsh = {
-    enable = lib.mkDefault true; # On darwin, this creates /etc/zshrc that loads the nix-darwin environment. Which is
+    enable = true; # On darwin, this creates /etc/zshrc that loads the nix-darwin environment. Which is
     # required if you want to use darwin's default shell - zsh
     interactiveShellInit = ''
     # START Zsh Shell Coloring
@@ -146,12 +145,12 @@
   ## ENd shell.nix
   ## START users.nix
   users.users.${myvars.username} = {
-    description = lib.mkDefault myvars.userfullname;
-    openssh.authorizedKeys.keys = lib.mkDefault myvars.ssh_authorized_keys;
+    description = myvars.userfullname;
+    openssh.authorizedKeys.keys = myvars.ssh_authorized_keys;
   };
   ## END users.nix
   ## START network.nix
-  services.tailscale.enable = lib.mkDefault true; # Start-up: `tailscale up --accept-routes`
+  services.tailscale.enable = true; # Start-up: `tailscale up --accept-routes`
   services.sing-box.enable = lib.mkDefault true;
   ## END network.nix
   ## START fonts.nix

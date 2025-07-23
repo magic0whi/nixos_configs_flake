@@ -1,8 +1,13 @@
 {mylib, lib, pkgs, ...}: with lib; {
   imports = mylib.scan_path ./.;
   fonts.fontconfig.enable = false; # This allows fontconfig to discover fonts and configurations installed through home.packages, but I manage fonts at system-level, not user-level
-  services.gpg-agent.pinentry.package = mkOverride 999 pkgs.pinentry-qt; # gpg agent with pinentry-qt
+  ## START gpg.nix
+  services.gpg-agent.pinentry.package = pkgs.pinentry-qt; # GPG agent with pinentry-qt
+  ## END gpg.nix
   services.psd.enable = mkDefault true;
+  ## START syncthing_tray.nix
+  services.syncthing.tray.enable = true; # Only supports Linux platform
+  ## END syncthing_tray.nix
   home.packages = with pkgs; [
     (anki-bin.overrideAttrs (_: prev: { # TIPS: 'builtins.trace <string> {}' is useful for debug
       buildCommand = lib.strings.concatLines [ # Add environment 'QT_IM_MODULE=fcitx' for anki

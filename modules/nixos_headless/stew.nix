@@ -1,49 +1,49 @@
 {lib, config, myvars, pkgs, ...}: {
   ## START bootloader.nix
-  boot.loader.efi.canTouchEfiVariables = lib.mkDefault true; # Allow installation process to modify EFI boot variables
+  boot.loader.efi.canTouchEfiVariables = true; # Allow installation process to modify EFI boot variables
   boot.loader.systemd-boot = {
     enable = lib.mkDefault true;
-    configurationLimit = lib.mkDefault 4; # Limit the boot loader entries
-    consoleMode = lib.mkDefault "max";
+    configurationLimit = 4; # Limit the boot loader entries
+    consoleMode = "max";
   };
   ## END bootloader.nix
   ## START power_management.nix
-  services.power-profiles-daemon.enable = lib.mkDefault true;
-  services.upower.enable = lib.mkDefault true;
+  services.power-profiles-daemon.enable = true;
+  services.upower.enable = true;
   ## END power_management.nix
   ## START nix.nix
-  nix.gc.dates = lib.mkDefault "weekly";
-  nix.settings.auto-optimise-store = lib.mkDefault true; # Optimise the store after each build
+  nix.gc.dates = "weekly";
+  nix.settings.auto-optimise-store = true; # Optimise the store after each build
   # nix.extraOptions = ''
     # !include ${config.age.secrets.nix-access-tokens.path}
   # '';
   ## END nix.nix
   ## START ssh.nix
-  services.openssh.settings.PasswordAuthentication = lib.mkDefault false; # disable password login
-  # The OpenSSH agent remembers private keys for you
-  # so that you don’t have to type in passphrases every time you make an SSH connection.
+  services.openssh.settings.PasswordAuthentication = false; # Disable password login
+  # The OpenSSH agent remembers private keys for you. So that you don’t have to type in passphrases every time you
+  # make an SSH connection.
   # Use `ssh-add` to add a key to the agent.
   # NOTE: You cannot use ssh-agent and GnuPG agent with SSH support at the same time
-  # ssh.startAgent = lib.mkDefault true;
+  # ssh.startAgent = true;
   ## END ssh.nix
   ## START i18n.nix
   # Select internationalisation properties.
-  i18n.defaultLocale = lib.mkDefault "en_US.UTF-8";
+  i18n.defaultLocale = "en_US.UTF-8";
   # i18n.extraLocaleSettings = {
-    # LC_ADDRESS = lib.mkDefault "en_US.UTF-8";
-    # LC_IDENTIFICATION = lib.mkDefault "en_US.UTF-8";
-    # LC_MEASUREMENT = lib.mkDefault "en_US.UTF-8";
-    # LC_MONETARY = lib.mkDefault "en_US.UTF-8";
-    # LC_NAME = lib.mkDefault "en_US.UTF-8";
-    # LC_NUMERIC = lib.mkDefault "en_US.UTF-8";
-    # LC_PAPER = lib.mkDefault "en_US.UTF-8";
-    # LC_TELEPHONE = lib.mkDefault "en_US.UTF-8";
-    # LC_TIME = lib.mkDefault "en_US.UTF-8";
+    # LC_ADDRESS = "en_US.UTF-8";
+    # LC_IDENTIFICATION = "en_US.UTF-8";
+    # LC_MEASUREMENT = "en_US.UTF-8";
+    # LC_MONETARY = "en_US.UTF-8";
+    # LC_NAME = "en_US.UTF-8";
+    # LC_NUMERIC = "en_US.UTF-8";
+    # LC_PAPER = "en_US.UTF-8";
+    # LC_TELEPHONE = "en_US.UTF-8";
+    # LC_TIME = "en_US.UTF-8";
   # };
   ## END i18n.nix
   ## START network.nix
-  networking.useNetworkd = lib.mkDefault true;
-  networking.nftables.enable = lib.mkDefault true;
+  networking.useNetworkd = true;
+  networking.nftables.enable = true;
   networking.firewall = {
     # enable = mkDefaults dns false;
     extraInputRules = ''
@@ -57,7 +57,7 @@
       tcp dport 8888 accept comment "Allow Atuin"
       udp dport bootps accept comment "Allow DHCP server (systemd-nspawn)"
     '';
-    filterForward = lib.mkDefault true;
+    filterForward = true;
     extraForwardRules = ''
       ip6 saddr { fe80::/16, fd66:06e5:aebe::/48 } counter accept comment "Allow forward from Link-Local / ULA-Prefix (IPv6)"
       ip6 saddr { 2409:8a20:5063:5c10::/60 } accept comment "Allow forward from SLAAC (IPv6)"
@@ -71,7 +71,7 @@
     "ntp.aliyun.com" # Aliyun NTP Server
     "ntp.tencent.com" # Tencent NTP Server
   ];
-  services.resolved.enable = lib.mkDefault true;
+  services.resolved.enable = true;
 
   # Override the sing-box's systemd service
   systemd.services.sing-box = lib.mkIf config.services.sing-box.enable (lib.mkOverride 100 {
@@ -94,10 +94,10 @@
   # Ref: https://github.com/NixOS/nixpkgs/blob/nixos-24.11/nixos/modules/services/networking/tailscale.nix
   # 
   # Auto detect the firewall type (nftables)
-  systemd.services.tailscaled.environment.TS_DEBUG_FIREWALL_MODE = lib.mkDefault "auto";
+  systemd.services.tailscaled.environment.TS_DEBUG_FIREWALL_MODE = "auto";
   services.tailscale = {
-    openFirewall = lib.mkDefault true; # allow the Tailscale UDP port through the firewall
-    useRoutingFeatures = lib.mkDefault "client"; # "server" if act as exit node
+    openFirewall = true; # allow the Tailscale UDP port through the firewall
+    useRoutingFeatures = "client"; # "server" if act as exit node
     # extraUpFlags = "--accept-routes";
     # authKeyFile = "/var/lib/tailscale/authkey";
   };
@@ -114,7 +114,7 @@
 
   # set local's max-job to 0 to force remote building(disable local building)
   # nix.settings.max-jobs = 0;
-  nix.distributedBuilds = lib.mkDefault true;
+  nix.distributedBuilds = true;
   nix.buildMachines = let # TODO
     sshUser = myvars.username;
     # ssh key's path on local machine
@@ -172,19 +172,19 @@
   ## START shell.nix
   programs.zsh = {
     autosuggestions = {
-      enable = lib.mkDefault true;
-      highlightStyle = lib.mkDefault "fg=60";
-      strategy = lib.mkDefault ["match_prev_cmd" "history" "completion"];
+      enable = true;
+      highlightStyle = "fg=60";
+      strategy = ["match_prev_cmd" "history" "completion"];
     };
-    syntaxHighlighting.enable = lib.mkDefault true;
+    syntaxHighlighting.enable = true;
   };
   ## END shell.nix
   ## START users.nix
   users = {
-    defaultUserShell = lib.mkOverride 999 pkgs.zsh;
-    mutableUsers = lib.mkDefault false; # Don't allow mutate users outside the config.
+    defaultUserShell = pkgs.zsh;
+    mutableUsers = false; # Don't allow mutate users outside the config.
     groups = {
-      "${myvars.username}" = {gid = lib.mkDefault 1000;};
+      "${myvars.username}" = {gid = 1000;};
       docker = {};
     };
     users."${myvars.username}" = {
@@ -200,11 +200,11 @@
       #     ```
       #   2. Never leave the device and never sent over the network.
       # - Or just use hardware security keys like Yubikey/CanoKey.
-      uid = lib.mkDefault 1000;
-      home = lib.mkDefault "/home/${myvars.username}";
-      initialHashedPassword = lib.mkDefault myvars.initial_hashed_password;
-      isNormalUser = lib.mkDefault true;
-      openssh.authorizedKeys.keys = lib.mkDefault myvars.ssh_authorized_keys;
+      uid = 1000;
+      home = "/home/${myvars.username}";
+      initialHashedPassword = myvars.initial_hashed_password;
+      isNormalUser = true;
+      openssh.authorizedKeys.keys = myvars.ssh_authorized_keys;
       extraGroups = [
         myvars.username
         "docker"
@@ -216,13 +216,13 @@
       ];
     };
     users.root = { # root's ssh key are heavily used for remote deployment
-      initialHashedPassword = lib.mkDefault config.users.users."${myvars.username}".initialHashedPassword;
-      openssh.authorizedKeys.keys = lib.mkDefault config.users.users."${myvars.username}".openssh.authorizedKeys.keys;
+      initialHashedPassword = config.users.users."${myvars.username}".initialHashedPassword;
+      openssh.authorizedKeys.keys = config.users.users."${myvars.username}".openssh.authorizedKeys.keys;
     };
   };
   ## END users.nix
   ## START zram.nix
-  zramSwap.enable = lib.mkDefault true;
+  zramSwap.enable = true;
   ## END zram.nix
   ## START fhs.nix
   # Create a fhs environment by command `fhs`, so we can run non-NixOS packages in # NixOS
@@ -246,10 +246,10 @@
   #
   # You can overwrite `NIX_LD_LIBRARY_PATH` in the environment where you run the non-NixOS binaries to customize the
   # search path for shared libraries.
-  programs.nix-ld.enable = lib.mkDefault true;
-  programs.nix-ld.libraries = lib.mkDefault [pkgs.stdenv.cc.cc];
+  programs.nix-ld.enable = true;
+  programs.nix-ld.libraries = [pkgs.stdenv.cc.cc];
   ## END fhs.nix
-  systemd.services.console-blanking = lib.mkDefault { # Let monitor become blank after 2mins, and 3mins inactive to
+  systemd.services.console-blanking = { # Let monitor become blank after 2mins, and 3mins inactive to
   # poweroff
     description = "Enable virtual console blanking and DPMS";
     after = ["display-manager.service"];
@@ -263,23 +263,22 @@
     wantedBy = ["multi-user.target"];
   };
   ## START fonts.nix
-  fonts = { # all fonts are linked to /nix/var/nix/profiles/system/sw/share/X11/fonts
-    enableDefaultPackages = lib.mkOverride 999 false; # use fonts specified by user rather than default ones
-    fontDir.enable = lib.mkDefault true;
+  fonts = { # All fonts are linked to /nix/var/nix/profiles/system/sw/share/X11/fonts
+    fontDir.enable = true;
     packages = with pkgs; [noto-fonts noto-fonts-emoji];
     fontconfig = {
-      subpixel.rgba = lib.mkDefault "rgb";
+      subpixel.rgba = "rgb";
       defaultFonts = {
-        serif = lib.mkDefault [
-          "Noto Serif" "FZYaSongS-R-GB" "Noto Serif CJK SC" "Noto Serif CJK TC" "Noto Serif CJK JP"
+        serif = ["Noto Serif" "FZYaSongS-R-GB" "Noto Serif CJK SC" "Noto Serif CJK TC" "Noto Serif CJK JP"];
+        sansSerif = ["Inter Nerd Font" "Noto Sans" "Noto Sans CJK SC" "Noto Sans CJK TC" "Noto Sans CJK JP"];
+        monospace = [
+          "Iosevka Nerd Font Mono"
+          "Noto Sans Mono"
+          "Noto Sans Mono CJK SC"
+          "Noto Sans Mono CJK TC"
+          "Noto Sans Mono CJK JP"
         ];
-        sansSerif = lib.mkDefault [
-          "Inter Nerd Font" "Noto Sans" "Noto Sans CJK SC" "Noto Sans CJK TC" "Noto Sans CJK JP"
-        ];
-        monospace = lib.mkDefault [
-          "Iosevka Nerd Font Mono" "Noto Sans Mono" "Noto Sans Mono CJK SC" "Noto Sans Mono CJK TC" "Noto Sans Mono CJK JP"
-        ];
-        emoji = lib.mkDefault ["Noto Color Emoji"];
+        emoji = ["Noto Color Emoji"];
       };
     };
   };
@@ -290,19 +289,19 @@
   # kmscon is a kms/dri-based userspace virtual terminal implementation.
   # It supports a richer feature set than the standard linux console VT,
   # including full unicode support, and when the video card supports drm should be much faster.
-    enable = lib.mkDefault true;
+    enable = true;
     fonts = [{name = "Iosevka Nerd Font Mono"; package = pkgs.nerd-fonts.iosevka;}];
-    hwRender = lib.mkDefault true; # Whether to use 3D hardware acceleration to render the console.
+    hwRender = true; # Whether to use 3D hardware acceleration to render the console.
     extraOptions = "--term xterm-256color";
     extraConfig = ''font-size=12'';
   };
   ## START console.nix
   ## START security.nix
-  security.sudo.package = lib.mkDefault (pkgs.sudo.override {withSssd = true;});
+  security.sudo.package = (pkgs.sudo.override {withSssd = true;});
   security.sudo.extraConfig = ''Defaults passwd_timeout=0''; # Disable timeout for sudo prompt
   system.nssDatabases.sudoers = ["sss"]; # Use LDAP to distribute configuration of sudo as well
   services.sssd = {
-    enable = lib.mkDefault true;
+    enable = true;
     config = ''
     [sssd]
     config_file_version = 2

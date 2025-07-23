@@ -10,8 +10,8 @@ in {
     environment.systemPackages = [cfg.package];
     launchd.daemons.sing-box.serviceConfig = {
       KeepAlive = {
-        Crashed = lib.mkDefault true;
-        SuccessfulExit = lib.mkDefault false;
+        Crashed = true;
+        SuccessfulExit = false;
       };
       Label = lib.mkOverride 999 "io.nekohasekai.sing-box";
       ProgramArguments = [
@@ -22,9 +22,9 @@ in {
           + " && exec ${lib.getExe cfg.package} -c ${config.age.secrets."config.json".path} -D \"${sing-box_dir}\" run"
         )
       ];
-      RunAtLoad = lib.mkDefault true;
-      StandardErrorPath = lib.mkDefault "/Library/Logs/org.nixos.sing-box.stderr.log";
-      StandardOutPath = lib.mkDefault "/Library/Logs/org.nixos.sing-box.stdout.log";
+      RunAtLoad = true;
+      StandardErrorPath = "/Library/Logs/org.nixos.sing-box.stderr.log";
+      StandardOutPath = "/Library/Logs/org.nixos.sing-box.stdout.log";
     };
   };
 }

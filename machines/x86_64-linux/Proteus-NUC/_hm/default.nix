@@ -58,7 +58,7 @@ in {
       }
     ];
   };
-  programs.mpv.profiles.common.vulkan-device = "Intel(R) HD Graphics 520 (SKL GT2)";
+  programs.mpv.profiles.common.vulkan-device = "Intel(R) UHD Graphics (TGL GT1)";
   ## START secrets.nix
   imports = [agenix.homeManagerModules.default];
   age.identityPaths = ["/home/${myvars.username}/sync_work/3keys/private/legacy/proteus_ed25519.key"];

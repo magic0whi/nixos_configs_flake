@@ -1,4 +1,4 @@
-{pkgs, ...}: {
+{pkgs, ...}: { # TODO
   # home.packages = with pkgs; [
   #   docker-compose
   #   dive # explore docker layers

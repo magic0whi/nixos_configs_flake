@@ -22,7 +22,7 @@
     homebrew_mirror_env;
 in {
   imports = mylib.scan_path ./.;
-  system.primaryUser = lib.mkDefault myvars.username;
+  system.primaryUser = myvars.username;
   ## START networking.nix
   networking.knownNetworkServices = ["Wi-Fi"];
   networking.dns = [ # sing-box requires a non-local address to hijack DNS
@@ -33,13 +33,13 @@ in {
   ## END networking.nix
   ## START ssh.nix
   # Disable password authentication for SSH
-  environment.etc."ssh/sshd_config.d/200-disable-password-auth.conf".text = lib.mkDefault ''
+  environment.etc."ssh/sshd_config.d/200-disable-password-auth.conf".text = ''
     PasswordAuthentication no
     KbdInteractiveAuthentication no
   '';
   ## END ssh.nix
   ## START security.nix
-  security.pam.services.sudo_local.touchIdAuth = lib.mkDefault true; # Add ability to used TouchID for sudo authentication
+  security.pam.services.sudo_local.touchIdAuth = true; # Add ability to used TouchID for sudo authentication
   ## END security.nix
   ## START packages.nix
   environment.systemPackages= with pkgs; [
@@ -65,7 +65,7 @@ in {
     ++ ["/usr/share/terminfo"];
   ## END terminal.nix
   ## START shell.nix
-  programs.zsh.enableSyntaxHighlighting = lib.mkDefault true;
+  programs.zsh.enableSyntaxHighlighting = true;
   environment.shells = [pkgs.zsh];
   ## END shell.nix
   ## BEGIN brew.nix
@@ -78,13 +78,13 @@ in {
     eval "$(/opt/homebrew/bin/brew shellenv)"
   '';
   homebrew = { # homebrew need to be installed manually, see https://brew.sh
-    enable = lib.mkDefault true; # disable homebrew for fast deploy
+    enable = true; # disable homebrew for fast deploy
 
     onActivation = {
-      autoUpdate = lib.mkDefault true; # Fetch the newest stable branch of Homebrew's git repo
-      upgrade = lib.mkDefault true; # Upgrade outdated casks, formulae, and App Store apps
+      autoUpdate = true; # Fetch the newest stable branch of Homebrew's git repo
+      upgrade = true; # Upgrade outdated casks, formulae, and App Store apps
       # 'zap': uninstalls all formulae(and related files) not listed in the generated Brewfile
-      cleanup = lib.mkDefault "zap";
+      cleanup = "zap";
     };
     masApps = { # Applications to install from Mac App Store using mas. You need to install all these Apps manually first so that your apple account have records for them. otherwise Apple Store will refuse to install them. For details, see https://github.com/mas-cli/mas
       "GeoGebra Calculator Suite" = 1504416652;
@@ -140,7 +140,7 @@ in {
   ## END brew.nix
   ## START users.nix
   users.users.${myvars.username} = {
-    home = lib.mkDefault "/Users/${myvars.username}"; # home-manager needs it
+    home = "/Users/${myvars.username}"; # home-manager needs it
     # nix-darwin doesn't have `users.defaultUserShell`. If this don't work, try
     # chsh -s /run/current-system/sw/bin/zsh
     shell = pkgs.zsh;

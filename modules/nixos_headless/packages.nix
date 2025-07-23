@@ -1,4 +1,4 @@
-{pkgs, lib, ...}: { # List packages installed in system profile. To search, run: `nix search wget`
+{pkgs, ...}: { # List packages installed in system profile. To search, run: `nix search wget`
   environment.systemPackages = with pkgs; [
     # core tools
     keepassxc # Provides both CLI and GUI
@@ -69,6 +69,6 @@
     parted
     cryptsetup # dm-crypt tools
   ];
-  programs.bcc.enable = lib.mkDefault true; # BCC - Tools for BPF-based Linux IO analysis, # networking, monitoring, and more
+  programs.bcc.enable = true; # BCC - Tools for BPF-based Linux IO analysis, # networking, monitoring, and more
   # Ref: https://github.com/iovisor/bcc
 }

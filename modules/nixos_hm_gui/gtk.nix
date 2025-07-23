@@ -1,7 +1,6 @@
 {pkgs, lib, config, myvars, ...}: {
-  # If your themes for mouse cursor, icons or windows don’t load correctly,
-  # try setting them with home.pointerCursor and gtk.theme,
-  # which enable a bunch of compatibility options that should make the themes load in all situations.
+  # If your themes for mouse cursor, icons or windows don’t load correctly, try setting them with home.pointerCursor and
+  # gtk.theme, which enable a bunch of compatibility options that should make the themes load in all situations.
   home.pointerCursor = {
     gtk.enable = true;
     x11.enable = true;
@@ -9,13 +8,13 @@
     name = "Bibata-Modern-Ice";
     size = 24;
   };
-  xresources.properties = { # set dpi for 4k monitor
+  xresources.properties = { # Set DPI for 4k monitor
     # "Xft.dpi" = 150; # dpi for Xorg's font
     "*.dpi" = 150; # or set a generic dpi
   };
   # gtk's theme settings, generate files:
-  #  ~/.gtkrc-2.0
-  #  ~/.config/gtk-3.0/settings.ini
+  # ~/.gtkrc-2.0
+  # ~/.config/gtk-3.0/settings.ini
   gtk = {
     enable = true;
     font = {
