@@ -1,4 +1,4 @@
-{pkgs, lib, config, ...}: with lib; {
+{pkgs, lib, config, ...}: {
   home.packages = with pkgs; [
     sound-theme-freedesktop
     swaybg # the wallpaper
@@ -26,10 +26,10 @@
     graphviz
   ];
   programs.swaylock = {
-    enable = mkDefault true;
+    enable = true;
   };
   services.mako = let
-    cuppuccin-mocha = {
+    cuppuccin-mocha = { # TODO: https://github.com/catppuccin/nix/blob/main/modules/home-manager/mako.nix
       base = "#1e1e2e";
       blue = "#89b4fa";
       red = "#f38ba8";
@@ -38,7 +38,7 @@
       yellow = "#f9e2af";
     };
   in with cuppuccin-mocha; {
-    enable = mkDefault true; # mako is trigged by dbus
+    enable = true; # mako is trigged by dbus
     settings = {
       max-history = 100;
       padding = 5;

@@ -2,21 +2,7 @@
   imports = mylib.scan_path ./.;
   home.packages = with pkgs; [
     iproute2mac
-
-    anki-bin
-    blender # 3D creation suite
-    firefox
-    google-chrome
-    moonlight # Remote desktop client
-    modrinth-app
-    winetricks
-
-    vscode
-    joplin-desktop # Note taking app, https://joplinapp.org/help/
-    code-cursor # An AI code editor
     utm # Virtual machine manager for Apple platforms
-    insomnia # REST client
-    wireshark # Network analyzer
   ];
   ## START xdg.nix
   xdg.enable = true; # Enable management of XDG base directories on macOS

@@ -16,10 +16,7 @@
       HOMEBREW_CORE_GIT_REMOTE = "https://mirror.nju.edu.cn/git/homebrew/homebrew-core.git";
       HOMEBREW_PIP_INDEX_URL = "https://pypi.tuna.tsinghua.edu.cn/simple";
     };
-  in lib.attrsets.foldlAttrs
-    (acc: name: value: acc + "\nexport ${name}=${value}")
-    ""
-    homebrew_mirror_env;
+  in lib.attrsets.foldlAttrs (acc: name: value: acc + "\nexport ${name}=${value}") "" homebrew_mirror_env;
 in {
   imports = mylib.scan_path ./.;
   system.primaryUser = myvars.username;
@@ -42,22 +39,13 @@ in {
   security.pam.services.sudo_local.touchIdAuth = true; # Add ability to used TouchID for sudo authentication
   ## END security.nix
   ## START packages.nix
-  environment.systemPackages= with pkgs; [
-    git
-    tree
-    findutils
-    gnugrep
-    gnutar
-    curl
-    aria2
-    rsync
-
+  environment.systemPackages = with pkgs; [
     m-cli # Swiss Army Knife for macOS, https://github.com/rgcr/m-cli
     mas # Mac App Store command line interface
 
     raycast # (HotKey: alt/option + space)search, calculate and run scripts(with many plugins)
-    stats # beautiful system status monitor in menu bar
-    betterdisplay
+    stats # Beautiful system status monitor in menu bar
+    betterdisplay # Unlock display settings
   ];
   ## START packages.nix
   ## START terminal.nix
@@ -86,18 +74,22 @@ in {
       # 'zap': uninstalls all formulae(and related files) not listed in the generated Brewfile
       cleanup = "zap";
     };
-    masApps = { # Applications to install from Mac App Store using mas. You need to install all these Apps manually first so that your apple account have records for them. otherwise Apple Store will refuse to install them. For details, see https://github.com/mas-cli/mas
-      "GeoGebra Calculator Suite" = 1504416652;
-      LocalSend = 1661733229;
+    # Applications to install from Mac App Store using mas. You need to install all these Apps manually first so that
+    # your apple account have records for them. otherwise Apple Store will refuse to install them. For details, see
+    # https://github.com/mas-cli/mas
+    masApps = {
       "Microsoft Excel" = 462058435;
       "Microsoft Outlook" = 985367838;
       "Microsoft PowerPoint" = 462062816;
       "Microsoft Word" = 462054704;
       OneDrive = 823766827;
       QQ = 451108668;
-      # "sing-box" = 6673731168; # Older than sfm in brew cask
-      Telegram = 747648890;
       WeChat = 836500024;
+
+      # "GeoGebra Calculator Suite" = 1504416652; # Managed by home-manager
+      # LocalSend = 1661733229; # Managed by home-manager
+      # Telegram = 747648890; # Managed by home-manager
+      # sing-box = 6673731168; # Older than sfm in brew cask
     };
     taps = [
       "hashicorp/tap"
@@ -111,17 +103,11 @@ in {
       "clash-verge-rev"
       "jordanbaird-ice" # Powerful menu bar manager
 
-      # "discord" # update too frequently, use the web version instead
-      "windows-app" # Formerly microsoft-remote-desktop
-
       # Misc
-      # "reaper"  # audio editor
-      "sonic-pi" # music programming
       "tencent-lemon" # macOS cleaner
       "neteasemusic" # music
       "mihomo-party" # transparent proxy tool
       "obs"
-      "inkscape"
       "ibkr"
 
       # Development
@@ -135,6 +121,13 @@ in {
       "crossover"
       "steam"
       "mythic" # EPIC game launcher
+
+      ## Creative
+      "sonic-pi" # Music programming
+      # "reaper" # Audio editor, managed by home-manager
+      # "inkscape" # Vector graphics, managed by home-manager
+
+      # "windows-app" # Formerly microsoft-remote-desktop, I use remmina instead
     ];
   };
   ## END brew.nix

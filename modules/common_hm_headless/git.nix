@@ -1,4 +1,6 @@
 {config, lib, myvars, pkgs, ...}: {
+  # programs.gh.enable = true; # GitHub CLI tool
+
   # `programs.git` will generate the config file: ~/.config/git/config
   # to make git use this config file, `~/.gitconfig` should not exist!
   home.activation.remove_existing_git_config = lib.hm.dag.entryBefore ["checkLinkTargets"] ''

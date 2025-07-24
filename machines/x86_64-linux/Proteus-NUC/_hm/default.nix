@@ -5,8 +5,9 @@
   custom_files_dir = mylib.relative_to_root "custom_files";
 in {
   home.packages = [pkgs.nvtopPackages.intel];
-  modules.desktop.hyprland = {
+  modules.gui.hyprland = {
     enable = true;
+    # nvidia = true; # Sync prime
     settings = {
       # Configure your Display resolution, offset, scale and Monitors here, use `hyprctl monitors` to get the info.
       #   highres:      get the best possible resolution

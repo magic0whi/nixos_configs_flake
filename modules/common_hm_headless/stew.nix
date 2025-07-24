@@ -11,6 +11,8 @@
     fastfetch
     cowsay
     gnumake
+
+    keepassxc # Offline password manager, provides both CLI and GUI
     pgp2ssh.packages.${pkgs.system}.pgp2ssh
 
     ## Modern cli tools, replacement of grep/sed/...
@@ -20,7 +22,7 @@
 
     sad # CLI search and replace, just like sed, but with diff preview.
     yq-go # yaml processor https://github.com/mikefarah/yq
-    just # a command runner like make, but simpler
+    just # A command runner like make, but simpler
     lazygit # Git terminal UI.
     hyperfine # command-line benchmarking tool, replace `time`
     gping # ping, but with a graph (TUI)
@@ -56,9 +58,10 @@
     # 2. per-project, see https://github.com/the-nix-way/dev-templates
     deploy-rs.packages.${pkgs.system}.deploy-rs
 
-    python312
+    python313 # TODO: use https://github.com/the-nix-way/dev-templates?tab=readme-ov-file#python
     yarn # TODO: use https://github.com/the-nix-way/dev-templates?tab=readme-ov-file#node
-    # db related
+    mitmproxy # HTTP/HTTPS proxy tool
+    # DB related
     # mycli
     # pgcli
     # mongosh
@@ -66,6 +69,12 @@
 
     # embedded development
     # minicom
+
+    ## FPGA
+    python312Packages.apycula # gowin fpga
+    yosys # FPGA synthesis
+    nextpnr # FPGA place and route
+    openfpgaloader # FPGA programming
 
     # AI related
     # python313Packages.huggingface-hub # huggingface-cli

@@ -1,10 +1,11 @@
-{myvars, lib, config, pkgs, ...}: with lib; {
-  systemd.user.services.waybar.Service.RestartSec = mkIf config.programs.waybar.enable (mkDefault "3.02s");
+{myvars, lib, config, pkgs, ...}: {
+  # Waybar sometimes starts too fast before hyprland is ready
+  systemd.user.services.waybar.Service.RestartSec = lib.mkIf config.programs.waybar.enable "3.02s";
   programs.waybar = {
-    enable = mkDefault true;
-    systemd.enable = mkDefault true;
+    enable = true;
+    systemd.enable = true;
     # systemd.enableInspect = true; # DEBUG: GTK Inspector
-    settings = mkDefault [{
+    settings = [{
       modules-left = ["custom/launcher" "custom/powermenu" "hyprland/workspaces" "hyprland/submap"];
       modules-center = ["hyprland/window"];
       modules-right = [

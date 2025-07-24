@@ -163,4 +163,19 @@
     nerd-fonts.iosevka
   ];
   ## END fonts.nix
+  ## START packages.nix
+  environment.systemPackages = with pkgs; [
+    ## Core tools
+    git # Used by nix flakes
+
+    # Misc
+    findutils
+    tree
+    gnutar
+    rsync
+    gnugrep # GNU grep, provides `grep`/`egrep`/`fgrep`
+    curl
+    # aria2 # A lightweight multi-protocol & multi-source command-line download utility
+  ];
+  ## END packages.nix
 }

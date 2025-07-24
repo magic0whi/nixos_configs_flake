@@ -1,13 +1,13 @@
-{pkgs, lib, config, myvars, ...}: with lib; let
-  package = pkgs.hyprland;
+{pkgs, config, myvars, ...}: let
+  hypr_pkg = pkgs.hyprland;
 in {
   home.file.".wayland-session" = { # NOTE: this executable is used by greetd to start a wayland session when system boot up. With such a vendor-no-locking script, we can switch to another wayland compositor without modifying greetd's config in NixOS module
-    source = "${package}/bin/Hyprland";
+    source = "${hypr_pkg}/bin/Hyprland";
     executable = true;
   };
   wayland.windowManager.hyprland = {
-    inherit package;
     enable = true;
+    package = hypr_pkg;
     settings = {
       source = "${pkgs.catppuccin}/hyprland/${myvars.catppuccin_variant}.conf"; # Import color codes
       animations = {
@@ -220,7 +220,7 @@ in {
     };
   };
   programs.hyprlock = {
-    enable = mkDefault false; # TODO hyprlock is still experimental
+    enable = false; # TODO hyprlock is still experimental
     settings = {
       background = [{
         blur_passes = 0; # 0 disables blurring
