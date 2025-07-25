@@ -45,7 +45,7 @@
   networking.useNetworkd = true;
   networking.nftables.enable = true;
   networking.firewall = {
-    # enable = mkDefaults dns false;
+    # enable = false;
     extraInputRules = ''
       ip saddr 192.168.15.0/24 accept comment "Allow from LAN"
       ip6 saddr { fe80::/16, fd66:06e5:aebe::/48 } accept comment "Allow from Link-Local / ULA-Prefix (IPv6)"

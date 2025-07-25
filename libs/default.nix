@@ -26,13 +26,19 @@ in {
 
   # Args to generate nixosSystem/darwinSystem
   gen_system_args = {name, mylib, myvars, nixpkgs_modules, hm_modules, machine_path}: let
-    inherit (inputs) home-manager nixos-generators mac-app-util;
+    inherit (inputs) home-manager nixos-generators mac-app-util impermanence lanzaboote agenix;
     specialArgs = inputs // {inherit mylib myvars;};
   in {
     inherit system specialArgs;
     modules = nixpkgs_modules
-    ++ (lib.optional (!pkgs.stdenv.isDarwin) nixos-generators.nixosModules.all-formats)
-    ++ (lib.optional pkgs.stdenv.isDarwin mac-app-util.darwinModules.default)
+    ++ [agenix.nixosModules.default]
+    ++ (if pkgs.stdenv.isDarwin then [mac-app-util.darwinModules.default]
+      else [
+        nixos-generators.nixosModules.all-formats
+        impermanence.nixosModules.impermanence
+        lanzaboote.nixosModules.lanzaboote
+      ]
+    )
     ++ [{imports = mylib.scan_path machine_path; networking.hostName = name;}]
     ++ (lib.optionals ((lib.lists.length hm_modules) > 0) [
       home-manager.${if pkgs.stdenv.isDarwin then "darwinModules" else "nixosModules"}.home-manager {

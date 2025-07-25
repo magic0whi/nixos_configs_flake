@@ -1,7 +1,6 @@
 {agenix, config, mylib, myvars, pkgs, ...}: let
   mysecrets = mylib.relative_to_root "custom_files";
 in {
-  imports = [agenix.nixosModules.default];
   launchd.daemons."activate-agenix".serviceConfig = { # Enable logs for debugging
     StandardErrorPath = "/Library/Logs/org.nixos.activate-agenix.stderr.log";
     StandardOutPath = "/Library/Logs/org.nixos.activate-agenix.stdout.log";

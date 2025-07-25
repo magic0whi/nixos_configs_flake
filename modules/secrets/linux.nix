@@ -21,8 +21,14 @@
   };
   mysecrets = mylib.relative_to_root "custom_files";
 in {
-  imports = [agenix.nixosModules.default];
   options.modules.secrets = {
+    enabled = lib.mkOption {
+      readOnly = true;
+      type = lib.types.bool;
+      default = cfg.desktop.enable || enabled_server_secrets;
+      defaultText = lib.literalMD "`true` if secret is enabled";
+      description = "True if either modules.secrets.desktop or modules.secrets.server.* is enabled";
+    };
     desktop.enable = lib.mkEnableOption "NixOS Secrets for Desktops";
 
     server.application.enable = lib.mkEnableOption "NixOS Secrets for Application Servers";
@@ -32,11 +38,11 @@ in {
     server.webserver.enable = lib.mkEnableOption "NixOS Secrets for Web Servers(contains tls cert keys)";
     server.storage.enable = lib.mkEnableOption "NixOS Secrets for HDD Data's LUKS Encryption";
   };
-  config = lib.mkIf (cfg.desktop.enable || enabled_server_secrets) (lib.mkMerge [
+  config = lib.mkIf (config.modules.secrets.enabled) (lib.mkMerge [
     {
       environment.systemPackages = [agenix.packages."${pkgs.system}".default];
       age.identityPaths = lib.mkDefault (
-      if config.environment ? persistence && config.environment.persistence != {} then [
+      if config.environment.persistence != {} then [
         "/persistent${config.users.users.${myvars.username}.home}/sync_work/3keys/private/legacy/proteus_ed25519.key"
       ] else [
         "${config.users.users.${myvars.username}.home}/sync_work/3keys/private/legacy/proteus_ed25519.key"

@@ -2,7 +2,7 @@
   modules.secrets.desktop.enable = true;
   networking.wireless.iwd.enable = true;
   systemd.services.iwd.serviceConfig.ExecStart = [
-    ""
+    "" # Leave a empty to remove previous ExecStarts
     "${config.networking.wireless.iwd.package}/libexec/iwd --nointerfaces 'wlan[0-9]'"
   ];
   systemd.network.links."80-iwd".enable = false; # Or

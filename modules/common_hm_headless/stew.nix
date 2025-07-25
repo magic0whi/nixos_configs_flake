@@ -59,7 +59,7 @@
     deploy-rs.packages.${pkgs.system}.deploy-rs
 
     python313 # TODO: use https://github.com/the-nix-way/dev-templates?tab=readme-ov-file#python
-    yarn # TODO: use https://github.com/the-nix-way/dev-templates?tab=readme-ov-file#node
+    # yarn use https://github.com/the-nix-way/dev-templates?tab=readme-ov-file#node
     mitmproxy # HTTP/HTTPS proxy tool
     # DB related
     # mycli
@@ -137,9 +137,9 @@
   ## END direnv.nix
   ## START neovim.nix
   # programs.neovim = {
-    # enable = mkDefault true;
-    # viAlias = mkDefault true;
-    # vimAlias = mkDefault true;
+  #   enable = true;
+  #   viAlias = true;
+  #   vimAlias = true;
   # };
   ## END neovim.nix
   ## START gpg.nix
