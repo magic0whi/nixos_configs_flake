@@ -1,7 +1,7 @@
 en-US = [
   "Gamescope", "MangoHud", "Solaris", "Zhuyin", "NVENC", "Quantizer",
-  "Deblocking", "Subpixel",
+  "Deblocking", "Subpixel", "Filesystem", "Btrfs",
   "keyring", "zpool", "vdev", "xattrs", "dnodes", "quantizer",
-  "quantizers", "bitrate", "bitrates",
+  "quantizers", "bitrate", "bitrates", "filesystem",
   "systemd-nspawn" # Commands
 ]
