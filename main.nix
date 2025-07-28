@@ -4,13 +4,16 @@
     mylib_fn = system: import ./libs {inherit inputs system;};
     myvars = import ./vars {inherit lib;};
   in system: {inherit inputs lib system myvars; mylib = mylib_fn system;};
-  nixos_systems = {
-    x86_64-linux = import ./machines (args_fn "x86_64-linux");
-    # aarch64-linux = import ../machines/aarch64-linux (args // {system = "aarch64-linux";});
-    # riscv64-linux = import ../machines/riscv64-linux (args // {system = "riscv64-linux";});
-  };
-  darwin_systems.aarch64-darwin = import ./machines (args_fn "aarch64-darwin");
-
+  import_each_system = supported_systems: lib.genAttrs supported_systems (system: import ./machines (args_fn system));
+  nixos_systems = let supported_nixos_systems = [
+    "x86_64-linux"
+    # "aarch64-linux"
+    # "riscv64-linux"
+  ]; in import_each_system supported_nixos_systems;
+  darwin_systems = let supported_darwin_systems = [
+    # "x86_64-darwin"
+    "aarch64-darwin"
+  ]; in import_each_system supported_darwin_systems;
   nixos_systems_values = builtins.attrValues nixos_systems;
   darwin_systems_values = builtins.attrValues darwin_systems;
 in {

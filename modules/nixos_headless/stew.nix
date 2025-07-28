@@ -90,7 +90,6 @@
     wantedBy = ["multi-user.target"];
   });
   # Tailscale stores its data in /var/lib/tailscale, which is persistent across reboots via impermanence.nix
-  # TODO: move impermanence.nix from per machines' configs to modules/nixos_headless
   # Ref: https://github.com/NixOS/nixpkgs/blob/nixos-24.11/nixos/modules/services/networking/tailscale.nix
   # 
   # Auto detect the firewall type (nftables)
