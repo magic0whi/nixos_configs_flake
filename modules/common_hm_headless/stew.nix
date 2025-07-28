@@ -58,8 +58,8 @@
     # 2. per-project, see https://github.com/the-nix-way/dev-templates
     deploy-rs.packages.${pkgs.system}.deploy-rs
 
-    python313 # TODO: use https://github.com/the-nix-way/dev-templates?tab=readme-ov-file#python
-    # yarn use https://github.com/the-nix-way/dev-templates?tab=readme-ov-file#node
+    # python313 # use https://github.com/the-nix-way/dev-templates?tab=readme-ov-file#python instead
+    # yarn use https://github.com/the-nix-way/dev-templates?tab=readme-ov-file#node instead
     mitmproxy # HTTP/HTTPS proxy tool
     # DB related
     # mycli
