@@ -1,5 +1,6 @@
 {pkgs, ...}: {
   home.packages = with pkgs; [
+    blender
     # foliate # e-book viewer(.epub/.mobi/...),do not support .pdf
 
     ## Custom Hardened Packages

@@ -98,9 +98,10 @@ in {
     brews = [ # formulae, 'brew install'
     ];
     casks = [ # 'brew install --cask'
+      "blender" # 3D modeling, currently in nixpkg it's marked as broken on darwin
       "keepassxc" # gpgme is marked as broken, use casks temporally
-      "sfm" # Standalone client for sing-box, it lacks some features compares to its cli version
-      "clash-verge-rev"
+      # "sfm" # Standalone client for sing-box, it lacks some features compares to its cli version
+      # "clash-verge-rev"
       "jordanbaird-ice" # Powerful menu bar manager
 
       # Misc
