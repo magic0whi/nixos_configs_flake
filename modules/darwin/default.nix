@@ -118,8 +118,8 @@ in {
       "macfuse" # for rclone to mount a fuse filesystem
 
       # "game-porting-toolkit"
-      "gcenx/wine/wine-crossover" # Conflicts with game-porting-toolkit
-      "crossover"
+      # "gcenx/wine/wine-crossover" # Conflicts with game-porting-toolkit
+      # "crossover"
       "steam"
       "mythic" # EPIC game launcher
 
