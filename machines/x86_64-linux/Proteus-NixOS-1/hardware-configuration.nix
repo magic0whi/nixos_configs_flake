@@ -7,10 +7,12 @@
   boot.kernelModules = ["kvm-amd"];
   boot.extraModulePackages = [];
   boot.resumeDevice = "/dev/disk/by-partlabel/swap\\x20partition";
-  boot.zfs.forceImportRoot = false;
+  boot.zfs.forceImportRoot = false; # Disable backwards compatibility options
   boot.zfs.allowHibernation = true; # Make sure not use Swap on ZFS
+  boot.zfs.devNodes = "/dev/disk/by-partlabel"; # For virtio-blk, there is no disks in /dev/disk/by-id
 
   swapDevices = [{device = "/dev/disk/by-partlabel/swap\\x20partition";}];
+
   # Disable zfs-mount, use NixOS systemd mount management
   # Ref: https://wiki.nixos.org/wiki/ZFS#ZFS_conflicting_with_systemd
   systemd.services.zfs-mount.enable = false;

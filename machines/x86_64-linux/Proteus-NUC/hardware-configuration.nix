@@ -13,7 +13,7 @@
     # "quiet"
   ];
   boot.resumeDevice = "/dev/mapper/swap";
-  boot.zfs.forceImportRoot = false;
+  boot.zfs.forceImportRoot = false; # Disable backwards compatibility options
   boot.zfs.allowHibernation = true; # Make sure not use Swap on ZFS
 
   boot.initrd.luks.devices = {
