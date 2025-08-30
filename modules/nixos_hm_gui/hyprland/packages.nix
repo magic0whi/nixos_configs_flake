@@ -25,9 +25,6 @@
     imagemagick # Provides 'convert'
     graphviz
   ];
-  programs.swaylock = {
-    enable = true;
-  };
   services.mako = let
     cuppuccin-mocha = { # TODO: https://github.com/catppuccin/nix/blob/main/modules/home-manager/mako.nix
       base = "#1e1e2e";

@@ -32,8 +32,6 @@
   security.pam.services.greetd.enableGnomeKeyring = true;
   # Secret portal is handled by gnome-keyring
   xdg.portal.config.common."org.freedesktop.impl.portal.Secret" = ["gnome-keyring"];
-
-  security.pam.services.swaylock = {}; # Fix https://github.com/ryan4yin/nix-config/issues/10
   ## END security.nix
   ## START misc.nix
   programs = {

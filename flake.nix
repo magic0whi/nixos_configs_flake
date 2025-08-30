@@ -45,7 +45,7 @@
     };
     deploy-rs = {
       url = "github:serokell/deploy-rs";
-      inputs.nixpkgs.follows = "nixpkgs";
+      # inputs.nixpkgs.follows = "nixpkgs"; # https://github.com/serokell/deploy-rs/issues/322
     };
     nix-darwin = {
       url = "github:nix-darwin/nix-darwin";

@@ -73,7 +73,7 @@
     ## FPGA
     python312Packages.apycula # gowin fpga
     yosys # FPGA synthesis
-    nextpnr # FPGA place and route
+    # nextpnr # FPGA place and route
     openfpgaloader # FPGA programming
 
     # AI related

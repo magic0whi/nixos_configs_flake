@@ -220,7 +220,7 @@ in {
     };
   };
   programs.hyprlock = {
-    enable = false; # TODO hyprlock is still experimental
+    enable = true;
     settings = {
       background = [{
         blur_passes = 0; # 0 disables blurring
