@@ -30,9 +30,9 @@
       push.autoSetupRemote = true;
       pull.rebase = true;
       url = {
-        "ssh://git@ssh.github.com:443/${myvars.github_username}" = { # Replace https with ssh
-          insteadOf = "https://github.com/${myvars.github_username}";
-        };
+        # "ssh://git@ssh.github.com:443/${myvars.github_username}" = { # Replace https with ssh
+          # insteadOf = "https://github.com/${myvars.github_username}";
+        # };
         # "ssh://git@gitlab.com/" = {
         #   insteadOf = "https://gitlab.com/";
         # };
