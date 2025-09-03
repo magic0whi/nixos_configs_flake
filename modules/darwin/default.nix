@@ -103,11 +103,12 @@ in {
       # "sfm" # Standalone client for sing-box, it lacks some features compares to its cli version
       # "clash-verge-rev"
       "jordanbaird-ice" # Powerful menu bar manager
+      "tor-browser"
 
       # Misc
-      "tencent-lemon" # macOS cleaner
+      # "tencent-lemon" # macOS cleaner
       "neteasemusic" # music
-      "mihomo-party" # transparent proxy tool
+      # "mihomo-party" # transparent proxy tool
       "obs"
       "ibkr"
 
@@ -124,7 +125,7 @@ in {
       "mythic" # EPIC game launcher
 
       ## Creative
-      "sonic-pi" # Music programming
+      # "sonic-pi" # Music programming
       # "reaper" # Audio editor, managed by home-manager
       # "inkscape" # Vector graphics, managed by home-manager
 

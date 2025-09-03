@@ -12,7 +12,7 @@
   ObjC.import('Foundation')
   const argv = $.NSProcessInfo.processInfo.arguments.js
   const system_events = Application('System Events');
-  const term_path = '/nix/store/s8cwz1gr50bp09dqs1wjdharfsxryp6z-ghostty-bin-1.1.3/Applications/Ghostty.app';
+  const term_path = '${config.programs.ghostty.package}/Applications/Ghostty.app';
   function quick_term() {
     const ghostty = system_events.processes.byName('Ghostty');
     const menu_bar_view_quick_term = ghostty.menuBars[0].menuBarItems['View'].menus[0].menuItems['Quick Terminal'];
