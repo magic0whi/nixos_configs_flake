@@ -30,7 +30,6 @@
     # Set file extensions
     ${lib.getExe' pkgs.duti "duti"} -s io.mpv .mkv viewer
     ${lib.getExe' pkgs.duti "duti"} -s io.mpv .mp4 viewer
-    ${lib.getExe' pkgs.duti "duti"} -s io.mpv .webm viewer
   '');
   ## END associations.nix
   ## START syncthing.nix
