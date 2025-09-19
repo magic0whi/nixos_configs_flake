@@ -154,14 +154,14 @@
   services.sing-box = {
     enable = lib.mkDefault true;
     package = pkgs.sing-box.overrideAttrs(final: prev: {
-      version = "1.12.4";
+      version = "1.12.7";
       src = pkgs.fetchFromGitHub {
         owner = "SagerNet";
         repo = "sing-box";
         tag = "v${final.version}";
-        hash = "sha256-Pc6aszIzu9GZha7I59yGasVVKHUeLPiW34zALFTM8Ec=";
+        hash = "sha256-NguEPn1pi+SNRSYHnIEtw7N6FkChscqqbUO97o0TPtA=";
       };
-      vendorHash = "sha256-I/J1ht++GqxVlc83GxmLxzI7S980AbMwvrrVD867ll4=";
+      vendorHash = "sha256-q06yWv0K/BMplGcIlAufx1HiGb4AEJ4UioeAhPoQce0=";
       # Remove deprecated build tags
       tags = lib.lists.filter (e: e != "with_ech" && e != "with_reality_server") prev.tags;
     });
