@@ -111,6 +111,7 @@ in {
       # "mihomo-party" # transparent proxy tool
       "obs"
       "ibkr"
+      "trader-workstation"
 
       # Development
       # "miniforge" # Miniconda's community-driven distribution
