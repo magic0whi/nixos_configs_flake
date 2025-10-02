@@ -24,7 +24,7 @@ in {
   networking.knownNetworkServices = ["Wi-Fi"];
   networking.dns = [ # sing-box requires a non-local address to hijack DNS
     "223.5.5.5"
-    "2400:3200::1"
+    # "2400:3200::1"
     "8.8.8.8"
   ];
   ## END networking.nix
@@ -110,7 +110,7 @@ in {
       "neteasemusic" # music
       # "mihomo-party" # transparent proxy tool
       "obs"
-      "ibkr"
+      # "ibkr"
       "trader-workstation"
 
       # Development

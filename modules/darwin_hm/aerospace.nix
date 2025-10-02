@@ -141,6 +141,7 @@
       };
       on-window-detected = [
         {"if".app-id = "io.mpv"; run = ["layout floating"];}
+        {"if".app-id = "com.valvesoftware.steam"; run = ["layout tiling"];}
       ];
     };
   };

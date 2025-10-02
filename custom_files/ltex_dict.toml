@@ -3,5 +3,7 @@ en-US = [
   "Deblocking", "Subpixel", "Filesystem", "Btrfs",
   "keyring", "zpool", "vdev", "xattrs", "dnodes", "quantizer",
   "quantizers", "bitrate", "bitrates", "filesystem",
-  "systemd-nspawn" # Commands
+  "systemd-nspawn", # Commands
+  "subinterval", "subintervals",
+  "speakwritten" # "1984"
 ]
