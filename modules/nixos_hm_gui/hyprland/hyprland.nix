@@ -140,6 +140,7 @@ in {
         "$mainMod,mouse:272,movewindow"
         "$mainMod,mouse:273,resizewindow"
       ];
+      gesture = ["3, horizontal, workspace"];
       decoration = {
         rounding = 10;
 
@@ -173,7 +174,6 @@ in {
         "col.active_border" = "rgba(33ccffee) rgba(00ff99ee) 45deg";
         "col.inactive_border" = "rgba(595959aa)";
       };
-      gestures.workspace_swipe = true;
       misc = {
         key_press_enables_dpms = true;
         vrr = 1;
