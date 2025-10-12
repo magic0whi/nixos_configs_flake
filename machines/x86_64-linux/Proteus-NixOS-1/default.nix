@@ -7,7 +7,10 @@
     "modules/nixos_headless"
   ];
   hm_modules = map mylib.relative_to_root [
-    "modules/common_hm_headless"
+    "modules/common_hm_headless/git.nix"
+    "modules/common_hm_headless/helix.nix"
+    "modules/common_hm_headless/shell.nix"
+    "modules/common_hm_headless/stew.nix"
     "modules/nixos_hm_headless"
   ];
   nixos_system = inputs.nixpkgs.lib.nixosSystem (mylib.gen_system_args {

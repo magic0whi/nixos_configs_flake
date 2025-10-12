@@ -71,10 +71,10 @@
     # minicom
 
     ## FPGA
-    python312Packages.apycula # gowin fpga
-    yosys # FPGA synthesis
+    # python312Packages.apycula # gowin fpga
+    # yosys # FPGA synthesis
     # nextpnr # FPGA place and route
-    openfpgaloader # FPGA programming
+    # openfpgaloader # FPGA programming
 
     # AI related
     # python313Packages.huggingface-hub # huggingface-cli
