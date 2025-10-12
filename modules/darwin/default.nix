@@ -96,6 +96,7 @@ in {
       "gcenx/wine" # homebrew-wine - game-porting-toolkit & wine-crossover
     ];
     brews = [ # formulae, 'brew install'
+      "llvm" "lld" "cmake" "ninja"
     ];
     casks = [ # 'brew install --cask'
       "blender" # 3D modeling, currently in nixpkg it's marked as broken on darwin

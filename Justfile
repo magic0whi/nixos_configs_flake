@@ -151,8 +151,8 @@ deploy name:
 [linux]
 [group('homelab')]
 local name mode="default":
-  #!/usr/bin/env nu
-  use {{utils}} *;
+  #!/usr/bin/env bash
+  . {{utils}}
   nixos-switch {{name}} {{mode}}
 
 # Build and upload a vm image

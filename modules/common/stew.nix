@@ -153,7 +153,7 @@
   services.tailscale.enable = true; # Start-up: `tailscale up --accept-routes`
   services.sing-box = {
     enable = lib.mkDefault true;
-    package = pkgs.sing-box.overrideAttrs(final: prev: {
+    package = pkgs.sing-box.overrideAttrs (final: prev: {
       version = "1.12.7";
       src = pkgs.fetchFromGitHub {
         owner = "SagerNet";

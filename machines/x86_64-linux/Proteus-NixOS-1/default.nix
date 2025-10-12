@@ -20,7 +20,7 @@ in {
   # generate iso image
   packages.${name} = inputs.self.nixosConfigurations.${name}.config.formats.iso;
   deploy-rs_node.${name} = {
-    hostname = "79.76.120.128";
+    hostname = "192.168.64.4";
     profiles.system = {
       path = inputs.deploy-rs.lib.${system}.activate.nixos nixos_system;
       user = "root";
