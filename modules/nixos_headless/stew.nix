@@ -10,6 +10,7 @@
   ## START power_management.nix
   services.power-profiles-daemon.enable = true;
   services.upower.enable = true;
+  services.logind.settings.Login.HandleLidSwitch = "ignore";
   ## END power_management.nix
   ## START nix.nix
   nix.gc.dates = "weekly";
@@ -300,7 +301,7 @@
   security.sudo.extraConfig = ''Defaults passwd_timeout=0''; # Disable timeout for sudo prompt
   system.nssDatabases.sudoers = ["sss"]; # Use LDAP to distribute configuration of sudo as well
   services.sssd = {
-    enable = true;
+    # enable = true; # TODO
     config = ''
     [sssd]
     config_file_version = 2

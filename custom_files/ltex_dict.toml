@@ -4,6 +4,6 @@ en-US = [
   "keyring", "zpool", "vdev", "xattrs", "dnodes", "quantizer",
   "quantizers", "bitrate", "bitrates", "filesystem",
   "systemd-nspawn", # Commands
-  "subinterval", "subintervals", "antiderivatives",
+  "subinterval", "subintervals", "antiderivatives", "integrand",
   "speakwritten" # "1984"
 ]
