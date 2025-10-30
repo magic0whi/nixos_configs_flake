@@ -30,7 +30,6 @@
     else anki-bin)
     code-cursor # An AI code editor
     # blender # 3D modeling, currently broken on darwin
-    inkscape # Vector graphics
     musescore # Music notation
     # reaper # Audio production
 

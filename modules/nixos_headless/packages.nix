@@ -58,5 +58,5 @@
   ];
   # BCC - Tools for BPF-based Linux IO analysis, # networking, monitoring, and more.
   # Ref: https://github.com/iovisor/bcc
-  programs.bcc.enable = true;
+  # programs.bcc.enable = true;
 }

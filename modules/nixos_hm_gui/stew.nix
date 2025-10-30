@@ -15,6 +15,7 @@
     # gamescope # SteamOS session compositing window manager
 
     ## Creative
+    inkscape # Vector graphics
     gimp3 # Image editing, I prefer using figma in browser instead of this one
     # krita # digital painting
     # sonic-pi # music programming

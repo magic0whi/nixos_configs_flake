@@ -96,7 +96,7 @@ in {
       "gcenx/wine" # homebrew-wine - game-porting-toolkit & wine-crossover
     ];
     brews = [ # formulae, 'brew install'
-      "llvm" "lld" "cmake" "ninja"
+      # "llvm" "lld" "cmake" "ninja" # Poorly with stdlib
     ];
     casks = [ # 'brew install --cask'
       "blender" # 3D modeling, currently in nixpkg it's marked as broken on darwin
@@ -129,7 +129,7 @@ in {
       ## Creative
       # "sonic-pi" # Music programming
       # "reaper" # Audio editor, managed by home-manager
-      # "inkscape" # Vector graphics, managed by home-manager
+      "inkscape" # Vector graphics, currently broken in nixpkgs
 
       # "windows-app" # Formerly microsoft-remote-desktop, I use remmina instead
     ];
