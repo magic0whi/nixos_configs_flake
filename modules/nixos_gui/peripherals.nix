@@ -24,7 +24,6 @@
       gnome-settings-daemon
       platformio # udev rules for platformio
       openocd # required by paltformio, ref: https://github.com/NixOS/nixpkgs/issues/224895
-      android-udev-rules # required by adb
       openfpgaloader
     ];
     keyd = { # A key remapping daemon for linux, ref: https://github.com/rvaiya/keyd

@@ -30,4 +30,5 @@ in {
   "proteus.smb.age".publicKeys = machines;
   "syncthing_Proteus-MBP14M4P.key.pem.age".publicKeys = machines;
   "syncthing_proteus-nuc.key.pem.age".publicKeys = machines;
+  "proteus_server.key.pem.age".publicKeys = machines;
 }

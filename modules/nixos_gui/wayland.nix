@@ -11,7 +11,7 @@
           # command = "$HOME/.wayland-session"; # Start a wayland session directly without a login manager
           # Start wayland session with a TUI login manager
           user = myvars.username;
-          command = "${pkgs.greetd.tuigreet}/bin/tuigreet --time --cmd $HOME/.wayland-session";
+          command = "${pkgs.tuigreet}/bin/tuigreet --time --cmd $HOME/.wayland-session";
         };
       };
     };

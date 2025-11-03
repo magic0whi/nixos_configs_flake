@@ -11,11 +11,11 @@
     type = "fcitx5";
     fcitx5.waylandFrontend = true; # Hyprland supports it
     fcitx5.addons = with pkgs; [
-      fcitx5-configtool # needed enable rime using configtool after installed
-      fcitx5-chinese-addons fcitx5-chewing fcitx5-mozc fcitx5-rime
+      qt6Packages.fcitx5-configtool # needed enable rime using configtool after installed
+      qt6Packages.fcitx5-chinese-addons
+      fcitx5-chewing fcitx5-mozc fcitx5-rime
       fcitx5-pinyin-zhwiki fcitx5-pinyin-moegirl fcitx5-pinyin-minecraft
-      fcitx5-gtk # GTK IM module
-      catppuccin-fcitx5
+      fcitx5-gtk catppuccin-fcitx5 # GTK IM module
     ];
   };
 }

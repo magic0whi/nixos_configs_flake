@@ -15,6 +15,7 @@
       url = "github:nix-community/lanzaboote/v0.4.2";
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.flake-compat.follows = "deploy-rs/flake-compat";
+      inputs.rust-overlay.url = "github:oxalica/rust-overlay/stable";
     };
     impermanence.url = "github:nix-community/impermanence";
     nixpak = {

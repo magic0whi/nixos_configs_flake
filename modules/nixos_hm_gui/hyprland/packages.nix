@@ -15,7 +15,7 @@
 
     # audio
     alsa-utils # provides amixer/alsamixer/...
-    mpc-cli # command-line mpd client
+    mpc # command-line mpd client
     ncmpcpp # a mpd client with a UI
 
     ffmpeg-full

@@ -182,7 +182,7 @@
   ## START users.nix
   users = {
     defaultUserShell = pkgs.zsh;
-    mutableUsers = false; # Don't allow mutate users outside the config.
+    mutableUsers = false; # Don't allow mutate users outside the config
     groups = {
       "${myvars.username}" = {gid = 1000;};
       docker = {};
@@ -265,7 +265,7 @@
   ## START fonts.nix
   fonts = { # All fonts are linked to /nix/var/nix/profiles/system/sw/share/X11/fonts
     fontDir.enable = true;
-    packages = with pkgs; [noto-fonts noto-fonts-emoji];
+    packages = with pkgs; [noto-fonts noto-fonts-color-emoji];
     fontconfig = {
       subpixel.rgba = "rgb";
       defaultFonts = {
@@ -301,7 +301,7 @@
   security.sudo.extraConfig = ''Defaults passwd_timeout=0''; # Disable timeout for sudo prompt
   system.nssDatabases.sudoers = ["sss"]; # Use LDAP to distribute configuration of sudo as well
   services.sssd = {
-    # enable = true; # TODO
+    enable = true;
     config = ''
     [sssd]
     config_file_version = 2
@@ -309,6 +309,7 @@
     domains = LDAP
 
     [domain/LDAP]
+    override_shell = /run/current-system/sw/bin/${config.users.defaultUserShell.meta.mainProgram}
     cache_credentials = true
     entry_cache_timeout = 600
     enumerate = true
@@ -317,7 +318,7 @@
     auth_provider = ldap
     chpass_provider = ldap
 
-    ldap_uri = ldaps://proteusdesktop.tailba6c3f.ts.net:636
+    ldap_uri = ldaps://proteus-nuc.tailba6c3f.ts.net:636
     ldap_search_base = dc=tailba6c3f,dc=ts,dc=net
     ldap_sudo_search_base = ou=Sudoers,dc=tailba6c3f,dc=ts,dc=net
     ldap_tls_reqcert = demand

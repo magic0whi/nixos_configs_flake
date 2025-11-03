@@ -38,7 +38,7 @@
     libva-utils
     # vdpauinfo
     vulkan-tools
-    glxinfo
+    mesa-demos
     clinfo
   ];
   # This allows fontconfig to discover fonts and configurations installed through home.packages, but I manage fonts at

@@ -56,6 +56,7 @@ in {
       age.secrets = {
         "config.json" = {file = "${mysecrets}/config.json.age";} // noaccess;
         "proteus.smb" = {file = "${mysecrets}/proteus.smb.age";} // high_security;
+        "proteus_server.key.pem" = {file = "${mysecrets}/proteus_server.key.pem.age";} // user_readable;
       };
     })
   ]);
