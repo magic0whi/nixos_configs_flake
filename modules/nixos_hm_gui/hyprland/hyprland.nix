@@ -1,4 +1,4 @@
-{pkgs, config, myvars, ...}: let
+{pkgs, config, myvars, lib, ...}: let
   hypr_pkg = pkgs.hyprland;
 in {
   home.file.".wayland-session" = { # NOTE: this executable is used by greetd to start a wayland session when system boot up. With such a vendor-no-locking script, we can switch to another wayland compositor without modifying greetd's config in NixOS module
@@ -202,7 +202,7 @@ in {
     enable = true;
     settings = {
       general = {
-        lock_cmd = "pidof swaylock || (swaylock && loginctl unlock-session)";
+        lock_cmd = lib.mkDefault "pidof hyprlock || (hyprlock && loginctl unlock-session)";
         before_sleep_cmd = "loginctl lock-session"; # lock before suspend.
         after_sleep_cmd = "hyprctl dispatch dpms on"; # avoid have to press a key twice to turn on the display.
       };

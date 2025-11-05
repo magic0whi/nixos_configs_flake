@@ -305,29 +305,30 @@
   # security.pam.services = lib.genAttrs ["chfn" "chpasswd" "chsh" "cups" "greetd" "groupadd" "groupdel" "groupmems" "groupmod" "i3lock" "i3lock-color" "login" "other" "passwd" "polkit-1" "runuser" "runuser-l" "sshd" "su" "sudo" "systemd-run0" "systemd-user" "useradd" "userdel" "usermod" "vlock" "xlock" "xscreensaver"] (_:{sssdStrictAccess = true;});
   services.sssd = {
     enable = true;
-    config = ''
-    [sssd]
-    debug_level = 7
-    services = ifp, nss, pam, sudo
-    domains = LDAP
+    settings = {
+    sssd = {
+      debug_level = 7;
+      services = "ifp, nss, pam, sudo";
+      domains = "LDAP";
+    };
+    "domain/LDAP" = {
+      override_shell = "/run/current-system/sw/bin/${config.users.defaultUserShell.meta.mainProgram}";
+      cache_credentials = true;
+      entry_cache_timeout = 600;
+      enumerate = true;
 
-    [domain/LDAP]
-    override_shell = /run/current-system/sw/bin/${config.users.defaultUserShell.meta.mainProgram}
-    cache_credentials = true
-    entry_cache_timeout = 600
-    enumerate = true
+      id_provider = "ldap";
+      auth_provider = "ldap";
+      chpass_provider = "ldap";
 
-    id_provider = ldap
-    auth_provider = ldap
-    chpass_provider = ldap
-
-    ldap_uri = ldaps://proteus-nuc.tailba6c3f.ts.net:636
-    ldap_search_base = dc=tailba6c3f,dc=ts,dc=net
-    ldap_sudo_search_base = ou=Sudoers,dc=tailba6c3f,dc=ts,dc=net
-    ldap_tls_reqcert = demand
-    ldap_network_timeout = 2
-    ldap_schema = rfc2307bis
-    '';
+      ldap_uri = "ldaps://proteus-nuc.tailba6c3f.ts.net:636";
+      ldap_search_base = "dc=tailba6c3f,dc=ts,dc=net";
+      ldap_sudo_search_base = "ou=Sudoers,dc=tailba6c3f,dc=ts,dc=net";
+      ldap_tls_reqcert = "demand";
+      ldap_network_timeout = 2;
+      ldap_schema = "rfc2307bis";
+    };
+    };
   };
   ## END security.nix
   ## START tor.nix

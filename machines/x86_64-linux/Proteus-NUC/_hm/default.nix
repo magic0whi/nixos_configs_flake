@@ -27,6 +27,10 @@ in {
         sensitivity = 0.3;
       };
     };
+    hypridle.settings.general = {
+      lock_cmd = "lock_cmd = pidof hyprlock || (brightnessctl -sd usb-3-11-3-1::kbd_backlight set 0; hyprlock && loginctl unlock-session)";
+      unlock_cmd = "brightnessctl -rd usb-3-11-3-1::kbd_backlight";
+    };
   };
   # modules.editors.emacs.enable = true;
   programs.ssh = {

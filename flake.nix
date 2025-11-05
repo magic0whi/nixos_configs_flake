@@ -2,7 +2,7 @@
   description = "Proteus Qian's nix configuration for NixOS & WSL";
   inputs = {
     # nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
-    nixpkgs.url = "github:nixos/nixpkgs/5c92e83cc509d034b328787746d9c67c830dacad"; # staging
+    nixpkgs.url = "github:nixos/nixpkgs/b3d51a0365f6695e7dd5cdf3e180604530ed33b4"; # nixos-unstable as of 11/5/25 10:51
     home-manager = {
       url = "github:nix-community/home-manager/master";
       # The `follows` keyword in inputs is used for inheritance.
