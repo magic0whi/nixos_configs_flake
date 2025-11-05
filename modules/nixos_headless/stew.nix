@@ -57,6 +57,8 @@
       udp dport 53317 counter accept comment "Allow LocalSend (Multicast/UDP)"
       tcp dport 8888 accept comment "Allow Atuin"
       udp dport bootps accept comment "Allow DHCP server (systemd-nspawn)"
+      tcp dport ldaps accept comment "Allow OpenLDAP"
+      udp dport ldaps accept comment "Allow OpenLDAP"
     '';
     filterForward = true;
     extraForwardRules = ''
@@ -300,12 +302,13 @@
   security.sudo.package = (pkgs.sudo.override {withSssd = true;});
   security.sudo.extraConfig = ''Defaults passwd_timeout=0''; # Disable timeout for sudo prompt
   system.nssDatabases.sudoers = ["sss"]; # Use LDAP to distribute configuration of sudo as well
+  # security.pam.services = lib.genAttrs ["chfn" "chpasswd" "chsh" "cups" "greetd" "groupadd" "groupdel" "groupmems" "groupmod" "i3lock" "i3lock-color" "login" "other" "passwd" "polkit-1" "runuser" "runuser-l" "sshd" "su" "sudo" "systemd-run0" "systemd-user" "useradd" "userdel" "usermod" "vlock" "xlock" "xscreensaver"] (_:{sssdStrictAccess = true;});
   services.sssd = {
     enable = true;
     config = ''
     [sssd]
-    config_file_version = 2
-    services = nss, pam, sudo
+    debug_level = 7
+    services = ifp, nss, pam, sudo
     domains = LDAP
 
     [domain/LDAP]
