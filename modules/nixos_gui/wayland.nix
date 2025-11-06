@@ -1,5 +1,5 @@
 {pkgs, myvars, ...}: {
-  environment.systemPackages = [pkgs.wl-clipboard];
+  environment.systemPackages = [pkgs.wl-clipboard pkgs.brightnessctl];
   services = {
     xserver.enable = false; # Disable xorg server
     greetd = { # https://wiki.archlinux.org/title/Greetd
@@ -36,7 +36,6 @@
   ## START misc.nix
   programs = {
     dconf.enable = true;
-    light.enable = true;
     thunar = { # thunar file manager
       enable = true;
       plugins = with pkgs.xfce; [thunar-archive-plugin thunar-volman];

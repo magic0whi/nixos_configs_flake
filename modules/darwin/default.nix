@@ -130,6 +130,7 @@ in {
       # "sonic-pi" # Music programming
       # "reaper" # Audio editor, managed by home-manager
       "inkscape" # Vector graphics, currently broken in nixpkgs
+      "gimp" # As of 11/6/2025, broken on nixpkgs
 
       # "windows-app" # Formerly microsoft-remote-desktop, I use remmina instead
     ];

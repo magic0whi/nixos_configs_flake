@@ -3,8 +3,8 @@
 
   boot.initrd.availableKernelModules = ["xhci_pci" "thunderbolt" "nvme" "uas" "sd_mod"];
   boot.initrd.kernelModules = [];
+  # boot.extraModulePackages = [config.boot.kernelPackages.qc71_laptop];
   boot.kernelModules = ["kvm-intel"];
-  boot.extraModulePackages = [];
   boot.kernelParams = [
     "i915.enable_guc=2"
     "i915.mitigations=off"

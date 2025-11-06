@@ -41,8 +41,6 @@ in {
       "$clipManager" = "systemd-run --user --scope sh -c 'cliphist list | anyrun --show-results-immediately true | cliphist decode | wl-copy'";
       "$colorpicker" = "~/.config/hypr/scripts/colorpicker"; # TODO use Hyprpicker instead
       "$fileManager" = "systemd-run --user --scope thunar";
-      "$backlight" = "~/.config/hypr/scripts/brightness";
-      "$volume" = "~/.config/hypr/scripts/volume";
       "$wlogout" = "~/.config/hypr/scripts/wlogout";
       "$mainMod" = "SUPER";
       bind = [
@@ -116,16 +114,16 @@ in {
         "$mainMod ALT,K,resizeactive,0 -5%"
       ];
       bindel = [ # Multimedia keys for volume and brightness
-        ",XF86AudioRaiseVolume,exec,$volume -inc"
-        ",XF86AudioLowerVolume,exec,$volume -dec"
-        ",XF86AudioMute,exec,$volume --toggle"
-        ",XF86AudioMicMute,exec,$volume --toggle-mic"
-        ",XF86MonBrightnessUp,exec,$backlight --inc"
-        ",XF86MonBrightnessDown,exec,$backlight --dec"
-        ",XF86AudioNext,exec,mpc next"
-        ",XF86AudioPrev,exec,mpc prev"
-        ",XF86AudioPlay,exec,mpc toggle"
-        ",XF86AudioStop,exec,mpc stop"
+        ",XF86AudioRaiseVolume,exec,wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%+"
+        ",XF86AudioLowerVolume,exec,wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-"
+        ",XF86AudioMute,exec,wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"
+        ",XF86AudioMicMute,exec,wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle"
+        ",XF86MonBrightnessUp,exec,brightnessctl set +4%"
+        ",XF86MonBrightnessDown,exec,brightnessctl set 4%-"
+        ",XF86AudioNext,exec,mpc next" # Or `playerctl --all-players next`
+        ",XF86AudioPrev,exec,mpc prev" # Or `playerctl --all-players previous`
+        ",XF86AudioPlay,exec,mpc toggle" # Or `playerctl --all-players play-pause`
+        ",XF86AudioStop,exec,mpc stop" # Or `playerctl --all-players stop`
       ];
       bindl = [
         "$mainMod,Z,exec,loginctl lock-session; sleep 0.6; hyprctl dispatch dpms off"
