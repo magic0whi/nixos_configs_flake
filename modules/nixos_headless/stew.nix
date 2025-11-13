@@ -46,27 +46,23 @@
   networking.useNetworkd = true;
   networking.nftables.enable = true;
   networking.firewall = {
-    # enable = false;
+    # enable = false; # Disable firewall
     extraInputRules = ''
-      ip saddr 192.168.15.0/24 accept comment "Allow from LAN"
+      # ip saddr 192.168.1.0/24 accept comment "Allow from LAN"
       ip6 saddr { fe80::/16, fd66:06e5:aebe::/48 } accept comment "Allow from Link-Local / ULA-Prefix (IPv6)"
-      iifname tun0 accept comment "Allow sing-box"
+      iifname "tailscale0*" counter accept comment "Allow from Tailscale"
+      udp dport bootps accept comment "Allow DHCP server (systemd-nspawn)"
+      tcp dport 8888 accept comment "Allow Atuin"
       tcp dport snapenetio accept comment "Allow Syncthing"
       udp dport { snapenetio, 21027 } accept comment "Allow Syncthing broadcasts (IPv4) / multicasts (IPv6)"
       tcp dport 53317 counter accept comment "Allow LocalSend (HTTP/TCP)"
       udp dport 53317 counter accept comment "Allow LocalSend (Multicast/UDP)"
-      tcp dport 8888 accept comment "Allow Atuin"
-      udp dport bootps accept comment "Allow DHCP server (systemd-nspawn)"
-      tcp dport ldaps accept comment "Allow OpenLDAP"
-      udp dport ldaps accept comment "Allow OpenLDAP"
     '';
     filterForward = true;
     extraForwardRules = ''
       ip6 saddr { fe80::/16, fd66:06e5:aebe::/48 } counter accept comment "Allow forward from Link-Local / ULA-Prefix (IPv6)"
-      ip6 saddr { 2409:8a20:5063:5c10::/60 } accept comment "Allow forward from SLAAC (IPv6)"
-      ip6 daddr { 2409:8a20:5063:5c10::/60 } accept comment "Allow forward to SLAAC (IPv6)"
-      iifname { tun0, "ve-*" } accept comment "Allow sing-box, systemd-nspawn container"
-      oifname { tun0, "ve-*" } accept comment "Allow sing-box, systemd-nspawn container"
+      iifname "ve-*" accept comment "Allow systemd-nspawn container"
+      oifname "ve-*" accept comment "Allow systemd-nspawn container"
     '';
   };
   networking.timeServers = [ # Or
@@ -76,22 +72,6 @@
   ];
   services.resolved.enable = true;
 
-  # Override the sing-box's systemd service
-  systemd.services.sing-box = lib.mkIf config.services.sing-box.enable (lib.mkOverride 100 {
-    serviceConfig = {
-      StateDirectory = "sing-box";
-      StateDirectoryMode = "0700";
-      RuntimeDirectory = "sing-box";
-      RuntimeDirectoryMode = "0700";
-      LoadCredential = [("config.json:" + config.age.secrets."config.json".path)];
-      ExecStart = [
-        "" # Empty value remove previous value
-        (let configArgs = "-c $\{CREDENTIALS_DIRECTORY}/config.json";
-          in "${lib.getExe config.services.sing-box.package} -D \${STATE_DIRECTORY} ${configArgs} run")
-      ];
-    };
-    wantedBy = ["multi-user.target"];
-  });
   # Tailscale stores its data in /var/lib/tailscale, which is persistent across reboots via impermanence.nix
   # Ref: https://github.com/NixOS/nixpkgs/blob/nixos-24.11/nixos/modules/services/networking/tailscale.nix
   # 
@@ -186,10 +166,10 @@
     defaultUserShell = pkgs.zsh;
     mutableUsers = false; # Don't allow mutate users outside the config
     groups = {
-      "${myvars.username}" = {gid = 1000;};
+      ${myvars.username} = {gid = 1000;};
       docker = {};
     };
-    users."${myvars.username}" = {
+    users.${myvars.username} = {
       # Public Keys that can be used to login to all my PCs, Macbooks, and servers.
       #
       # Since its authority is so large, we must strengthen its security:

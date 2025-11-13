@@ -52,8 +52,7 @@
     ControlPersist 30m
     ServerAliveInterval 30
     ServerAliveCountMax 5
-    ''
-      + myvars.networking.ssh.extra_config;
+    '' + myvars.networking.ssh.extra_config;
     knownHosts = myvars.networking.ssh.known_hosts;
   };
   ## END ssh.nix

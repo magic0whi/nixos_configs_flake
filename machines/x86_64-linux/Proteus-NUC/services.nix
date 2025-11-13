@@ -1,4 +1,8 @@
 {pkgs, mylib, config, myvars, ...}: {
+  # networking.firewall.extraInputRules = ''
+  #   tcp dport ldaps accept comment "Allow OpenLDAP"
+  #   udp dport ldaps accept comment "Allow OpenLDAP"
+  # '';
   services.openldap = {
     enable = true;
     urlList = ["ldaps:///"];
@@ -12,7 +16,7 @@
         olcTLSCertificateFile = "${mylib.relative_to_root "custom_files/proteus_server.pem"}";
         olcTLSCertificateKeyFile = config.age.secrets."proteus_server.key.pem".path;
         olcTLSCipherSuite = "DEFAULT:!kRSA:!kDHE";
-        olcTLSProtocolMin = "3.4";
+        olcTLSProtocolMin = "3.3"; # 3.4 for tls1.3
 
       };
       children = {
@@ -55,128 +59,187 @@
     };
     declarativeContents = {
       "dc=tailba6c3f,dc=ts,dc=net" = ''
-dn: dc=tailba6c3f,dc=ts,dc=net
-objectClass: dcObject
-objectClass: organization
-dc: tailba6c3f
-o: Proteus' Organization
+        dn: dc=tailba6c3f,dc=ts,dc=net
+        objectClass: dcObject
+        objectClass: organization
+        dc: tailba6c3f
+        o: Proteus' Organization
 
-dn: cn=Manager,dc=tailba6c3f,dc=ts,dc=net
-objectClass: top
-objectClass: organizationalRole
-cn: Manager
-description: LDAP administrator
-roleOccupant: dc=tailba6c3f,dc=ts,dc=net
+        dn: cn=Manager,dc=tailba6c3f,dc=ts,dc=net
+        objectClass: top
+        objectClass: organizationalRole
+        cn: Manager
+        description: LDAP administrator
+        roleOccupant: dc=tailba6c3f,dc=ts,dc=net
 
-dn: ou=People,dc=tailba6c3f,dc=ts,dc=net
-objectClass: top
-objectClass: organizationalUnit
-ou: People
+        dn: ou=People,dc=tailba6c3f,dc=ts,dc=net
+        objectClass: top
+        objectClass: organizationalUnit
+        ou: People
 
-dn: ou=Group,dc=tailba6c3f,dc=ts,dc=net
-objectClass: top
-objectClass: organizationalUnit
-ou: Group
+        dn: ou=Group,dc=tailba6c3f,dc=ts,dc=net
+        objectClass: top
+        objectClass: organizationalUnit
+        ou: Group
 
-dn: ou=Sudoers,dc=tailba6c3f,dc=ts,dc=net
-objectClass: top
-objectClass: organizationalUnit
-ou: Sudoers
+        dn: ou=Sudoers,dc=tailba6c3f,dc=ts,dc=net
+        objectClass: top
+        objectClass: organizationalUnit
+        ou: Sudoers
 
-dn: cn=defaults,ou=Sudoers,dc=tailba6c3f,dc=ts,dc=net
-objectClass: top
-objectClass: sudoRole
-cn: defaults
-description: Default sudoOption's go here
-sudoOption: env_keep+=SSH_AUTH_SOCK
-sudoOption: passwd_timeout=0
+        dn: cn=defaults,ou=Sudoers,dc=tailba6c3f,dc=ts,dc=net
+        objectClass: top
+        objectClass: sudoRole
+        cn: defaults
+        description: Default sudoOption's go here
+        sudoOption: env_keep+=SSH_AUTH_SOCK
+        sudoOption: passwd_timeout=0
 
-# The Sudoer rules order matter
-dn: cn=allowMainUserNoPass,ou=Sudoers,dc=tailba6c3f,dc=ts,dc=net
-objectClass: top
-objectClass: sudoRole
-cn: allowMainUserNoPass
-sudoUser: ${myvars.username}
-sudoHost: ALL
-sudoRunAsUser: ALL
-sudoOption: !authenticate
-sudoCommand: /usr/bin/psd-overlay-helper
-# Note: paru hardcoded 'sudo install -dm755 $CHROOT'
-# https://github.com/Morganamilo/paru/blob/5355012aa3529014145b8940dd0c62b21e53095a/src/chroot.rs#L43
-sudoCommand: /usr/bin/arch-nspawn
-sudoCommand: /usr/bin/cp -auT /var/lib/pacman/sync /tmp/aur_chroot/overlay/root/var/lib/pacman/sync
-sudoCommand: /usr/bin/install -dm755 {{ .COMMON.aurChrootPath }}/overlay
-sudoCommand: /usr/bin/mkarchroot
-sudoCommand: /usr/bin/pacman
+        # The Sudoer rules order matter
+        dn: cn=allowMainUserNoPass,ou=Sudoers,dc=tailba6c3f,dc=ts,dc=net
+        objectClass: top
+        objectClass: sudoRole
+        cn: allowMainUserNoPass
+        sudoUser: ${myvars.username}
+        sudoHost: ALL
+        sudoRunAsUser: ALL
+        sudoOption: !authenticate
+        sudoCommand: /usr/bin/psd-overlay-helper
+        # Note: paru hardcoded 'sudo install -dm755 $CHROOT'
+        # https://github.com/Morganamilo/paru/blob/5355012aa3529014145b8940dd0c62b21e53095a/src/chroot.rs#L43
+        sudoCommand: /usr/bin/arch-nspawn
+        sudoCommand: /usr/bin/cp -auT /var/lib/pacman/sync /tmp/aur_chroot/overlay/root/var/lib/pacman/sync
+        sudoCommand: /usr/bin/install -dm755 {{ .COMMON.aurChrootPath }}/overlay
+        sudoCommand: /usr/bin/mkarchroot
+        sudoCommand: /usr/bin/pacman
 
-dn: cn=allowMainUserNoPassSetenv,ou=Sudoers,dc=tailba6c3f,dc=ts,dc=net
-objectClass: top
-objectClass: sudoRole
-cn: allowMainUserNoPassSetenv
-sudoUser: ${myvars.username}
-sudoHost: ALL
-sudoRunAsUser: ALL
-sudoOption: !authenticate
-sudoOption: setenv
-sudoCommand: /usr/bin/makechrootpkg
+        dn: cn=allowMainUserNoPassSetenv,ou=Sudoers,dc=tailba6c3f,dc=ts,dc=net
+        objectClass: top
+        objectClass: sudoRole
+        cn: allowMainUserNoPassSetenv
+        sudoUser: ${myvars.username}
+        sudoHost: ALL
+        sudoRunAsUser: ALL
+        sudoOption: !authenticate
+        sudoOption: setenv
+        sudoCommand: /usr/bin/makechrootpkg
 
-dn: cn=allowMainUser,ou=Sudoers,dc=tailba6c3f,dc=ts,dc=net
-objectClass: top
-objectClass: sudoRole
-cn: allowMainUser
-sudoUser: ${myvars.username}
-sudoHost: ALL
-sudoRunAsUser: ALL
-sudoCommand: ALL
+        dn: cn=allowMainUser,ou=Sudoers,dc=tailba6c3f,dc=ts,dc=net
+        objectClass: top
+        objectClass: sudoRole
+        cn: allowMainUser
+        sudoUser: ${myvars.username}
+        sudoHost: ALL
+        sudoRunAsUser: ALL
+        sudoCommand: ALL
 
-dn: uid=${myvars.username},ou=People,dc=tailba6c3f,dc=ts,dc=net
-objectClass: top
-objectClass: person
-objectClass: organizationalPerson
-objectClass: inetOrgPerson
-objectClass: posixAccount
-objectClass: shadowAccount
-uid: ${myvars.username}
-cn: ${myvars.userfullname}
-sn: Qian
-givenName: Proteus
-title: Qiansan
-mobile: {{ keepassxcAttribute "chezmoi/openldap" "proteus_phone" }}
-mail: ${myvars.useremail}
-postalAddress: Toukyouto$Setagayaku$Kitazawa3Choume23Ban14Gou
-userPassword: {CRYPT}$y$j9T$VxvTELjZ5/UmI62sCkpRN/$Tbh9wX3i2E5mBipB1IbPUz.ZVbb1oU54xkeUU4hX4CB
-labeledURI: https://magic0whi.github.io/
-loginShell: /bin/zsh
-uidNumber: 1000
-gidNumber: 1000
-homeDirectory: /home/${myvars.username}/
-description: This is me
+        dn: uid=${myvars.username},ou=People,dc=tailba6c3f,dc=ts,dc=net
+        objectClass: top
+        objectClass: person
+        objectClass: organizationalPerson
+        objectClass: inetOrgPerson
+        objectClass: posixAccount
+        objectClass: shadowAccount
+        uid: ${myvars.username}
+        cn: ${myvars.userfullname}
+        sn: Qian
+        givenName: Proteus
+        title: Qiansan
+        mobile: {{ keepassxcAttribute "chezmoi/openldap" "proteus_phone" }}
+        mail: ${myvars.useremail}
+        postalAddress: Toukyouto$Setagayaku$Kitazawa3Choume23Ban14Gou
+        userPassword: {CRYPT}$y$j9T$VxvTELjZ5/UmI62sCkpRN/$Tbh9wX3i2E5mBipB1IbPUz.ZVbb1oU54xkeUU4hX4CB
+        labeledURI: https://magic0whi.github.io/
+        loginShell: /bin/zsh
+        uidNumber: 1000
+        gidNumber: 1000
+        homeDirectory: ${config.users.users.${myvars.username}.home}/sync
+        description: This is me
 
-dn: uid=atuin,ou=People,dc=tailba6c3f,dc=ts,dc=net
-objectClass: top
-objectClass: person
-objectClass: organizationalPerson
-objectClass: inetOrgPerson
-objectClass: posixAccount
-objectClass: shadowAccount
-uid: atuin
-sn: Atuin
-cn: Atuinsh Atuin
-userPassword: {SSHA}qco/dwy9gOBqNW/uc3e1uGB5UbS6OSS4
-loginShell: /usr/bin/nologin
-uidNumber: 1001
-gidNumber: 1001
-homeDirectory: /mnt/overlay/Services/atuin
-description: Magical shell history
+        dn: uid=atuin,ou=People,dc=tailba6c3f,dc=ts,dc=net
+        objectClass: top
+        objectClass: person
+        objectClass: organizationalPerson
+        objectClass: inetOrgPerson
+        objectClass: posixAccount
+        objectClass: shadowAccount
+        uid: atuin
+        sn: Atuin
+        cn: Atuinsh Atuin
+        userPassword: {SSHA}qco/dwy9gOBqNW/uc3e1uGB5UbS6OSS4
+        loginShell: /usr/bin/nologin
+        uidNumber: 1001
+        gidNumber: 1001
+        homeDirectory: /mnt/overlay/Services/atuin
+        description: Magical shell history
 
-dn: cn=${myvars.username},ou=Group,dc=tailba6c3f,dc=ts,dc=net
-objectClass: top
-objectClass: posixGroup
-objectClass: groupOfMembers
-cn: ${myvars.username}
-gidNumber: 1000
-member: uid=${myvars.username},ou=People,dc=tailba6c3f,dc=ts,dc=net
-    '';
+        dn: cn=${myvars.username},ou=Group,dc=tailba6c3f,dc=ts,dc=net
+        objectClass: top
+        objectClass: posixGroup
+        objectClass: groupOfMembers
+        cn: ${myvars.username}
+        gidNumber: 1000
+        member: uid=${myvars.username},ou=People,dc=tailba6c3f,dc=ts,dc=net
+      '';
     };
+  };
+  services.monero = {
+    enable = true;
+    # dataDir = "/mnt/storage1/monero";
+    extraConfig = ''
+      # log-file=/mnt/storage1/monero/monero.log
+      # log-level=0
+      p2p-use-ipv6=1
+      rpc-use-ipv6=1
+      public-node=1
+      confirm-external-bind=1
+      rpc-bind-ipv6-address=fd7a:115c:a1e0::d901:e013
+    '';
+    rpc.address = "100.109.224.13";
+    rpc.restricted = true;
+  };
+  services.samba = {
+    enable = true;
+    openFirewall = true;
+    settings = {
+      global = {
+        "workgroup" = "WORKGROUP";
+        "server string" = "smbnix";
+        "netbios name" = "smbnix";
+        "security" = "user";
+        #"use sendfile" = "yes";
+        #"max protocol" = "smb2";
+        # note: localhost is the ipv6 localhost ::1
+        # "hosts allow" = "192.168.0. 127.0.0.1 localhost";
+        # "hosts deny" = "0.0.0.0/0";
+        "guest account" = "nobody";
+        "map to guest" = "bad user";
+      };
+      "private" = {
+        "path" = "/srv/nfs/private";
+        "browseable" = "yes";
+        "read only" = "no";
+        "guest ok" = "no";
+        "create mask" = "0644";
+        "directory mask" = "0755";
+        "force user" = myvars.username;
+        "force group" = myvars.username;
+      };
+      "sync" = {
+        "path" = "${config.users.users.${myvars.username}.home}/sync";
+        "browseable" = "yes";
+        "read only" = "no";
+        "guest ok" = "no";
+        "create mask" = "0644";
+        "directory mask" = "0755";
+        "force user" = myvars.username;
+        "force group" = myvars.username;
+      };
+
+    };
+  };
+  services.samba-wsdd = {
+    enable = true;
+    openFirewall = true;
   };
 }
