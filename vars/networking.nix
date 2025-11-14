@@ -1,6 +1,5 @@
-{lib, ...}: rec { # TODO
-  prefixLength = 24;
-  hostsAddr = {
+_: { # TODO
+  hosts_addr = {
     # ============================================
     # Homelab's Physical Machines (KubeVirt Nodes)
     # ============================================
@@ -126,54 +125,9 @@
       ipv4 = "192.168.5.116";
     };
   };
-
-  hostsInterface = lib.attrsets.mapAttrs
-    (
-      key: val: {
-        interfaces."${val.iface}" = {
-          useDHCP = false;
-          ipv4.addresses = [
-            {
-              inherit prefixLength;
-              address = val.ipv4;
-            }
-          ];
-        };
-      }
-    )
-    hostsAddr;
-
-  # Accessed by modules/nix/common
-  ssh = {
-    # Configs will be written to /etc/ssh/ssh_config
-    extra_config = lib.attrsets.foldlAttrs
-      (acc: host: val: acc + ''
-        Host ${host}
-          HostName ${val.ipv4}
-          Port 22
-      '')
-      ""
-      hostsAddr;
-
-    # Define the host key for remote builders so that nix can verify all the
-    # remote builders.
-    # This config will be written to /etc/ssh/ssh_known_hosts
-    known_hosts =
-      # Update only the values of the given attribute set.
-      #
-      #   mapAttrs
-      #   (name: value: ("bar-" + value))
-      #   { x = "a"; y = "b"; }
-      #     => { x = "bar-a"; y = "bar-b"; }
-      lib.attrsets.mapAttrs
-      (host: value: {
-        hostNames = [host hostsAddr.${host}.ipv4];
-        publicKey = value.publicKey;
-      })
-      {
-        aquamarine.publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEOXFhFu9Duzp6ZBE288gDZ6VLrNaeWL4kDrFUh9Neic root@aquamarine";
-        # ruby.publicKey = "";
-        # kana.publicKey = "";
-      };
+  known_hosts = {
+    aquamarine.public_key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEOXFhFu9Duzp6ZBE288gDZ6VLrNaeWL4kDrFUh9Neic root@aquamarine";
+    # ruby.public_key = "";
+    # kana.public_key = "";
   };
 }

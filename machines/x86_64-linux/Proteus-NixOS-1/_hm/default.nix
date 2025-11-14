@@ -2,6 +2,7 @@
   home.packages = [pkgs.nvtopPackages.intel];
   programs.ssh = {
     enable = true;
+    enableDefaultConfig = false;
     matchBlocks."*" = { # Default values
         # A private key that is used during authentication will be added to
         # ssh-agent if it is running

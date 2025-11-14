@@ -1,5 +1,5 @@
 # https://github.com/nixpak/pkgs/blob/master/pkgs/modules/gui-base.nix
-{config, lib, pkgs, sloth, myvars, ...}: let
+{config, lib, pkgs, sloth, ...}: let
   envSuffix = envKey: suffix: sloth.concat' (sloth.env envKey) suffix;
   # cursor & icon's theme should be the same as the host's one.
   cursor_theme = pkgs.bibata-cursors;
@@ -78,7 +78,6 @@ in {
         XDG_DATA_DIRS = lib.mkForce (lib.makeSearchPath "share" (with pkgs; [
           cursor_theme
           papirus-icon-theme
-          myvars.catppuccin-gtk
 
           shared-mime-info
         ]));

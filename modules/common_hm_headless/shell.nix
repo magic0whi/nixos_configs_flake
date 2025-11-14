@@ -56,14 +56,6 @@
       enable = true;
       config = {
         pager = "less -FR";
-        theme = "catppuccin-${myvars.catppuccin_variant}";
-      };
-      themes = {
-        # https://raw.githubusercontent.com/catppuccin/bat/main/Catppuccin-mocha.tmTheme
-        "catppuccin-${myvars.catppuccin_variant}" = {
-          src = "${pkgs.catppuccin}/bat";
-          file = "Catppuccin ${myvars.catppuccin_variant}.tmTheme";
-        };
       };
     };
     # A command-line fuzzy finder. Interactively filter its input using fuzzy searching, not limit to filenames.
@@ -71,20 +63,6 @@
       enable = true;
       defaultOptions = ["-m"];
       defaultCommand = "rg --files"; # Using ripgrep in fzf
-      colors = { # catppuccin-mocha, ref: https://github.com/catppuccin/fzf
-        "bg+" = "#313244";
-        "bg" = "#1e1e2e";
-        "spinner" = "#f5e0dc";
-        "hl" = "#f38ba8";
-        "fg" = "#cdd6f4";
-        "header" = "#f38ba8";
-        "info" = "#cba6f7";
-        "pointer" = "#f5e0dc";
-        "marker" = "#f5e0dc";
-        "fg+" = "#cdd6f4";
-        "prompt" = "#cba6f7";
-        "hl+" = "#f38ba8";
-      };
     };
     # zoxide is a smarter cd command, inspired by z and autojump.
     # It remembers which directories you use most frequently,
@@ -136,8 +114,7 @@
         right_format = "[$status$time]($style)";
         username.format = "[$user]($style) @ ";
         username.show_always = true;
-        palette = "catppuccin_${myvars.catppuccin_variant}";
-      } // builtins.fromTOML (builtins.readFile "${pkgs.catppuccin}/starship/${myvars.catppuccin_variant}.toml");
+      };
     };
     # tmux = {
     #   enable = true;

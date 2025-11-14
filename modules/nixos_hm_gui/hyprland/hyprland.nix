@@ -1,4 +1,4 @@
-{pkgs, config, myvars, lib, ...}: let
+{pkgs, config, lib, ...}: let
   hypr_pkg = pkgs.hyprland;
 in {
   home.file.".wayland-session" = { # NOTE: this executable is used by greetd to start a wayland session when system boot up. With such a vendor-no-locking script, we can switch to another wayland compositor without modifying greetd's config in NixOS module
@@ -9,7 +9,6 @@ in {
     enable = true;
     package = hypr_pkg;
     settings = {
-      source = "${pkgs.catppuccin}/hyprland/${myvars.catppuccin_variant}.conf"; # Import color codes
       animations = {
         bezier = [
           "easeOutQuint,0.23,1,0.32,1" # https://easings.net/#easeOutQuint
@@ -39,7 +38,7 @@ in {
       "$terminal" = "systemd-run --user --scope alacritty";
       "$menu" = "systemd-run --user --scope ~/.config/hypr/scripts/menu";
       "$clipManager" = "systemd-run --user --scope sh -c 'cliphist list | anyrun --show-results-immediately true | cliphist decode | wl-copy'";
-      "$colorpicker" = "~/.config/hypr/scripts/colorpicker"; # TODO use Hyprpicker instead
+      "$colorpicker" = "~/.config/hypr/scripts/colorpicker";
       "$fileManager" = "systemd-run --user --scope thunar";
       "$wlogout" = "~/.config/hypr/scripts/wlogout";
       "$mainMod" = "SUPER";
@@ -217,86 +216,7 @@ in {
       ];
     };
   };
-  programs.hyprlock = {
-    enable = true;
-    settings = {
-      background = [{
-        blur_passes = 0; # 0 disables blurring
-        blur_size = 7;
-        brightness = 0.8172;
-        color = "rgba(25, 20, 20, 1.0)";
-        contrast = 0.8916;
-        noise = 0.0117;
-        path = "${config.xdg.userDirs.pictures}/background.png"; # supports png, jpg, webp (no animations, though)
-        # If 'path' is invalid, will use 'color'
-        vibrancy = 0.1696;
-        vibrancy_darkness = 0.0;
-      }];
-      image = [{
-        border_color = "rgb(221, 221, 221)";
-        border_size = 4;
-        halign = "center";
-        path = "${config.xdg.userDirs.pictures}/avatar.png";
-        position = "0, 200";
-        reload_time = -1; # seconds between reloading, 0 to reload with SIGUSR2
-        rotate = 0; # degrees, counter-clockwise
-        rounding = -1; # negative values mean circle
-        size = 150; # lesser side if not 1:1 ratio
-        valign = "center";
-      }];
-      input-field = [{
-        bothlock_color = -1; # when both locks are active. -1 means don't change outer color (same for above)
-        capslock_color = -1;
-        check_color = "rgb(204, 136, 34)";
-        dots_center = false;
-        dots_rounding = -1; # -1 default circle, -2 follow input-field rounding
-        dots_size = 0.33; # Scale of input-field height, 0.2 - 0.8
-        dots_spacing = 0.15; # Scale of dots' absolute size, 0.0 - 1.0
-        fade_on_empty = true;
-        fade_timeout = 1000; # Milliseconds before fade_on_empty is triggered.
-        fail_color = "rgb(204, 34, 34)"; # if authentication failed, changes outer_color and fail message color
-        fail_text = "<i>$FAIL <b>($ATTEMPTS)</b></i>"; # can be set to empty
-        fail_transition = 300; # transition time in ms between normal outer_color and fail_color
-        font_color = "rgb(10, 10, 10)";
-        halign = "center";
-        hide_input = false;
-        inner_color = "rgb(200, 200, 200)";
-        invert_numlock = false; # change color if numlock is off
-        numlock_color = -1;
-        outer_color = "rgb(151515)";
-        outline_thickness = 3;
-        placeholder_text = "<i>Input Password...</i>"; # Text rendered in the input box when it's empty.
-        position = "0, -20";
-        rounding = -1; # -1 means complete rounding (circle/oval)
-        size = "200, 50";
-        swap_font_color = false; # see below
-        valign = "center";
-      }];
-      shape = [{
-        border_color = "rgba(0, 207, 230, 1.0)";
-        border_size = 8;
-        color = "rgba(17, 17, 17, 0.8)";
-        halign = "center";
-        position = "0, 0";
-        rotate = 0;
-        rounding = 69;
-        size = "360, 360";
-        valign = "center";
-        xray = false; # if true, make a "hole" in the background (rectangle of specified size, no rotation)
-      }];
-      label = [{
-        color = "rgba(200, 200, 200, 1.0)";
-        font_family = "Noto Sans";
-        font_size = 25;
-        halign = "center";
-        position = "0, 80";
-        rotate = 0; # degrees, counter-clockwise
-        text = "Hi there, $USER";
-        text_align = "center"; # center/right or any value for default left. multi-line text alignment inside label container
-        valign = "center";
-      }];
-    };
-  };
+  programs.hyprlock.enable = true;
   services.cliphist.enable = true;
   xdg.configFile = { # hyprland configs, based on https://github.com/notwidow/hyprland
     "hypr/mako" = { # Keep icon files

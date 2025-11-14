@@ -12,11 +12,10 @@
 # 4. And Other common shortcuts such as Copy, Paste, Cursor Move, etc.
 #
 # NOTE: Alacritty do not have support for Tabs, and any graphic protocol.
-{pkgs, myvars, ...}: {
+{pkgs, ...}: {
   programs.alacritty = {
     enable = true;
     settings = { # https://alacritty.org/config-alacritty.html
-      general.import = ["${pkgs.catppuccin}/alacritty/catppuccin-${myvars.catppuccin_variant}.toml"];
       window = {
         opacity = 0.93;
         startup_mode = "Maximized"; # Maximized window

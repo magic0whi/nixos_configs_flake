@@ -13,7 +13,7 @@
     gnumake
 
     keepassxc # Offline password manager, provides both CLI and GUI
-    pgp2ssh.packages.${pkgs.system}.pgp2ssh
+    pgp2ssh.packages.${pkgs.stdenv.hostPlatform.system}.pgp2ssh
 
     ## Modern cli tools, replacement of grep/sed/...
     # A fast and polyglot tool for code searching, linting, rewriting at large scale
@@ -56,7 +56,7 @@
     # NOTE: Please avoid to install language specific packages here (globally), instead, install them:
     # 1. per IDE, such as `programs.neovim.extraPackages`
     # 2. per-project, see https://github.com/the-nix-way/dev-templates
-    deploy-rs.packages.${pkgs.system}.deploy-rs
+    deploy-rs.packages.${pkgs.stdenv.hostPlatform.system}.deploy-rs
 
     # python313 # use https://github.com/the-nix-way/dev-templates?tab=readme-ov-file#python instead
     # yarn use https://github.com/the-nix-way/dev-templates?tab=readme-ov-file#node instead
@@ -106,18 +106,12 @@
   '';
   ## END pip.nix
   ## START btop.nix
-  # https://github.com/catppuccin/btop/blob/main/themes/catppuccin_mocha.theme
-  xdg.configFile."btop/themes".source = "${pkgs.catppuccin}/btop/";
   programs.btop = { # Alternative to htop/nmon
     enable = true;
-    settings = {
-      color_theme = "catppuccin_${myvars.catppuccin_variant}";
-      theme_background = false; # Make btop transparent
-    };
+    settings.theme_background = false; # Make btop transparent
   };
   ## END btop.nix
   ## START yazi.nix
-  # xdg.configFile."yazi/theme.toml".source = "${nur-ryan4yin.packages.${pkgs.system}.catppuccin-yazi}/mocha.toml";
   programs.yazi = { # terminal file manager
     enable = true;
     # enableZshIntegration = false; # Don't changing working directory when exiting Yazi
@@ -195,4 +189,11 @@
     sshKeys = myvars.gpg2ssh_keygrip; # Run 'gpg --export-ssh-key gpg-key!' to export public key
   };
   ## END gpg.nix
+  ## START catppuccin.nix
+  catppuccin = { # Enable Catppuccin globally
+    enable = true;
+    accent = myvars.catppuccin_accent;
+    flavor = myvars.catppuccin_flavor;
+  };
+  ## END catppuccin.nix
 }

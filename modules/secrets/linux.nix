@@ -40,7 +40,7 @@ in {
   };
   config = lib.mkIf (config.modules.secrets.enabled) (lib.mkMerge [
     {
-      environment.systemPackages = [agenix.packages."${pkgs.system}".default];
+      environment.systemPackages = [agenix.packages."${pkgs.stdenv.hostPlatform.system}".default];
       age.identityPaths = lib.mkDefault (
       if config.environment.persistence != {} then [
         "/persistent${config.users.users.${myvars.username}.home}/sync_work/3keys/private/legacy/proteus_ed25519.key"

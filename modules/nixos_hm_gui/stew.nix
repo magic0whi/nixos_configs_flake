@@ -11,7 +11,7 @@
     # wechat-uos
 
     ## Games
-    # nix-gaming.packages.${pkgs.system}.osu-laser-bin
+    # nix-gaming.packages.${pkgs.stdenv.hostPlatform.system}.osu-laser-bin
     # gamescope # SteamOS session compositing window manager
 
     ## Creative
@@ -50,9 +50,6 @@
   ## START syncthing_tray.nix
   services.syncthing.tray.enable = true; # Only supports Linux platform
   ## END syncthing_tray.nix
-  # Color scheme for `cava`, ref: https://github.com/catppuccin/cava
-  # xdg.configFile."cava/config".text = "# Custom cava config\n"
-  #   + builtins.readFile "${nur-ryan4yin.packages.${pkgs.system}.catppuccin-cava}/mocha.cava";
   services.playerctld.enable = true; # playerctl
   ## START browsers.nix
   services.psd.enable = true;

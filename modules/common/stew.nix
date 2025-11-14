@@ -45,15 +45,31 @@
   ## START ssh.nix
   services.openssh.enable = true;
   programs.ssh = {
+    # Configs will be written to /etc/ssh/ssh_config
     extraConfig = ''
-    Compression yes
-    ControlMaster auto
-    ControlPath ~/.ssh/master-%r@%n:%p
-    ControlPersist 30m
-    ServerAliveInterval 30
-    ServerAliveCountMax 5
-    '' + myvars.networking.ssh.extra_config;
-    knownHosts = myvars.networking.ssh.known_hosts;
+      Compression yes
+      ControlMaster auto
+      ControlPath ~/.ssh/master-%r@%n:%p
+      ControlPersist 30m
+      ServerAliveInterval 30
+      ServerAliveCountMax 5
+    '' + lib.attrsets.foldlAttrs
+      (acc: host: val: acc + ''
+        Host ${host}
+          HostName ${val.ipv4}
+          Port 22
+      '')
+      ""
+      myvars.networking.hosts_addr;
+    # Define the host key for remote builders so that nix can verify all the
+    # remote builders.
+    # This config will be written to /etc/ssh/ssh_known_hosts
+    knownHosts = lib.attrsets.mapAttrs
+      (name: val: {
+        hostNames = [name myvars.networking.hosts_addr.${name}.ipv4]; # Hostname and its IPv4
+        publicKey = val.public_key;
+      })
+      myvars.networking.known_hosts;
   };
   ## END ssh.nix
   ## START shell.nix

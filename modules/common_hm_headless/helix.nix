@@ -1,13 +1,11 @@
 {pkgs, mylib, ...}: {
-  # catppuccin, Ref: https://github.com/catppuccin/helix
-  # xdg.configFile."helix/themes".source = "${nur-ryan4yin.packages.${pkgs.system}.catppuccin-helix}/themes/default";
   programs = {
     helix = {
       enable = true;
       defaultEditor = true;
       extraPackages = with pkgs; [nil marksman ltex-ls texlab nodePackages.vscode-json-languageserver];
       settings = {
-        theme = "gruvbox";
+        # theme = "gruvbox"; # Disable if use catpuccin
         editor = {
           bufferline = "multiple";
           color-modes = true;

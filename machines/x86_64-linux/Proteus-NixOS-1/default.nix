@@ -2,7 +2,6 @@
   name = baseNameOf ./.;
   nixpkgs_modules = map mylib.relative_to_root [
     "modules/secrets/linux.nix"
-    "modules/overlays/catppuccin.nix"
     "modules/common"
     "modules/nixos_headless"
   ];

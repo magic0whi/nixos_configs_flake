@@ -32,8 +32,7 @@
       url = "github:ryan4yin/wallpapers";
       flake = false;
     };
-    # secrets management
-    agenix = {
+    agenix = { # secrets management
       url = "github:ryantm/agenix";
       # replaced with a type-safe reimplementation to get a better error message and less bugs.
       # url = "github:ryan4yin/ragenix";
@@ -56,6 +55,7 @@
       url = "github:hraban/mac-app-util";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    catppuccin.url = "github:catppuccin/nix";
     # my private secrets, it's a private repository, you need to replace it with your own. TODO
     # use ssh protocol to authenticate via ssh-agent/ssh-key, and shallow clone to save time
     # mysecrets = {

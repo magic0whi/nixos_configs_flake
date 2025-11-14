@@ -1,4 +1,4 @@
-{myvars, lib, config, pkgs, ...}: {
+{lib, config, ...}: {
   # Waybar sometimes starts too fast before hyprland is ready
   systemd.user.services.waybar.Service.RestartSec = lib.mkIf config.programs.waybar.enable "3.02s";
   programs.waybar = {
@@ -289,7 +289,6 @@
       b = number of class selectors
       c = number of type selectors
       */
-      @import "${pkgs.catppuccin}/waybar/${myvars.catppuccin_variant}.css";
 
       window#waybar {
         background-color: transparent;
