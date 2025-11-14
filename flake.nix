@@ -29,7 +29,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     wallpapers = {
-      url = "github:ryan4yin/wallpapers";
+      url = "github:ryan4yin/wallpapers"; # TODO:
       flake = false;
     };
     agenix = { # secrets management
