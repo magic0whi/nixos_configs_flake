@@ -1,9 +1,10 @@
-{agenix, config, lib, mylib, myvars, pkgs, ...}: let
+{config, lib, mylib, pkgs, ...}: let
   dpi_scale = lib.strings.substring 0 4 (lib.strings.floatToString 1.25);
   main_monitor = "eDP-1";
   modeline = "highres,auto,${dpi_scale},bitdepth,10";
   custom_files_dir = mylib.relative_to_root "custom_files";
 in {
+  imports = mylib.scan_path ./.;
   home.packages = [pkgs.nvtopPackages.intel];
   modules.gui.hyprland = {
     enable = true;
@@ -65,22 +66,12 @@ in {
   programs.gpg = {
     publicKeys = [ # https://www.gnupg.org/gph/en/manual/x334.html
       {
-        source = mylib.relative_to_root "custom_files/proteus.pub.asc";
+        source = "${custom_files_dir}/proteus.pub.asc";
         trust = 5; # ultimate trust, my own keys
       }
     ];
   };
   programs.mpv.profiles.common.vulkan-device = "Intel(R) UHD Graphics (TGL GT1)";
-  ## START secrets.nix
-  imports = [agenix.homeManagerModules.default];
-  age.identityPaths = ["/home/${myvars.username}/sync_work/3keys/private/legacy/proteus_ed25519.key"];
-  age.secrets = let
-    noaccess = {mode = "0000";};
-    high_security = {mode = "0500";};
-  in {
-    "syncthing_proteus-nuc.key.pem" = {file = "${custom_files_dir}/syncthing_proteus-nuc.key.pem.age";} // high_security;
-  };
-  ## END secrets.nix
   services.syncthing = {
     key = config.age.secrets."syncthing_proteus-nuc.key.pem".path;
     cert = "${custom_files_dir}/syncthing_proteus-nuc.crt.pem";

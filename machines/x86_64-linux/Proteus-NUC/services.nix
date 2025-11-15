@@ -153,7 +153,7 @@
         loginShell: /bin/zsh
         uidNumber: 1000
         gidNumber: 1000
-        homeDirectory: ${config.users.users.${myvars.username}.home}/sync
+        homeDirectory: ${config.users.users.${myvars.username}.home}
         description: This is me
 
         dn: uid=atuin,ou=People,dc=tailba6c3f,dc=ts,dc=net
@@ -184,7 +184,7 @@
     };
   };
   services.monero = {
-    enable = true;
+    # enable = true;
     # dataDir = "/mnt/storage1/monero";
     extraConfig = ''
       # log-file=/mnt/storage1/monero/monero.log
