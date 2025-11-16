@@ -1,5 +1,6 @@
 {pkgs, config, ...}: {
   modules.secrets.desktop.enable = true;
+  age.identityPaths = ["/srv/sync_work/3keys/private/pgp2ssh.key"];
   networking.wireless.iwd.enable = true;
   networking.wireless.iwd.settings.General.Country = "CN";
   systemd.services.iwd.serviceConfig.ExecStart = [

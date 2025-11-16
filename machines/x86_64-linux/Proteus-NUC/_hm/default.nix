@@ -85,7 +85,7 @@ in {
       };
       folders = {
         "work" = {
-          path = "~/sync_work";
+          path = "/srv/sync_work";
           devices = ["LGE-AN00" "M2011K2C" "Proteus-MBP14M4P" "PROTEUSDESKTOP" "Redmi Note 5"];
         };
         "nixos_configs_flake" = {

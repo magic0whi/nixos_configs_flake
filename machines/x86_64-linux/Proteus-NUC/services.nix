@@ -242,4 +242,24 @@
     enable = true;
     openFirewall = true;
   };
+  services.sftpgo = {
+    enable = true;
+    user = myvars.username;
+    group = myvars.username;
+    settings = {
+      httpd.bindings = [{
+        address = "0.0.0.0";
+        enable_https = true;
+        certificate_file = "${mylib.relative_to_root "custom_files/proteus_server.pem"}";
+        certificate_key_file = config.age.secrets."proteus_server.key.pem".path;
+      }];
+      webdavd.bindings = [{
+        address = "0.0.0.0";
+        port = 443;
+        enable_https = true;
+        certificate_file = "${mylib.relative_to_root "custom_files/proteus_server.pem"}";
+        certificate_key_file = config.age.secrets."proteus_server.key.pem".path;
+      }];
+    };
+  };
 }
