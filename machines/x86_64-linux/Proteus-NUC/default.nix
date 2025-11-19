@@ -18,7 +18,7 @@
     machine_path = ./.;
   });
 in {
-  _DEBUG = {inherit name nixpkgs_modules hm_modules;};
+  _DEBUG = {inherit name nixpkgs_modules hm_modules myvars;};
   nixos_configurations.${name} = nixos_system;
   # generate iso image
   packages.${name} = inputs.self.nixosConfigurations.${name}.config.formats.iso;

@@ -56,7 +56,10 @@
     '' + lib.attrsets.foldlAttrs
       (acc: host: val: acc + ''
         Host ${host}
-          HostName ${val.ipv4}
+          Hostname ${if (builtins.isNull myvars.networking.hosts_addr.${host}.ipv4) then
+            host
+          else
+            val.ipv4}
           Port 22
       '')
       ""
@@ -66,7 +69,11 @@
     # This config will be written to /etc/ssh/ssh_known_hosts
     knownHosts = lib.attrsets.mapAttrs
       (name: val: {
-        hostNames = [name myvars.networking.hosts_addr.${name}.ipv4]; # Hostname and its IPv4
+        hostNames = [name] # Hostname and its IPv4
+        ++ (lib.optional
+          (!builtins.isNull myvars.networking.hosts_addr.${name}.ipv4)
+          myvars.networking.hosts_addr.${name}.ipv4
+        );
         publicKey = val.public_key;
       })
       myvars.networking.known_hosts;

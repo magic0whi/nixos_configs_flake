@@ -23,17 +23,15 @@
 
     # waydroid.enable = true; Usage: https://wiki.nixos.org/wiki/Waydroid
 
-    # libvirtd = {
-      # enable = true;
-      # hanging this option to false may cause file permission issues for existing guests.
-      # To fix these, manually change ownership of affected files in /var/lib/libvirt/qemu to qemu-libvirtd.
-      # qemu.runAsRoot = true;
-    # };
+    libvirtd = {
+      enable = true;
+      qemu.swtpm.enable = true;
+    };
 
     # lxd.enable = true;
   };
 
-  # environment.systemPackages = with pkgs; [
+  environment.systemPackages = with pkgs; [
     # This script is used to install the arm translation layer for waydroid
     # so that we can install arm apks on x86_64 waydroid
     # https://github.com/casualsnek/waydroid_script
@@ -42,7 +40,7 @@
     # nur-ataraxiasjel.packages.${pkgs.system}.waydroid-script
 
     # Need to add [File (in the menu bar) -> Add connection] when start for the first time
-    # virt-manager
+    virt-manager
 
     # QEMU/KVM (HostCpuOnly), provides:
     # - qemu-storage-daemon qemu-edid qemu-ga
@@ -57,5 +55,5 @@
     #   qemu-system-xtensa qemu-xtensa qemu-system-xtensaeb qemu-xtensaeb
     #   ......
     # qemu
-  # ];
+  ];
 }
