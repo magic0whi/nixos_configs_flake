@@ -12,7 +12,7 @@ in {
   environment.systemPackages = with pkgs; [btrfs-progs cifs-utils];
   boot.supportedFilesystems = ["cifs"];
   fileSystems = {
-    "/mnt/storage2" = {device = "//proteusdesktop.tailba6c3f.ts.net/storage2";} // cifs_opts;
-    "/mnt/storage3" = {device = "//proteusdesktop.tailba6c3f.ts.net/storage3";} // cifs_opts;
+    # "/mnt/storage2" = {device = "//proteusdesktop.tailba6c3f.ts.net/storage2";} // cifs_opts;
+    # "/mnt/storage3" = {device = "//proteusdesktop.tailba6c3f.ts.net/storage3";} // cifs_opts;
   };
 }

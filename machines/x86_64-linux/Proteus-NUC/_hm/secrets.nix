@@ -1,6 +1,6 @@
 {agenix, myvars, mylib, ...}: {
   imports = [agenix.homeManagerModules.default];
-  age.identityPaths = ["/home/${myvars.username}/sync_work/3keys/private/legacy/proteus_ed25519.key"];
+  age.identityPaths = ["/srv/sync_work/3keys/private/pgp2ssh.key"];
   age.secrets = let
     noaccess = {mode = "0000";};
     high_security = {mode = "0500";};

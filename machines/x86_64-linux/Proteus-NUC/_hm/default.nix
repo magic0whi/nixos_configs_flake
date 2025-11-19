@@ -93,7 +93,7 @@ in {
           devices = ["Proteus-MBP14M4P"];
         };
         "sync" = {
-          path = "~/sync";
+          path = "/srv/sync";
           devices = ["PROTEUSDESKTOP"];
         };
       };
