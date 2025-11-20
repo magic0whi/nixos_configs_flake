@@ -1,7 +1,6 @@
 {pkgs, config, ...}: {
   home.packages = with pkgs; [
     sound-theme-freedesktop
-    swaybg # the wallpaper
     wlogout # logout menu
     wl-clipboard # copying and pasting
     hyprpicker # color picker

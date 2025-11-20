@@ -547,8 +547,7 @@
         "nixos-generators": "nixos-generators",
         "nixpak": "nixpak",
         "nixpkgs": "nixpkgs_4",
-        "pgp2ssh": "pgp2ssh",
-        "wallpapers": "wallpapers"
+        "pgp2ssh": "pgp2ssh"
       }
     },
     "rust-overlay": {
@@ -651,22 +650,6 @@
       "original": {
         "owner": "numtide",
         "repo": "flake-utils",
-        "type": "github"
-      }
-    },
-    "wallpapers": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1703310017,
-        "narHash": "sha256-SL3PIDa4BNz2rDZ/9KwnJCAfhelIoqpLtQ/FSYgfusI=",
-        "owner": "ryan4yin",
-        "repo": "wallpapers",
-        "rev": "20dea02ee2c0bb74dadcc3d4ec5efe78d00520dc",
-        "type": "github"
-      },
-      "original": {
-        "owner": "ryan4yin",
-        "repo": "wallpapers",
         "type": "github"
       }
     }

@@ -28,10 +28,6 @@
       url = "github:nix-community/nixos-generators";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    wallpapers = {
-      url = "github:ryan4yin/wallpapers"; # TODO:
-      flake = false;
-    };
     agenix = { # secrets management
       url = "github:ryantm/agenix";
       # replaced with a type-safe reimplementation to get a better error message and less bugs.

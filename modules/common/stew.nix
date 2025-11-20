@@ -71,8 +71,8 @@
       (name: val: {
         hostNames = [name] # Hostname and its IPv4
         ++ (lib.optional
-          (!builtins.isNull myvars.networking.hosts_addr.${name}.ipv4)
-          myvars.networking.hosts_addr.${name}.ipv4
+            (!builtins.isNull myvars.networking.hosts_addr.${name}.ipv4)
+            myvars.networking.hosts_addr.${name}.ipv4
         );
         publicKey = val.public_key;
       })

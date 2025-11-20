@@ -11,7 +11,7 @@ _: { # TODO
     # ============================================
     # Other VMs and Physical Machines
     # ============================================
-    proteus-nuc = { # Notebook
+    Proteus-NUC = { # Notebook
       iface = "wlo1";
       ipv4 = null;
     };
@@ -49,7 +49,7 @@ _: { # TODO
     };
   };
   known_hosts = {
-    proteus-nuc.public_key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAILSH65JuZBQd6cPhSGMy+XpGoKBo+/HnUNrwAIb3YMO2 root@proteus-nuc";
+    Proteus-NUC.public_key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAILSH65JuZBQd6cPhSGMy+XpGoKBo+/HnUNrwAIb3YMO2 root@proteus-nuc";
     rakushun.public_key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEOXFhFu9Duzp6ZBE288gDZ6VLrNaeWL4kDrFUh9Neic root@aquamarine";
   };
 }
