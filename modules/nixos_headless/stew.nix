@@ -7,11 +7,6 @@
     consoleMode = "max";
   };
   ## END bootloader.nix
-  ## START power_management.nix
-  services.power-profiles-daemon.enable = true;
-  services.upower.enable = true;
-  services.logind.settings.Login.HandleLidSwitch = "ignore";
-  ## END power_management.nix
   ## START nix.nix
   nix.gc.dates = "weekly";
   nix.settings.auto-optimise-store = true; # Optimise the store after each build
