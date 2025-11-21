@@ -27,6 +27,7 @@
       enable = true;
       qemu.swtpm.enable = true;
     };
+    spiceUSBRedirection.enable = true;
 
     # lxd.enable = true;
   };

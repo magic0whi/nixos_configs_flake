@@ -206,31 +206,6 @@
   ## START zram.nix
   zramSwap.enable = true;
   ## END zram.nix
-  ## START fhs.nix
-  # Create a fhs environment by command `fhs`, so we can run non-NixOS packages in # NixOS
-  environment.systemPackages = [(let base = pkgs.appimageTools.defaultFhsEnvArgs;
-  in pkgs.buildFHSEnv (base // {
-    name = "fhs";
-    targetPkgs = pkgs: (base.targetPkgs pkgs) ++ [pkgs.pkg-config];
-    profile = "export FHS=1";
-    runScript = "bash";
-    extraOutputsToInstall = ["dev"];
-  }))];
-  # nix-ld will install itself at `/lib64/ld-linux-x86-64.so.2` so that it can be used as the dynamic linker for non-NixOS binaries.
-  # Ref: https://github.com/Mic92/nix-ld
-  # nix-ld works like a middleware between the actual link loader located at `/nix/store/.../ld-linux-x86-64.so.2`
-  # and the non-NixOS binaries. It will:
-  # 1. read the `NIX_LD` environment variable and use it to find the actual link loader.
-  # 2. read the `NIX_LD_LIBRARY_PATH` environment variable and use it to set the `LD_LIBRARY_PATH` environment variable
-  #    for the actual link loader.
-  # nix-ld's nixos module will set default values for `NIX_LD` and `NIX_LD_LIBRARY_PATH` environment variables, so
-  # it can work out of the box: https://github.com/NixOS/nixpkgs/blob/nixos-24.11/nixos/modules/programs/nix-ld.nix#L37-L40
-  #
-  # You can overwrite `NIX_LD_LIBRARY_PATH` in the environment where you run the non-NixOS binaries to customize the
-  # search path for shared libraries.
-  programs.nix-ld.enable = true;
-  programs.nix-ld.libraries = [pkgs.stdenv.cc.cc];
-  ## END fhs.nix
   systemd.services.console-blanking = { # Let monitor become blank after 2mins, and 3mins inactive to
   # poweroff
     description = "Enable virtual console blanking and DPMS";

@@ -33,8 +33,6 @@
     lsof # list open files
 
     # ebpf related tools
-    # https://github.com/bpftrace/bpftrace
-    bpftrace # powerful tracing tool
     bpftop # monitor BPF programs
     bpfmon # BPF based visual packet rate monitor
 
