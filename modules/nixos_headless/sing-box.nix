@@ -1,14 +1,5 @@
 {lib, config, ...}: {
-  networking.firewall = {
-    extraInputRules = ''
-      iifname tun0 accept comment "Allow sing-box"
-      tcp dport 9091 accept comment "Allow sing-box (WebUI)"
-    '';
-    extraForwardRules = ''
-      iifname tun0 accept comment "Allow sing-box"
-      oifname tun0 accept comment "Allow sing-box"
-    '';
-  };
+  networking.firewall.allowedTCPPorts = [9091]; # sing-box WebUI
   # Override the sing-box's systemd service
   systemd.services.sing-box = lib.mkIf config.services.sing-box.enable (lib.mkOverride 100 {
     serviceConfig = {

@@ -45,19 +45,7 @@
     extraInputRules = ''
       # ip saddr 192.168.1.0/24 accept comment "Allow from LAN"
       ip6 saddr { fe80::/16, fd66:06e5:aebe::/48 } accept comment "Allow from Link-Local / ULA-Prefix (IPv6)"
-      iifname "tailscale0*" counter accept comment "Allow from Tailscale"
       udp dport bootps accept comment "Allow DHCP server (systemd-nspawn)"
-      tcp dport 8888 accept comment "Allow Atuin"
-      tcp dport snapenetio accept comment "Allow Syncthing"
-      udp dport { snapenetio, 21027 } accept comment "Allow Syncthing broadcasts (IPv4) / multicasts (IPv6)"
-      tcp dport 53317 counter accept comment "Allow LocalSend (HTTP/TCP)"
-      udp dport 53317 counter accept comment "Allow LocalSend (Multicast/UDP)"
-    '';
-    filterForward = true;
-    extraForwardRules = ''
-      ip6 saddr { fe80::/16, fd66:06e5:aebe::/48 } counter accept comment "Allow forward from Link-Local / ULA-Prefix (IPv6)"
-      iifname "ve-*" accept comment "Allow systemd-nspawn container"
-      oifname "ve-*" accept comment "Allow systemd-nspawn container"
     '';
   };
   networking.timeServers = [ # Or

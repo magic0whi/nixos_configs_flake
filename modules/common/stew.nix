@@ -173,21 +173,7 @@
   ## END users.nix
   ## START network.nix
   services.tailscale.enable = true; # Start-up: `tailscale up --accept-routes`
-  services.sing-box = {
-    enable = lib.mkDefault true;
-    package = pkgs.sing-box.overrideAttrs (final: prev: {
-      version = "1.12.9";
-      src = pkgs.fetchFromGitHub {
-        owner = "SagerNet";
-        repo = "sing-box";
-        tag = "v${final.version}";
-        hash = "sha256-1sN1VE+3CMI/rDiADpPJFv9NsxOvulLjGTE38CQOJzo=";
-      };
-      vendorHash = "sha256-Cx9SD5FTiyISRpWxlUsxeGP1M39YJQrWpRPaK1o6H08=";
-      # Remove deprecated build tags
-      tags = lib.lists.filter (e: e != "with_ech" && e != "with_reality_server") prev.tags;
-    });
-  };
+  services.sing-box.enable = lib.mkDefault true;
   ## END network.nix
   ## START fonts.nix
   fonts.packages = with pkgs; [

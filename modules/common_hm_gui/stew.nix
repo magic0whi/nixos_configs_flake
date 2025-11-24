@@ -4,6 +4,8 @@
     telegram-desktop # Instant messaging
     # discord # Update too frequently, use the web version instead
 
+    libnotify # notify-send
+
     ## Remote Desktop (RDP protocol)
     remmina
     freerdp # Required by remmina

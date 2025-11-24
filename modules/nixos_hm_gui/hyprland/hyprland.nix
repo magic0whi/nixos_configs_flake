@@ -219,10 +219,6 @@ in {
   programs.hyprlock.enable = true;
   services.cliphist.enable = true;
   xdg.configFile = { # hyprland configs, based on https://github.com/notwidow/hyprland
-    "hypr/mako" = { # Keep icon files
-      source = ./_conf/mako;
-      recursive = true;
-    };
     "hypr/scripts" = {
       source = ./_conf/scripts;
       recursive = true;

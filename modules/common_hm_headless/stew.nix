@@ -44,7 +44,6 @@
     caddy # A webserver with automatic HTTPS via Let's Encrypt(replacement of nginx)
     croc # File transfer between computers securely and easily
 
-    libnotify # notify-send
     wireguard-tools # manage wireguard vpn manually, via wg-quick
 
     # ventoy # create bootable usb
@@ -100,9 +99,9 @@
   ## START pip.nix
   # Use mirror for pip install
   xdg.configFile."pip/pip.conf".text = ''
-  [global]
-  index-url = https://mirror.nju.edu.cn/pypi/web/simple
-  format = columns
+    [global]
+    index-url = https://mirror.nju.edu.cn/pypi/web/simple
+    format = columns
   '';
   ## END pip.nix
   ## START btop.nix

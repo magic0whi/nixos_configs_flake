@@ -11,10 +11,8 @@
   virtualisation = {
     docker = {
       enable = true;
-      # Start dockerd on boot. This is required for containers which are created
-      # with the `--restart=always` flag to work.
-      enableOnBoot = true;
       daemon.settings = {
+        # firewall-backend = "nftables"; # Waiting for docker 29
         # Enables pulling using containerd, which supports restarting from a
         # partial pull, ref https://docs.docker.com/storage/containerd/
         features = {containerd-snapshotter = true;};

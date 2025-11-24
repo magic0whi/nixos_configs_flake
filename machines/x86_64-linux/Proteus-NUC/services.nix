@@ -3,6 +3,18 @@
   #   tcp dport ldaps accept comment "Allow OpenLDAP"
   #   udp dport ldaps accept comment "Allow OpenLDAP"
   # '';
+  networking.firewall = {
+    allowedTCPPorts = [
+      8888 # Atuin Server
+      22000 # Syncthing TCP transfers
+      53317 # LocalSend (HTTP/TCP)
+    ];
+    allowedUDPPorts = [
+      21027 # Syncthing discovery broadcasts on IPv4 and multicasts on IPv6
+      22000 # Syncthing QUIC transfers
+      53317 # LocalSend (Multicast/UDP)
+    ];
+  };
   ## START tor.nix
   services.tor = {
     enable = true;
