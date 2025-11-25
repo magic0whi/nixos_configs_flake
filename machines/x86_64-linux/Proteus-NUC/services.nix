@@ -247,7 +247,7 @@
         "map to guest" = "bad user";
       };
       "private" = {
-        "path" = "/srv/nfs/private";
+        "path" = "/srv";
         "browseable" = "yes";
         "read only" = "no";
         "guest ok" = "no";
@@ -256,17 +256,6 @@
         "force user" = myvars.username;
         "force group" = myvars.username;
       };
-      "sync" = {
-        "path" = "${config.users.users.${myvars.username}.home}/sync";
-        "browseable" = "yes";
-        "read only" = "no";
-        "guest ok" = "no";
-        "create mask" = "0644";
-        "directory mask" = "0755";
-        "force user" = myvars.username;
-        "force group" = myvars.username;
-      };
-
     };
   };
   services.samba-wsdd = {
