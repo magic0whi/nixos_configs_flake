@@ -180,7 +180,7 @@
         mobile: {{ keepassxcAttribute "chezmoi/openldap" "proteus_phone" }}
         mail: ${myvars.useremail}
         postalAddress: Toukyouto$Setagayaku$Kitazawa3Choume23Ban14Gou
-        userPassword: {CRYPT}$y$j9T$VxvTELjZ5/UmI62sCkpRN/$Tbh9wX3i2E5mBipB1IbPUz.ZVbb1oU54xkeUU4hX4CB
+        userPassword: {SSHA}LbpR3GOQuhToaqzVejQOTJuOFEjlUHgK
         labeledURI: https://magic0whi.github.io/
         loginShell: /bin/zsh
         uidNumber: 1000
