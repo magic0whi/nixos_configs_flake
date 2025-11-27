@@ -34,35 +34,35 @@ in {
     };
   };
   # modules.editors.emacs.enable = true;
-  programs.ssh = {
-    enable = true;
-    enableDefaultConfig = false;
-    matchBlocks = {
-      "*" = { # Default values
-        # A private key that is used during authentication will be added to
-        # ssh-agent if it is running
-        addKeysToAgent = "yes";
-        # Allow to securely use local SSH agent to authenticate on the remote
-        # machine. It has the same effect as adding cli option `ssh -A user@host`
-        forwardAgent = true;
-      };
-      "*.tailba6c3f.ts.net" = {
-      };
-      "ssh.github.com hf.co" = lib.hm.dag.entryBefore ["*.tailba6c3f.ts.net"] {
-        user = "git";
-        # identityFile = "~/sync_work/3keys/private/proteus_ed25519.key";
-        # identitiesOnly = true; # Prevent sending default identity files first.
-      };
-      "desktop" = {
-        hostname = "192.168.15.11";
-        port = 22;
-      };
-      "192.168.*" = {
-        # identityFile = "/etc/agenix/ssh-key-romantic"; # romantic holds my homelab~
-        # identitiesOnly = true; # Specifies that ssh should only use the identity file. Required to prevent sending default identity files first.
-      };
-    };
-  };
+  # programs.ssh = {
+  #   enable = true;
+  #   enableDefaultConfig = false;
+  #   matchBlocks = {
+  #     "*" = { # Default values
+  #       # A private key that is used during authentication will be added to
+  #       # ssh-agent if it is running
+  #       addKeysToAgent = "yes";
+  #       # Allow to securely use local SSH agent to authenticate on the remote
+  #       # machine. It has the same effect as adding cli option `ssh -A user@host`
+  #       forwardAgent = true;
+  #     };
+  #     "*.tailba6c3f.ts.net" = {
+  #     };
+  #     "ssh.github.com hf.co" = lib.hm.dag.entryBefore ["*.tailba6c3f.ts.net"] {
+  #       user = "git";
+  #       # identityFile = "~/sync_work/3keys/private/proteus_ed25519.key";
+  #       # identitiesOnly = true; # Prevent sending default identity files first.
+  #     };
+  #     "desktop" = {
+  #       hostname = "192.168.15.11";
+  #       port = 22;
+  #     };
+  #     "192.168.*" = {
+  #       # identityFile = "/etc/agenix/ssh-key-romantic"; # romantic holds my homelab~
+  #       # identitiesOnly = true; # Specifies that ssh should only use the identity file. Required to prevent sending default identity files first.
+  #     };
+  #   };
+  # };
   programs.gpg = {
     publicKeys = [ # https://www.gnupg.org/gph/en/manual/x334.html
       {

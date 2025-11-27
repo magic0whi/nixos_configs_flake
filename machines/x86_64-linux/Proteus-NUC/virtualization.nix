@@ -8,6 +8,7 @@
   #   boot.kernelModules = ["kvm-intel"];
   #   boot.extraModprobeConfig = "options kvm_intel nested=1"; # for intel cpu
   # boot.kernelModules = ["vfio-pci"];
+  networking.firewall.trustedInterfaces = ["virbr0"];
   virtualisation = {
     docker = {
       enable = true;

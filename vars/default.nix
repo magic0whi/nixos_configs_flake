@@ -21,7 +21,6 @@
   #    2. Never leave the device and never sent over the network.
   # 2. Or just use hardware security keys like Yubikey/CanoKey.
   ssh_authorized_keys = [
-    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIClFmzSjsfApgmBto1ejpI7trvfHKzECHAVIFh1hSKGR lollipop.studio.cn@gmail.com"
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHBAm5d2IeApyfv8zLb7IMpex7wVHkCV86ztON7HFTkn openpgp:0xB17F9ED3"
   ];
   # Use an [A]uthenticate subkey, run `gpg --list-secret-keys --with-keygrip` to show its keygrip

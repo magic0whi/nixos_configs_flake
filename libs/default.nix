@@ -26,20 +26,30 @@ in {
 
   # Args to generate nixosSystem/darwinSystem
   gen_system_args = {name, mylib, myvars, nixpkgs_modules, hm_modules, machine_path}: let
-    inherit (inputs) home-manager nixos-generators mac-app-util impermanence lanzaboote agenix catppuccin;
+    inherit (inputs)
+      home-manager
+      nixos-generators
+      # mac-app-util
+      impermanence
+      lanzaboote
+      agenix
+      catppuccin
+      disko;
     specialArgs = inputs // {inherit mylib myvars;};
   in {
     inherit system specialArgs;
     modules = nixpkgs_modules
-    ++ (if pkgs.stdenv.isDarwin then [mac-app-util.darwinModules.default agenix.darwinModules.default]
-      else [
+    ++ (if pkgs.stdenv.isDarwin then [
+        # mac-app-util.darwinModules.default
+        agenix.darwinModules.default
+      ] else [
         agenix.nixosModules.default
         nixos-generators.nixosModules.all-formats
         impermanence.nixosModules.impermanence
         lanzaboote.nixosModules.lanzaboote
         catppuccin.nixosModules.catppuccin
-      ]
-    )
+        disko.nixosModules.disko
+      ])
     ++ [{imports = mylib.scan_path machine_path; networking.hostName = name;}]
     ++ (lib.optionals ((lib.lists.length hm_modules) > 0) [
       home-manager.${if pkgs.stdenv.isDarwin then "darwinModules" else "nixosModules"}.home-manager {
@@ -48,7 +58,7 @@ in {
         home-manager.useGlobalPkgs = true;
         home-manager.useUserPackages = true;
         home-manager.users."${myvars.username}".imports = hm_modules
-        ++ (lib.optional pkgs.stdenv.isDarwin mac-app-util.homeManagerModules.default)
+        # ++ (lib.optional pkgs.stdenv.isDarwin mac-app-util.homeManagerModules.default)
         ++ [catppuccin.homeModules.catppuccin]
         ++ [(machine_path + "/_hm")];
       }
