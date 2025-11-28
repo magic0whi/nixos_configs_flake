@@ -7,19 +7,10 @@
     || cfg.server.kubernetes.enable
     || cfg.server.webserver.enable
     || cfg.server.storage.enable;
-  noaccess = {
-    mode = "0000";
-    owner = "root";
-  };
-  high_security = {
-    mode = "0500";
-    owner = "root";
-  };
-  user_readable = {
-    mode = "0500";
-    owner = myvars.username;
-  };
-  mysecrets = mylib.relative_to_root "custom_files";
+  noaccess = {mode = "0000"; owner = "root";};
+  high_security = {mode = "0500"; owner = "root";};
+  user_readable = {mode = "0500"; owner = myvars.username;};
+  custom_files_dir = mylib.relative_to_root "custom_files";
 in {
   options.modules.secrets = {
     enabled = lib.mkOption {
@@ -41,12 +32,11 @@ in {
   config = lib.mkIf (config.modules.secrets.enabled) (lib.mkMerge [
     {
       environment.systemPackages = [agenix.packages."${pkgs.stdenv.hostPlatform.system}".default];
-      age.identityPaths = lib.mkDefault (
-      if config.environment.persistence != {} then [
-        "/persistent${config.users.users.${myvars.username}.home}/sync_work/3keys/private/pgp2ssh.key"
+      age.identityPaths = if config.environment.persistence != {} then [
+        "/persistent${config.users.users.${myvars.username}.home}/sync_work/3keys/pgp2ssh.priv.key"
       ] else [
-        "${config.users.users.${myvars.username}.home}/sync_work/3keys/private/pgp2ssh.key"
-      ]);
+        "${config.users.users.${myvars.username}.home}/sync_work/3keys/pgp2ssh.priv.key"
+      ];
       assertions = [{
         assertion = !(cfg.desktop.enable && enabled_server_secrets);
         message = "Enable either desktop or server's secrets, not both!";
@@ -54,9 +44,9 @@ in {
     }
     (lib.mkIf cfg.desktop.enable {
       age.secrets = {
-        "config.json" = {file = "${mysecrets}/config.json.age";} // noaccess;
-        "proteus.smb" = {file = "${mysecrets}/proteus.smb.age";} // high_security;
-        "proteus_server.key.pem" = {file = "${mysecrets}/proteus_server.key.pem.age";} // user_readable;
+        "config.json" = {file = "${custom_files_dir}/config.json.age";} // noaccess;
+        "proteus_smb.priv" = {file = "${custom_files_dir}/proteus_smb.priv.age";} // high_security;
+        "proteus_server.priv.pem" = {file = "${custom_files_dir}/proteus_server.priv.pem.age";} // user_readable;
       };
     })
   ]);

@@ -1,4 +1,4 @@
-{mylib, pkgs, ...}: {
+{pkgs, ...}: {
   home.packages = [pkgs.nvtopPackages.intel];
   programs.ssh = {
     enable = true;
@@ -12,10 +12,4 @@
         forwardAgent = true;
     };
   };
-  programs.gpg.publicKeys = [ # https://www.gnupg.org/gph/en/manual/x334.html
-    {
-      source = mylib.relative_to_root "custom_files/proteus.pub.asc";
-      trust = 5; # ultimate trust, my own keys
-    }
-  ];
 }

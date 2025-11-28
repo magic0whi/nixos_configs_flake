@@ -1,13 +1,18 @@
-{config, mylib, myvars, ...}: let path_prefix = "/srv"; in {
-  age.secrets = let mysecrets = mylib.relative_to_root "custom_files"; in {
-    "aria2rpc.key" = {file = "${mysecrets}/aria2rpc.key.age"; mode = "0500"; owner = "aria2";};
-    "aria2rpc.key.pem" = {file = "${mysecrets}/proteus_server.key.pem.age"; mode = "0500"; owner = "aria2";};
+{config, mylib, myvars, ...}: let
+  path_prefix = "/srv";
+  custom_files_dir = mylib.relative_to_root "custom_files";
+in {
+  age.secrets = let
+    high_security = {mode = "0500"; owner = "aria2";};
+  in {
+    "aria2rpc.priv" = {file = "${custom_files_dir}/aria2rpc.priv.age";} // high_security;
+    "aria2rpc_proteus_server.priv.pem" = {file = "${custom_files_dir}/proteus_server.priv.pem.age";} // high_security;
   };
   users.users.${myvars.username}.extraGroups = ["aria2"];
   services.aria2 = {
     enable = true;
     openPorts = true;
-    rpcSecretFile = config.age.secrets."aria2rpc.key".path;
+    rpcSecretFile = config.age.secrets."aria2rpc.priv".path;
     settings = {
       dir = "${path_prefix}/aria2";
       disk-cache = "2048M";
@@ -91,8 +96,8 @@
       rpc-listen-port = 6800;
       rpc-max-request-size = "256M";
       rpc-secure = true;
-      rpc-certificate = "${mylib.relative_to_root "custom_files/proteus_server.pem"}";
-      rpc-private-key = config.age.secrets."aria2rpc.key.pem".path;
+      rpc-certificate = "${custom_files_dir}/proteus_server.pub.pem";
+      rpc-private-key = config.age.secrets."aria2rpc_proteus_server.priv.pem".path;
       #event-poll=select
       #async-dns=true
       #async-dns-server=119.29.29.29,223.5.5.5,8.8.8.8,1.1.1.1

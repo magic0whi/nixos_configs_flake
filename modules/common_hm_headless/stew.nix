@@ -1,4 +1,4 @@
-{myvars, pkgs, pgp2ssh, deploy-rs, lib, ...}: {
+{myvars, mylib, pkgs, pgp2ssh, deploy-rs, lib, ...}: {
   # This value determines the Home Manager release that your configuration is compatible with. This helps avoid
   # breakage when a new Home Manager release introduces backwards incompatible changes.
   #
@@ -137,6 +137,12 @@
   ## END neovim.nix
   ## START gpg.nix
   programs.gpg = {
+    publicKeys = [ # https://www.gnupg.org/gph/en/manual/x334.html
+      {
+        source = "${mylib.relative_to_root "custom_files"}/sudaku233@outlook.com.pub.asc";
+        trust = 5; # ultimate trust, my own keys
+      }
+    ];
     enable = true;
     # $GNUPGHOME/trustdb.gpg stores all the trust level you specified in `programs.gpg.publicKeys` option. If set
     # `mutableTrust` to false, the path $GNUPGHOME/trustdb.gpg will be overwritten on each activation. Thus we can only

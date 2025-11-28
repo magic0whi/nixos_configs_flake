@@ -1,4 +1,7 @@
-{pkgs, lib, mylib, config, myvars, ...}: {
+{pkgs, lib, mylib, config, myvars, ...}: let
+  server_pub_crt = "${mylib.relative_to_root "custom_files/proteus_server.pub.pem"}";
+  server_priv_crt = config.age.secrets."proteus_server.priv.pem".path;
+in {
   networking.firewall = {
     allowedTCPPorts = [
       443 # WebDAV
@@ -45,8 +48,8 @@
         # cn: config
         # objectClass: olcGlobal
         olcLogLevel = ["stats"];
-        olcTLSCertificateFile = "${mylib.relative_to_root "custom_files/proteus_server.pem"}";
-        olcTLSCertificateKeyFile = config.age.secrets."proteus_server.key.pem".path;
+        olcTLSCertificateFile = server_pub_crt;
+        olcTLSCertificateKeyFile = server_priv_crt;
         olcTLSCipherSuite = "DEFAULT:!kRSA:!kDHE";
         olcTLSProtocolMin = "3.3"; # 3.4 for tls1.3
 
@@ -271,15 +274,15 @@
       httpd.bindings = [{
         address = "0.0.0.0";
         enable_https = true;
-        certificate_file = "${mylib.relative_to_root "custom_files/proteus_server.pem"}";
-        certificate_key_file = config.age.secrets."proteus_server.key.pem".path;
+        certificate_file = server_pub_crt;
+        certificate_key_file = server_priv_crt;
       }];
       webdavd.bindings = [{
         address = "0.0.0.0";
         port = 443;
         enable_https = true;
-        certificate_file = "${mylib.relative_to_root "custom_files/proteus_server.pem"}";
-        certificate_key_file = config.age.secrets."proteus_server.key.pem".path;
+        certificate_file = server_pub_crt;
+        certificate_key_file = server_priv_crt;
       }];
     };
   };

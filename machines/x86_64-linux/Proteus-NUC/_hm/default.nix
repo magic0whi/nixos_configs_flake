@@ -63,17 +63,9 @@ in {
   #     };
   #   };
   # };
-  programs.gpg = {
-    publicKeys = [ # https://www.gnupg.org/gph/en/manual/x334.html
-      {
-        source = "${custom_files_dir}/proteus.pub.asc";
-        trust = 5; # ultimate trust, my own keys
-      }
-    ];
-  };
   programs.mpv.profiles.common.vulkan-device = "Intel(R) UHD Graphics (TGL GT1)";
   services.syncthing = {
-    key = config.age.secrets."syncthing_proteus-nuc.key.pem".path;
+    key = config.age.secrets."syncthing_proteus-nuc.priv.pem".path;
     cert = "${custom_files_dir}/syncthing_proteus-nuc.crt.pem";
     settings = {
       devices = {

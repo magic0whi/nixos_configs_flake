@@ -1,4 +1,4 @@
-{modulesPath, ...}: {
+{modulesPath, lib, ...}: {
   imports = [ (modulesPath + "/profiles/qemu-guest.nix") ];
 
   boot.initrd.availableKernelModules = ["ata_piix" "uhci_hcd" "virtio_pci" "virtio_scsi" "sd_mod"];
@@ -9,7 +9,7 @@
   boot.resumeDevice = "/dev/disk/by-partlabel/swap\\x20partition";
   boot.zfs.forceImportRoot = false; # Disable backwards compatibility options
   boot.zfs.allowHibernation = true; # Make sure not use Swap on ZFS
-  boot.zfs.devNodes = "/dev/disk/by-partlabel"; # For virtio-blk, there is no disks in /dev/disk/by-id
+  boot.zfs.devNodes = lib.mkDefault "/dev/disk/by-partlabel"; # For virtio-blk, there is no disks in /dev/disk/by-id
 
   swapDevices = [{device = "/dev/disk/by-partlabel/swap\\x20partition";}];
 

@@ -144,19 +144,4 @@ in {
     shell = pkgs.zsh;
   };
   ## END users.nix
-  ## START nfs.nix
-  # Install a map file for autofs
-  environment.etc."nfs.conf".text = ''
-    nfs.client.mount.options = vers=4.1,resvport,soft,timeo=300
-  '';
-  environment.etc."auto.nfs".text = ''
-    # key   mount-opts                         location
-    share   -fstype=nfs,nfsvers=4.1,soft,timeo=300,retrans=3,resvport    proteus-nuc.tailba6c3f.ts.net:/    # root export with fsid=0
-    media   -fstype=nfs,nfsvers=4.1,soft,timeo=300,retrans=3,resvport    proteus-nuc.tailba6c3f.ts.net:/media
-  '';
-  # Update /etc/auto_master to include our indirect map at /nfs
-  environment.etc."auto_master.d/nfs.map".text = ''
-    /nfs    auto.nfs
-  '';
-  ## END nfs.nix
 }
