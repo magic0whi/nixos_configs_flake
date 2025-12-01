@@ -1,4 +1,4 @@
-{pkgs, mylib, ...}: {
+{pkgs, myvars, ...}: {
   programs.helix = {
     enable = true;
     defaultEditor = true;
@@ -47,7 +47,7 @@
           config.ltex = {
             language = "en-US";
             dictionary = builtins.fromTOML (
-              builtins.readFile (mylib.relative_to_root "custom_files/ltex_dict.toml"));
+              builtins.readFile "${myvars.secrets_dir}/ltex_dict.toml");
           };
         };
         texlab.config.texlab = {

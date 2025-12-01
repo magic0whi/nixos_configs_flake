@@ -1,6 +1,4 @@
-{agenix, config, mylib, myvars, pkgs, ...}: let
-  custom_files_dir = mylib.relative_to_root "custom_files";
-in {
+{agenix, config, myvars, pkgs, ...}: {
   launchd.daemons."activate-agenix".serviceConfig = { # Enable logs for debugging
     StandardErrorPath = "/Library/Logs/org.nixos.activate-agenix.stderr.log";
     StandardOutPath = "/Library/Logs/org.nixos.activate-agenix.stdout.log";
@@ -12,6 +10,6 @@ in {
     high_security = {mode = "0500"; owner = "root";};
     user_readable = {mode = "0500"; owner = myvars.username;};
   in {
-    "config.json" = {file = "${custom_files_dir}/config.json.age";} // noaccess;
+    "config.json" = {file = "${myvars.secrets_dir}/config.json.age";} // noaccess;
   };
 }

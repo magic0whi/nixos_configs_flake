@@ -2,7 +2,8 @@
   inherit (inputs.nixpkgs) lib;
 in {
   ## System agnostic functions
-  relative_to_root = lib.path.append ../.;  # Use path relative to the root of the project
+  # Use path relative to the root of the project
+  relative_to_root = lib.path.append ../.;
 
   scan_path = p: map (fn: p + "/${fn}") (builtins.attrNames
     (lib.filterAttrs ( # includedirectories (ex named hm), ignore default.nix,
@@ -10,12 +11,12 @@ in {
       e: t: (t == "directory" && !(lib.hasPrefix "_" e)) || ((e != "default.nix") && (lib.hasSuffix ".nix" e))
     ) (builtins.readDir p))
   );
-
   ## System dependent functions
   mk_for_system = system: let
     pkgs = inputs.nixpkgs.legacyPackages.${system};
   in {
-    mk_out_of_store_symlink = path: let # Create a symlink of dir/file out of /nix/store
+    # Create a symlink of dir/file out of /nix/store
+    mk_out_of_store_symlink = path: let
       path_str = toString path;
       store_filename = path: let # Filter unsafe chars
         safe_chars = ["+" "." "_" "?" "="] ++ lib.lowerChars ++ lib.upperChars

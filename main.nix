@@ -1,9 +1,9 @@
 {self, ...}@inputs: let
   inherit (inputs.nixpkgs) lib;
   args_fn = let # The args given to other nix files
-    mylib_sys = system: import ./libs {inherit inputs system;};
-    myvars = import ./vars {inherit lib;};
-  in system: {inherit inputs lib system myvars; mylib = mylib_sys system;};
+    mylib = import ./libs {inherit inputs;};
+    myvars = import ./vars {inherit lib mylib;};
+  in system: {inherit inputs lib system myvars; mylib = mylib // (mylib.mk_for_system system);};
   import_each_system = supported_systems: lib.genAttrs supported_systems (system: import ./machines (args_fn system));
   nixos_systems = let supported_nixos_systems = [
     "x86_64-linux"

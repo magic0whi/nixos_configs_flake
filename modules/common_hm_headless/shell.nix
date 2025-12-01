@@ -1,4 +1,4 @@
-{config, pkgs, lib, mylib, myvars, ...}: {
+{config, pkgs, lib, myvars, ...}: {
   home.packages = with pkgs; [
     tlrc # tldr written in Rust
     fd # search for files by name, faster than find
@@ -7,7 +7,7 @@
   ## START zellij.nix
   programs.zellij.enable = true;
   home.shellAliases."zj" = "zellij";
-  xdg.configFile."zellij/config.kdl".source = mylib.relative_to_root "custom_files/zellij.kdl";
+  xdg.configFile."zellij/config.kdl".source = "${myvars.secrets_dir}/zellij.kdl";
   ## END zellij.nix
 
   home.sessionVariables = { # Environment variables that always set at login

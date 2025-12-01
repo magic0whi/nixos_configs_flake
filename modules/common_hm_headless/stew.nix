@@ -1,4 +1,4 @@
-{myvars, mylib, pkgs, pgp2ssh, lib, ...}: {
+{myvars, pkgs, pgp2ssh, lib, ...}: {
   # This value determines the Home Manager release that your configuration is compatible with. This helps avoid
   # breakage when a new Home Manager release introduces backwards incompatible changes.
   #
@@ -81,7 +81,7 @@
   programs.gpg = {
     publicKeys = [ # https://www.gnupg.org/gph/en/manual/x334.html
       {
-        source = "${mylib.relative_to_root "custom_files"}/sudaku233@outlook.com.pub.asc";
+        source = "${myvars.secrets_dir}/sudaku233@outlook.com.pub.asc";
         trust = 5; # ultimate trust, my own keys
       }
     ];

@@ -1,5 +1,5 @@
-{pkgs, lib, mylib, config, myvars, ...}: let
-  server_pub_crt = "${mylib.relative_to_root "custom_files/proteus_server.pub.pem"}";
+{pkgs, lib, config, myvars, ...}: let
+  server_pub_crt = "${myvars.secrets_dir}/proteus_server.pub.pem";
   server_priv_crt = config.age.secrets."proteus_server.priv.pem".path;
 in {
   networking.firewall = {
@@ -58,9 +58,9 @@ in {
         "cn=schema".includes = [
           "${pkgs.openldap}/etc/schema/core.ldif"
           "${pkgs.openldap}/etc/schema/cosine.ldif"
-          "${mylib.relative_to_root "custom_files/rfc2307bis.ldif"}"
+          "${myvars.secrets_dir}/rfc2307bis.ldif"
           "${pkgs.openldap}/etc/schema/inetorgperson.ldif"
-          "${mylib.relative_to_root "custom_files/schema.olcSudo"}"
+          "${myvars.secrets_dir}/schema.olcSudo"
         ];
         "olcDatabase={0}config" = {
           attrs = {
@@ -242,7 +242,7 @@ in {
         "server string" = "smbnix";
         "netbios name" = "smbnix";
         "security" = "user";
-        #"use sendfile" = "yes";
+        #"use sendfile" = "
         #"max protocol" = "smb2";
         # note: localhost is the ipv6 localhost ::1
         # "hosts allow" = "192.168.0. 127.0.0.1 localhost";

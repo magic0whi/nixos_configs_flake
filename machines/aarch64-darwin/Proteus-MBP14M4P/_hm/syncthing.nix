@@ -1,13 +1,11 @@
-{myvars, mylib, config, ...}: let
-  custom_files_dir = mylib.relative_to_root "custom_files";
-in {
+{myvars, config, ...}: {
   launchd.agents.syncthing.config = {
     StandardErrorPath = "/Users/${myvars.username}/Library/Logs/syncthing/stderr";
     StandardOutPath = "/Users/${myvars.username}/Library/Logs/syncthing/stdout";
   };
   services.syncthing = {
     key = config.age.secrets."syncthing_Proteus-MBP14M4P.priv.pem".path;
-    cert = "${custom_files_dir}/syncthing_Proteus-MBP14M4P.crt.pem";
+    cert = "${myvars.secrets_dir}/syncthing_Proteus-MBP14M4P.crt.pem";
     settings = {
       devices = {
         "LGE-AN00".id = "T2V6DJB-243NJGD-5B63LUP-DSLNFBD-U72KGD2-AZVTIHL-HEUMBTI-HAVD7A2";

@@ -1,9 +1,7 @@
-{mylib, config, ...}: let
-  custom_files_dir = mylib.relative_to_root "custom_files";
-in {
+{myvars, config, ...}: {
   services.syncthing = {
     key = config.age.secrets."syncthing_proteus-nuc.priv.pem".path;
-    cert = "${custom_files_dir}/syncthing_proteus-nuc.crt.pem";
+    cert = "${myvars.secrets_dir}/syncthing_proteus-nuc.crt.pem";
     settings = {
       devices = {
         "LGE-AN00".id = "T2V6DJB-243NJGD-5B63LUP-DSLNFBD-U72KGD2-AZVTIHL-HEUMBTI-HAVD7A2";

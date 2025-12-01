@@ -1,4 +1,4 @@
-{config, agenix, lib, pkgs, mylib, myvars, ...}: let
+{config, agenix, lib, pkgs, myvars, ...}: let
   cfg = config.modules.secrets;
   enabled_server_secrets =
     cfg.server.application.enable
@@ -10,7 +10,6 @@
   noaccess = {mode = "0000"; owner = "root";};
   high_security = {mode = "0500"; owner = "root";};
   user_readable = {mode = "0500"; owner = myvars.username;};
-  custom_files_dir = mylib.relative_to_root "custom_files";
 in {
   options.modules.secrets = {
     enabled = lib.mkOption {
@@ -44,9 +43,9 @@ in {
     }
     (lib.mkIf cfg.desktop.enable {
       age.secrets = {
-        "config.json" = {file = "${custom_files_dir}/config.json.age";} // noaccess;
-        "proteus_smb.priv" = {file = "${custom_files_dir}/proteus_smb.priv.age";} // high_security;
-        "proteus_server.priv.pem" = {file = "${custom_files_dir}/proteus_server.priv.pem.age";} // user_readable;
+        "config.json" = {file = "${myvars.secrets_dir}/config.json.age";} // noaccess;
+        "proteus_smb.priv" = {file = "${myvars.secrets_dir}/proteus_smb.priv.age";} // high_security;
+        "proteus_server.priv.pem" = {file = "${myvars.secrets_dir}/proteus_server.priv.pem.age";} // user_readable;
       };
     })
   ]);
