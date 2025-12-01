@@ -1,4 +1,4 @@
-{myvars, mylib, pkgs, pgp2ssh, deploy-rs, lib, ...}: {
+{myvars, mylib, pkgs, pgp2ssh, lib, ...}: {
   # This value determines the Home Manager release that your configuration is compatible with. This helps avoid
   # breakage when a new Home Manager release introduces backwards incompatible changes.
   #
@@ -7,13 +7,10 @@
   home.stateVersion = myvars.nixos_state_version;
   programs.home-manager.enable = true; # Let Home Manager install and manage itself.
   home.packages = with pkgs; [
-    ## Misc
     fastfetch
-    cowsay
-    gnumake
-
     keepassxc # Offline password manager, provides both CLI and GUI
     pgp2ssh.packages.${pkgs.stdenv.hostPlatform.system}.pgp2ssh
+    just # A command runner like make, but simpler
 
     ## Modern cli tools, replacement of grep/sed/...
     # A fast and polyglot tool for code searching, linting, rewriting at large scale
@@ -21,8 +18,6 @@
     ast-grep
 
     sad # CLI search and replace, just like sed, but with diff preview.
-    yq-go # yaml processor https://github.com/mikefarah/yq
-    just # A command runner like make, but simpler
     lazygit # Git terminal UI.
     hyperfine # command-line benchmarking tool, replace `time`
     gping # ping, but with a graph (TUI)
@@ -40,62 +35,9 @@
     nix-melt # A TUI flake.lock viewer, ref: https://github.com/nix-community/nix-melt
     nix-tree # A TUI to visualize the dependency graph of a nix derivation, ref: https://github.com/utdemir/nix-tree
 
-    # Productivity
-    caddy # A webserver with automatic HTTPS via Let's Encrypt(replacement of nginx)
-    croc # File transfer between computers securely and easily
-
-    wireguard-tools # manage wireguard vpn manually, via wg-quick
-
-    # ventoy # create bootable usb
-
-    # Benchmark
-    xmrig
-
-    # Dev-tools
-    # NOTE: Please avoid to install language specific packages here (globally), instead, install them:
-    # 1. per IDE, such as `programs.neovim.extraPackages`
-    # 2. per-project, see https://github.com/the-nix-way/dev-templates
-    deploy-rs.packages.${pkgs.stdenv.hostPlatform.system}.deploy-rs
-
-    # python313 # use https://github.com/the-nix-way/dev-templates?tab=readme-ov-file#python instead
-    # yarn use https://github.com/the-nix-way/dev-templates?tab=readme-ov-file#node instead
-    mitmproxy # HTTP/HTTPS proxy tool
-    # DB related
-    # mycli
-    # pgcli
-    # mongosh
-    # sqlite
-
-    # embedded development
-    # minicom
-
-    ## FPGA
-    # python312Packages.apycula # gowin fpga
-    # yosys # FPGA synthesis
-    # nextpnr # FPGA place and route
-    # openfpgaloader # FPGA programming
-
-    # AI related
-    # python313Packages.huggingface-hub # huggingface-cli
-
-    # misc
-    # devbox
-    # bfg-repo-cleaner # remove large files from git history
-    # k6 # load testing tool
-    # protobuf # protocol buffer compiler
-
-    # solve coding extercises - learn by doing
-    # exercism
-
-    # need to run `conda-install` before using it
-    # need to run `conda-shell` before using command `conda`
-    # conda is not available for MacOS
-    # conda
-
-    # android-tools
+    xmrig # Benchmark
   ];
   services.syncthing.enable = true;
-  programs.yt-dlp.enable = true;
   ## START pip.nix
   # Use mirror for pip install
   xdg.configFile."pip/pip.conf".text = ''

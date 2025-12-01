@@ -32,7 +32,8 @@
       layer = "overlay";
       on-button-middle = "none";
       on-button-right = "dismiss-all";
-      on-notify = "exec mpv ${pkgs.sound-theme-freedesktop}/share/sounds/freedesktop/stereo/message.oga";
+      on-notify =
+        "exec mpv --keep-open=no ${pkgs.sound-theme-freedesktop}/share/sounds/freedesktop/stereo/message.oga";
       "urgency=low".default-timeout = 2000;
       "urgency=high".default-timeout = "0";
       "category=mpd" = {

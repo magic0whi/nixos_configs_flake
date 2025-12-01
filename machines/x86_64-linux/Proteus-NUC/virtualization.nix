@@ -25,6 +25,7 @@
     libvirtd = {
       enable = true;
       qemu.swtpm.enable = true;
+      qemu.vhostUserPackages = [pkgs.virtiofsd];
     };
     spiceUSBRedirection.enable = true;
 

@@ -169,7 +169,6 @@
       home = "/home/${myvars.username}";
       initialHashedPassword = myvars.initial_hashed_password;
       isNormalUser = true;
-      openssh.authorizedKeys.keys = myvars.ssh_authorized_keys;
       extraGroups = [
         myvars.username
         "docker"

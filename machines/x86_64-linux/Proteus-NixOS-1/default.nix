@@ -3,7 +3,9 @@
   nixpkgs_modules = map mylib.relative_to_root [
     "modules/secrets/linux.nix"
     "modules/common"
-    "modules/nixos_headless"
+    "modules/nixos_headless/stew.nix"
+    "modules/nixos_headless/packages.nix"
+    "modules/nixos_headless/impermanence.nix"
   ];
   hm_modules = map mylib.relative_to_root [
     "modules/common_hm_headless/git.nix"
