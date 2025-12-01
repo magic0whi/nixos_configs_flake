@@ -9,6 +9,11 @@
     ];
   };
 in {
+  age.secrets."proteus_smb.priv" = {
+    file = "${myvars.secrets_dir}/proteus_smb.priv.age";
+    mode = "0500";
+    owner = "root";
+  };
   environment.systemPackages = with pkgs; [btrfs-progs cifs-utils];
   boot.supportedFilesystems = ["cifs"];
   fileSystems = {

@@ -2,6 +2,11 @@
   server_pub_crt = "${myvars.secrets_dir}/proteus_server.pub.pem";
   server_priv_crt = config.age.secrets."proteus_server.priv.pem".path;
 in {
+  age.secrets."proteus_server.priv.pem" = {
+    file = "${myvars.secrets_dir}/proteus_server.priv.pem.age";
+    mode = "0500";
+    owner = myvars.username;
+  };
   networking.firewall = {
     allowedTCPPorts = [
       443 # WebDAV

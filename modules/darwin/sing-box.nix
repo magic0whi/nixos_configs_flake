@@ -5,6 +5,10 @@ in {
   options.services.sing-box = {
     enable = lib.mkEnableOption "sing-box universal proxy platform";
     package = lib.mkPackageOption pkgs "sing-box" {};
+    config_file = lib.mkOption {
+      type = lib.types.path;
+      description = "Path to the sing-box config file";
+    };
   };
   config = lib.mkIf cfg.enable {
     environment.systemPackages = [cfg.package];
@@ -19,7 +23,7 @@ in {
         "-c"
         ("/bin/wait4path /nix/store"
           + " && install -dm700 \"${sing-box_dir}\""
-          + " && exec ${lib.getExe cfg.package} -c ${config.age.secrets."config.json".path} -D \"${sing-box_dir}\" run"
+          + " && exec ${lib.getExe cfg.package} -c ${cfg.config_file} -D \"${sing-box_dir}\" run"
         )
       ];
       RunAtLoad = true;

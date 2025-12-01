@@ -2,7 +2,7 @@
 {inputs, mylib, myvars, system, ...}: let
   name = baseNameOf ./.;
   nixpkgs_modules = map mylib.relative_to_root [
-    "modules/secrets/linux.nix"
+    "modules/secrets/common.nix"
     "modules/common"
     "modules/nixos_headless/impermanence.nix"
     "modules/nixos_headless/stew.nix"

@@ -1,7 +1,7 @@
 {inputs, mylib, myvars, ...}: let
   name = baseNameOf ./.;
   nixpkgs_modules = map mylib.relative_to_root [
-    "modules/secrets/darwin.nix"
+    "modules/secrets"
     "modules/common"
     "modules/darwin"
   ];

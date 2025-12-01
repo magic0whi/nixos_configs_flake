@@ -1,5 +1,4 @@
-{pkgs, config, ...}: {
-  modules.secrets.desktop.enable = true;
+{pkgs, config, myvars, ...}: {
   age.identityPaths = ["/srv/sync_work/3keys/pgp2ssh.priv.key"];
   networking.wireless.iwd.enable = true;
   networking.wireless.iwd.settings.General.Country = "CN";
@@ -14,4 +13,13 @@
   environment.systemPackages = with pkgs; [
     bpftrace # powerful tracing tool, ref: https://github.com/bpftrace/bpftrace
   ];
+  ## START sing-box.nix
+  age.secrets."sb_client.json" = {
+    file = "${myvars.secrets_dir}/sb_client.json.age";
+    mode = "0000";
+    owner = "root";
+  };
+  services.sing-box.enable = true;
+  services.sing-box.config_file = config.age.secrets."sb_client.json".path;
+  ## END sing-box.nix
 }

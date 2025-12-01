@@ -173,7 +173,6 @@
   ## END users.nix
   ## START network.nix
   services.tailscale.enable = true; # Start-up: `tailscale up --accept-routes`
-  services.sing-box.enable = lib.mkDefault true;
   ## END network.nix
   ## START fonts.nix
   fonts.packages = with pkgs; [

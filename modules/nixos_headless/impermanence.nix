@@ -29,7 +29,7 @@
 
     ]
     ++ lib.optional config.boot.lanzaboote.enable config.boot.lanzaboote.pkiBundle # If lanzaboote is enabled
-    ++ lib.optional config.modules.secrets.enabled "/etc/agenix/"; # My secrets repo
+    ++ lib.optional (config.age.secrets != {}) "/etc/agenix/"; # My secrets repo
 
     files = ["/etc/machine-id"];
 
