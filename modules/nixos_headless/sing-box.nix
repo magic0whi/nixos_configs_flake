@@ -6,8 +6,6 @@
     };
   };
   config = lib.mkIf config.services.sing-box.enable {
-    networking.firewall = {allowedTCPPorts = [9091];}; # sing-box's WebUI
-
     # Override the sing-box's systemd service
     systemd.services.sing-box = lib.mkOverride 100 {
       serviceConfig = {

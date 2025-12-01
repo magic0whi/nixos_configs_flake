@@ -3,18 +3,15 @@ _: { # TODO
     # ============================================
     # Homelab's Physical Machines (KubeVirt Nodes)
     # ============================================
-    kubevirt-shoryu = {
-      iface = "eno1";
-      ipv4 = "192.168.5.181";
+    Proteus-NUC = { # Notebook
+      iface = "wlo1";
+      ipv4 = "100.109.224.13";
     };
-
     # ============================================
     # Other VMs and Physical Machines
     # ============================================
-    Proteus-NUC = { # Notebook
-      iface = "wlo1";
-      ipv4 = null;
-    };
+    Proteus-NixOS-3.ipv4 = "100.65.115.97";
+    Proteus-NixOS-4.ipv4 = "79.72.90.132"; # Ephemeral
     nozomi = {
       # LicheePi 4A's wireless interface - RISC-V
       iface = "wlan0";
@@ -50,6 +47,6 @@ _: { # TODO
   };
   known_hosts = {
     Proteus-NUC.public_key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAILSH65JuZBQd6cPhSGMy+XpGoKBo+/HnUNrwAIb3YMO2 root@proteus-nuc";
-    rakushun.public_key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEOXFhFu9Duzp6ZBE288gDZ6VLrNaeWL4kDrFUh9Neic root@aquamarine";
+    Proteus-NixOS-3.public_key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIApKI/t64l+gbXUkUgYaEmH5MibN7q6W2ZcreNaTjd6N proteus@Proteus-NixOS-3";
   };
 }

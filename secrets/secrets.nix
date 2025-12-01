@@ -12,12 +12,8 @@ let
   #   cat /etc/ssh/ssh_host_ed25519_key.pub
   # If you do not have this file, you can generate all the host keys by command:
   #   sudo ssh-keygen -A
-  # idol_ai = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAINHZtzeaQyXwuRMLzoOAuTu8P9bu5yc5MBwo5LI3iWBV root@ai";
-  machines = [
-    recovery_key
-    opengpg
-    # idol_ai
-  ];
+  Proteus-NixOS-3 = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIApKI/t64l+gbXUkUgYaEmH5MibN7q6W2ZcreNaTjd6N proteus@Proteus-NixOS-3";
+  machines = [recovery_key opengpg];
 in {
   # To see & edit encrypted file, run:
   # agenix -e sb_client.json.age -i <(pgp2ssh <<< <(gpg -ao - --export-secret-subkeys subkey_with_[A]\!) <<< 1 2>&1 | awk 'BEGIN { A=0; S=0; } /BEGIN OPENSSH PRIVATE KEY/ { A=1; } { if (A==1) { print; } }')
@@ -27,4 +23,5 @@ in {
   "syncthing_proteus-nuc.priv.pem.age".publicKeys = machines;
   "proteus_server.priv.pem.age".publicKeys = machines;
   "aria2rpc.priv.age".publicKeys = machines;
+  "sb_Proteus-NixOS-3.json.age".publicKeys = machines ++ [Proteus-NixOS-3];
 }
