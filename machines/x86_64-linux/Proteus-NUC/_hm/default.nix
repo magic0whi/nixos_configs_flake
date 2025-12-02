@@ -49,7 +49,6 @@ in {
     unlock_cmd = "brightnessctl -rd usb-3-11-3-1::kbd_backlight";
   };
   programs.mpv.profiles.common.vulkan-device = "Intel(R) UHD Graphics (TGL GT1)";
-  # modules.editors.emacs.enable = true;
   # programs.ssh = {
   #   enable = true;
   #   enableDefaultConfig = false;
@@ -62,21 +61,16 @@ in {
   #       # machine. It has the same effect as adding cli option `ssh -A user@host`
   #       forwardAgent = true;
   #     };
-  #     "*.tailba6c3f.ts.net" = {
-  #     };
   #     "ssh.github.com hf.co" = lib.hm.dag.entryBefore ["*.tailba6c3f.ts.net"] {
   #       user = "git";
-  #       # identityFile = "~/sync_work/3keys/private/proteus_ed25519.key";
-  #       # identitiesOnly = true; # Prevent sending default identity files first.
-  #     };
-  #     "desktop" = {
-  #       hostname = "192.168.15.11";
-  #       port = 22;
+  #       identityFile = "~/sync_work/keys/private/proteus_ed25519.key";
+  #       identitiesOnly = true; # Prevent sending default identity files first.
   #     };
   #     "192.168.*" = {
-  #       # identityFile = "/etc/agenix/ssh-key-romantic"; # romantic holds my homelab~
-  #       # identitiesOnly = true; # Specifies that ssh should only use the identity file. Required to prevent sending default identity files first.
+  #       identityFile = "/etc/agenix/ssh-key-romantic"; # romantic holds my homelab~
+  #       identitiesOnly = true; # Specifies that ssh should only use the identity file. Required to prevent sending default identity files first.
   #     };
   #   };
   # };
+  # modules.editors.emacs.enable = true;
 }

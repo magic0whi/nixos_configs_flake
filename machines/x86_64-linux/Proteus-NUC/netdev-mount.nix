@@ -4,7 +4,7 @@
     options = [
       "x-systemd.requires=tailscaled.service"
       "x-systemd.automount,noauto,x-systemd.idle-timeout=60,x-systemd.device-timeout=5s,x-systemd.mount-timeout=5s"
-      "relatime,seal,rw,vers=3.1.1,cache=strict,uid=${toString config.users.users.${myvars.username}.uid},noforceuid,gid=${toString config.users.groups.${myvars.username}.gid},noforcegid,file_mode=0644,dir_mode=0755,iocharset=utf8,nounix,serverino,mapposix,rsize=4194304,wsize=4194304,bsize=1048576"
+      "relatime,seal,rw,vers=3.1.1,cache=strict,uid=${builtins.toString config.users.users.${myvars.username}.uid},noforceuid,gid=${builtins.toString config.users.groups.${myvars.username}.gid},noforcegid,file_mode=0644,dir_mode=0755,iocharset=utf8,nounix,serverino,mapposix,rsize=4194304,wsize=4194304,bsize=1048576"
       "credentials=${config.age.secrets."proteus_smb.priv".path}"
     ];
   };

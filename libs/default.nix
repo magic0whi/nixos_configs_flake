@@ -17,7 +17,7 @@ in {
   in {
     # Create a symlink of dir/file out of /nix/store
     mk_out_of_store_symlink = path: let
-      path_str = toString path;
+      path_str = builtins.toString path;
       store_filename = path: let # Filter unsafe chars
         safe_chars = ["+" "." "_" "?" "="] ++ lib.lowerChars ++ lib.upperChars
         ++ lib.strings.stringToCharacters "0123456789";

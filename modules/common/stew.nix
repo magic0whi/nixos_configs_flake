@@ -1,4 +1,4 @@
-{lib, pkgs, myvars, ...}: {
+{lib, pkgs, myvars, config, ...}: {
   system.stateVersion = if pkgs.stdenv.isDarwin then myvars.darwin_state_version else myvars.nixos_state_version;
   # Add my self-signed CA certificate to the system-wide trust store.
   security.pki.certificateFiles = [("${myvars.secrets_dir}/proteus_ca.pub.pem")];
@@ -46,24 +46,24 @@
   services.openssh.enable = true;
   programs.ssh = {
     # Configs will be written to /etc/ssh/ssh_config
-    extraConfig = ''
-      Compression yes
-      ControlMaster auto
-      ControlPath ~/.ssh/master-%r@%n:%p
-      ControlPersist 30m
-      ServerAliveInterval 30
-      ServerAliveCountMax 5
-    '' + lib.attrsets.foldlAttrs
-      (acc: host: val: acc + ''
-        Host ${host}
-          Hostname ${if (builtins.isNull myvars.networking.hosts_addr.${host}.ipv4) then
-            host
-          else
-            val.ipv4}
-          Port 22
+    extraConfig = lib.mkMerge [
+      (lib.mkBefore ''
+        Compression yes
+        ControlMaster auto
+        ControlPath ~/.ssh/master-%r@%n:%p
+        ControlPersist 30m
+        ServerAliveInterval 30
+        ServerAliveCountMax 5
       '')
-      ""
-      myvars.networking.hosts_addr;
+      (lib.mkAfter (lib.attrsets.foldlAttrs (acc: host: val: acc + ''
+        Host ${host}
+          Hostname ${if (builtins.isNull myvars.networking.hosts_addr.${host}.ipv4) then host else val.ipv4}
+          Port 22
+        '')
+        ""
+        myvars.networking.hosts_addr
+      ))
+    ];
     # Define the host key for remote builders so that nix can verify all the
     # remote builders.
     # This config will be written to /etc/ssh/ssh_known_hosts
