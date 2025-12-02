@@ -1,7 +1,5 @@
 {pkgs, myvars, ...}: {
-  environment.systemPackages = [pkgs.wl-clipboard pkgs.brightnessctl];
   services = {
-    xserver.enable = false; # Disable xorg server
     greetd = { # https://wiki.archlinux.org/title/Greetd
       enable = true;
       settings = {

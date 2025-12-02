@@ -1,5 +1,6 @@
 {pkgs, config, ...}: {
   home.packages = with pkgs; [
+    brightnessctl
     sound-theme-freedesktop
     wlogout # logout menu
     wl-clipboard # copying and pasting

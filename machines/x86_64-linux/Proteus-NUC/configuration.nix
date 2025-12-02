@@ -23,4 +23,5 @@
   services.sing-box.enable = true;
   services.sing-box.config_file = config.age.secrets."sb_client.json".path;
   ## END sing-box.nix
+  time.timeZone = "Europe/London";
 }

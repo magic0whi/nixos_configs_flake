@@ -48,5 +48,6 @@ _: { # TODO
   known_hosts = {
     Proteus-NUC.public_key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAILSH65JuZBQd6cPhSGMy+XpGoKBo+/HnUNrwAIb3YMO2 root@proteus-nuc";
     Proteus-NixOS-3.public_key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIApKI/t64l+gbXUkUgYaEmH5MibN7q6W2ZcreNaTjd6N proteus@Proteus-NixOS-3";
+    Proteus-NixOS-4.public_key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKsD46UGmybJT0syN9caioiA+7vScwwLrBNsPMKS3a29 root@proteus-nixos-4";
   };
 }

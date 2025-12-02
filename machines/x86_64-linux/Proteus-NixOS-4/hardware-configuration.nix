@@ -2,16 +2,16 @@
   imports = [(modulesPath + "/profiles/qemu-guest.nix")];
 
   boot.initrd.availableKernelModules = [ "ata_piix" "uhci_hcd" "virtio_pci" "virtio_scsi" "sd_mod" ];
-  boot.initrd.kernelModules = [];
+  boot.initrd.kernelModules = ["dm-snapshot"];
   boot.kernelModules = ["kvm-amd"];
   boot.extraModulePackages = [];
 
   fileSystems = {
     "/" = {
-      device = "/dev/disk/by-uuid/e5140861-b17f-43b9-8b3d-d42a36ebc9ee";
-      fsType = "ext4";};
+      device = "/dev/mapper/ocivolume-root";
+      fsType = "xfs";};
     "/boot" = {
-      device = "/dev/disk/by-uuid/43A5-304A";
+      device = "/dev/disk/by-uuid/AE3C-806E";
       fsType = "vfat";
       options = ["fmask=0022" "dmask=0022"];
     };

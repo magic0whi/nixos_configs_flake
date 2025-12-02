@@ -1,4 +1,4 @@
-{pkgs, config, lib, ...}: let
+{pkgs, lib, ...}: let
   hypr_pkg = pkgs.hyprland;
 in {
   home.file.".wayland-session" = { # NOTE: this executable is used by greetd to start a wayland session when system boot up. With such a vendor-no-locking script, we can switch to another wayland compositor without modifying greetd's config in NixOS module
@@ -37,17 +37,19 @@ in {
       };
       "$terminal" = "systemd-run --user --scope alacritty";
       "$menu" = "systemd-run --user --scope ~/.config/hypr/scripts/menu";
-      "$clipManager" = "systemd-run --user --scope sh -c 'cliphist list | anyrun --show-results-immediately true | cliphist decode | wl-copy'";
+      # "$menu" = "systemd-run --user --scope rofi -show combi"
+      "$clip_manager" = "systemd-run --user --scope sh -c 'cliphist list | anyrun --show-results-immediately true | cliphist decode | wl-copy'";
+      # "$clip_manager" = "systemd-run --user --scope sh -c 'cliphist list | rofi -dmenu | cliphist decode | wl-copy'";
       "$colorpicker" = "~/.config/hypr/scripts/colorpicker";
-      "$fileManager" = "systemd-run --user --scope thunar";
+      "$file_manager" = "systemd-run --user --scope thunar";
       "$wlogout" = "~/.config/hypr/scripts/wlogout";
       "$mainMod" = "SUPER";
       bind = [
-        "$mainMod,E,exec,$fileManager"
+        "$mainMod,E,exec,$file_manager"
         "$mainMod,Q,exec,$terminal"
         "$mainMod,W,killactive,"
         "$mainMod,SPACE,exec,$menu"
-        "$mainMod,V,exec,$clipManager"
+        "$mainMod,V,exec,$clip_manager"
         "$mainMod CTRL,P,exec,$colorpicker"
         "$mainMod,X,exec,$wlogout"
         "$mainMod,F,fullscreen,"
@@ -156,12 +158,11 @@ in {
         preserve_split = true; # The split (side/top) will not change regardless of what happens to the container
       };
       env = [
-        "_JAVA_AWT_WM_NONREPARENTING,1"
-        "QT_WAYLAND_DISABLE_WINDOWDECORATION,1" # Disables window decorations on Qt applications
-        "QT_QPA_PLATFORMTHEME,qt6ct"
-        "QT_QPA_PLATFORM,wayland"
-        "SDL_VIDEODRIVER,wayland"
-        "GDK_BACKEND,wayland"
+        # "_JAVA_AWT_WM_NONREPARENTING,1"
+        # "QT_WAYLAND_DISABLE_WINDOWDECORATION,1" # Disables window decorations on Qt applications
+        # "QT_QPA_PLATFORM,wayland"
+        # "SDL_VIDEODRIVER,wayland"
+        # "GDK_BACKEND,wayland"
         "QT_ENABLE_HIGHDPI_SCALING,1"
       ];
       general = {
