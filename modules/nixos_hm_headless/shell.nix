@@ -1,4 +1,4 @@
-{...}: {
+_: {
   home.sessionVariables.BROWSER = "google-chrome-stable"; # Set default applications
   home.shellAliases = {
     ip = "ip --color=auto";

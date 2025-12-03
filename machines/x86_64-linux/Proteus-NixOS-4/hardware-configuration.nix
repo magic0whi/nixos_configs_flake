@@ -11,9 +11,13 @@
       device = "/dev/mapper/ocivolume-root";
       fsType = "xfs";};
     "/boot" = {
-      device = "/dev/disk/by-uuid/AE3C-806E";
+      device = "/dev/disk/by-uuid/8EB3-7302";
       fsType = "vfat";
       options = ["fmask=0022" "dmask=0022"];
+    };
+    "/boot/EFI" = {
+      device = "/dev/disk/by-uuid/dd88872e-0527-4193-8282-b8281f1ae6fd";
+      fsType = "xfs";
     };
   };
 

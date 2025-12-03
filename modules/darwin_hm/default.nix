@@ -31,6 +31,7 @@
     ${lib.getExe' pkgs.duti "duti"} -s io.mpv .mkv viewer
     ${lib.getExe' pkgs.duti "duti"} -s io.mpv .mp4 viewer
     ${lib.getExe' pkgs.duti "duti"} -s com.google.Chrome .webm viewer
+    ${lib.getExe' pkgs.duti "duti"} -s com.apple.Preview .heic viewer
   '');
   ## END associations.nix
   ## START syncthing.nix
