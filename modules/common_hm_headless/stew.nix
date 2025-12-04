@@ -37,7 +37,7 @@
 
     xmrig # Benchmark
   ];
-  services.syncthing.enable = true;
+  services.syncthing.enable = lib.mkDefault true;
   ## START pip.nix
   # Use mirror for pip install
   xdg.configFile."pip/pip.conf".text = ''

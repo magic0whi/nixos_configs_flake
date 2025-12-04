@@ -52,12 +52,12 @@
        # https://github.com/ryan4yin/nix-config/issues/70
        speedFactor = 1;
      }
-     # {
-     #   inherit sshUser sshKey systems supportedFeatures;
-     #   hostName = "ruby";
-     #   maxJobs = 2;
-     #   speedFactor = 1;
-     # }
+     {
+       inherit sshUser systems supportedFeatures;
+       hostName = "Proteus-NixOS-4";
+       maxJobs = 2;
+       speedFactor = 1;
+     }
      # {
      #   inherit sshUser sshKey systems supportedFeatures;
      #   hostName = "kana";
