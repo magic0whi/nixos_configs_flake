@@ -14,9 +14,9 @@
               size = "512M";
               content = {
                 type = "filesystem";
+                mountpoint = "/boot";
                 format = "vfat";
                 extraArgs = ["-F32" "-S4096" "-nBOOT"];
-                mountpoint = "/boot";
                 mountOptions = ["umask=0077"];
               };
             };
@@ -30,40 +30,34 @@
                 subvolumes = {
                   # Subvolume name is different from mountpoint
                   "@root" = {
-                    mountOptions = ["compress=zstd"];
                     mountpoint = "/";
+                    mountOptions = ["compress=zstd"];
                   };
                   # Subvolume name is the same as the mountpoint
                   "@home" = {
-                    mountOptions = ["compress=zstd"];
                     mountpoint = "/home";
+                    mountOptions = ["compress=zstd"];
                   };
                   "@nix" = {
-                    mountOptions = [
-                      "compress=zstd"
-                      "noatime"
-                    ];
                     mountpoint = "/nix";
+                    mountOptions = ["compress=zstd" "noatime"];
                   };
                   # Subvolume for the swapfile
                   "@swap" = {
                     mountpoint = "/.swapvol";
+                    mountOptions = ["compress=zstd" "noatime"];
                     swap = {
-                      swapfile.size = "20M";
-                      swapfile2.size = "20M";
-                      swapfile2.path = "rel-path";
+                      swapfile.size = "1G";
+                      # swapfile2.size = "20M";
+                      # swapfile2.path = "rel-path";
                     };
                   };
                 };
-                mountpoint = "/partition-root";
-                swap = {
-                  swapfile = {
-                    size = "20M";
-                  };
-                  swapfile1 = {
-                    size = "20M";
-                  };
-                };
+                # mountpoint = "/btrfs-root";
+                # swap = { # swapfiles under `/btrfs-root`
+                #   swapfile.size = "20M";
+                #   swapfile1.size = "20M";
+                # };
               };
             };
           };

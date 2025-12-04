@@ -5,22 +5,21 @@
     type = "disk";
     content = {
       type = "gpt";
-      partitions = {
-        luks_part = {
-          type = "CA7D7CCB-63ED-4C53-861C-1742536059CC";
-          size = "488385536K"; # Unit is KiB, ~500G
+      partitions.luks_part = {
+        type = "CA7D7CCB-63ED-4C53-861C-1742536059CC";
+        size = "488385536K"; # Unit is KiB, ~500G
+        content = {
+          type = "luks";
+          name = "crypted-${diskId}";
+          passwordFile = "/tmp/dm_crypt.key";
+          settings = { # boot.initrd.luks.device.<name>.*
+            keyFile = "/etc/dm_keyfile.key";
+            allowDiscards = true;
+            bypassWorkqueues = true;
+          };
           content = {
-            type = "luks";
-            name = "crypted-${diskId}";
-            settings = { # boot.initrd.luks.device.<name>.*
-              keyFile = "/etc/dm_keyfile.key";
-              allowDiscards = true;
-              bypassWorkqueues = true;
-            };
-            content = {
-              type = "zfs";
-              pool = "storage";
-            };
+            type = "zfs";
+            pool = "storage";
           };
         };
       };
