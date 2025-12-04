@@ -58,12 +58,12 @@
        maxJobs = 2;
        speedFactor = 1;
      }
-     # {
-     #   inherit sshUser sshKey systems supportedFeatures;
-     #   hostName = "kana";
-     #   maxJobs = 2;
-     #   speedFactor = 1;
-     # }
+     {
+       inherit sshUser systems supportedFeatures;
+       hostName = "Proteus-NixOS-5";
+       maxJobs = 2;
+       speedFactor = 1;
+     }
   ];
   # optional, useful when the builder has a faster internet connection than yours
   nix.extraOptions = "builders-use-substitutes = true";
