@@ -5,12 +5,14 @@ in {
   # Use path relative to the root of the project
   relative_to_root = lib.path.append ../.;
 
-  scan_path = p: map (fn: p + "/${fn}") (builtins.attrNames
-    (lib.filterAttrs ( # includedirectories (ex named hm), ignore default.nix,
-      # include .nix files
-      e: t: (t == "directory" && !(lib.hasPrefix "_" e)) || ((e != "default.nix") && (lib.hasSuffix ".nix" e))
-    ) (builtins.readDir p))
-  );
+  scan_path = p: map (fn: p + "/${fn}") (builtins.attrNames (
+    lib.filterAttrs (
+        e: t: !(lib.hasPrefix "_" e) # Exclude if `_` prefix
+        # Include directories and *.nix, exclude default.nix
+        && ((t == "directory") || ((lib.hasSuffix ".nix" e) && (e != "default.nix")))
+      )
+      (builtins.readDir p)
+  ));
   ## System dependent functions
   mk_for_system = system: let
     pkgs = inputs.nixpkgs.legacyPackages.${system};
@@ -30,7 +32,15 @@ in {
     in pkgs.runCommandLocal name {} "ln -s ${lib.escapeShellArg path_str} $out";
 
     # Args to generate nixosSystem/darwinSystem
-    gen_system_args = {name, mylib, myvars, nixpkgs_modules, hm_modules, machine_path}: let
+    gen_system_args = {
+      name,
+      mylib,
+      myvars,
+      nixpkgs_modules,
+      hm_modules,
+      machine_path,
+      enable_persistence ? true
+    }: let
       inherit (inputs)
         home-manager
         nixos-generators
@@ -43,19 +53,34 @@ in {
       specialArgs = inputs // {inherit mylib myvars;};
     in {
       inherit system specialArgs;
-      modules = nixpkgs_modules
+      modules = (if enable_persistence then
+        nixpkgs_modules 
+      else
+        builtins.filter (p: !lib.strings.hasSuffix "impermanence.nix" p) nixpkgs_modules
+      )
       ++ (if pkgs.stdenv.isDarwin then [
           # mac-app-util.darwinModules.default
           agenix.darwinModules.default
         ] else [
           agenix.nixosModules.default
           nixos-generators.nixosModules.all-formats
-          impermanence.nixosModules.impermanence
+          # (lib.mkIf enable_persistence impermanence.nixosModules.impermanence)
           lanzaboote.nixosModules.lanzaboote
           catppuccin.nixosModules.catppuccin
           disko.nixosModules.disko
-        ])
-      ++ [{imports = mylib.scan_path machine_path; networking.hostName = name;}]
+        ]
+        ++ (lib.optional enable_persistence impermanence.nixosModules.impermanence)
+      )
+      ++ [{
+        imports = let
+          all_machine_files = mylib.scan_path machine_path;
+        in if enable_persistence then
+          all_machine_files
+        else
+          builtins.filter (p: !lib.strings.hasSuffix "impermanence.nix" p) all_machine_files;
+
+        networking.hostName = name;
+      }]
       ++ (lib.optionals ((lib.lists.length hm_modules) > 0) [
         home-manager.${if pkgs.stdenv.isDarwin then "darwinModules" else "nixosModules"}.home-manager {
           home-manager.backupFileExtension = "home-manager.backup";

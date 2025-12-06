@@ -11,11 +11,13 @@
         content = {
           type = "luks";
           name = "crypted-${diskId}";
-          passwordFile = "/tmp/dm_crypt.key";
+          # passwordFile = "/tmp/dm_password.key";
+          initrdUnlock = false;
           settings = { # boot.initrd.luks.device.<name>.*
             keyFile = "/etc/dm_keyfile.key";
             allowDiscards = true;
             bypassWorkqueues = true;
+            # fallbackToPassword = false;
           };
           content = {
             type = "zfs";
@@ -68,7 +70,6 @@ in {
         };
       };
       # --- 2. SATA Data Drives (LUKS + ZFS RAIDZ2) ---
-      # REPLACE WITH YOUR ACTUAL DISK IDs
       sata1 = mkLuksZfsDisk "ata-ST500DM002-1BD142_S2A7EA2P";
       sata2 = mkLuksZfsDisk "ata-WDC_WD5000AAKX-001CA0_WD-WMAYU5316042";
       sata3 = mkLuksZfsDisk "ata-WDC_WD5000AAKX-60U6AA0_WD-WCC2E3HEXA48";
