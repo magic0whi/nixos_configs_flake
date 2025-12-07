@@ -40,6 +40,7 @@
       fsType = "vfat";
       options = [ "fmask=0077" "dmask=0077" ];
     };
+    # TODO lacks "/persistent"
   };
 
   # Enables DHCP on each ethernet and wireless interface. In case of scripted networking

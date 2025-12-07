@@ -1,4 +1,4 @@
-_: { # TODO
+_: {
   hosts_addr = {
     # ============================================
     # Homelab's Physical Machines (KubeVirt Nodes)
@@ -7,7 +7,7 @@ _: { # TODO
       iface = "wlo1";
       ipv4 = "100.109.224.13";
     };
-    Proteus-Desktop.ipv4 = "192.168.1.23";
+    Proteus-Desktop.ipv4 = "100.89.227.22";
 
     # ============================================
     # Other VMs and Physical Machines
@@ -50,6 +50,7 @@ _: { # TODO
   };
   known_hosts = {
     Proteus-NUC.public_key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAILSH65JuZBQd6cPhSGMy+XpGoKBo+/HnUNrwAIb3YMO2 root@proteus-nuc";
+    Proteus-Desktop.public_key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJla2bgFUIxlMyfqiS/BIxkFXFiIh4dhjjOvWzHnr6IL root@Proteus-Desktop";
     Proteus-NixOS-3.public_key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIApKI/t64l+gbXUkUgYaEmH5MibN7q6W2ZcreNaTjd6N proteus@Proteus-NixOS-3";
     Proteus-NixOS-4.public_key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDR5ZoOvgTtQIgCv+Bt0gF9AlCUE0zM1sofmuZppWdaY root@Proteus-NixOS-4";
     Proteus-NixOS-5.public_key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJ2kaT60FsFXcmFEUor9C5RgW10G5TZQEFvkeZeP03kv root@Proteus-NixOS-5";

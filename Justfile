@@ -104,10 +104,10 @@ proteus-nuc mode="default":
 
 [linux]
 [group('desktop')]
-s-hypr mode="default":
-  #!/usr/bin/env nu
-  use {{utils}} *;
-  nixos-switch shoukei-hyprland {{mode}}
+proteus-desktop mode="default":
+  #!/usr/bin/env bash
+  . {{utils}}
+  nixos-switch Proteus-Desktop {{mode}}
 
 ############################################################################
 #

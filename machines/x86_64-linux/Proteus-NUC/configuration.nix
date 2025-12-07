@@ -1,5 +1,7 @@
 {pkgs, config, myvars, ...}: {
+  time.timeZone = "Europe/London";
   age.identityPaths = ["/srv/sync_work/3keys/pgp2ssh.priv.key"];
+  ## START iwd.nix
   networking.wireless.iwd.enable = true;
   networking.wireless.iwd.settings.General.Country = "CN";
   systemd.services.iwd.serviceConfig.ExecStart = [
@@ -8,6 +10,7 @@
   ];
   systemd.network.links."80-iwd".enable = false; # Or
   # environment.etc."systemd/network/80-iwd.link".source = lib.mkForce (mylib.mk_out_of_store_symlink "/dev/null");
+  ## END iwd.nix
   # virtualisation.docker.storageDriver = "btrfs"; # conflict with feature: containerd-snapshotter
   hardware.graphics.extraPackages = with pkgs; [intel-media-driver intel-compute-runtime-legacy1];
   environment.systemPackages = with pkgs; [
@@ -19,9 +22,11 @@
     mode = "0000";
     owner = "root";
   };
-  networking.firewall = {allowedTCPPorts = [9091];}; # sing-box's WebUI
+  networking.firewall = {
+    allowedTCPPorts = [2080 9091]; # sing-box's WebUI
+    allowedUDPPorts = [2080];
+  };
   services.sing-box.enable = true;
   services.sing-box.config_file = config.age.secrets."sb_client.json".path;
   ## END sing-box.nix
-  time.timeZone = "Europe/London";
 }

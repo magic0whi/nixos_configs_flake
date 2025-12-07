@@ -140,6 +140,7 @@ in {
         datasets.data = {
           type = "zfs_fs";
           mountpoint = "/mnt/storage/data";
+          mountOptions = ["nofail"];
           options.canmount = "on";
         };
       };
