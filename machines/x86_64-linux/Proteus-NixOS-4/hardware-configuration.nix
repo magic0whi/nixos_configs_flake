@@ -6,5 +6,9 @@
   boot.kernelModules = ["kvm-amd"];
   boot.extraModulePackages = [];
 
+  fileSystems."/persistent".neededForBoot = true;
+
+  networking.useDHCP = true;
+
   nixpkgs.hostPlatform = "x86_64-linux";
 }

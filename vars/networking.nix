@@ -12,6 +12,7 @@ _: {
     # ============================================
     # Other VMs and Physical Machines
     # ============================================
+    Proteus-NixOS-1.ipv4 = "92.5.20.49"; # Ephemeral
     Proteus-NixOS-3.ipv4 = "100.65.115.97";
     Proteus-NixOS-4.ipv4 = "100.112.197.20";
     Proteus-NixOS-5.ipv4 = "100.81.108.101";

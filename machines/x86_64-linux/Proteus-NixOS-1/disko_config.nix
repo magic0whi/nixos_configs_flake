@@ -3,7 +3,7 @@
     disk = {
       main = {
         type = "disk";
-        device = "/dev/disk/by-path/pci-0000:00:04.0-scsi-0:0:0:1";
+        device = "/dev/disk/by-id/scsi-3608e3e76dbf14034b65b53e2aaf666f6";
         content = {
           type = "gpt";
           partitions = {
@@ -50,18 +50,9 @@
                   "@swap" = {
                     mountpoint = "/.swapvol";
                     mountOptions = ["compress=zstd" "noatime"];
-                    swap = {
-                      swapfile.size = "1G";
-                      # swapfile2.size = "20M";
-                      # swapfile2.path = "rel-path";
-                    };
+                    swap.swapfile.size = "12G";
                   };
                 };
-                # mountpoint = "/btrfs-root";
-                # swap = { # swapfiles under `/btrfs-root`
-                #   swapfile.size = "20M";
-                #   swapfile1.size = "20M";
-                # };
               };
             };
           };

@@ -1,3 +1,4 @@
+# Proteus-NixOS-1 Hessen
 {inputs, mylib, myvars, system, ...}: let
   name = baseNameOf ./.;
   nixpkgs_modules = map mylib.relative_to_root [
@@ -13,7 +14,8 @@
     "modules/common_hm_headless/helix.nix"
     "modules/common_hm_headless/shell.nix"
     "modules/common_hm_headless/stew.nix"
-    "modules/nixos_hm_headless"
+    "modules/nixos_hm_headless/shell.nix"
+    "modules/nixos_hm_headless/stew.nix"
   ];
   nixos_system = inputs.nixpkgs.lib.nixosSystem (mylib.gen_system_args {
     inherit name mylib myvars nixpkgs_modules hm_modules;
@@ -24,14 +26,15 @@
     enable_persistence = false;
     machine_path = ./.;
   }) // {format = "iso";});
-
 in {
   _DEBUG = {inherit name nixpkgs_modules hm_modules myvars mylib;};
   nixos_configurations.${name} = nixos_system;
   # generate iso image
   packages.${name} = nixos_iso;
   deploy-rs_node.${name} = {
-    hostname = "192.168.64.4";
+    hostname = myvars.networking.hosts_addr.${name}.ipv4;
+    sshUser = "root";
+    interactiveSudo = false; # Since we use 'root' user to ssh
     profiles.system = {
       path = inputs.deploy-rs.lib.${system}.activate.nixos nixos_system;
       user = "root";
