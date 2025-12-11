@@ -1,4 +1,4 @@
 {agenix, ...}: {
   imports = [agenix.homeManagerModules.default];
-  age.identityPaths = ["/srv/sync_work/3keys/pgp2ssh.priv.key"];
+  age.identityPaths = ["/etc/ssh/ssh_host_ed25519_key"];
 }

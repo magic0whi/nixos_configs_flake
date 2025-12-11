@@ -37,7 +37,11 @@
 
     xmrig # Benchmark
   ];
+  ## START syncthing.nix
   services.syncthing.enable = lib.mkDefault true;
+  systemd.user.services.syncthing.environment.STNODEFAULTFOLDER = "true";
+  launchd.agents.syncthing.config.EnvironmentVariables.STNODEFAULTFOLDER = "true";
+  ## END syncthing.nix
   ## START pip.nix
   # Use mirror for pip install
   xdg.configFile."pip/pip.conf".text = ''

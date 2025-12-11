@@ -1,4 +1,5 @@
 {myvars, ...}: {
+  environment.persistence."/persistent".directories = ["/srv"];
   environment.persistence."/persistent".users.${myvars.username} = {
     directories = [
       "Downloads"

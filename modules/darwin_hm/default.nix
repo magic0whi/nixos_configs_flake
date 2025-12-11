@@ -34,8 +34,4 @@
     ${lib.getExe' pkgs.duti "duti"} -s com.apple.Preview .heic viewer
   '');
   ## END associations.nix
-  ## START syncthing.nix
-  # Don't create default ~/Sync folder
-  launchd.agents.syncthing.config.EnvironmentVariables.STNODEFAULTFOLDER = "true";
-  ## END syncthing.nix
 }

@@ -26,6 +26,7 @@ in {
   "proteus_smb.priv.age".publicKeys = machines;
   "syncthing_Proteus-MBP14M4P.priv.pem.age".publicKeys = machines;
   "syncthing_proteus-nuc.priv.pem.age".publicKeys = machines;
+  "syncthing_proteus-desktop.priv.pem.age".publicKeys = machines ++ [Proteus-Desktop];
   "proteus_server.priv.pem.age".publicKeys = machines;
   "aria2rpc.priv.age".publicKeys = machines;
   "sb_Proteus-NixOS-3.json.age".publicKeys = machines ++ oracle_vps;

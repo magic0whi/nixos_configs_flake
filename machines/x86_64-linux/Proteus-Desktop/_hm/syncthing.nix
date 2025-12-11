@@ -1,32 +1,32 @@
 {myvars, config, ...}: {
-  age.secrets."syncthing_proteus-nuc.priv.pem" = {
-    file = "${myvars.secrets_dir}/syncthing_proteus-nuc.priv.pem.age";
+  age.secrets."syncthing_proteus-desktop.priv.pem" = {
+    file = "${myvars.secrets_dir}/syncthing_proteus-desktop.priv.pem.age";
     mode = "0500";
   };
   services.syncthing = {
     # nix run nixpkgs#syncthing -- generate --config myconfig/"
-    key = config.age.secrets."syncthing_proteus-nuc.priv.pem".path;
-    cert = "${myvars.secrets_dir}/syncthing_proteus-nuc.crt.pem";
+    key = config.age.secrets."syncthing_proteus-desktop.priv.pem".path;
+    cert = "${myvars.secrets_dir}/syncthing_proteus-desktop.crt.pem";
     settings = {
       devices = {
         "LGE-AN00".id = "T2V6DJB-243NJGD-5B63LUP-DSLNFBD-U72KGD2-AZVTIHL-HEUMBTI-HAVD7A2";
         "M2011K2C".id = "W6ZP2GU-HJ5DM7Q-UXKEKCI-OL3TYHM-LGLLPIN-3MCH7DM-76K3DB5-KNELIA5";
         "Proteus-MBP14M4P".id = "UF2KT6R-ISVDLBM-UJW3JKP-YZJTOES-7K55HS2-IGPE5MQ-OO4D6HK-LZRSLAE";
-        "Proteus-Desktop".id = "DFKVKXA-MHOUCDP-2DXEZGE-VUGGQXP-MRQCOZL-BOOBXAV-4IDSU26-B3GOUAF";
+        "Proteus-NUC".id = "3P2RWV6-RQMHBFS-L3Z5JTF-O6HOR66-7INJZNM-XW3WUSG-XCIB454-UITNPAF";
         "Redmi Note 5".id = "V3BFX3M-H4RJSCS-DZ6XQIM-3T5JK2V-KPYKGPD-HUV5UMG-PQA52BH-MYOFIAR";
       };
       folders = {
         "work" = {
-          path = "/srv/sync_work";
-          devices = ["LGE-AN00" "M2011K2C" "Proteus-MBP14M4P" "Proteus-Desktop" "Redmi Note 5"];
+          path = "/mnt/storage/data/sync_work";
+          devices = ["LGE-AN00" "M2011K2C" "Proteus-MBP14M4P" "Proteus-NUC" "Redmi Note 5"];
         };
         "nixos_configs_flake" = {
           path = "~/nixos_configs_flake";
-          devices = ["Proteus-MBP14M4P" "Proteus-Desktop"];
+          devices = ["Proteus-MBP14M4P" "Proteus-NUC"];
         };
         "sync" = {
-          path = "/srv/sync";
-          devices = ["Proteus-Desktop"];
+          path = "/mnt/storage/data/sync";
+          devices = ["Proteus-NUC"];
         };
       };
     };
