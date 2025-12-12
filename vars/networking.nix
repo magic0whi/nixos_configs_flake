@@ -5,7 +5,7 @@ _: {
     # ============================================
     Proteus-NUC = { # Notebook
       iface = "wlo1";
-      ipv4 = "100.109.224.13";
+      ipv4 = "100.64.161.20";
     };
     Proteus-Desktop.ipv4 = "100.89.227.22";
 
@@ -50,7 +50,7 @@ _: {
     };
   };
   known_hosts = {
-    Proteus-NUC.public_key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAILSH65JuZBQd6cPhSGMy+XpGoKBo+/HnUNrwAIb3YMO2 root@proteus-nuc";
+    Proteus-NUC.public_key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGkreuZakzaKdfQL+YNAvcr6WRsIz5c3eoFcK3NAUmLu root@Proteus-NUC";
     Proteus-Desktop.public_key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJla2bgFUIxlMyfqiS/BIxkFXFiIh4dhjjOvWzHnr6IL root@Proteus-Desktop";
     Proteus-NixOS-1.public_key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOOpQ6Cn+3XpWzPH0OHhsyP7xovKJHbEaHQp+6dZ0ixs root@Proteus-NixOS-1";
     Proteus-NixOS-3.public_key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAINb46b7YcHOymx1UusNJJEw+2Q+dwdjzI0fhHn7U1iFE root@Proteus-NixOS-3";

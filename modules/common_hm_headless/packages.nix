@@ -5,7 +5,7 @@
     # cowsay
     # gnumake
 
-    yq-go # yaml processor https://github.com/mikefarah/yq
+    # yq-go # yaml processor https://github.com/mikefarah/yq
 
     # caddy # A webserver with automatic HTTPS via Let's Encrypt (replacement of nginx)
     # croc # File transfer between computers securely and easily
@@ -20,7 +20,7 @@
 
     # python313 # use https://github.com/the-nix-way/dev-templates?tab=readme-ov-file#python instead
     # yarn use https://github.com/the-nix-way/dev-templates?tab=readme-ov-file#node instead
-    mitmproxy # HTTP/HTTPS proxy tool
+    # mitmproxy # HTTP/HTTPS proxy tool
     # DB related
     # mycli
     # pgcli

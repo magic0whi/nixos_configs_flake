@@ -1,4 +1,5 @@
-_: {
+{mylib, ...}: {
+    imports = mylib.scan_path ./.;
   programs = {
     aerospace.userSettings.workspace-to-monitor-force-assignment = {
       "7" = ["C340SCA"];

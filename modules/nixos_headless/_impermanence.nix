@@ -14,6 +14,8 @@
     #   See also https://grahamc.com/blog/erase-your-darlings/
 
     boot.initrd.systemd.enable = true; # Hibernate alse requires this
+    fileSystems."/persistent".neededForBoot = true;
+
     # NOTE: impermanence only mounts the directory/file list below to /persistent. If the directory/file already exists in
     # the root filesystem, you should move those files/directories to /persistent first!
     environment.persistence."/persistent" = {
@@ -26,8 +28,8 @@
         "/var/log"
         "/var/lib"
 
-      ]
-      ++ lib.optional config.boot.lanzaboote.enable config.boot.lanzaboote.pkiBundle; # If lanzaboote is enabled
+      ];
+      # ++ lib.optional config.boot.lanzaboote.enable config.boot.lanzaboote.pkiBundle; # If lanzaboote is enabled. Disable since we got its parent `/var/lib` persistent already
       # ++ lib.optional (config.age.secrets != {}) "/etc/agenix/"; # My secrets repo
 
       files = ["/etc/machine-id"];

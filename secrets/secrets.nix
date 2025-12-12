@@ -12,6 +12,7 @@ let
   #   cat /etc/ssh/ssh_host_ed25519_key.pub
   # If you do not have this file, you can generate all the host keys by command:
   #   sudo ssh-keygen -A
+  Proteus-NUC = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGkreuZakzaKdfQL+YNAvcr6WRsIz5c3eoFcK3NAUmLu root@Proteus-NUC";
   Proteus-Desktop = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJla2bgFUIxlMyfqiS/BIxkFXFiIh4dhjjOvWzHnr6IL root@Proteus-Desktop";
   Proteus-NixOS-1 = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOOpQ6Cn+3XpWzPH0OHhsyP7xovKJHbEaHQp+6dZ0ixs root@Proteus-NixOS-1";
   Proteus-NixOS-3 = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAINb46b7YcHOymx1UusNJJEw+2Q+dwdjzI0fhHn7U1iFE root@Proteus-NixOS-3";
@@ -22,12 +23,11 @@ let
 in {
   # To see & edit encrypted file, run:
   # agenix -e sb_client.json.age -i <(pgp2ssh <<< <(gpg -ao - --export-secret-subkeys subkey_with_[A]\!) <<< 1 2>&1 | awk 'BEGIN { A=0; S=0; } /BEGIN OPENSSH PRIVATE KEY/ { A=1; } { if (A==1) { print; } }')
-  "sb_client.json.age".publicKeys = machines ++ [Proteus-Desktop];
-  "proteus_smb.priv.age".publicKeys = machines;
+  "sb_client.json.age".publicKeys = machines ++ [Proteus-NUC Proteus-Desktop];
   "syncthing_Proteus-MBP14M4P.priv.pem.age".publicKeys = machines;
-  "syncthing_proteus-nuc.priv.pem.age".publicKeys = machines;
+  "syncthing_proteus-nuc.priv.pem.age".publicKeys = machines ++ [Proteus-NUC];
   "syncthing_proteus-desktop.priv.pem.age".publicKeys = machines ++ [Proteus-Desktop];
-  "proteus_server.priv.pem.age".publicKeys = machines;
-  "aria2rpc.priv.age".publicKeys = machines;
+  "proteus_server.priv.pem.age".publicKeys = machines ++ [Proteus-NUC];
+  "aria2rpc.priv.age".publicKeys = machines ++ [Proteus-NUC];
   "sb_Proteus-NixOS-3.json.age".publicKeys = machines ++ oracle_vps;
 }

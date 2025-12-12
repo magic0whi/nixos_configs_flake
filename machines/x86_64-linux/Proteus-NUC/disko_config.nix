@@ -1,0 +1,135 @@
+_: let
+  # LUKS-encrypted ZFS disk helper (460GB partition)
+  zroot = "zroot";
+  mk_luks_part = disk_id: {
+    type = "CA7D7CCB-63ED-4C53-861C-1742536059CC";
+    size = "500106240K"; # Unit is KiB, ~512G
+    content = {
+      type = "luks";
+      name = "crypted-${disk_id}";
+      # passwordFile = "/tmp/dm_password.key";
+      settings = { # boot.initrd.luks.device.<name>.*
+        # keyFile = "/etc/dm_keyfile.key";
+        allowDiscards = true;
+        bypassWorkqueues = true;
+        # fallbackToPassword = false;
+      };
+      content = {type = "zfs"; pool = zroot;};
+    };
+  };
+in {
+  disko.devices = {
+    # Big NVMe (953.9G) with ESP + swap + zroot1 + Windows 11
+    disk = {
+      nvme0 = let
+        disk_id = "nvme-SAMSUNG_MZVL21T0HCLR-00B00_S676NX0T115316";
+      in {
+        device = "/dev/disk/by-id/${disk_id}";
+        type = "disk";
+        content = {
+          type = "gpt";
+          partitions = {
+            ESP = {
+              label = "EFI SYSTEM PARTITION";
+              # https://en.wikipedia.org/wiki/GUID_Partition_Table#Partition_type_GUIDs
+              type = "C12A7328-F81F-11D2-BA4B-00A0C93EC93B";
+              size = "512M";
+              content = {
+                type = "filesystem";
+                format = "vfat";
+                extraArgs = ["-F32" "-S4096" "-nBOOT"];
+                mountpoint = "/boot";
+                mountOptions = ["umask=0077"];
+              };
+            };
+            encrypted_swap = {
+              label = "SWAP PARTITION";
+              type = "0657FD6D-A4AB-43C4-84E5-0933C84B4F4F";
+              size = "32G";
+              content = {
+                type = "swap";
+                discardPolicy = "both";
+                resumeDevice = true;
+                randomEncryption = true;
+                # Not supported by disko yet
+                # encrypted.enable = true;
+                # encrypted.label = "swap";
+                # encrypted.blkDev = "/dev/disk/by-id/nvme-eui.002538b121b3218a-part2";
+              };
+            };
+            luks_part = mk_luks_part disk_id;
+            windows = { # Optional spare/unused space
+              label = "WINDOWS";
+              type = "EBD0A0A2-B9E5-4433-87C0-68B6B72699C7"; # aka. Basic data partition
+              size = "100%";
+            };
+          };
+        };
+      };
+      # Smaller NVMe fully used for LUKS+ZFS
+      nvme1 = let
+        disk_id = "nvme-SAMSUNG_MZVLB512HAJQ-000L2_S3RGNF0K901813";
+      in {
+        device = "/dev/disk/by-id/${disk_id}";
+        type = "disk";
+        content = {
+          type = "gpt";
+          partitions.luks_part = mk_luks_part disk_id;
+        };
+      };
+    };
+    # ROOT POOL (NVMe) - Impermanence Setup
+    zpool.zroot = {
+      type = "zpool";
+      mode = ""; # stripe (RAID-0)
+      options.ashift = "12"; # Pool-level options
+      rootFsOptions = { # Dataset defaults
+        # ACL and Extended Attributes
+        acltype = "posixacl";
+        xattr = "sa";
+        # Performance
+        dnodesize = "auto";
+        normalization = "formD";
+        relatime = "on";
+
+        compression = "zstd";
+
+        devices = "off"; # Security
+        # Mount behavior
+        mountpoint = "/";
+        canmount = "off";
+      };
+      postCreateHook = "zpool set bootfs=${zroot}/root ${zroot};"
+      + "zpool set cachefile=/etc/zfs/zpool.cache ${zroot}"; # Create zpool.cache
+      datasets = {
+        root = { # ROOT dataset (ephemeral, rolled back to blank on boot)
+          type = "zfs_fs";
+          mountpoint = "/";
+          options."com.sun:auto-snapshot" = "false";
+          postCreateHook = "zfs list -t snapshot -H -o name | grep -E '^${zroot}/root@blank$' || zfs snapshot ${zroot}/root@blank";
+        };
+        home = {
+          type = "zfs_fs";
+          mountpoint = "/home";
+          # Used by `services.zfs.autoSnapshot.*` options.
+          options."com.sun:auto-snapshot" = "false";
+        };
+        "home/root" = {
+          type = "zfs_fs";
+          mountpoint = "/root";
+        };
+        nix = {
+          type = "zfs_fs";
+          mountpoint = "/nix";
+          options."com.sun:auto-snapshot" = "false";
+          options.atime = "off";
+        };
+        persistent = {
+          type = "zfs_fs";
+          mountpoint = "/persistent";
+          options."com.sun:auto-snapshot" = "true";
+        };
+      };
+    };
+  };
+}

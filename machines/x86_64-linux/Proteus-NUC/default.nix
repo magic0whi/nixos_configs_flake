@@ -30,7 +30,7 @@ in {
   # packages.${name} = inputs.self.nixosConfigurations.${name}.config.formats.iso;
   packages.${name} = nixos_iso;
   deploy-rs_node.${name} = {
-    hostname = "${name}.tailba6c3f.ts.net";
+    hostname = "${name}";
     profiles.system = {
       path = inputs.deploy-rs.lib.${system}.activate.nixos nixos_system;
       user = "root";

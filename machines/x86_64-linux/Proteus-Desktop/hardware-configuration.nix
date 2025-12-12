@@ -13,7 +13,6 @@
   systemd.services.zfs-mount.enable = false;
 
   # disko will take care of filesystems.*, swapDevices, boot.resumeDevice, boot.initrd.luks.devices
-  fileSystems."/persistent".neededForBoot = true;
 
   environment.etc."crypttab".text = let
     sata1 = "ata-ST500DM002-1BD142_S2A7EA2P";

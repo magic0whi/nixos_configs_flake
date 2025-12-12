@@ -15,7 +15,6 @@
     "modules/common_hm_headless/shell.nix"
     "modules/common_hm_headless/stew.nix"
     "modules/nixos_hm_headless/shell.nix"
-    "modules/nixos_hm_headless/stew.nix"
   ];
   nixos_system = inputs.nixpkgs.lib.nixosSystem (mylib.gen_system_args {
     inherit name mylib myvars nixpkgs_modules hm_modules;
