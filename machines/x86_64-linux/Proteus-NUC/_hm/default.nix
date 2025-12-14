@@ -4,6 +4,7 @@
   # ls /sys/class/drm/card*
   main_monitor = "eDP-1,highres,auto,${dpi_scale},bitdepth,10";
   secondary_monitor = "DP-3,highres,auto-left,2,bitdepth,10";
+  third_monitor = "HDMI-A-1,highres,auto-left,2,bitdepth,10";
 in {
   imports = mylib.scan_path ./.;
   home.packages = [pkgs.nvtopPackages.intel];
@@ -14,18 +15,19 @@ in {
       #   highres:      get the best possible resolution
       #   auto:         position automatically
       #   bitdepth,10:  enable 10 bit support
-      monitor = [main_monitor secondary_monitor];
+      monitor = [main_monitor secondary_monitor third_monitor];
       workspace = let
         main_iface = builtins.head (lib.strings.splitString "," main_monitor);
         secondary_iface = builtins.head (lib.strings.splitString "," secondary_monitor);
+        third_iface = builtins.head (lib.strings.splitString "," third_monitor);
       in [
         "1,monitor:${main_iface}"
         "2,monitor:${main_iface}"
         "3,monitor:${main_iface}"
         "4,monitor:${main_iface}"
-        "5,monitor:${main_iface}"
-        "6,monitor:${secondary_iface}"
-        "7,monitor:${secondary_iface}"
+        "5,monitor:${third_iface}"
+        "6,monitor:${third_iface}"
+        "7,monitor:${third_iface}"
         "8,monitor:${secondary_iface}"
         "9,monitor:${secondary_iface}"
         "10,monitor:${secondary_iface}"
@@ -38,10 +40,6 @@ in {
         ",switch:on:Lid Switch,exec,[ $(hyprctl monitors -j | jq '.[].name' | wc -w) -ne 1 ] && hyprctl keyword monitor \"${main_monitor},disable\"" # Going to dock mode if has external monitor connected
         ",switch:off:Lid Switch,exec,hyprctl keyword monitor \"${main_monitor}\"" # Restore internal monitor
       ];
-      device = {
-        name = "microsoft-surface-type-cover-touchpad";
-        sensitivity = 0.3;
-      };
     };
   };
   services.hypridle.settings.general = {
