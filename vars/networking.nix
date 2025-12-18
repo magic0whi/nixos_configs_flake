@@ -1,6 +1,7 @@
 _: {
   hosts_addr = {
     "github.com".ipv4 = null;
+    "ssh.github.com".ipv4 = null;
     # ============================================
     # Homelab's Physical Machines (KubeVirt Nodes)
     # ============================================
@@ -49,8 +50,11 @@ _: {
       ipv4 = "192.168.5.114";
     };
   };
-  known_hosts = {
-    "github.com".public_key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOMqqnkVzrm0SdG6UOoqKLsabgH5C9okWi0dh2l9GKJl";
+  known_hosts = let
+    github_key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOMqqnkVzrm0SdG6UOoqKLsabgH5C9okWi0dh2l9GKJl";
+  in {
+    "github.com".public_key = github_key;
+    "ssh.github.com".public_key = github_key;
     Proteus-MBP14M4P.public_key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIC+ekT5jrD2KuLEqVeIASQ9A/VaBcrCE7xfcBqxsWbQ8";
     Proteus-NUC.public_key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGkreuZakzaKdfQL+YNAvcr6WRsIz5c3eoFcK3NAUmLu root@Proteus-NUC";
     Proteus-Desktop.public_key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJla2bgFUIxlMyfqiS/BIxkFXFiIh4dhjjOvWzHnr6IL root@Proteus-Desktop";
