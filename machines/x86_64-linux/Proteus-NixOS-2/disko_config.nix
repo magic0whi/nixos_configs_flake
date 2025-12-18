@@ -3,7 +3,7 @@
     disk = {
       main = {
         type = "disk";
-        device = "/dev/disk/by-id/scsi-0Google_PersistentDisk_proteus-nixos-4";
+        device = "/dev/disk/by-id/scsi-0Google_PersistentDisk_proteus-nixos-2";
         content = {
           type = "gpt";
           partitions = {

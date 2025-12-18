@@ -29,4 +29,11 @@
   services.sing-box.enable = true;
   services.sing-box.config_file = config.age.secrets."sb_client.json".path;
   ## END sing-box.nix
+  ## START systemd_tmpfiles.nix
+  systemd.tmpfiles.rules = [ # See tmpfiles.d(5)
+    # Type Path       Mode User    Group Age Argument
+    "d /srv/sync      0775 proteus users -   -"
+    "d /srv/sync_work 0775 proteus users -   -"
+  ];
+  ## END systemd_tmpfiles.nix
 }

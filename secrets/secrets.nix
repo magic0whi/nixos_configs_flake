@@ -14,12 +14,19 @@ let
   #   sudo ssh-keygen -A
   Proteus-NUC = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGkreuZakzaKdfQL+YNAvcr6WRsIz5c3eoFcK3NAUmLu root@Proteus-NUC";
   Proteus-Desktop = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJla2bgFUIxlMyfqiS/BIxkFXFiIh4dhjjOvWzHnr6IL root@Proteus-Desktop";
-  Proteus-NixOS-1 = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOOpQ6Cn+3XpWzPH0OHhsyP7xovKJHbEaHQp+6dZ0ixs root@Proteus-NixOS-1";
-  Proteus-NixOS-3 = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAINb46b7YcHOymx1UusNJJEw+2Q+dwdjzI0fhHn7U1iFE root@Proteus-NixOS-3";
-  Proteus-NixOS-4 = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDR5ZoOvgTtQIgCv+Bt0gF9AlCUE0zM1sofmuZppWdaY root@Proteus-NixOS-4";
-  Proteus-NixOS-5 = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJ2kaT60FsFXcmFEUor9C5RgW10G5TZQEFvkeZeP03kv root@Proteus-NixOS-5";
+  Proteus-NixOS-1 = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGddmyDQlfBoA5O+sNwBsSysFzaUXdBKora5RrtqsqvK root@Proteus-NixOS-1";
+  Proteus-NixOS-2 = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIvgw44cQ1oBlQo/bm37v9M9ezNjdxUPT3Jy/7GjG4e/ root@Proteus-NixOS-2";
+  Proteus-NixOS-3 = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIG/bepdaGkv6j5AQFRZ0LEJIjHLqxFUoUoNYAFMyfcYM root@proteus-nixos-3";
+  Proteus-NixOS-4 = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEyJC/6Qd6dHeYSzjL5u3pILAfpKlrG/IcKBdJGmmYfS root@Proteus-NixOS-4";
+  Proteus-NixOS-5 = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIrGJy2AzZVu15K2xs6Uzcqq7RaW5RlktjFxT63KEl/a root@Proteus-NixOS-5";
   machines = [recovery_key opengpg];
-  oracle_vps = [Proteus-NixOS-1 Proteus-NixOS-3 Proteus-NixOS-4 Proteus-NixOS-5];
+  google_vps = [
+    Proteus-NixOS-1
+    Proteus-NixOS-2
+    Proteus-NixOS-3
+    Proteus-NixOS-4
+    Proteus-NixOS-5
+  ];
 in {
   # To see & edit encrypted file, run:
   # agenix -e sb_client.json.age -i <(pgp2ssh <<< <(gpg -ao - --export-secret-subkeys subkey_with_[A]\!) <<< 1 2>&1 | awk 'BEGIN { A=0; S=0; } /BEGIN OPENSSH PRIVATE KEY/ { A=1; } { if (A==1) { print; } }')
@@ -29,5 +36,5 @@ in {
   "syncthing_proteus-desktop.priv.pem.age".publicKeys = machines ++ [Proteus-Desktop];
   "proteus_server.priv.pem.age".publicKeys = machines ++ [Proteus-NUC];
   "aria2rpc.priv.age".publicKeys = machines ++ [Proteus-NUC];
-  "sb_Proteus-NixOS-3.json.age".publicKeys = machines ++ oracle_vps;
+  "sb_Proteus-NixOS-1.json.age".publicKeys = machines ++ google_vps;
 }

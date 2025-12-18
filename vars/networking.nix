@@ -1,21 +1,21 @@
 _: {
   hosts_addr = {
+    "github.com".ipv4 = null;
     # ============================================
     # Homelab's Physical Machines (KubeVirt Nodes)
     # ============================================
-    Proteus-NUC = { # Notebook
-      iface = "wlo1";
-      ipv4 = "100.64.161.20";
-    };
+    Proteus-MBP14M4P.ipv4 = "100.109.173.125";
+    Proteus-NUC = {/* Notebook */iface = "wlo1"; ipv4 = "100.64.161.20";};
     Proteus-Desktop.ipv4 = "100.89.227.22";
 
     # ============================================
     # Other VMs and Physical Machines
     # ============================================
-    Proteus-NixOS-1.ipv4 = "100.115.24.55";
-    Proteus-NixOS-3.ipv4 = "100.95.194.59";
-    Proteus-NixOS-4.ipv4 = "100.112.197.20";
-    Proteus-NixOS-5.ipv4 = "100.81.108.101";
+    Proteus-NixOS-1.ipv4 = "100.83.241.108";
+    Proteus-NixOS-2.ipv4 = "100.94.100.77";
+    Proteus-NixOS-3.ipv4 = "100.65.160.94";
+    Proteus-NixOS-4.ipv4 = "100.119.29.125";
+    Proteus-NixOS-5.ipv4 = "100.89.91.100";
     nozomi = {
       # LicheePi 4A's wireless interface - RISC-V
       iface = "wlan0";
@@ -50,11 +50,14 @@ _: {
     };
   };
   known_hosts = {
+    "github.com".public_key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOMqqnkVzrm0SdG6UOoqKLsabgH5C9okWi0dh2l9GKJl";
+    Proteus-MBP14M4P.public_key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIC+ekT5jrD2KuLEqVeIASQ9A/VaBcrCE7xfcBqxsWbQ8";
     Proteus-NUC.public_key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGkreuZakzaKdfQL+YNAvcr6WRsIz5c3eoFcK3NAUmLu root@Proteus-NUC";
     Proteus-Desktop.public_key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJla2bgFUIxlMyfqiS/BIxkFXFiIh4dhjjOvWzHnr6IL root@Proteus-Desktop";
-    Proteus-NixOS-1.public_key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOOpQ6Cn+3XpWzPH0OHhsyP7xovKJHbEaHQp+6dZ0ixs root@Proteus-NixOS-1";
-    Proteus-NixOS-3.public_key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAINb46b7YcHOymx1UusNJJEw+2Q+dwdjzI0fhHn7U1iFE root@Proteus-NixOS-3";
-    Proteus-NixOS-4.public_key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDR5ZoOvgTtQIgCv+Bt0gF9AlCUE0zM1sofmuZppWdaY root@Proteus-NixOS-4";
-    Proteus-NixOS-5.public_key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJ2kaT60FsFXcmFEUor9C5RgW10G5TZQEFvkeZeP03kv root@Proteus-NixOS-5";
+    Proteus-NixOS-1.public_key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGddmyDQlfBoA5O+sNwBsSysFzaUXdBKora5RrtqsqvK root@Proteus-NixOS-1";
+    Proteus-NixOS-2.public_key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIvgw44cQ1oBlQo/bm37v9M9ezNjdxUPT3Jy/7GjG4e/ root@Proteus-NixOS-2";
+    Proteus-NixOS-3.public_key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIG/bepdaGkv6j5AQFRZ0LEJIjHLqxFUoUoNYAFMyfcYM root@proteus-nixos-3";
+    Proteus-NixOS-4.public_key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEyJC/6Qd6dHeYSzjL5u3pILAfpKlrG/IcKBdJGmmYfS root@Proteus-NixOS-4";
+    Proteus-NixOS-5.public_key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIrGJy2AzZVu15K2xs6Uzcqq7RaW5RlktjFxT63KEl/a root@Proteus-NixOS-5";
   };
 }

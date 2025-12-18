@@ -47,36 +47,29 @@
       # 2. the ip address of the remote builder
       # 3. a host alias defined globally in /etc/ssh/ssh_config
       hostName = "Proteus-Desktop";
-      maxJobs = 2;
-      speedFactor = 1;
-    }
-    {
-      inherit sshUser systems supportedFeatures;
-      hostName = "Proteus-NixOS-5";
-      maxJobs = 1; # remote builder's max-job
-      # speedFactor's a signed integer
+      maxJobs = 2; # remote builder's max-job
+      speedFactor = 3; # speedFactor is a signed integer
       # https://github.com/ryan4yin/nix-config/issues/70
-      speedFactor = 1;
     }
     {
       inherit sshUser systems supportedFeatures;
-      hostName = "Proteus-NixOS-3";
-      maxJobs = 1; # remote builder's max-job
-      # speedFactor's a signed integer
-      # https://github.com/ryan4yin/nix-config/issues/70
-      speedFactor = 1;
+      hostName = "Proteus-NixOS-1"; maxJobs = 1; speedFactor = 2;
     }
     {
       inherit sshUser systems supportedFeatures;
-      hostName = "Proteus-NixOS-4";
-      maxJobs = 1;
-      speedFactor = 1;
+      hostName = "Proteus-NixOS-2"; maxJobs = 1; speedFactor = 0;
     }
     {
       inherit sshUser systems supportedFeatures;
-      hostName = "Proteus-NixOS-1";
-      maxJobs = 1;
-      speedFactor = 1;
+      hostName = "Proteus-NixOS-3"; maxJobs = 1; speedFactor = 0;
+    }
+    {
+      inherit sshUser systems supportedFeatures;
+      hostName = "Proteus-NixOS-4"; maxJobs = 1; speedFactor = 0;
+    }
+    {
+      inherit sshUser systems supportedFeatures;
+      hostName = "Proteus-NixOS-5"; maxJobs = 1; speedFactor = 1;
     }
   ];
   # optional, useful when the builder has a faster internet connection than yours

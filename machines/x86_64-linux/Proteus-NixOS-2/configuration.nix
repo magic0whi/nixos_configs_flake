@@ -1,11 +1,10 @@
 {myvars, config, ...}: {
-  time.timeZone = "Europe/London";
+  time.timeZone = "Europe/Berlin";
   boot.kernelParams = [
-    "console=tty1"
-    "console=ttyS0"
-    # "nvme.shutdown_timeout=10" # The VM.Standard.E2.1.Micro does not use nvme
-    "libiscsi.debug_libiscsi_eh=1"
-    "crash_kexec_post_notifiers"
+    "console=ttyS0,115200"
+    "earlyprintk=ttyS0,115200"
+    "consoleblank=0"
+    "intel_iommu=off"
   ];
   services.syncthing.enable = false;
   ## START sing-box.nix

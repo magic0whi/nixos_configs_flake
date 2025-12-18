@@ -3,7 +3,7 @@
     disk = {
       main = {
         type = "disk";
-        device = "/dev/disk/by-id/scsi-360245f50c3954a39bcae4e25cfa829cc";
+        device = "/dev/disk/by-id/scsi-0Google_PersistentDisk_instance-20251215-090927";
         content = {
           type = "gpt";
           partitions = {
@@ -50,7 +50,7 @@
                   "@swap" = {
                     mountpoint = "/.swapvol";
                     mountOptions = ["compress=zstd" "noatime"];
-                    swap.swapfile.size = "12G";
+                    swap.swapfile.size = "2G";
                   };
                 };
               };

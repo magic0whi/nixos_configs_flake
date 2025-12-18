@@ -1,5 +1,5 @@
 {myvars, config, ...}: {
-  time.timeZone = "Europe/Berlin";
+  time.timeZone = "Asia/Taipei";
   boot.kernelParams = [
     "console=tty1"
     "console=ttyS0"
@@ -19,13 +19,13 @@
   # networking.useDHCP = false;
   services.syncthing.enable = false;
   ## START sing-box.nix
-  age.secrets."sb_Proteus-NixOS-3.json" = {
-    file = "${myvars.secrets_dir}/sb_Proteus-NixOS-3.json.age";
+  age.secrets."sb_Proteus-NixOS-1.json" = {
+    file = "${myvars.secrets_dir}/sb_Proteus-NixOS-1.json.age";
     mode = "0000";
     owner = "root";
   };
   networking.firewall = {allowedTCPPorts = [443];}; # Reality
   services.sing-box.enable = true;
-  services.sing-box.config_file = config.age.secrets."sb_Proteus-NixOS-3.json".path;
+  services.sing-box.config_file = config.age.secrets."sb_Proteus-NixOS-1.json".path;
   ## END sing-box.nix
 }

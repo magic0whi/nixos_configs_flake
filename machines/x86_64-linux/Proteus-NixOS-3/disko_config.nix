@@ -3,7 +3,7 @@
     disk = {
       main = {
         type = "disk";
-        device = "/dev/disk/by-id/scsi-360459a250b054749a7ac6cd6b927da4a";
+        device = "/dev/disk/by-id/scsi-0Google_PersistentDisk_proteus-nixos-3";
         content = {
           type = "gpt";
           partitions = {
@@ -50,7 +50,7 @@
                   "@swap" = {
                     mountpoint = "/.swapvol";
                     mountOptions = ["compress=zstd" "noatime"];
-                    swap.swapfile.size = "12G";
+                    swap.swapfile.size = "2G";
                   };
                 };
               };

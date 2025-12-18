@@ -43,7 +43,7 @@ in {
               };
             };
             encrypted_swap = {
-              label = "SWAP PARTITION";
+              label = "SWAP";
               type = "0657FD6D-A4AB-43C4-84E5-0933C84B4F4F";
               size = "32G";
               content = {

@@ -160,6 +160,8 @@
   };
   ## END fonts.nix
   ## START security.nix
+  # Without polkit, sing-box can't interact with systemd-resolved
+  security.polkit.enable = true;
   security.sudo.package = (pkgs.sudo.override {withSssd = true;});
   security.sudo.extraConfig = ''Defaults passwd_timeout=0''; # Disable timeout for sudo prompt
   system.nssDatabases.sudoers = ["sss"]; # Use LDAP to distribute configuration of sudo as well

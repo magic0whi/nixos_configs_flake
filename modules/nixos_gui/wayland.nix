@@ -41,8 +41,6 @@
     config.common.default = ["gtk"]; # Use xdg-desktop-portal-gtk for every portal interface
   };
   ## START security.nix
-  security.polkit.enable = true;
-
   # Security with gnome-kering
   services.gnome.gnome-keyring.enable = true;
   security.pam.services.greetd.enableGnomeKeyring = true;
