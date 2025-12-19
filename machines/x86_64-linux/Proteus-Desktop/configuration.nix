@@ -2,8 +2,7 @@
   ## START sing-box.nix
   age.secrets."sb_client.json" = {
     file = "${myvars.secrets_dir}/sb_client.json.age";
-    mode = "0000";
-    owner = "root";
+    mode = "0000"; owner = "root";
   };
   networking.firewall = {
     allowedTCPPorts = [2080 9091]; # sing-box's WebUI

@@ -1,18 +1,16 @@
 {myvars, config, ...}: {
   time.timeZone = "Europe/London";
   boot.kernelParams = [
-    "console=tty1"
-    "console=ttyS0"
-    # "nvme.shutdown_timeout=10" # The VM.Standard.E2.1.Micro does not use nvme
-    "libiscsi.debug_libiscsi_eh=1"
-    "crash_kexec_post_notifiers"
+    "console=ttyS0,115200"
+    "earlyprintk=ttyS0,115200"
+    "consoleblank=0"
+    "intel_iommu=off"
   ];
   services.syncthing.enable = false;
   ## START sing-box.nix
   age.secrets."sb_Proteus-NixOS-1.json" = {
     file = "${myvars.secrets_dir}/sb_Proteus-NixOS-1.json.age";
-    mode = "0000";
-    owner = "root";
+    mode = "0000"; owner = "root";
   };
   networking.firewall = {allowedTCPPorts = [443];}; # Reality
   services.sing-box.enable = true;

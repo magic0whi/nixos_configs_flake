@@ -10,8 +10,7 @@
   ## START sing-box.nix
   age.secrets."sb_Proteus-NixOS-1.json" = {
     file = "${myvars.secrets_dir}/sb_Proteus-NixOS-1.json.age";
-    mode = "0000";
-    owner = "root";
+    mode = "0000"; owner = "root";
   };
   networking.firewall = {allowedTCPPorts = [443];}; # Reality
   services.sing-box.enable = true;
