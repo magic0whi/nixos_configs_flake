@@ -16,4 +16,5 @@
   services.sing-box.enable = true;
   services.sing-box.config_file = config.age.secrets."sb_Proteus-NixOS-1.json".path;
   ## END sing-box.nix
+  boot.binfmt.emulatedSystems = ["riscv64-linux"]; # Cross compilation
 }

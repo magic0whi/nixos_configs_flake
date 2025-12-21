@@ -18,7 +18,6 @@
     systems = [
       # Native arch
       "x86_64-linux"
-
       # Emulated arch using binfmt_misc and qemu-user
       "aarch64-linux"
       "riscv64-linux"
@@ -47,26 +46,26 @@
       speedFactor = 3; # speedFactor is a signed integer
       # https://github.com/ryan4yin/nix-config/issues/70
     }
-    {
-      inherit sshUser systems supportedFeatures;
-      hostName = "Proteus-NixOS-1"; maxJobs = 1; speedFactor = 2;
-    }
-    {
-      inherit sshUser systems supportedFeatures;
-      hostName = "Proteus-NixOS-2"; maxJobs = 1; speedFactor = 0;
-    }
-    {
-      inherit sshUser systems supportedFeatures;
-      hostName = "Proteus-NixOS-3"; maxJobs = 1; speedFactor = 0;
-    }
-    {
-      inherit sshUser systems supportedFeatures;
-      hostName = "Proteus-NixOS-4"; maxJobs = 1; speedFactor = 0;
-    }
-    {
-      inherit sshUser systems supportedFeatures;
-      hostName = "Proteus-NixOS-5"; maxJobs = 1; speedFactor = 1;
-    }
+    # {
+    #   inherit sshUser systems supportedFeatures;
+    #   hostName = "Proteus-NixOS-1"; maxJobs = 1; speedFactor = 2;
+    # }
+    # {
+    #   inherit sshUser systems supportedFeatures;
+    #   hostName = "Proteus-NixOS-2"; maxJobs = 1; speedFactor = 0;
+    # }
+    # {
+    #   inherit sshUser systems supportedFeatures;
+    #   hostName = "Proteus-NixOS-3"; maxJobs = 1; speedFactor = 0;
+    # }
+    # {
+    #   inherit sshUser systems supportedFeatures;
+    #   hostName = "Proteus-NixOS-4"; maxJobs = 1; speedFactor = 0;
+    # }
+    # {
+    #   inherit sshUser systems supportedFeatures;
+    #   hostName = "Proteus-NixOS-5"; maxJobs = 1; speedFactor = 1;
+    # }
   ];
   # optional, useful when the builder has a faster internet connection than yours
   nix.extraOptions = "builders-use-substitutes = true";

@@ -166,8 +166,14 @@ upload-vm name mode="default":
 # Deploy all the KubeVirt nodes(Physical machines running KubeVirt)
 [linux]
 [group('homelab')]
-lab:
-  colmena apply --on '@virt-*' --verbose --show-trace
+all:
+  deploy -s --targets /home/proteus/nixos_configs_flake#Proteus-NUC \
+  --targets /home/proteus/nixos_configs_flake#Proteus-Desktop \
+  --targets /home/proteus/nixos_configs_flake#Proteus-NixOS-1 \
+  --targets /home/proteus/nixos_configs_flake#Proteus-NixOS-2 \
+  --targets /home/proteus/nixos_configs_flake#Proteus-NixOS-3 \
+  --targets /home/proteus/nixos_configs_flake#Proteus-NixOS-4 \
+  --targets /home/proteus/nixos_configs_flake#Proteus-NixOS-5
 
 [linux]
 [group('homelab')]

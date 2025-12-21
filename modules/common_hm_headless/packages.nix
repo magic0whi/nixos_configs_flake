@@ -27,9 +27,6 @@
     # mongosh
     # sqlite
 
-    # embedded development
-    # minicom
-
     ## FPGA
     # python312Packages.apycula # gowin fpga
     # yosys # FPGA synthesis

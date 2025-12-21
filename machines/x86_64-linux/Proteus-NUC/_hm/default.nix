@@ -7,7 +7,11 @@
   third_monitor = "HDMI-A-1,highres,auto-left,2,bitdepth,10";
 in {
   imports = mylib.scan_path ./.;
-  home.packages = [pkgs.nvtopPackages.intel];
+  home.packages = with pkgs; [
+    nvtopPackages.intel
+    # embedded development
+    minicom
+  ];
   wayland.windowManager.hyprland = {
     # nvidia = true; # Sync prime
     settings = {

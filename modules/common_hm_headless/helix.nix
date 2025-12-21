@@ -2,7 +2,7 @@
   programs.helix = {
     enable = true;
     defaultEditor = true;
-    extraPackages = with pkgs; [nil marksman ltex-ls texlab nodePackages.vscode-json-languageserver];
+    extraPackages = with pkgs; [nil marksman nodePackages.vscode-json-languageserver];
     settings = {
       # theme = "gruvbox"; # Disable if use catpuccin
       editor = {
