@@ -21,15 +21,27 @@
     inherit name mylib myvars nixpkgs_modules hm_modules;
     machine_path = ./.;
   });
-  nixos_iso = inputs.nixos-generators.nixosGenerate ((mylib.gen_system_args {
-    inherit name mylib myvars nixpkgs_modules hm_modules;
-    enable_persistence = false;
+  nixos_sd_image = (inputs.nixpkgs.lib.nixosSystem (mylib.gen_system_args {
+    inherit name mylib myvars hm_modules;
+    nixpkgs_modules = nixpkgs_modules ++ [{
+      imports = ["${inputs.nixos-hardware}/starfive/visionfive/v2/sd-image-installer.nix"];
+      sdImage.compressImage = false;
+      # Cross-compile
+      # Or add `boot.binfmt.emulatedSystems = ["riscv64-linux"];` to your
+      # NixOS configurations
+      # nixpkgs.crossSystem = {
+      #   config = "riscv64-unknown-linux-gnu"; system = "riscv64-linux";
+      # };
+      disko.enableConfig = false; # nixpkgs' sd-image.nix use its built-in ext4
+    }];
     machine_path = ./.;
-  }) // {format = "iso";});
+  # }));
+  })).config.system.build.sdImage;
 in {
   _DEBUG = {inherit name nixpkgs_modules hm_modules myvars mylib;};
   nixos_configurations.${name} = nixos_system;
-  packages.${name} = nixos_iso; # generate iso image
+  # generate iso image
+  packages.${name} = nixos_sd_image;
   deploy-rs_node.${name} = {
     hostname = myvars.networking.hosts_addr.${name}.ipv4;
     sshUser = "root";

@@ -19,16 +19,9 @@
     inherit name mylib myvars nixpkgs_modules hm_modules;
     machine_path = ./.;
   });
-  nixos_iso = inputs.nixos-generators.nixosGenerate ((mylib.gen_system_args {
-    inherit name mylib myvars nixpkgs_modules hm_modules;
-    enable_persistence = false;
-    machine_path = ./.;
-  }) // {format = "iso";});
 in {
   _DEBUG = {inherit name nixpkgs_modules hm_modules myvars mylib;};
   nixos_configurations.${name} = nixos_system;
-  # generate iso image
-  packages.${name} = nixos_iso;
   deploy-rs_node.${name} = {
     hostname = myvars.networking.hosts_addr.${name}.ipv4;
     sshUser = "root";

@@ -2,7 +2,7 @@
   username = "proteus";
   userfullname = "Proteus Qian";
   useremail = "sudaku233@outlook.com";
-  nixos_state_version = "25.05";
+  nixos_state_version = "25.11";
   darwin_state_version = 6;
   github_username = "magic0whi";
   secrets_dir = mylib.relative_to_root "secrets";

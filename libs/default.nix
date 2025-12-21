@@ -54,7 +54,7 @@ in {
     in {
       inherit system specialArgs;
       modules = (if enable_persistence then
-        nixpkgs_modules 
+        nixpkgs_modules
       else
         builtins.filter (p: !lib.strings.hasSuffix "impermanence.nix" p) nixpkgs_modules
       )
@@ -77,8 +77,9 @@ in {
         in if enable_persistence then
           all_machine_files
         else
-          builtins.filter (p: !lib.strings.hasSuffix "impermanence.nix" p) all_machine_files;
-
+          builtins.filter
+            (p: !lib.strings.hasSuffix "impermanence.nix" p)
+            all_machine_files;
         networking.hostName = name;
       }]
       ++ (lib.optionals ((lib.lists.length hm_modules) > 0) [

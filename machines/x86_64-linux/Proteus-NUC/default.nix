@@ -30,7 +30,9 @@ in {
   # packages.${name} = inputs.self.nixosConfigurations.${name}.config.formats.iso;
   packages.${name} = nixos_iso;
   deploy-rs_node.${name} = {
-    hostname = "${name}";
+    hostname = myvars.networking.hosts_addr.${name}.ipv4;
+    sshUser = "root";
+    interactiveSudo = false; # Since we use 'root' user to ssh
     profiles.system = {
       path = inputs.deploy-rs.lib.${system}.activate.nixos nixos_system;
       user = "root";

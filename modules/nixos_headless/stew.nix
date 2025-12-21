@@ -117,7 +117,7 @@
       ];
     };
     users.root = { # root's ssh key are heavily used for remote deployment
-      initialHashedPassword = config.users.users."${myvars.username}".initialHashedPassword;
+      initialHashedPassword = lib.mkDefault config.users.users."${myvars.username}".initialHashedPassword;
       openssh.authorizedKeys.keys = config.users.users."${myvars.username}".openssh.authorizedKeys.keys;
     };
   };
