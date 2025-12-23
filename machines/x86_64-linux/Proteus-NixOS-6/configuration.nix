@@ -8,7 +8,7 @@
     "console=tty0"
     "console=ttyS0,115200n8"
     "noibrs"
-    "crashkernel=0M-1G:0M,1G-4G:192M,4G-128G:384M,128G-:512M"
+    # "crashkernel=0M-1G:0M,1G-4G:192M,4G-128G:384M,128G-:512M"
   ];
   services.syncthing.enable = false;
   ## START sing-box.nix
