@@ -28,24 +28,24 @@
   in [
     # Nix seems always try to build on the machine remotely
     # to make use of the local machine's high-performance CPU, do not set remote builder's maxJobs too high.
-    {
-      # some of my remote builders are running NixOS
-      # and has the same sshUser, sshKey, systems, etc.
-      inherit
-        sshUser
-        # sshKey
-        systems
-        supportedFeatures;
+    # {
+    #   # some of my remote builders are running NixOS
+    #   # and has the same sshUser, sshKey, systems, etc.
+    #   inherit
+    #     sshUser
+    #     # sshKey
+    #     systems
+    #     supportedFeatures;
 
-      # the hostName should be:
-      # 1. a hostname that can be resolved by DNS
-      # 2. the ip address of the remote builder
-      # 3. a host alias defined globally in /etc/ssh/ssh_config
-      hostName = "Proteus-Desktop";
-      maxJobs = 2; # remote builder's max-job
-      speedFactor = 3; # speedFactor is a signed integer
-      # https://github.com/ryan4yin/nix-config/issues/70
-    }
+    #   # the hostName should be:
+    #   # 1. a hostname that can be resolved by DNS
+    #   # 2. the ip address of the remote builder
+    #   # 3. a host alias defined globally in /etc/ssh/ssh_config
+    #   hostName = "Proteus-Desktop";
+    #   maxJobs = 2; # remote builder's max-job
+    #   speedFactor = 3; # speedFactor is a signed integer
+    #   # https://github.com/ryan4yin/nix-config/issues/70
+    # }
     # {
     #   inherit sshUser systems supportedFeatures;
     #   hostName = "Proteus-NixOS-1"; maxJobs = 1; speedFactor = 2;

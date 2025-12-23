@@ -3,4 +3,4 @@ result/*
 
 .stignore
 
-.stfolder/
+/.stfolder

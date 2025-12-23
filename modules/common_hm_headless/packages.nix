@@ -1,6 +1,12 @@
-{pkgs, deploy-rs, ...}: {
+{pkgs, deploy-rs, pgp2ssh, ...}: {
   programs.yt-dlp.enable = true;
   home.packages = with pkgs; [
+    deploy-rs.packages.${pkgs.stdenv.hostPlatform.system}.deploy-rs
+    keepassxc # Offline password manager, provides both CLI and GUI
+    pgp2ssh.packages.${pkgs.stdenv.hostPlatform.system}.pgp2ssh
+    just # A command runner like make, but simpler
+
+    xmrig # Benchmark
     # Misc
     # cowsay
     # gnumake
@@ -16,7 +22,6 @@
     # NOTE: Please avoid to install language specific packages here (globally), instead, install them:
     # 1. per IDE, such as `programs.neovim.extraPackages`
     # 2. per-project, see https://github.com/the-nix-way/dev-templates
-    deploy-rs.packages.${pkgs.stdenv.hostPlatform.system}.deploy-rs
 
     # python313 # use https://github.com/the-nix-way/dev-templates?tab=readme-ov-file#python instead
     # yarn use https://github.com/the-nix-way/dev-templates?tab=readme-ov-file#node instead

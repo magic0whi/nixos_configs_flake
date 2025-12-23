@@ -19,6 +19,7 @@ let
   Proteus-NixOS-3 = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIG/bepdaGkv6j5AQFRZ0LEJIjHLqxFUoUoNYAFMyfcYM root@proteus-nixos-3";
   Proteus-NixOS-4 = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEyJC/6Qd6dHeYSzjL5u3pILAfpKlrG/IcKBdJGmmYfS root@Proteus-NixOS-4";
   Proteus-NixOS-5 = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIrGJy2AzZVu15K2xs6Uzcqq7RaW5RlktjFxT63KEl/a root@Proteus-NixOS-5";
+  Proteus-NixOS-6 = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOUXCE7Ghu4cLl0xBCg+q69QqGuhyIu17KDgrCpz0Gvb root@Proteus-NixOS-6";
   machines = [recovery_key opengpg];
   google_vps = [
     Proteus-NixOS-1
@@ -27,6 +28,7 @@ let
     Proteus-NixOS-4
     Proteus-NixOS-5
   ];
+  huawei_vps = [Proteus-NixOS-6];
 in {
   # To see & edit encrypted file, run:
   # agenix -e sb_client.json.age -i <(pgp2ssh <<< <(gpg -ao - --export-secret-subkeys subkey_with_[A]\!) <<< 1 2>&1 | awk 'BEGIN { A=0; S=0; } /BEGIN OPENSSH PRIVATE KEY/ { A=1; } { if (A==1) { print; } }')
@@ -37,4 +39,5 @@ in {
   "proteus_server.priv.pem.age".publicKeys = machines ++ [Proteus-NUC];
   "aria2rpc.priv.age".publicKeys = machines ++ [Proteus-NUC];
   "sb_Proteus-NixOS-1.json.age".publicKeys = machines ++ google_vps;
+  "sb_Proteus-NixOS-6.json.age".publicKeys = machines ++ huawei_vps;
 }

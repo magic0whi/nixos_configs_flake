@@ -1,6 +1,6 @@
 {lib, config, myvars, pkgs, ...}: {
   ## START bootloader.nix
-  boot.loader.efi.canTouchEfiVariables = true; # Allow installation process to modify EFI boot variables
+  boot.loader.efi.canTouchEfiVariables = lib.mkDefault true; # Allow installation process to modify EFI boot variables
   boot.loader.systemd-boot = {
     enable = lib.mkDefault true;
     configurationLimit = 4; # Limit the boot loader entries

@@ -17,6 +17,7 @@ _: {
     Proteus-NixOS-3.ipv4 = "100.65.160.94";
     Proteus-NixOS-4.ipv4 = "100.119.29.125";
     Proteus-NixOS-5.ipv4 = "100.89.91.100";
+    Proteus-NixOS-6.ipv4 = "100.126.174.68";
     nozomi = {
       # LicheePi 4A's wireless interface - RISC-V
       iface = "wlan0";
@@ -63,5 +64,6 @@ _: {
     Proteus-NixOS-3.public_key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIG/bepdaGkv6j5AQFRZ0LEJIjHLqxFUoUoNYAFMyfcYM root@proteus-nixos-3";
     Proteus-NixOS-4.public_key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEyJC/6Qd6dHeYSzjL5u3pILAfpKlrG/IcKBdJGmmYfS root@Proteus-NixOS-4";
     Proteus-NixOS-5.public_key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIrGJy2AzZVu15K2xs6Uzcqq7RaW5RlktjFxT63KEl/a root@Proteus-NixOS-5";
+    Proteus-NixOS-6.public_key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOUXCE7Ghu4cLl0xBCg+q69QqGuhyIu17KDgrCpz0Gvb root@Proteus-NixOS-6";
   };
 }

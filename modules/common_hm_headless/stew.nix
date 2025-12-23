@@ -1,4 +1,4 @@
-{myvars, pkgs, pgp2ssh, lib, ...}: {
+{myvars, pkgs, lib, ...}: {
   # This value determines the Home Manager release that your configuration is compatible with. This helps avoid
   # breakage when a new Home Manager release introduces backwards incompatible changes.
   #
@@ -8,15 +8,10 @@
   programs.home-manager.enable = true; # Let Home Manager install and manage itself.
   home.packages = with pkgs; [
     fastfetch
-    keepassxc # Offline password manager, provides both CLI and GUI
-    pgp2ssh.packages.${pkgs.stdenv.hostPlatform.system}.pgp2ssh
-    just # A command runner like make, but simpler
-
     ## Modern cli tools, replacement of grep/sed/...
     # A fast and polyglot tool for code searching, linting, rewriting at large scale
     # supported languages: only some mainstream languages currently (don't support nix/nginx/yaml/toml/...)
     ast-grep
-
     sad # CLI search and replace, just like sed, but with diff preview.
     lazygit # Git terminal UI.
     hyperfine # command-line benchmarking tool, replace `time`
@@ -34,8 +29,6 @@
     nix-init # Generate nix derivation from url
     nix-melt # A TUI flake.lock viewer, ref: https://github.com/nix-community/nix-melt
     nix-tree # A TUI to visualize the dependency graph of a nix derivation, ref: https://github.com/utdemir/nix-tree
-
-    xmrig # Benchmark
   ];
   ## START syncthing.nix
   services.syncthing.enable = lib.mkDefault true;
