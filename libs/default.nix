@@ -56,7 +56,13 @@ in {
       modules = (if enable_persistence then
         nixpkgs_modules
       else
-        builtins.filter (p: !lib.strings.hasSuffix "impermanence.nix" p) nixpkgs_modules
+        builtins.filter (p: # Filter out the files with `impermanence.nix`
+          # suffix
+          # If it is not a path or string (i.e. an attribute set), return true
+          # immediately to keep it
+          !(builtins.isPath p || builtins.isString p)
+          || !lib.strings.hasSuffix "impermanence.nix" p)
+          nixpkgs_modules
       )
       ++ (if pkgs.stdenv.isDarwin then [
           # mac-app-util.darwinModules.default

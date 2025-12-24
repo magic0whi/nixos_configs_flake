@@ -1,9 +1,7 @@
 {pkgs, deploy-rs, pgp2ssh, ...}: {
   programs.yt-dlp.enable = true;
   home.packages = with pkgs; [
-    deploy-rs.packages.${pkgs.stdenv.hostPlatform.system}.deploy-rs
     keepassxc # Offline password manager, provides both CLI and GUI
-    pgp2ssh.packages.${pkgs.stdenv.hostPlatform.system}.pgp2ssh
     just # A command runner like make, but simpler
 
     xmrig # Benchmark
@@ -56,5 +54,11 @@
     # conda
 
     # android-tools
-  ];
+  ]
+  ++ (if (pkgs.stdenv.hostPlatform.system == "riscv64-linux") then
+    [pkgs.pkgs.deploy-rs]
+  else [
+    deploy-rs.packages.${pkgs.stdenv.hostPlatform.system}.deploy-rs
+    pgp2ssh.packages.${pkgs.stdenv.hostPlatform.system}.pgp2ssh
+  ]);
 }
