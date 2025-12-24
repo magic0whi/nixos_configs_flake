@@ -25,14 +25,15 @@
     inherit name mylib myvars hm_modules;
     enable_persistence = false;
     nixpkgs_modules = nixpkgs_modules ++ [{
-      imports = ["${inputs.nixos-hardware}/starfive/visionfive/v2/sd-image-installer.nix"];
-      # imports = [(inputs.nixos-hardware + "/starfive/visionfive/v2/sd-image-installer.nix")];
+      # imports = ["${inputs.nixos-hardware}/starfive/visionfive/v2/sd-image-installer.nix"];
+      # Or
+      imports = [(inputs.nixos-hardware + "/starfive/visionfive/v2/sd-image-installer.nix")];
       sdImage.compressImage = false;
       # Cross-compile
       # Or add `boot.binfmt.emulatedSystems = ["riscv64-linux"];` to your
       # NixOS configurations
       # nixpkgs.crossSystem = {
-      #   config = "riscv64-unknown-linux-gnu"; system = "riscv64-linux";
+        # config = "riscv64-unknown-linux-gnu"; system = "riscv64-linux";
       # };
       disko.enableConfig = false; # nixpkgs' sd-image.nix use its built-in ext4
     }];
