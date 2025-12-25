@@ -1,7 +1,7 @@
 {mylib, ...}: {
     imports = mylib.scan_path ./.;
   programs = {
-    aerospace.userSettings.workspace-to-monitor-force-assignment = {
+    aerospace.settings.workspace-to-monitor-force-assignment = {
       "7" = ["C340SCA"];
       "8" = ["C340SCA"];
       "9" = ["RTK UHD HDR"];

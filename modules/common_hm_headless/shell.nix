@@ -29,7 +29,8 @@
     mvr = "rsync --archive -hh --partial --info=stats1,progress2 --modify-window=1 --remove-source-files \"$@\"";
     diff = "command diff --text --unified --new-file --color=auto \"$@\"";
     man = "MANPAGER=\"less -R --use-color -Dd+r -Du+b\"" # Set boldface -> red color, underline -> blue color
-      + " MANROFFOPT=\"-P-c\""
+      + " MANROFFOPT=\"-P-c\"" # Enables groff's "continuous" (non-paginated) output mode
+      + " MANWIDTH=$(($(tput cols) - 7))" # Adjustment manwidth when less' line number enabled
       + " command man \"$@\"";
   };
   programs = {

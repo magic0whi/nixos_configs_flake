@@ -4,12 +4,12 @@
     config = {
       plugins = let pkg = config.programs.anyrun.package; in [
         "${pkg}/lib/libapplications.so" # Launch applications
-        "${pkg}/lib/libdictionary.so" # Look up word definitions using the Free Dictionary API
-        "${pkg}/lib/libnix_run.so" # search & run graphical apps from nixpkgs via `nix run`, without installing it
-        "${pkg}/lib/librink.so" # A simple calculator plugin
+        # "${pkg}/lib/libdictionary.so" # Look up word definitions using the Free Dictionary API
+        # "${pkg}/lib/libnix_run.so" # search & run graphical apps from nixpkgs via `nix run`, without installing it
+        # "${pkg}/lib/librink.so" # A simple calculator plugin
         "${pkg}/lib/libstdin.so" # Required by cliphist
-        "${pkg}/lib/libsymbols.so" # Look up unicode symbols and custom user defined symbols
-        "${pkg}/lib/libtranslate.so" # ":zh <text to translate>" Quickly translate text using the Google Translate API
+        # "${pkg}/lib/libsymbols.so" # Look up unicode symbols and custom user defined symbols
+        # "${pkg}/lib/libtranslate.so" # ":zh <text to translate>" Quickly translate text using the Google Translate API
       ];
       x.fraction = 0.5; # At the middle of the screen
       y.fraction = 0.05; # At the top of the screen
