@@ -8,7 +8,7 @@
   nixos_systems = let supported_nixos_systems = [
     "x86_64-linux"
     # "aarch64-linux"
-    "riscv64-linux"
+    # "riscv64-linux" # Disable temporary
   ]; in import_each_system supported_nixos_systems;
   darwin_systems = let supported_darwin_systems = [
     # "x86_64-darwin"
