@@ -40,8 +40,8 @@
   '';
   programs.aerospace = {
     enable = true;
-    programs.aerospace.launchd.enable = true;
-    userSettings = { # See https://nikitabobko.github.io/AeroSpace/guide#configuring-aerospace
+    launchd.enable = true;
+    settings = { # See https://nikitabobko.github.io/AeroSpace/guide#configuring-aerospace
       automatically-unhide-macos-hidden-apps = true; # Turn off macOS "Hide application" (cmd-h) feature
       gaps = {
         inner.horizontal = 3;
