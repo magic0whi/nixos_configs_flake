@@ -1,4 +1,5 @@
 {
+  boot.blacklistedKernelModules = ["nova_core"];
   services.xserver.videoDrivers = ["nvidia"];
   hardware.nvidia = {
     dynamicBoost.enable = true;
