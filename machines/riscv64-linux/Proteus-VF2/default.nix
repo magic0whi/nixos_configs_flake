@@ -29,12 +29,12 @@
       # Or
       imports = [(inputs.nixos-hardware + "/starfive/visionfive/v2/sd-image-installer.nix")];
       sdImage.compressImage = false;
-      # Cross-compile
-      # Or add `boot.binfmt.emulatedSystems = ["riscv64-linux"];` to your
-      # NixOS configurations
+      # Cross-compile, either
       # nixpkgs.crossSystem = {
         # config = "riscv64-unknown-linux-gnu"; system = "riscv64-linux";
       # };
+      # Or add `boot.binfmt.emulatedSystems = ["riscv64-linux"];` to your
+      # NixOS configurations
       disko.enableConfig = false; # nixpkgs' sd-image.nix use its built-in ext4
     }];
     machine_path = ./.;

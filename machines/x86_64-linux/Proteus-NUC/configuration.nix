@@ -35,5 +35,5 @@
     "d /srv/sync_work 0775 proteus users -   -"
   ];
   ## END systemd_tmpfiles.nix
-  # boot.binfmt.emulatedSystems = ["riscv64-linux"]; # Cross compilation
+  boot.binfmt.emulatedSystems = ["riscv64-linux"]; # Cross compilation
 }
