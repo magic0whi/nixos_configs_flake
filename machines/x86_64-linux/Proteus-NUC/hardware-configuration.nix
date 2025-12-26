@@ -23,7 +23,7 @@
   # `-r` destroys any snapshots and bookmarks more recent than the one
   # specified
   boot.initrd.systemd.services."zfs-rollback-root" = {
-    description = "Rollback zroot/local/root@blank in initrd";
+    description = "Rollback zroot/root@blank in initrd";
     wantedBy = ["zfs-import.target"];
     after = ["zfs-import-zroot.service"]; # Make sure zroot is imported
     before = ["sysroot.mount"]; # Make sure this happens before root is mounted
