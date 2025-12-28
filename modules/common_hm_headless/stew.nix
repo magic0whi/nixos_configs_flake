@@ -23,11 +23,13 @@
     gdu # Disk usage analyzer(replacement of `du`)
 
     ## Nix related
-    nix-output-monitor # Command `nom`, works just like `nix` with more fancy output
     hydra-check # Check hydra (nix's build farm) for the build status of a package
     nix-index # A small utility to index nix store paths
     nix-init # Generate nix derivation from url
     nix-melt # A TUI flake.lock viewer, ref: https://github.com/nix-community/nix-melt
+  ]
+  ++ lib.optionals (!stdenv.hostPlatform.isRiscV64) [ # TODO: Requires bootstrap GHC
+    nix-output-monitor # Command `nom`, works just like `nix` with more fancy output
     nix-tree # A TUI to visualize the dependency graph of a nix derivation, ref: https://github.com/utdemir/nix-tree
   ];
   ## START syncthing.nix
@@ -135,7 +137,7 @@
   ## END gpg.nix
   ## START catppuccin.nix
   catppuccin = { # Enable Catppuccin globally
-    enable = true;
+    enable = lib.mkDefault true;
     accent = myvars.catppuccin_accent;
     flavor = myvars.catppuccin_flavor;
   };

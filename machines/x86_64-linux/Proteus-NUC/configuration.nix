@@ -3,7 +3,7 @@
   age.identityPaths = ["/srv/sync_work/3keys/pgp2ssh.priv.key"];
   ## START iwd.nix
   networking.wireless.iwd.enable = true;
-  networking.wireless.iwd.settings.General.Country = "CN";
+  networking.wireless.iwd.settings.General.Country = "GB";
   systemd.services.iwd.serviceConfig.ExecStart = [
     "" # Leave a empty to remove previous ExecStarts
     "${config.networking.wireless.iwd.package}/libexec/iwd --nointerfaces 'wlan[0-9]'"

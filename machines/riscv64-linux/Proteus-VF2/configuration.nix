@@ -20,13 +20,5 @@
   services.sing-box.enable = true;
   services.sing-box.config_file = config.age.secrets."sb_client.json".path;
   ## END sing-box.nix
-  ## START systemd_tmpfiles.nix
-  systemd.tmpfiles.rules = [
-    # Grant 'rwx' to primary user via ACL. `getfacl /path` to show
-    "A /mnt/storage/data - - - - u:${myvars.username}:rwx"
-    # Optional: Default ACL so new files created there inherit these rights
-    # A+: Adds an ACL entry to the existing ones
-    "A+ /mnt/storage/data - - - - d:u:${myvars.username}:rwx"
-  ];
-  ## END systemd_tmpfiles.nix
+  catppuccin.enable = false;
 }

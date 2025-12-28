@@ -5,9 +5,14 @@
     (ripgrep.override {withPCRE2 = true;}) # search for files by its content, replacement of grep
   ];
   ## START zellij.nix
-  programs.zellij.enable = true;
+  programs.zellij = {
+    enable = true;
+    settings = {
+      keybinds._props.clear-defaults = true;
+    };
+  };
   home.shellAliases."zj" = "zellij";
-  xdg.configFile."zellij/config.kdl".source = "${myvars.secrets_dir}/zellij.kdl";
+  # xdg.configFile."zellij/config.kdl".source = "${myvars.secrets_dir}/zellij.kdl"; # TODO
   ## END zellij.nix
 
   home.sessionVariables = { # Environment variables that always set at login
@@ -49,7 +54,7 @@
       in lib.mkAfter ''export PATH="$PATH:${local_bin}:${go_bin}:${rust_bin}"'';
     };
     eza = { # A modern replacement for ‘ls’, useful in bash/zsh prompt, but not in nushell
-      enable = true;
+      enable = if pkgs.stdenv.hostPlatform.isRiscV64 then false else true;
       git = true;
       icons = "auto";
     };

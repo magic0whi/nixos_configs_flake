@@ -1,4 +1,4 @@
-{lib, pkgs, myvars, config, ...}: {
+{lib, pkgs, myvars, ...}: {
   system.stateVersion = if pkgs.stdenv.isDarwin then myvars.darwin_state_version else myvars.nixos_state_version;
   # Add my self-signed CA certificate to the system-wide trust store.
   security.pki.certificateFiles = [("${myvars.secrets_dir}/proteus_ca.pub.pem")];

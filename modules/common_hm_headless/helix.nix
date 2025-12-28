@@ -2,7 +2,8 @@
   programs.helix = {
     enable = true;
     defaultEditor = true;
-    extraPackages = with pkgs; [nil marksman nodePackages.vscode-json-languageserver];
+    extraPackages = with pkgs; [nodePackages.vscode-json-languageserver]
+    ++ lib.optionals (!stdenv.hostPlatform.isRiscV64) [nil marksman]; # TODO: Requires bootstrap GHC
     settings = {
       # theme = "gruvbox"; # Disable if use catpuccin
       editor = {
