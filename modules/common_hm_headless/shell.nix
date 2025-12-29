@@ -8,7 +8,115 @@
   programs.zellij = {
     enable = true;
     settings = {
-      keybinds._props.clear-defaults = true;
+      plugins = {
+        tab-bar.path = "tab-bar";
+        status-bar.path = "status-bar";
+        strider.path = "strider";
+        compact-bar.path = "compact-bar";
+      };
+      keybinds = {
+        _props.clear-defaults = true;
+        _children = [
+          {
+            shared_except = {
+              _args = ["locked"];
+              _children = [
+                {bind = {_args = ["Ctrl g"]; SwitchToMode = "Locked";};}
+                {bind = {_args = ["Ctrl q"]; Quit = {};};}
+                {bind = {_args = ["Alt n"]; NewPane = {};};}
+                {bind = {_args = ["Alt h" "Alt Left"]; MoveFocusOrTab = "Left";};}
+                {bind = {_args = ["Alt j" "Alt Down"]; MoveFocusOrTab = "Down";};}
+                # TODO
+              ];
+            };
+          }
+          {
+            shared_except = {
+              _args = ["normal" "locked"];
+              bind = {_args = ["Enter" "Esc"]; SwitchToMode = "Locked";};
+            };
+          }
+          # TODO
+        ];
+        # Uncomment this and adjust key if using copy_on_select=false
+        # normal.bind = {_args = ["Alt c"]; Copy = {};};
+        locked.bind = {_args = ["Ctrl g"]; SwitchToMode = "Normal";};
+        resize._children = [
+          {bind = {_args = ["Ctrl n"]; SwitchToMode = "Normal";};}
+          {bind = {_args = ["h" "Left"]; Resize = "Increase Left";};}
+          {bind = {_args = ["j" "Down"]; Resize = "Increase Down";};}
+          {bind = {_args = ["k" "Up"]; Resize = "Increase Up";};}
+          {bind = {_args = ["l" "Right"]; Resize = "Increase Right";};}
+          {bind = {_args = ["H"]; Resize = "Decrease Left";};}
+          {bind = {_args = ["J"]; Resize = "Decrease Down";};}
+          {bind = {_args = ["K"]; Resize = "Decrease Up";};}
+          {bind = {_args = ["L"]; Resize = "Decrease Right";};}
+          {bind = {_args = ["=" "+"]; Resize = "Increase";};}
+          {bind = {_args = ["-" "_"]; Resize = "Decrease";};}
+        ];
+        pane._children = [
+          {bind = {_args = ["Ctrl p"]; SwitchToMode = "Normal";};}
+          {bind = {_args = ["h" "Left"]; MoveFocus = "Left";};}
+          {bind = {_args = ["j" "Down"]; MoveFocus = "Down";};}
+          {bind = {_args = ["k" "Up"]; MoveFocus = "Up";};}
+          {bind = {_args = ["l" "Right"]; MoveFocus = "Right";};}
+          {bind = {_args = ["p"]; SwitchFocus = {};};}
+          {bind = {
+            _args = ["n"];
+            _children = [{NewPane = {};}{SwitchToMode = "Normal";}];
+          };}
+          {bind = {
+            _args = ["d"];
+            _children = [{NewPane = "Down";}{SwitchToMode = "Normal";}];
+          };}
+          {bind = {
+            _args = ["r"];
+            _children = [{NewPane = "Right";}{SwitchToMode = "Normal";}];
+          };}
+          {bind = {
+            _args = ["x"];
+            _children = [{CloseFocus = {};}{SwitchToMode = "Normal";}];
+          };}
+          {bind = {
+            _args = ["f"];
+            _children = [{ToggleFocusFullscreen = {};}{SwitchToMode = "Normal";}];
+          };}
+          {bind = {
+            _args = ["z"];
+            _children = [{TogglePaneFrames = {};}{SwitchToMode = "Normal";}];
+          };}
+          {bind = {
+            _args = ["w"];
+            _children = [{ToggleFloatingPanes = {};}{SwitchToMode = "Normal";}];
+          };}
+          {bind = {
+            _args = ["e"];
+            _children = [{TogglePaneEmbedOrFloating = {};}{SwitchToMode = "Normal";}];
+          };}
+          {bind = {
+            _args = ["c"];
+            _children = [{SwitchToMode = "RenamePane";}{PaneNameInput = 0;}];
+          };}
+        ];
+      # pane._children = [
+      #   {
+      #     bind = {
+      #       _args = ["e"];
+      #       _children = [
+      #         { TogglePaneEmbedOrFloating = {}; }
+      #         { SwitchToMode._args = ["locked"]; }
+      #       ];
+      #     };
+      #   }
+      #   {
+      #     bind = {
+      #       _args = ["left"];
+      #       MoveFocus = ["left"];
+      #     };
+      #   }
+      # ];
+      # TODO
+      };
     };
   };
   home.shellAliases."zj" = "zellij";

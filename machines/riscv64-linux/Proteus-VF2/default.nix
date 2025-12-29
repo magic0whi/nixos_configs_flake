@@ -1,7 +1,7 @@
 {inputs, mylib, myvars, system, ...}: let
   name = baseNameOf ./.;
   nixpkgs_modules = map mylib.relative_to_root [
-    "modules/secrets/common.nix"
+    # "modules/secrets/common.nix" # agenix.packages.riscv64-linux missing
     "modules/common"
     "modules/nixos_headless/_impermanence.nix"
     "modules/nixos_headless/stew.nix"
