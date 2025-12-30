@@ -227,6 +227,26 @@
         "type": "github"
       }
     },
+    "i915-sriov-dkms": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1766953301,
+        "narHash": "sha256-EEDGDAr/XndyGibUIoa+TClTQQwoH7/4hCbCd53aEVM=",
+        "owner": "strongtz",
+        "repo": "i915-sriov-dkms",
+        "rev": "8691bc86bbf6cbb53127676dece772cdeb55e7ec",
+        "type": "github"
+      },
+      "original": {
+        "owner": "strongtz",
+        "repo": "i915-sriov-dkms",
+        "type": "github"
+      }
+    },
     "impermanence": {
       "locked": {
         "lastModified": 1737831083,
@@ -469,6 +489,7 @@
         "deploy-rs": "deploy-rs",
         "disko": "disko",
         "home-manager": "home-manager",
+        "i915-sriov-dkms": "i915-sriov-dkms",
         "impermanence": "impermanence",
         "lanzaboote": "lanzaboote",
         "nix-darwin": "nix-darwin",

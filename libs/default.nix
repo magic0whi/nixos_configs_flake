@@ -44,12 +44,12 @@ in {
       inherit (inputs)
         home-manager
         nixos-generators
-        # mac-app-util
         impermanence
         lanzaboote
         agenix
         catppuccin
-        disko;
+        disko
+        i915-sriov-dkms;
       specialArgs = inputs // {inherit mylib myvars;};
     in {
       inherit system specialArgs;
@@ -65,15 +65,14 @@ in {
           nixpkgs_modules
       )
       ++ (if pkgs.stdenv.isDarwin then [
-          # mac-app-util.darwinModules.default
           agenix.darwinModules.default
         ] else [
           agenix.nixosModules.default
           nixos-generators.nixosModules.all-formats
-          # (lib.mkIf enable_persistence impermanence.nixosModules.impermanence)
           lanzaboote.nixosModules.lanzaboote
           catppuccin.nixosModules.catppuccin
           disko.nixosModules.disko
+          i915-sriov-dkms.nixosModules.default
         ]
         ++ (lib.optional enable_persistence impermanence.nixosModules.impermanence)
       )
@@ -95,7 +94,6 @@ in {
           home-manager.useGlobalPkgs = true;
           home-manager.useUserPackages = true;
           home-manager.users."${myvars.username}".imports = hm_modules
-          # ++ (lib.optional pkgs.stdenv.isDarwin mac-app-util.homeManagerModules.default)
           ++ [catppuccin.homeModules.catppuccin]
           ++ [(machine_path + "/_hm")];
         }

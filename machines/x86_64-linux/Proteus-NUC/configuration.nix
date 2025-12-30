@@ -36,4 +36,13 @@
   ];
   ## END systemd_tmpfiles.nix
   boot.binfmt.emulatedSystems = ["riscv64-linux"]; # Cross compilation
+  ## START sriov.nix
+  boot.extraModulePackages = with pkgs; [i915-sriov xe-sriov];
+  boot.kernelParams = [
+    "intel_iommu=on"
+    "xe.max_vfs=7"
+    "xe.force_probe=0x9a60" # cat /sys/devices/pci0000:00/0000:00:02.0/device
+    "module_blacklist=i915"
+  ];
+  ## END sriov.nix
 }

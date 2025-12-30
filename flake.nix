@@ -47,10 +47,6 @@
       url = "github:nix-darwin/nix-darwin";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    # mac-app-util = { # Fix .app programs installed by Nix on Mac not verified
-    #   url = "github:hraban/mac-app-util";
-    #   inputs.nixpkgs.follows = "nixpkgs";
-    # };
     catppuccin = {
       url = "github:catppuccin/nix";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -60,6 +56,10 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     nixos-hardware.url = "github:nixos/nixos-hardware";
+    i915-sriov-dkms = {
+      url = "github:strongtz/i915-sriov-dkms";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     # my private secrets, it's a private repository, you need to replace it with your own. TODO
     # use ssh protocol to authenticate via ssh-agent/ssh-key, and shallow clone to save time
     # mysecrets = {

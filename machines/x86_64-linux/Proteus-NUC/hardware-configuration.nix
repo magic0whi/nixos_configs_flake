@@ -1,4 +1,4 @@
-{config, modulesPath, lib, ...}: {
+{config, modulesPath, ...}: {
   imports = [(modulesPath + "/installer/scan/not-detected.nix")];
 
   boot.initrd.availableKernelModules = ["xhci_pci" "thunderbolt" "nvme" "uas" "sd_mod"];
@@ -6,8 +6,8 @@
   # boot.extraModulePackages = [config.boot.kernelPackages.qc71_laptop];
   boot.kernelModules = ["kvm-intel"];
   boot.kernelParams = [
-    "i915.enable_guc=2"
-    "i915.mitigations=off"
+    # "i915.enable_guc=2"
+    # "i915.mitigations=off"
     "mitigations=off"
     "bgrt_disable"
     # "quiet"
