@@ -36,9 +36,17 @@
       # Or add `boot.binfmt.emulatedSystems = ["riscv64-linux"];` to your
       # NixOS configurations
       disko.enableConfig = false; # nixpkgs' sd-image.nix use its built-in ext4
+      nixpkgs.overlays = [(_: prev: {
+        coreutils = prev.coreutils.overrideAttrs (_: prev: {
+          postPatch = prev.postPatch + ''
+            # Fails when build through cross compile
+            echo "int main() { return 77; }" > "gnulib-tests/test-free.c"
+          '';
+        });
+      })];
     }];
     machine_path = ./.;
-  # }));
+  # })); # For debug
   })).config.system.build.sdImage;
 in {
   _DEBUG = {inherit name nixpkgs_modules hm_modules myvars mylib;};
