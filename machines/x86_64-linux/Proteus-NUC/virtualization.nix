@@ -1,4 +1,4 @@
-{pkgs, ...}: {
+{pkgs, lib, ...}: {
   # Enable nested virtualization, required by security containers and nested vm.
   # This should be set per host in /hosts, not here.
   # - For AMD CPU, add "kvm-amd" to kernelModules.
@@ -26,6 +26,85 @@
       enable = true;
       qemu.swtpm.enable = true;
       qemu.vhostUserPackages = [pkgs.virtiofsd];
+      hooks.qemu."99-hugepages.sh" = pkgs.writeShellScript "99-hugepages.sh" ''
+        #!/usr/bin/env bash
+        ## START DEBUG
+        LOG=/var/log/libvirt/hooks-qemu.log
+        exec >>"$LOG" 2>&1
+        set -x
+
+        echo "---- $(date -Is) ----"
+        echo "argv: $0 $*"
+        env | sort
+        ## END DEBUG
+        set -eufo pipefail
+
+        DOMAIN_XML="$(cat)"
+        VM="$1"
+        OP="$2"
+        SUBOP="$3"
+
+        [ "$VM" = "win11" ] || exit 0 # Only for this VM
+
+        MEM_MIB=$((
+          $(printf '%s' "$DOMAIN_XML" \
+          | ${lib.getExe' pkgs.libxml2 "xmllint"} --xpath "string(//domain/memory)" -) / 1024
+        )) # Unit in xml is KiB
+        HP_SIZE_KB=$(${lib.getExe pkgs.gawk} '/Hugepagesize:/ { print $2 }' /proc/meminfo)
+        HP_SYSFS="/sys/kernel/mm/hugepages/hugepages-''${HP_SIZE_KB}kB/nr_hugepages"
+
+        STATE_DIR="/run/libvirt-hugepages"
+        STATE_FILE="$STATE_DIR/$VM.baseline"
+
+        pages_needed() {
+          echo $(((MEM_MIB * 1024) / HP_SIZE_KB))
+        }
+
+        get_current() {
+          cat "$HP_SYSFS"
+        }
+
+        set_target() {
+          local target="$1"
+          echo "$target" > "$HP_SYSFS"
+        }
+
+        alloc_if_needed() {
+          mkdir -p "$STATE_DIR"
+
+          local baseline current need target
+          current="$(get_current)"
+          baseline="$current"
+          echo "$baseline" > "$STATE_FILE"
+
+          need="$(pages_needed)"
+          target=$((baseline + need))
+
+          # Only grow pool if we don't already have enough
+          if [ "$current" -lt "$target" ]; then
+            set_target "$target"
+          fi
+        }
+
+        restore_baseline() {
+          [ -f "$STATE_FILE" ] || exit 0
+          local baseline
+          baseline="$(cat "$STATE_FILE")"
+
+          # Restore exactly to what it was before starting this VM
+          set_target "$baseline"
+          rm -f "$STATE_FILE"
+        }
+
+        case "$OP $SUBOP" in
+          "prepare begin")
+            alloc_if_needed
+            ;;
+          "release end")
+            restore_baseline
+            ;;
+        esac
+      '';
     };
     spiceUSBRedirection.enable = true;
 
