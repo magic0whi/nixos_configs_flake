@@ -28,15 +28,14 @@
       qemu.vhostUserPackages = [pkgs.virtiofsd];
       hooks.qemu."99-hugepages.sh" = pkgs.writeShellScript "99-hugepages.sh" ''
         #!/usr/bin/env bash
-        ## START DEBUG
-        LOG=/var/log/libvirt/hooks-qemu.log
-        exec >>"$LOG" 2>&1
-        set -x
-
-        echo "---- $(date -Is) ----"
-        echo "argv: $0 $*"
-        env | sort
-        ## END DEBUG
+        # ## START DEBUG
+        # LOG=/var/log/libvirt/hooks-qemu.log
+        # exec >>"$LOG" 2>&1
+        # set -x
+        # echo "---- $(date -Is) ----"
+        # echo "argv: $0 $*"
+        # env | sort
+        # ## END DEBUG
         set -eufo pipefail
 
         DOMAIN_XML="$(cat)"
