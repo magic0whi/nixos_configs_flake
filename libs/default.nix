@@ -14,8 +14,8 @@ in {
       (builtins.readDir p)
   ));
   ## System dependent functions
-  mk_for_system = system: let
-    pkgs = inputs.nixpkgs.legacyPackages.${system};
+  mk_for_system = _system: let
+    pkgs = inputs.nixpkgs.legacyPackages.${_system};
   in {
     # Create a symlink of dir/file out of /nix/store
     mk_out_of_store_symlink = path: let
@@ -39,7 +39,8 @@ in {
       nixpkgs_modules,
       hm_modules,
       machine_path,
-      enable_persistence ? true
+      enable_persistence ? true,
+      system ? _system
     }: let
       inherit (inputs)
         home-manager

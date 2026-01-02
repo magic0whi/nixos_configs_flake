@@ -19,6 +19,7 @@
   ];
   nixos_system = inputs.nixpkgs.lib.nixosSystem (mylib.gen_system_args {
     inherit name mylib myvars nixpkgs_modules hm_modules;
+    system = "x86_64-linux"; # Cross-compile
     machine_path = ./.;
   });
   nixos_sd_image = (inputs.nixpkgs.lib.nixosSystem (mylib.gen_system_args {
@@ -31,10 +32,8 @@
       imports = [(inputs.nixos-hardware + "/starfive/visionfive/v2/sd-image-installer.nix")];
       sdImage.compressImage = false;
       # Cross-compile, either
-      nixpkgs.crossSystem = {
-        config = "riscv64-unknown-linux-gnu";
-        system = "riscv64-linux";
-      }; # Or add `boot.binfmt.emulatedSystems = ["riscv64-linux"];` to your
+      nixpkgs.buildPlatform = "x86_64-linux";
+      # Or add `boot.binfmt.emulatedSystems = ["riscv64-linux"];` to your
       # NixOS configurations
       disko.enableConfig = false; # nixpkgs' sd-image.nix use its built-in ext4
       nixpkgs.overlays = [(_: prev: let
@@ -48,6 +47,9 @@
       in {
         coreutils = prev.coreutils.overrideAttrs patch_test_free;
         findutils = prev.findutils.overrideAttrs patch_test_free;
+        perl540Packages = prev.perl540Packages.overrideScope (_: pprev: {
+          Test2Harness = pprev.Test2Harness.overrideAttrs (_: {doCheck = false;});
+        });
       })];
     }];
   # })); # For debug
