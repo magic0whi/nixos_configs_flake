@@ -17,5 +17,5 @@
   networking.useDHCP = lib.mkDefault true;
   networking.hostId = "953b2f69"; # ZFS requires this
 
-  nixpkgs.hostPlatform = "riscv64-linux";
+  # nixpkgs.hostPlatform = "riscv64-linux";
 }

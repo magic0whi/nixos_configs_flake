@@ -24,34 +24,38 @@
   nixos_sd_image = (inputs.nixpkgs.lib.nixosSystem (mylib.gen_system_args {
     inherit name mylib myvars hm_modules;
     enable_persistence = false;
+    machine_path = ./.;
     nixpkgs_modules = nixpkgs_modules ++ [{
       # imports = ["${inputs.nixos-hardware}/starfive/visionfive/v2/sd-image-installer.nix"];
       # Or
       imports = [(inputs.nixos-hardware + "/starfive/visionfive/v2/sd-image-installer.nix")];
       sdImage.compressImage = false;
       # Cross-compile, either
-      # nixpkgs.crossSystem = {
-        # config = "riscv64-unknown-linux-gnu"; system = "riscv64-linux";
-      # };
-      # Or add `boot.binfmt.emulatedSystems = ["riscv64-linux"];` to your
+      nixpkgs.crossSystem = {
+        config = "riscv64-unknown-linux-gnu";
+        system = "riscv64-linux";
+      }; # Or add `boot.binfmt.emulatedSystems = ["riscv64-linux"];` to your
       # NixOS configurations
       disko.enableConfig = false; # nixpkgs' sd-image.nix use its built-in ext4
-      nixpkgs.overlays = [(_: prev: {
-        coreutils = prev.coreutils.overrideAttrs (_: prev: {
+      nixpkgs.overlays = [(_: prev: let
+        patch_test_free = _: prev: {
           postPatch = prev.postPatch + ''
+
             # Fails when build through cross compile
             echo "int main() { return 77; }" > "gnulib-tests/test-free.c"
           '';
-        });
+        };
+      in {
+        coreutils = prev.coreutils.overrideAttrs patch_test_free;
+        findutils = prev.findutils.overrideAttrs patch_test_free;
       })];
     }];
-    machine_path = ./.;
   # })); # For debug
   })).config.system.build.sdImage;
 in {
   _DEBUG = {inherit name nixpkgs_modules hm_modules myvars mylib;};
   nixos_configurations.${name} = nixos_system;
-  # generate iso image
+  # Generate iso image
   packages.${name} = nixos_sd_image;
   deploy-rs_node.${name} = {
     hostname = myvars.networking.hosts_addr.${name}.ipv4;
