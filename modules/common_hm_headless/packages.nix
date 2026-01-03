@@ -4,7 +4,6 @@
     keepassxc # Offline password manager, provides both CLI and GUI
     just # A command runner like make, but simpler
 
-    xmrig # Benchmark
     # Misc
     # cowsay
     # gnumake

@@ -9,8 +9,8 @@ in {
   imports = mylib.scan_path ./.;
   home.packages = with pkgs; [
     nvtopPackages.intel
-    # embedded development
-    minicom
+    minicom # embedded development
+    xmrig # Heating & Mining
   ];
   wayland.windowManager.hyprland = {
     # nvidia = true; # Sync prime
