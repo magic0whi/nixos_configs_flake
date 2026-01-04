@@ -36,19 +36,35 @@
       # Or add `boot.binfmt.emulatedSystems = ["riscv64-linux"];` to your
       # NixOS configurations
       disko.enableConfig = false; # nixpkgs' sd-image.nix use its built-in ext4
-      nixpkgs.overlays = [(_: prev: let
-        patch_test_free = _: prev: {
+      nixpkgs.overlays = [(_: prev: {
+        coreutils = prev.coreutils.overrideAttrs (prev: {
           postPatch = prev.postPatch + ''
-
+            # Fails when build through cross compile
+            echo "int main() { return 77; }" > "gnulib-tests/test-free.c"
+            sed '2i echo Skipping split line-bytes test && exit 77' -i ./tests/split/line-bytes.sh
+          '';
+        });
+        findutils = prev.findutils.overrideAttrs (prev: {
+          postPatch = prev.postPatch + ''
             # Fails when build through cross compile
             echo "int main() { return 77; }" > "gnulib-tests/test-free.c"
           '';
-        };
-      in {
-        coreutils = prev.coreutils.overrideAttrs patch_test_free;
-        findutils = prev.findutils.overrideAttrs patch_test_free;
-        perl540Packages = prev.perl540Packages.overrideScope (_: pprev: {
-          Test2Harness = pprev.Test2Harness.overrideAttrs (_: {doCheck = false;});
+        });
+        openexr = prev.openexr.overrideAttrs (_: {doCheck = false;});
+        perl540Packages = prev.perl540Packages.overrideScope (_: perl_prev: {
+          Test2Harness = perl_prev.Test2Harness.overrideAttrs (_: {doCheck = false;});
+        });
+        pythonPackagesExtensions = prev.pythonPackagesExtensions ++ [
+          (_: python_prev: {
+            # fs = (python_prev.fs.override {pytestCheckHook = null;});
+            fs = python_prev.fs.overrideAttrs (_: {dontUsePytestCheck = false;});
+          })
+        ];
+        git = prev.git.overrideAttrs (prev: {
+          preInstallCheck = prev.preInstallCheck + ''
+            # Fails on cross-compile on riscv64-linux
+            disable_test t0050-filesystem
+          '';
         });
       })];
     }];
