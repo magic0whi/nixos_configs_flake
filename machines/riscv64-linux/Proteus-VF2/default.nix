@@ -63,6 +63,16 @@
           preInstallCheck = prev.preInstallCheck + ''
             # Fails on cross-compile on riscv64-linux
             disable_test t0050-filesystem
+            disable_test t4200-rerere
+          '';
+        });
+        rsync = prev.rsync.overrideAttrs (prev: {
+          passthru = prev.passthru // {tests = {};};
+        });
+        elfutils = prev.elfutils.overrideAttrs (prev: {
+          postPatch = prev.postPatch + ''
+            # Fails when build through cross-compile
+            sed '2i echo Skipping run strip reloc ko && exit 77' -i ./tests/run-strip-reloc-ko.sh
           '';
         });
       })];
