@@ -28,7 +28,6 @@
 
     # System call monitoring
     strace # system call monitoring
-    ltrace # library call monitoring
     # tcpdump # network sniffer
     lsof # list open files
 
@@ -54,6 +53,9 @@
     parted
     cryptsetup # dm-crypt tools
     # nfs-utils # Linux user-space NFS utilities
+  ]
+  ++ lib.optionals (!stdenv.hostPlatform.isRiscV64) [
+    ltrace # library call monitoring
   ];
   # BCC - Tools for BPF-based Linux IO analysis, # networking, monitoring, and more.
   # Ref: https://github.com/iovisor/bcc

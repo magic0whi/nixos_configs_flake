@@ -36,7 +36,7 @@
       # Or add `boot.binfmt.emulatedSystems = ["riscv64-linux"];` to your
       # NixOS configurations
       disko.enableConfig = false; # nixpkgs' sd-image.nix use its built-in ext4
-      nixpkgs.overlays = [(_: prev: {
+      nixpkgs.overlays = [(final: prev: {
         coreutils = prev.coreutils.overrideAttrs (prev: {
           postPatch = prev.postPatch + ''
             # Fails when build through cross compile
@@ -57,6 +57,7 @@
         pythonPackagesExtensions = prev.pythonPackagesExtensions ++ [
           (_: python_prev: {
             fs = (python_prev.fs.override {pytestCheckHook = null;});
+            hypothesis = (python_prev.hypothesis.override {pytestCheckHook = null;});
           })
         ];
         git = prev.git.overrideAttrs (prev: {
@@ -74,6 +75,17 @@
             # Fails when build through cross-compile
             sed '2i echo Skipping run strip reloc ko && exit 77' -i ./tests/run-strip-reloc-ko.sh
           '';
+        });
+        yascreen = prev.yascreen.overrideAttrs (prev: {
+          postPatch = (prev.postPatch or "") + ''
+            # Replace 'install -Ds' with 'install -D' (no strip)
+            substituteInPlace Makefile.main \
+              --replace '$(INSTALL) -Ds' '$(INSTALL) -D'
+          '';
+          # Force the build to use the correctly prefixed AR tool from the stdenv
+          makeFlags = (prev.makeFlags or []) ++ [
+            "AR=${final.stdenv.cc.targetPrefix}gcc-ar"
+          ];
         });
       })];
     }];
