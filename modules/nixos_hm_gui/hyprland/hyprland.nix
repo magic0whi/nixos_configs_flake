@@ -177,20 +177,20 @@ in {
         vrr = 1;
       };
       windowrule = [
-        "float,class:^(yad|org\.pulseaudio\.pavucontrol|imv|qemu)$"
-        "float,class:^(thunar)$,title:^(File Operation Progress)$"
+        "match:class ^yad|org\.pulseaudio\.pavucontrol|imv|qemu$,float true"
+        "match:class ^thunar$, match:title ^File Operation Progress$,float true"
 
-        "idleinhibit focus,class:^(firefox)$"
-        "float,class:^(firefox)$,title:^(Picture-in-Picture)$"
-        "pin,class:^(firefox)$,title:^(Picture-in-Picture)$"
-        "size 480 270,class:^(firefox)$,title:^(Picture-in-Picture)$"
-        "move 100%-w-5 100%-w-5,class:^(firefox)$,title:^(Picture-in-Picture)$"
+        "match:class ^firefox$,idle_inhibit focus"
+        "match:class ^firefox$,match:title ^Picture-in-Picture$,float true"
+        "match:class ^firefox$,match:title ^Picture-in-Picture$,pin true"
+        "match:class ^firefox$,match:title ^Picture-in-Picture$,size 480 270"
+        "match:class ^firefox$,match:title ^Picture-in-Picture$,move 100%-w-5 100%-w-5"
 
-        "float, class:^(anki)$, title:(HyperTTS: Add Audio \(Collection\))"
-        "size 1090 640, class:(anki), title:(HyperTTS: Add Audio \(Collection\))"
+        "match:class ^anki$,match:title ^HyperTTS: Add Audio \(Collection\)$,float true"
+        "match:class ^anki$,match:title ^HyperTTS: Add Audio \(Collection\)$,size 1090 640"
 
-        "float, class:^(org\.inkscape\.Inkscape)$, title:^(Function Plotter)$"
-        "float, class:^(org\.inkscape\.Inkscape)$, title:^(Function Plotter)$"
+        "match:class ^org\.inkscape\.Inkscape$,match:title ^Function Plotter$,float true"
+        "match:class ^org\.inkscape\.Inkscape$,match:title ^Function Plotter$,float true"
       ];
       xwayland.force_zero_scaling = true; # This will get rid of the pixelated look, but will not scale applications properly. To do this, each toolkit has its own mechanism.
     };
