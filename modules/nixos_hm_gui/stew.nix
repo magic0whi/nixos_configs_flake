@@ -1,6 +1,7 @@
 {pkgs, ...}: {
   home.packages = with pkgs; [
     blender
+    telegram-desktop # Instant messaging
     # foliate # e-book viewer(.epub/.mobi/...),do not support .pdf
 
     ## Custom Hardened Packages

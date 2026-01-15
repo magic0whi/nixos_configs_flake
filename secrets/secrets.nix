@@ -40,4 +40,5 @@ in {
   "aria2rpc.priv.age".publicKeys = machines ++ [Proteus-NUC];
   "sb_Proteus-NixOS-1.json.age".publicKeys = machines ++ google_vps;
   "sb_Proteus-NixOS-6.json.age".publicKeys = machines ++ huawei_vps;
+  "proteus-ap.key.age".publicKeys = machines ++ [Proteus-Desktop];
 }

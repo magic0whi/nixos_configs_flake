@@ -21,4 +21,27 @@
   ];
   ## END systemd_tmpfiles.nix
   boot.binfmt.emulatedSystems = ["riscv64-linux"]; # Cross compilation
+  ## START hostapd.nix
+  age.secrets."proteus-ap.key" = {
+    file = "${myvars.secrets_dir}/proteus-ap.key.age";
+    mode = "0600"; owner = myvars.username;
+  };
+  services.hostapd = {
+    # enable = true;
+    radios.Proteus-AP = {
+      band = "5g";
+      channel = 0; # `0` use ACS
+      countryCode = "GB";
+      networks = {
+        wlp2s0 = {
+          ssid = "Proteus-AP";
+          authentication = {
+            pairwiseCiphers = ["GCMP" "GCMP-256"];
+            saePasswordsFile = config.age.secrets."proteus-ap.key".path;
+          };
+        };
+      };
+    };
+  };
+  ## END hostapd.nix
 }

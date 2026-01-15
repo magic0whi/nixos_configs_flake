@@ -83,12 +83,12 @@ in {
       "Microsoft Word" = 462054704;
       OneDrive = 823766827;
       QQ = 451108668;
+      Telegram = 747648890; # Can be managed by home-manager (home-manager's version crash when sending image)
       WeChat = 836500024;
       "WhatsApp Messenger" = 310633997;
 
       # "GeoGebra Calculator Suite" = 1504416652; # Managed by home-manager
       # LocalSend = 1661733229; # Managed by home-manager
-      # Telegram = 747648890; # Managed by home-manager
       # sing-box = 6673731168; # Older than sfm in brew cask
     };
     taps = [

@@ -1,7 +1,6 @@
 {pkgs, lib, ...}: {
   home.packages = with pkgs; [
     localsend # Alternative to AirDrop
-    telegram-desktop # Instant messaging
     # discord # Update too frequently, use the web version instead
 
     libnotify # notify-send
