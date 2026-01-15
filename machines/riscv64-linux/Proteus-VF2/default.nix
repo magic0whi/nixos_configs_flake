@@ -51,8 +51,25 @@
           '';
         });
         openexr = prev.openexr.overrideAttrs (_: {doCheck = false;});
-        perl540Packages = prev.perl540Packages.overrideScope (_: perl_prev: {
+        # perl540Packages = prev.perl540Packages.overrideScope (_: perl_prev: {
+        # });
+        perlPackages = prev.perlPackages.overrideScope (_: perl_prev: {
           Test2Harness = perl_prev.Test2Harness.overrideAttrs (_: {doCheck = false;});
+          MIMECharset = prev.perlPackages.MIMECharset.overrideAttrs (prev: {
+            # 1. Force removing the bundled inc/ directory so it uses the system Module::Install
+            #    This bypasses the bundled Makefiles that trigger the Fcntl error.
+            preConfigure = ''
+              rm -rf inc
+            '';
+
+            # 2. Ensure Module::Install is available as a build dependency
+            nativeBuildInputs = (prev.nativeBuildInputs or []) ++ [
+              final.perlPackages.ModuleInstall
+            ];
+          });
+          SGMLSpm = prev.perlPackages.SGMLSpm.overrideAttrs (prev: {
+            nativeBuildInputs = (prev.nativeBuildInputs or []) ++ [final.perlPackages.ModuleBuild];
+          });
         });
         pythonPackagesExtensions = prev.pythonPackagesExtensions ++ [
           (_: python_prev: {
@@ -85,6 +102,13 @@
           # Force the build to use the correctly prefixed AR tool from the stdenv
           makeFlags = (prev.makeFlags or []) ++ [
             "AR=${final.stdenv.cc.targetPrefix}gcc-ar"
+          ];
+        });
+        adcli = prev.adcli.overrideAttrs (prev: {
+          # Force the check to 'no' (not present) to bypass the error
+          # Or 'yes' if you are somehow providing it in the sysroot (unlikely for cross)
+          configureFlags = (prev.configureFlags or []) ++ [
+            "ac_cv_file__usr_share_selinux_devel_Makefile=no"
           ];
         });
       })];

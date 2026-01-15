@@ -1,7 +1,7 @@
 {
   disko.devices.disk.main = {
     type = "disk";
-    device = "/dev/disk/by-id/scsi-0Google_PersistentDisk_instance-20251215-090927";
+    device = "/dev/disk/by-id/scsi-0Google_PersistentDisk_proteus-nixos-5";
     content = {
       type = "gpt";
       partitions = {
