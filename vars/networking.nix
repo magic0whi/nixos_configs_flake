@@ -7,7 +7,7 @@ _: {
     # ============================================
     Proteus-MBP14M4P.ipv4 = "100.109.173.125";
     Proteus-NUC = {/* Notebook */iface = "wlo1"; ipv4 = "100.64.161.20";};
-    Proteus-Desktop.ipv4 = "100.89.227.22";
+    Proteus-Desktop = {iface = "enp4s0"; ipv4 = "100.89.227.22";};
 
     # ============================================
     # Other VMs and Physical Machines
