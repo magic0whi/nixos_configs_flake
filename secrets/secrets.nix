@@ -32,7 +32,8 @@ let
 in {
   # To see & edit encrypted file, run:
   # agenix -e sb_client.json.age -i <(pgp2ssh <<< <(gpg -ao - --export-secret-subkeys subkey_with_[A]\!) <<< 1 2>&1 | awk 'BEGIN { A=0; S=0; } /BEGIN OPENSSH PRIVATE KEY/ { A=1; } { if (A==1) { print; } }')
-  "sb_client.json.age".publicKeys = machines ++ [Proteus-NUC Proteus-Desktop];
+  "sb_client.json.age".publicKeys = machines;
+  "sb_client_linux.json.age".publicKeys = machines ++ [Proteus-NUC Proteus-Desktop];
   "syncthing_Proteus-MBP14M4P.priv.pem.age".publicKeys = machines;
   "syncthing_proteus-nuc.priv.pem.age".publicKeys = machines ++ [Proteus-NUC];
   "syncthing_proteus-desktop.priv.pem.age".publicKeys = machines ++ [Proteus-Desktop];

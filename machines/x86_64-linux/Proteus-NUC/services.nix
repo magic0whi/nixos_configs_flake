@@ -291,4 +291,16 @@ in {
       }];
     };
   };
+  ## START minio.nix
+  # age.secrets."minio/private.key" = {
+  #   file = "${myvars.secrets_dir}/proteus_server.priv.pem.age";
+  #   mode = "0500"; owner = config.systemd.services.minio.serviceConfig.User;
+  # };
+  # # TODO: public.crt in secretsDir/minio
+  # services.minio = {
+  #   enable = true;
+  #   region = "us-east-1"; # TODO
+  #   certificatesDir = "${config.age.secertsDir}/minio";
+  # };
+  ## END minio.nix
 }

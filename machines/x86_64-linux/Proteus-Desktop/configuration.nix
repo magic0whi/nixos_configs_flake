@@ -2,8 +2,8 @@
   wlan_iface = "wlp0s20u9";
 in {
   ## START sing-box.nix
-  age.secrets."sb_client.json" = {
-    file = "${myvars.secrets_dir}/sb_client.json.age";
+  age.secrets."sb_client_linux.json" = {
+    file = "${myvars.secrets_dir}/sb_client_linux.json.age";
     mode = "0000"; owner = "root";
   };
   networking.firewall = {
@@ -11,7 +11,7 @@ in {
     allowedUDPPorts = [2080];
   };
   services.sing-box.enable = true;
-  services.sing-box.config_file = config.age.secrets."sb_client.json".path;
+  services.sing-box.config_file = config.age.secrets."sb_client_linux.json".path;
   ## END sing-box.nix
   ## START systemd_tmpfiles.nix
   systemd.tmpfiles.rules = [
