@@ -1,4 +1,4 @@
-{pkgs, lib, config, myvars, ...}: let
+{pkgs, lib, config, myvars, mylib, ...}: let
   server_pub_crt = "${myvars.secrets_dir}/proteus_server.pub.pem";
   server_priv_crt = config.age.secrets."proteus_server.priv.pem".path;
 in {
@@ -292,15 +292,34 @@ in {
     };
   };
   ## START minio.nix
-  # age.secrets."minio/private.key" = {
-  #   file = "${myvars.secrets_dir}/proteus_server.priv.pem.age";
-  #   mode = "0500"; owner = config.systemd.services.minio.serviceConfig.User;
-  # };
-  # # TODO: public.crt in secretsDir/minio
-  # services.minio = {
-  #   enable = true;
-  #   region = "us-east-1"; # TODO
-  #   certificatesDir = "${config.age.secertsDir}/minio";
-  # };
+  age.secrets = {
+    "minio/private.key" = {
+      file = "${myvars.secrets_dir}/proteus_server.priv.pem.age";
+      mode = "0500"; owner = config.systemd.services.minio.serviceConfig.User;
+    };
+    "minio/minio_root_credentials.env" = {
+      file = "${myvars.secrets_dir}/minio_root_credentials.env.age";
+      mode = "0500"; owner = config.systemd.services.minio.serviceConfig.User;
+    };
+  };
+  # TODO: public.crt in secretsDir/minio
+  services.minio = {
+    enable = true;
+    region = "us-east-1"; # TODO
+    rootCredentialsFile = config.age.secrets."minio/minio_root_credentials.env".path;
+    certificatesDir = "${config.age.secretsDir}/minio";
+  };
+  # TLS: Copy public.crt to agenix's secret dir
+  systemd.services.minio.serviceConfig.ExecStartPre = [
+    # `+` prefix let the command run with root user
+    "+${pkgs.writeShellScript "link-public-crt" ''
+      mkdir -p /run/agenix/minio # Ensure the directory exists
+      # Copy the file from Nix store to the runtime path, MinIO requires both
+      # private key and public key's file type must same
+      cp -f ${myvars.secrets_dir}/proteus_server.pub.pem /run/agenix/minio/public.crt
+      chown minio: /run/agenix/minio/public.crt
+      chmod 644 /run/agenix/minio/public.crt
+    ''}"
+  ];
   ## END minio.nix
 }
