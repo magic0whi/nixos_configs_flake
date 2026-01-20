@@ -79,9 +79,7 @@ in {
     prefixLength = 24;
   }];
   # Tell systemd-resolved NOT to listen on port 53 (Stub Listener)
-  services.resolved.extraConfig = ''
-    DNSStubListener=no
-  '';
+  services.resolved.settings.Resolve.DNSStubListener = false;
   # Ensure dnsmasq starts AFTER resolved to avoid race conditions
   systemd.services.dnsmasq.after = ["systemd-resolved.service"];
   services.dnsmasq = {

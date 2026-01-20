@@ -1,4 +1,4 @@
-{pkgs, deploy-rs, pgp2ssh, ...}: {
+{pkgs, deploy-rs, pgp2ssh, myvars, ...}: {
   programs.yt-dlp.enable = if pkgs.stdenv.hostPlatform.isRiscV64 then false else true;
   home.packages = with pkgs; [
     keepassxc # Offline password manager, provides both CLI and GUI
@@ -57,7 +57,10 @@
   ++ (if stdenv.hostPlatform.isRiscV64 then
     [pkgs.pkgs.deploy-rs]
   else [
-    deploy-rs.packages.${pkgs.stdenv.hostPlatform.system}.deploy-rs
+    # https://github.com/serokell/deploy-rs/issues/355#issuecomment-3685955253
+    (deploy-rs.packages.${pkgs.stdenv.hostPlatform.system}.deploy-rs.overrideAttrs (_: {
+      patches = ["${myvars.secrets_dir}/deploy-rs-nix-2-33.patch"];
+    }))
     pgp2ssh.packages.${pkgs.stdenv.hostPlatform.system}.pgp2ssh
   ]);
 }
