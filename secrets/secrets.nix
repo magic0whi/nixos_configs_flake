@@ -37,7 +37,7 @@ in {
   "syncthing_Proteus-MBP14M4P.priv.pem.age".publicKeys = machines;
   "syncthing_proteus-nuc.priv.pem.age".publicKeys = machines ++ [Proteus-NUC];
   "syncthing_proteus-desktop.priv.pem.age".publicKeys = machines ++ [Proteus-Desktop];
-  "proteus_server.priv.pem.age".publicKeys = machines ++ [Proteus-NUC];
+  "proteus_server.priv.pem.age".publicKeys = machines ++ [Proteus-NUC] ++ google_vps ++ huawei_vps;
   "aria2rpc.priv.age".publicKeys = machines ++ [Proteus-NUC];
   "sb_Proteus-NixOS-1.json.age".publicKeys = machines ++ google_vps;
   "sb_Proteus-NixOS-6.json.age".publicKeys = machines ++ huawei_vps;
