@@ -79,15 +79,11 @@ just <host nickname>
 ### Remote deployment
 
 ```bash
-deploy [-s] \
---targets /home/proteus/nixos_configs_flake#Proteus-NUC \
---targets /home/proteus/nixos_configs_flake#Proteus-Desktop \
---targets /home/proteus/nixos_configs_flake#Proteus-NixOS-1 \
---targets /home/proteus/nixos_configs_flake#Proteus-NixOS-2 \
---targets /home/proteus/nixos_configs_flake#Proteus-NixOS-3 \
---targets /home/proteus/nixos_configs_flake#Proteus-NixOS-4 \
---targets /home/proteus/nixos_configs_flake#Proteus-NixOS-5 \
---targets /home/proteus/nixos_configs_flake#Proteus-NixOS-6
+deploy [-s] --targets \
+  /home/proteus/nixos_configs_flake#Proteus-NUC \
+  /home/proteus/nixos_configs_flake#Proteus-Desktop \
+  /home/proteus/nixos_configs_flake#Proteus-NixOS-{1..6} \
+-- --show-trace --verbose
 ```
 
 ### List ZFS volumes
