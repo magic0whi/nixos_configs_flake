@@ -48,6 +48,7 @@
         special-visible-only = true; # special workspaces will be shown only if visible.
         window-rewrite-default = "&#xf059;"; # nf-fa-question_circle
         window-rewrite = {
+          "class<.virt-manager-wrapped>" = "&#xeb7b;"; # nf-cod-vm_running
           "class<ario>" = "&#xf0386;"; # music_circle
           "class<blender>" = "&#xf00ab;"; # blender_software
           "class<blueman-manager>" = "&#xf293;"; # nf-fa-bluetooth
@@ -57,7 +58,7 @@
           "class<google-chrome>" = "&#xf268;"; # nf-fa-chrome
           "class<hyprland-share-picker>" = "&#xf0496;"; # share
           "class<imv>" = "&#xf02e9;"; # image
-          "class<localsend>" = "&#xf04b8;"; # soccer
+          "class<localsend|localsend_app>" = "&#xf04b8;"; # soccer
           "class<mpv>" = "&#xf36e;"; # linux-mpv
           "class<org.fcitx.fcitx5-config-qt>" = "&#xf09f9;"; # keyboard_settings
           "class<org.gnome.Nautilus|Thunar>" = "&#xf024b;"; # folder
