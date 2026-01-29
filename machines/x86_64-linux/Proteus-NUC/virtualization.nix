@@ -9,11 +9,12 @@
   #   boot.extraModprobeConfig = "options kvm_intel nested=1"; # for intel cpu
   # boot.kernelModules = ["vfio-pci"];
   networking.firewall.trustedInterfaces = ["virbr0"];
+  systemd.services.docker.path = [pkgs.nftables];
   virtualisation = {
     docker = {
       enable = true;
       daemon.settings = {
-        # firewall-backend = "nftables"; # Waiting for docker 29
+        firewall-backend = "nftables"; # Requires >= docker 29
         # Enables pulling using containerd, which supports restarting from a
         # partial pull, ref https://docs.docker.com/storage/containerd/
         features = {containerd-snapshotter = true;};

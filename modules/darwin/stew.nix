@@ -113,6 +113,7 @@ in {
       "obs"
       # "ibkr"
       "trader-workstation"
+      "thinkorswim"
 
       # Development
       # "miniforge" # Miniconda's community-driven distribution
