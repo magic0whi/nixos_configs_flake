@@ -11,6 +11,7 @@ in {
     nvtopPackages.intel
     minicom # embedded development
     xmrig xmrig-cuda # Heating & Mining
+    chezmoi
   ];
   wayland.windowManager.hyprland = {
     # nvidia = true; # Sync prime

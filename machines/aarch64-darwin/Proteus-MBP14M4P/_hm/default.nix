@@ -1,6 +1,9 @@
 {mylib, pkgs, ...}: {
   imports = mylib.scan_path ./.;
-  home.packages = [pkgs.xmrig/*Heating & Mining*/];
+  home.packages = with pkgs; [
+    xmrig # Heating
+    chezmoi
+  ];
   programs = {
     aerospace.settings.workspace-to-monitor-force-assignment = {
       "7" = ["C340SCA"];
