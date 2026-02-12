@@ -30,7 +30,7 @@ in {
     client.enable = true;
     # openFirewall = true;
     settings = {
-      ExitNodes = "{GB}";
+      # ExitNodes = "{GB}";
       ExitPolicy = ["accept *:*"];
       AvoidDiskWrites = 1;
       HardwareAccel = 1;
