@@ -1,11 +1,15 @@
 {pkgs, lib, config, myvars, ...}: let
   server_pub_crt = "${myvars.secrets_dir}/proteus_server.pub.pem";
-  server_priv_crt = config.age.secrets."proteus_server.priv.pem".path;
-in {
-  age.secrets."proteus_server.priv.pem" = {
+  server_priv_crt_base = {
     file = "${myvars.secrets_dir}/proteus_server.priv.pem.age";
-    mode = "0500";
-    owner = myvars.username;
+    mode = "0400";
+  };
+  server_priv_crt_proteus = config.age.secrets."proteus_server.priv.pem".path;
+  server_priv_crt_postgresql = config.age.secrets."postgresql_server.priv.pem".path;
+in {
+  age.secrets."proteus_server.priv.pem" = server_priv_crt_base // {owner = myvars.username;};
+  age.secrets."postgresql_server.priv.pem" = server_priv_crt_base // {
+    owner = config.systemd.services.postgresql.serviceConfig.User;
   };
   networking.firewall = {
     allowedTCPPorts = [
@@ -54,7 +58,7 @@ in {
         # objectClass: olcGlobal
         olcLogLevel = ["stats"];
         olcTLSCertificateFile = server_pub_crt;
-        olcTLSCertificateKeyFile = server_priv_crt;
+        olcTLSCertificateKeyFile = server_priv_crt_proteus;
         olcTLSCipherSuite = "DEFAULT:!kRSA:!kDHE";
         olcTLSProtocolMin = "3.3"; # 3.4 for tls1.3
 
@@ -280,15 +284,41 @@ in {
         address = "0.0.0.0";
         enable_https = true;
         certificate_file = server_pub_crt;
-        certificate_key_file = server_priv_crt;
+        certificate_key_file = server_priv_crt_proteus;
       }];
       webdavd.bindings = [{
         address = "0.0.0.0";
         port = 443;
         enable_https = true;
         certificate_file = server_pub_crt;
-        certificate_key_file = server_priv_crt;
+        certificate_key_file = server_priv_crt_proteus;
       }];
     };
+  };
+  services.postgresql = {
+    enable = true;
+    package = pkgs.postgresql.override {ldapSupport = true;};
+    enableJIT = true;
+    enableTCPIP = true;
+    settings = {
+      ssl = true;
+      ssl_cert_file = server_pub_crt;
+      ssl_key_file = server_priv_crt_postgresql;
+    };
+    ensureUsers = [{
+      name = "proteus";
+      ensureClauses = {
+        login = true;
+        # superuser = true;
+        createdb = true;
+      };
+    }];
+    ensureDatabases = ["mydatabase"]; # TODO: Learn
+    authentication = ''
+      #type database DBuser auth-method [auth-options]
+      local all all trust
+      host all all 100.64.0.0/10 ldap ldapurl="ldaps://proteus-nuc.tailba6c3f.ts.net:636/ou=People,dc=tailba6c3f,dc=ts,dc=net?uid?sub"
+      host all all fd7a:115c:a1e0::/48 ldap ldapurl="ldaps://proteus-nuc.tailba6c3f.ts.net:636/ou=People,dc=tailba6c3f,dc=ts,dc=net?uid?sub"
+    '';
   };
 }
