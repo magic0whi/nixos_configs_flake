@@ -397,7 +397,7 @@
     # Additionally, it provides optional and fully encrypted
     # synchronisation of your history between machines, via an Atuin server.
     atuin.enable = true;
-    atuin.settings.sync_address = "https://proteusdesktop.tailba6c3f.ts.net:8888";
+    atuin.settings.sync_address = "http://proteus-nuc.tailba6c3f.ts.net:8888";
 
     starship = {
       enable = true;

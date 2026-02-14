@@ -11,6 +11,7 @@ in {
   age.secrets."postgresql_server.priv.pem" = server_priv_crt_base // {
     owner = config.systemd.services.postgresql.serviceConfig.User;
   };
+  age.secrets."atuin.env" = {file = "${myvars.secrets_dir}/atuin.env.age"; mode = "0400"; owner = myvars.username;};
   networking.firewall = {
     allowedTCPPorts = [
       443 # WebDAV
@@ -210,7 +211,7 @@ in {
         uid: atuin
         sn: Atuin
         cn: Atuinsh Atuin
-        userPassword: {SSHA}qco/dwy9gOBqNW/uc3e1uGB5UbS6OSS4
+        userPassword: {SSHA}Tf4S6QVwUiSbgXAHlzPKepNpv/lgAB+Y
         loginShell: /usr/bin/nologin
         uidNumber: 1001
         gidNumber: 1001
@@ -279,6 +280,7 @@ in {
     enable = true;
     user = myvars.username;
     group = myvars.username;
+    extraReadWriteDirs = [/srv];
     settings = {
       httpd.bindings = [{
         address = "0.0.0.0";
@@ -305,15 +307,18 @@ in {
       ssl_cert_file = server_pub_crt;
       ssl_key_file = server_priv_crt_postgresql;
     };
-    ensureUsers = [{
-      name = "proteus";
-      ensureClauses = {
-        login = true;
-        # superuser = true;
-        createdb = true;
-      };
-    }];
-    ensureDatabases = ["mydatabase"]; # TODO: Learn
+    ensureDatabases = ["mydatabase" "atuin"]; # TODO: Learn
+    ensureUsers = [
+      {
+        name = "proteus";
+        ensureClauses = {
+          login = true;
+          # superuser = true;
+          createdb = true;
+        };
+      }
+      {name = "atuin"; ensureDBOwnership = true;}
+    ];
     authentication = ''
       #type database DBuser auth-method [auth-options]
       local all all trust
@@ -321,4 +326,13 @@ in {
       host all all fd7a:115c:a1e0::/48 ldap ldapurl="ldaps://proteus-nuc.tailba6c3f.ts.net:636/ou=People,dc=tailba6c3f,dc=ts,dc=net?uid?sub"
     '';
   };
+  # TODO: TLS support, reverse proxy
+  services.atuin = {
+    enable = true;
+    openFirewall = true;
+    database.uri = null;
+    host = "0.0.0.0";
+    openRegistration = true;
+  };
+  systemd.services.atuin.serviceConfig.EnvironmentFile = config.age.secrets."atuin.env".path;
 }

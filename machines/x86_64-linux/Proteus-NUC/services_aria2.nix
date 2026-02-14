@@ -1,7 +1,7 @@
 {config, myvars, ...}: let
   path_prefix = "/srv";
 in {
-  age.secrets = let high_security = {mode = "0500"; owner = "aria2";}; in {
+  age.secrets = let high_security = {mode = "0400"; owner = "aria2";}; in {
     "aria2rpc.priv" = {file = "${myvars.secrets_dir}/aria2rpc.priv.age";} // high_security;
     "aria2rpc_proteus_server.priv.pem" = {file = "${myvars.secrets_dir}/proteus_server.priv.pem.age";} // high_security;
   };
