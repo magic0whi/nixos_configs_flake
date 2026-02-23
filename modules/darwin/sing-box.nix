@@ -27,8 +27,8 @@ in {
         )
       ];
       RunAtLoad = true;
-      StandardErrorPath = "/Library/Logs/org.nixos.sing-box.stderr.log";
-      StandardOutPath = "/Library/Logs/org.nixos.sing-box.stdout.log";
+      StandardErrorPath = "/Library/Logs/io.nekohasekai.sing-box.stderr.log";
+      StandardOutPath = "/Library/Logs/io.nekohasekai.sing-box.stdout.log";
     };
   };
 }

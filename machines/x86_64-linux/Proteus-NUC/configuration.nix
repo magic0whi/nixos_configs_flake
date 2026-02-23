@@ -25,7 +25,6 @@
     allowedTCPPorts = [2080 9091]; # sing-box's WebUI
     allowedUDPPorts = [2080];
   };
-  services.tailscale.enable = false;
   services.sing-box.enable = true;
   services.sing-box.config_file = config.age.secrets."sb_client_linux.json".path;
   ## END sing-box.nix
