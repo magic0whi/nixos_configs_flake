@@ -5,6 +5,7 @@
     mode = "0000";
     owner = "root";
   };
+  services.tailscale.enable = false;
   services.sing-box.enable = true;
   services.sing-box.config_file = config.age.secrets."sb_client.json".path;
 }

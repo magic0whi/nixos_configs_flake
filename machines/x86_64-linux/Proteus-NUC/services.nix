@@ -11,7 +11,8 @@ in {
   age.secrets."postgresql_server.priv.pem" = server_priv_crt_base // {
     owner = config.systemd.services.postgresql.serviceConfig.User;
   };
-  age.secrets."atuin.env" = {file = "${myvars.secrets_dir}/atuin.env.age"; mode = "0400"; owner = myvars.username;};
+  age.secrets."atuin.env" = {file = "${myvars.secrets_dir}/atuin.env.age"; mode = "0400"; owner = "root";};
+  age.secrets."immich.env" = {file = "${myvars.secrets_dir}/immich.env.age"; mode = "0400"; owner = "root";};
   networking.firewall = {
     allowedTCPPorts = [
       443 # WebDAV
@@ -212,11 +213,29 @@ in {
         sn: Atuin
         cn: Atuinsh Atuin
         userPassword: {SSHA}Tf4S6QVwUiSbgXAHlzPKepNpv/lgAB+Y
-        loginShell: /usr/bin/nologin
+        loginShell: /run/current-system/sw/bin/nologin
         uidNumber: 1001
         gidNumber: 1001
         homeDirectory: /mnt/overlay/Services/atuin
         description: Magical shell history
+
+        dn: uid=${config.services.immich.user},ou=People,dc=tailba6c3f,dc=ts,dc=net
+        objectClass: top
+        objectClass: person
+        objectClass: organizationalPerson
+        objectClass: inetOrgPerson
+        objectClass: posixAccount
+        objectClass: shadowAccount
+        uid: ${config.services.immich.user}
+        o: immich-app
+        sn: Immich
+        cn: Immich App
+        userPassword: {SSHA}3zaMR2HtFO2t9FEI6BIiLEgddW6HGSol
+        loginShell: /run/current-system/sw/bin/nologin
+        uidNumber: 1002
+        gidNumber: 1002
+        homeDirectory: ${config.services.immich.mediaLocation}
+        description: High performance self-hosted photo and video management solution.
 
         dn: cn=${myvars.username},ou=Group,dc=tailba6c3f,dc=ts,dc=net
         objectClass: top
@@ -335,4 +354,10 @@ in {
     openRegistration = true;
   };
   systemd.services.atuin.serviceConfig.EnvironmentFile = config.age.secrets."atuin.env".path;
+  # services.immich = {
+  #   enable = true;
+  #   openFirewall = true;
+  #   database.host = "proteus-nuc.tailba6c3f.ts.net";
+  #   secretsFile = config.age.secrets."immich.env".path;
+  # };
 }

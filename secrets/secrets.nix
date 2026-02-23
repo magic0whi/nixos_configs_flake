@@ -44,4 +44,5 @@ in {
   "proteus-ap.key.age".publicKeys = machines ++ [Proteus-Desktop];
   "minio.env.age".publicKeys = machines ++ google_vps ++ huawei_vps;
   "atuin.env.age".publicKeys = machines ++ [Proteus-NUC];
+  "immich.env.age".publicKeys = machines ++ [Proteus-NUC];
 }
