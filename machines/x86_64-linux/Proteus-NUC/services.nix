@@ -1,11 +1,12 @@
 {pkgs, lib, config, myvars, ...}: let
   server_pub_crt = "${myvars.secrets_dir}/proteus_server.pub.pem";
   server_priv_crt_base = {file = "${myvars.secrets_dir}/proteus_server.priv.pem.age"; mode = "0400";};
-  server_priv_crt_proteus = config.age.secrets."proteus_server.priv.pem".path;
+  # server_priv_crt_proteus = config.age.secrets."proteus_server.priv.pem".path;
 in {
   age.secrets."proteus_server.priv.pem" = server_priv_crt_base // {owner = myvars.username;};
   networking.firewall = {
     allowedTCPPorts = [
+      53 # unbound TCP
       443 # WebDAV
       853 # unbound DoT
       5201 # iperf3
@@ -66,17 +67,17 @@ in {
     extraReadWriteDirs = [/srv];
     settings = {
       httpd.bindings = [{
-        address = "0.0.0.0";
+        # address = "0.0.0.0";
         enable_https = true;
-        certificate_file = server_pub_crt;
-        certificate_key_file = server_priv_crt_proteus;
+        # certificate_file = server_pub_crt;
+        # certificate_key_file = server_priv_crt_proteus;
       }];
       webdavd.bindings = [{
-        address = "0.0.0.0";
-        port = 443;
-        enable_https = true;
-        certificate_file = server_pub_crt;
-        certificate_key_file = server_priv_crt_proteus;
+        # address = "0.0.0.0";
+        port = 8443;
+        enable_https = false;
+        # certificate_file = server_pub_crt;
+        # certificate_key_file = server_priv_crt_proteus;
       }];
     };
   };
@@ -109,14 +110,13 @@ in {
   };
   ## END services_postgresql.nix
   ## START services_atuin.nix
-  # TODO: TLS support, reverse proxy
   age.secrets."atuin.env" = {file = "${myvars.secrets_dir}/atuin.env.age"; mode = "0400"; owner = "root";};
   systemd.services.atuin.serviceConfig.EnvironmentFile = config.age.secrets."atuin.env".path;
   services.atuin = {
     enable = true;
     openFirewall = true;
+    # host = "0.0.0.0";
     database.uri = null;
-    host = "0.0.0.0";
     openRegistration = true;
   };
   ## END services_atuin.nix
@@ -125,6 +125,7 @@ in {
   services.immich = {
     enable = true;
     openFirewall = true;
+    host = "127.0.0.1";
     database.host = "proteus-nuc.tailba6c3f.ts.net";
     secretsFile = config.age.secrets."immich.env".path;
   };
@@ -178,4 +179,62 @@ in {
     };
   };
   ## END services_unbound.nix
+  ## START services_traefik.nix
+  age.secrets."traefik_server.priv.pem" = server_priv_crt_base // {
+    owner = config.systemd.services.traefik.serviceConfig.User;
+  };
+  services.traefik = {
+    enable = true;
+    # Static configuration handles entrypoints (ports) and global settings
+    staticConfigOptions = {
+      global = {checkNewVersion = false; sendAnonymousUsage = false;};
+      entryPoints = {
+        # Force HTTP to HTTPS redirect globally
+        web = {address = ":80"; http.redirections.entryPoint = {to = "websecure"; scheme = "https";};};
+        websecure = {address = ":443";};
+      };
+    };
+    # Dynamic configuration handles routers, services, and TLS certificates
+    dynamicConfigOptions = {
+      tls.certificates = [{certFile = server_pub_crt; keyFile = config.age.secrets."traefik_server.priv.pem".path;}];
+      http = let domain = "proteus.eu.org"; in {
+        routers = {
+          atuin = {
+            rule = "Host(`atuin.${domain}`)";
+            entryPoints = ["websecure"];
+            service = "atuin";
+            tls = {};
+          };
+          immich = {
+            rule = "Host(`immich.${domain}`)";
+            entryPoints = ["websecure"];
+            service = "immich";
+            tls = {}; # Enables TLS using the default cert provided above
+          };
+          sftpgo-webui = {
+            rule = "Host(`sftpgo.${domain}`)";
+            entryPoints = ["websecure"];
+            service = "sftpgo-webui";
+            tls = {};
+          };
+          sftpgo-webdav = {
+            rule = "Host(`webdav.${domain}`)";
+            entryPoints = ["websecure"];
+            service = "sftpgo-webdav";
+            tls = {};
+          };
+        };
+        services = {
+          atuin.loadBalancer.servers  = [{url = "http://127.0.0.1:${builtins.toString config.services.atuin.port}";}];
+          immich.loadBalancer.servers = [{url = "http://127.0.0.1:${builtins.toString config.services.immich.port}";}];
+          sftpgo-webui.loadBalancer.servers = [
+            {url = "http://127.0.0.1:${builtins.toString (builtins.head config.services.sftpgo.settings.httpd.bindings).port}";}
+          ];
+          sftpgo-webdav.loadBalancer.servers = [
+            { url = "http://127.0.0.1:${builtins.toString (builtins.head config.services.sftpgo.settings.webdavd.bindings).port}"; }
+          ];
+        };
+      };
+    };
+  };
 }
