@@ -63,8 +63,10 @@
 
         "audio/*" = ["mpv.desktop"];
         "video/*" = ["mpv.desktop"];
+        "video/quicktime" = ["mpv.desktop"];
         "image/*" = ["imv-dir.desktop"];
         "image/gif" = ["imv-dir.desktop"];
+        "image/heif" = ["imv-dir.desktop"];
         "image/jpeg" = ["imv-dir.desktop"];
         "image/png" = ["imv-dir.desktop"];
         "image/webp" = ["imv-dir.desktop"];

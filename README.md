@@ -1,15 +1,16 @@
 # NixOS Configurations Flake
 
-Personal NixOS system configurations managed as a Flake, featuring declarative disk management, ZFS with impermanence, and LUKS encryption.
+Personal NixOS and nix-darwin system configurations managed as a Flake, featuring declarative disk management, ZFS with impermanence, LUKS encryption, and an iterative modular design.
 
 ## Features
 
-- **Declarative Disk Management**: Automated partitioning with [Disko](https://github.com/nix-community/disko)
-- **ZFS Root with Impermanence**: Ephemeral root that rolls back to `zroot/root@blank` snapshot on boot
-- **LUKS Encryption**: Full-disk encryption with systemd in initrd
-- **Multi-Host Support**: Modular configuration for desktop and server systems
-- **Persistent State Management**: Selective persistence with proper directory creation
-- **Network Tunneling**: sing-box integration for secure networking
+- **"Stew" (Hub & Spoke) Refactoring**: An iterative code organization strategy that prevents premature optimization by starting with monolithic domain files (`stew.nix`) and splitting into dedicated modules as complexity grows.
+- **Declarative Disk Management**: Automated partitioning with [Disko](https://github.com/nix-community/disko).
+- **ZFS Root with Impermanence**: Ephemeral root that rolls back to `zroot/root@blank` snapshot on boot.
+- **LUKS Encryption**: Full-disk encryption with systemd in initrd.
+- **Multi-OS / Multi-Arch Support**: Modular configurations spanning x86_64 NixOS, riscv64 NixOS, and aarch64 macOS.
+- **Persistent State Management**: Selective persistence with proper directory creation.
+- **Secret Management**: Encrypted secrets via agenix stored directly in the repository.
 
 ## Hosts
 
@@ -17,7 +18,8 @@ Personal NixOS system configurations managed as a Flake, featuring declarative d
 |----------|------|--------------|---------|
 | Proteus-Desktop | Workstation | x86_64-linux | ZFS on LUKS |
 | Proteus-NUC | Home Server | x86_64-linux | ZFS on LUKS |
-| Proteus-NixOS-* | VPS Instances | Vary | Btrfs |
+| Proteus-NixOS-* | VPS Instances | x86_64-linux | Btrfs |
+| Proteus-MBP14M4P| Laptop | aarch64-darwin| APFS |
 | Proteus-VF2 | SBC | riscv64-linux | Btrfs (TODO) |
 
 ## Installation
@@ -36,7 +38,6 @@ Personal NixOS system configurations managed as a Flake, featuring declarative d
   ```
 2. **Review and customize disko configuration:**
   ```bash
-  # Edit the disko config for your target host, update disk(s) ID with your actual hardware
   hx machines/<system>/<hostname>/disko-config.nix
   ```
 3. **Generate & Modify `hardware-configuration.nix`**
@@ -88,34 +89,37 @@ deploy [-s] --targets \
 
 ### List ZFS volumes
 
-```
+```bash
 zfs list -o name,mountpoint,encryption,canmount,mounted -t filesystem,snapshot
 ```
 
 ## Structure
 
-TODO: TBD
+The repository is organized to separate machine-specific hardware configurations from reusable system modules.
 ```plaintext
 .
 ├── flake.nix                  # Main flake configuration
-├── flake.lock                 # Locked dependency versions
-├── machines/<system>/
-│   ├── Proteus-Desktop/
-│   │   ├── configuration.nix  # Host-specific config
-│   │   ├── hardware-configuration.nix
-│   │   └── disko-config.nix   # Disk layout
-│   └── Proteus-NUC/
-│       ├── configuration.nix
-│       ├── hardware-configuration.nix
-│       └── disko-config.nix
-├── modules/                   # Reusable NixOS modules
-│   ├── common                 # Common shared modules
-│   ├── nixos_headless/_impermanence.nix # Persistent directories config (default not included)
-│   ├── *_hm_headless/         # Home-manager configurations (optional)
-│   └── ...
+├── Justfile                   # Command runner shortcuts
+├── machines/                  # Host-specific configurations grouped by architecture
+│   ├── aarch64-darwin/        # macOS hosts (e.g., Proteus-MBP14M4P)
+│   ├── riscv64-linux/         # RISC-V SBCs
+│   └── x86_64-linux/          # Workstations, servers, and VPS nodes
+├── modules/                   # Reusable configurations
+│   ├── common*/               # Shared across OSes (gui/headless)
+│   ├── darwin*/               # nix-darwin specific modules
+│   ├── nixos_*/               # NixOS specific modules (system and home-manager)
+│   └── overlays/              # Custom packages (e.g., wechat, qq)
+├── secrets/                   # Agenix encrypted secrets and keys
+└── vars/                      # Global variables and networking definitions
 ```
 
 ## Key Design Decisions
+
+### The "Stew" (Hub & Spoke) Code Organization
+
+To avoid the cognitive overhead of premature file fragmentation, this repository utilizes an organic "Hub and Spoke" module strategy. New packages, services, or configurations for a specific domain (like `modules/nixos_headless/`) are initially dropped into a centralized `stew.nix` file.
+
+As specific logical units within the stew grow large or complex (e.g., a massive Hyprland config or specific development environments), they are extracted into their own dedicated files (the "spokes") within that directory.
 
 ### Ephemeral Root
 
