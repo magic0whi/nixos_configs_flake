@@ -2,6 +2,7 @@
   server_pub_crt = "${myvars.secrets_dir}/proteus_server.pub.pem";
   server_priv_crt = config.age.secrets."openldap_server.priv.pem".path;
 in {
+  # TODO: use Traefik
   age.secrets."openldap_server.priv.pem" = {
     file = "${myvars.secrets_dir}/proteus_server.priv.pem.age";
     mode = "0400";

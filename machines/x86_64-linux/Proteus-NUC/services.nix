@@ -83,6 +83,7 @@ in {
   };
   ## END services_sftpgo.nix
   ## START services_postgresql.nix
+  ## TODO: use Treafik
   age.secrets."postgresql_server.priv.pem" = server_priv_crt_base // {
     owner = config.systemd.services.postgresql.serviceConfig.User;
   };
@@ -237,4 +238,6 @@ in {
       };
     };
   };
+  ## END services_traefik.nix
+  ## TODO: paperless to host receipts & statements for Beancount
 }
