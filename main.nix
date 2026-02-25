@@ -30,5 +30,23 @@ in {
     fastConnection = true;
     nodes = lib.attrsets.mergeAttrsList (map (i: i.deploy-rs_nodes or {}) nixos_systems_values);
   };
-  checks = builtins.mapAttrs (system: deployLib: deployLib.deployChecks self.deploy) inputs.deploy-rs.lib;
+  # Currently deploy_checks broken on MacOS
+  checks = let
+    deploy_checks = builtins.mapAttrs (system: deployLib: deployLib.deployChecks self.deploy) inputs.deploy-rs.lib;
+    lib_checks = lib.genAttrs (builtins.attrNames (nixos_systems // darwin_systems)) (system: let
+      pkgs = inputs.nixpkgs.legacyPackages.${system};
+      test_results = import ./libs/tests.nix {inherit pkgs inputs;};
+    in {
+      mylib_tests = if test_results == [] then
+        pkgs.runCommand "lib-tests-passed" {} ''
+          echo "All custom library unit tests passed on ${system}!"
+          touch $out
+        ''
+      else
+        builtins.throw ''
+          Library unit tests failed on ${system}!
+          ${builtins.toJSON test_results}
+        '';
+    });
+  in lib.recursiveUpdate deploy_checks lib_checks;
 }

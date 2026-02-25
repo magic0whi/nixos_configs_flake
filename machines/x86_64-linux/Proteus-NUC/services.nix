@@ -8,6 +8,7 @@ in {
     allowedTCPPorts = [
       53 # unbound TCP
       443 # WebDAV
+      636 # OpenLDAP (secure)
       853 # unbound DoT
       5201 # iperf3
       8888 # Atuin Server
@@ -16,6 +17,7 @@ in {
     ];
     allowedUDPPorts = [
       53 # unbound
+      # 636 # OpenLDAP (secure, generally not used)
       853 # unbound DNS-over-QUIC
       5201 # iperf3
       21027 # Syncthing discovery broadcasts on IPv4 and multicasts on IPv6
@@ -42,23 +44,6 @@ in {
     };
   };
   ## END tor.nix
-  ## START services_monero.nix
-  services.monero = {
-    # enable = true;
-    # dataDir = "/mnt/storage1/monero";
-    extraConfig = ''
-      # log-file=/mnt/storage1/monero/monero.log
-      # log-level=0
-      p2p-use-ipv6=1
-      rpc-use-ipv6=1
-      public-node=1
-      confirm-external-bind=1
-      rpc-bind-ipv6-address=fd7a:115c:a1e0::d901:e013
-    '';
-    rpc.address = "100.109.224.13";
-    rpc.restricted = true;
-  };
-  ## END services_monero.nix
   ## START services_sftpgo.nix
   services.sftpgo = {
     enable = true;
@@ -83,7 +68,6 @@ in {
   };
   ## END services_sftpgo.nix
   ## START services_postgresql.nix
-  ## TODO: use Treafik
   age.secrets."postgresql_server.priv.pem" = server_priv_crt_base // {
     owner = config.systemd.services.postgresql.serviceConfig.User;
   };
@@ -105,8 +89,8 @@ in {
     authentication = ''
       #type database DBuser auth-method [auth-options]
       local all all trust
-      host all all 100.64.0.0/10 ldap ldapurl="ldaps://proteus-nuc.tailba6c3f.ts.net:636/ou=People,dc=tailba6c3f,dc=ts,dc=net?uid?sub"
-      host all all fd7a:115c:a1e0::/48 ldap ldapurl="ldaps://proteus-nuc.tailba6c3f.ts.net:636/ou=People,dc=tailba6c3f,dc=ts,dc=net?uid?sub"
+      host all all 100.64.0.0/10 ldap ldapurl="ldaps://openldap.proteus.eu.org/ou=People,dc=tailba6c3f,dc=ts,dc=net?uid?sub"
+      host all all fd7a:115c:a1e0::/48 ldap ldapurl="ldaps://openldap.proteus.eu.org/ou=People,dc=tailba6c3f,dc=ts,dc=net?uid?sub"
     '';
   };
   ## END services_postgresql.nix
@@ -193,18 +177,28 @@ in {
         # Force HTTP to HTTPS redirect globally
         web = {address = ":80"; http.redirections.entryPoint = {to = "websecure"; scheme = "https";};};
         websecure = {address = ":443";};
+        # Dedicated entrypoint for secure LDAP traffic
+        ldaps = {address = ":636";};
       };
     };
-    # Dynamic configuration handles routers, services, and TLS certificates
+    # Dynamic configuration defines routing rules, backend services, and certificate management.
     dynamicConfigOptions = {
-      tls.certificates = [{certFile = server_pub_crt; keyFile = config.age.secrets."traefik_server.priv.pem".path;}];
+      # tls.certificates = [{certFile = server_pub_crt; keyFile = config.age.secrets."traefik_server.priv.pem".path;}];
+
+      # Establish the default fallback certificate.
+      # This is critical for TCP clients (like `ldapsearch`) that do not send
+      # Server Name Indication (SNI) data during the TLS handshake. Without this,
+      # Traefik serves an untrusted dummy certificate.
+      tls.stores.default.defaultCertificate = {
+        certFile = server_pub_crt; keyFile = config.age.secrets."traefik_server.priv.pem".path;
+      };
       http = let domain = "proteus.eu.org"; in {
         routers = {
           atuin = {
             rule = "Host(`atuin.${domain}`)";
             entryPoints = ["websecure"];
             service = "atuin";
-            tls = {};
+            tls = {}; # Enables TLS using the default cert provided above
           };
           immich = {
             rule = "Host(`immich.${domain}`)";
@@ -226,13 +220,31 @@ in {
           };
         };
         services = {
-          atuin.loadBalancer.servers  = [{url = "http://127.0.0.1:${builtins.toString config.services.atuin.port}";}];
+          atuin.loadBalancer.servers = [{url = "http://127.0.0.1:${builtins.toString config.services.atuin.port}";}];
           immich.loadBalancer.servers = [{url = "http://127.0.0.1:${builtins.toString config.services.immich.port}";}];
           sftpgo-webui.loadBalancer.servers = [
             {url = "http://127.0.0.1:${builtins.toString (builtins.head config.services.sftpgo.settings.httpd.bindings).port}";}
           ];
           sftpgo-webdav.loadBalancer.servers = [
-            { url = "http://127.0.0.1:${builtins.toString (builtins.head config.services.sftpgo.settings.webdavd.bindings).port}"; }
+            {url = "http://127.0.0.1:${builtins.toString (builtins.head config.services.sftpgo.settings.webdavd.bindings).port}";}
+          ];
+        };
+      };
+      tcp = {
+        routers = {
+          openldap-secure = {
+            # Catch-all for traffic on this port. standard LDAP clients (like
+            # ldapsearch and many older legacy systems) do not send SNI data.
+            rule = "HostSNI(`*`)";
+            entryPoints = ["ldaps"];
+            service = "openldap-backend";
+            tls = {};
+          };
+        };
+        services = {
+          openldap-backend.loadBalancer.servers = [
+            # Point to the standard UNENCRYPTED local LDAP port.
+            {address = "127.0.0.1:389";}
           ];
         };
       };

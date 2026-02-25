@@ -1,31 +1,27 @@
 {myvars, config, pkgs, ...}: let
-  server_pub_crt = "${myvars.secrets_dir}/proteus_server.pub.pem";
-  server_priv_crt = config.age.secrets."openldap_server.priv.pem".path;
+  # server_pub_crt = "${myvars.secrets_dir}/proteus_server.pub.pem";
+  # server_priv_crt = config.age.secrets."openldap_server.priv.pem".path;
 in {
-  # TODO: use Traefik
-  age.secrets."openldap_server.priv.pem" = {
-    file = "${myvars.secrets_dir}/proteus_server.priv.pem.age";
-    mode = "0400";
-    owner = config.services.openldap.user;
-  };
-  networking.firewall = {
-    allowedTCPPorts = [636]; # OpenLDAP
-    allowedUDPPorts = [636]; # OpenLDAP
-  };
+  # age.secrets."openldap_server.priv.pem" = {
+  #   file = "${myvars.secrets_dir}/proteus_server.priv.pem.age";
+  #   mode = "0400";
+  #   owner = config.services.openldap.user;
+  # };
   services.openldap = {
     enable = true;
-    urlList = ["ldaps:///"];
+    # The `///` tells OpenLDAP to bind to the default port on all available
+    # network interfaces (`0.0.0.0` and `::`)
+    urlList = [/*"ldaps:///"*/ "ldap://127.0.0.1/"];
     settings = {
       # dn: cn=config
       attrs = {
         # cn: config
         # objectClass: olcGlobal
         olcLogLevel = ["stats"];
-        olcTLSCertificateFile = server_pub_crt;
-        olcTLSCertificateKeyFile = server_priv_crt;
-        olcTLSCipherSuite = "DEFAULT:!kRSA:!kDHE";
-        olcTLSProtocolMin = "3.3"; # 3.4 for tls1.3
-
+        # olcTLSCertificateFile = server_pub_crt;
+        # olcTLSCertificateKeyFile = server_priv_crt;
+        # olcTLSCipherSuite = "DEFAULT:!kRSA:!kDHE";
+        # olcTLSProtocolMin = "3.3"; # 3.4 for tls1.3
       };
       children = {
         "cn=schema".includes = [
@@ -113,13 +109,8 @@ in {
         sudoRunAsUser: ALL
         sudoOption: !authenticate
         sudoCommand: /usr/bin/psd-overlay-helper
-        # Note: paru hardcoded 'sudo install -dm755 $CHROOT'
-        # https://github.com/Morganamilo/paru/blob/5355012aa3529014145b8940dd0c62b21e53095a/src/chroot.rs#L43
-        sudoCommand: /usr/bin/arch-nspawn
-        sudoCommand: /usr/bin/cp -auT /var/lib/pacman/sync /tmp/aur_chroot/overlay/root/var/lib/pacman/sync
-        sudoCommand: /usr/bin/install -dm755 {{ .COMMON.aurChrootPath }}/overlay
-        sudoCommand: /usr/bin/mkarchroot
-        sudoCommand: /usr/bin/pacman
+        # sudoCommand: /usr/bin/arch-nspawn
+        # sudoCommand: /usr/bin/pacman
 
         dn: cn=allowMainUserNoPassSetenv,ou=Sudoers,dc=tailba6c3f,dc=ts,dc=net
         objectClass: top
@@ -153,7 +144,7 @@ in {
         sn: Qian
         givenName: Proteus
         title: Qiansan
-        mobile: {{ keepassxcAttribute "chezmoi/openldap" "proteus_phone" }}
+        mobile: +44 1145114191
         mail: ${myvars.useremail}
         postalAddress: Toukyouto$Setagayaku$Kitazawa3Choume23Ban14Gou
         userPassword: {SSHA}LbpR3GOQuhToaqzVejQOTJuOFEjlUHgK
@@ -209,5 +200,4 @@ in {
       '';
     };
   };
-  ## END services_openldap.nix
 }

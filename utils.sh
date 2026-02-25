@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+set -eufo pipefail
+
 # Function: nixos-switch
 # Args:
 #   $1: name (string)
@@ -56,14 +58,14 @@ darwin-rollback() {
 #   $1: name (string)
 #   $2: mode (string)
 upload-vm() {
-    local name="$1"
-    local mode="$2"
-    local target=".#$name"
-    if [[ "$mode" == "debug" ]]; then
-        nom build $target --show-trace --verbose
-    else
-        nix build $target
-    fi
-    local remote="proteus@proteusdesktop.tailba6c3f.ts.net:/mnt/overlay/Services/vms/kubevirt-$name.qcow2"
-    rsync -acvzL --progress result "$remote"
+  local name="$1"
+  local mode="$2"
+  local target=".#$name"
+  if [[ "$mode" == "debug" ]]; then
+    nom build $target --show-trace --verbose
+  else
+    nix build $target
+  fi
+  local remote="proteus@proteusdesktop.tailba6c3f.ts.net:/mnt/overlay/Services/vms/kubevirt-$name.qcow2"
+  rsync -acvzL --progress result "$remote"
 }

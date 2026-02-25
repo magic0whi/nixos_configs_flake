@@ -17,7 +17,7 @@ in {
   mk_for_system = _system: let
     pkgs = inputs.nixpkgs.legacyPackages.${_system};
   in {
-    # Create a symlink of dir/file out of /nix/store
+    # Create a symlink of dir/file out of /nix/store (with prefix `custom_`)
     mk_out_of_store_symlink = path: let
       path_str = builtins.toString path;
       store_filename = path: let # Filter unsafe chars

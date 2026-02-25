@@ -79,10 +79,7 @@
   ## START gpg.nix
   programs.gpg = {
     publicKeys = [ # https://www.gnupg.org/gph/en/manual/x334.html
-      {
-        source = "${myvars.secrets_dir}/sudaku233@outlook.com.pub.asc";
-        trust = 5; # ultimate trust, my own keys
-      }
+      {source = "${myvars.secrets_dir}/${myvars.useremail}.pub.asc"; trust = 5; /*ultimate trust, my own keys*/}
     ];
     enable = true;
     # $GNUPGHOME/trustdb.gpg stores all the trust level you specified in `programs.gpg.publicKeys` option. If set

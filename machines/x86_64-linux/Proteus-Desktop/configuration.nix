@@ -92,7 +92,7 @@ in {
   # networking.nat = {
   #   enable = true;
   #   # The interface connected to the internet (e.g., eth0, wlan0 onboard)
-  #   externalInterface = myvars.networking.hosts_addr.${config.networking.hostName}.iface; 
+  #   externalInterface = myvars.networking.hosts_addr.${config.networking.hostName}.iface;
   #   # The interface acting as the hotspot
   #   internalInterfaces = [wlan_iface];
   # };

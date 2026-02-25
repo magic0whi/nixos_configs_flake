@@ -194,7 +194,7 @@ proteus-desktop-local mode="default":
 [group('homelab')]
 upload-idols mode="default":
   #!/usr/bin/env nu
-  use {{utils}} *; 
+  use {{utils}} *;
   upload-vm aquamarine {{mode}}
   upload-vm ruby {{mode}}
   upload-vm kana {{mode}}
@@ -210,21 +210,21 @@ upload-idols mode="default":
 [group('homelab')]
 upload-k3s-prod mode="default":
   #!/usr/bin/env nu
-  use {{utils}} *; 
-  upload-vm k3s-prod-1-master-1 {{mode}}; 
-  upload-vm k3s-prod-1-master-2 {{mode}}; 
-  upload-vm k3s-prod-1-master-3 {{mode}}; 
-  upload-vm k3s-prod-1-worker-1 {{mode}}; 
-  upload-vm k3s-prod-1-worker-2 {{mode}}; 
+  use {{utils}} *;
+  upload-vm k3s-prod-1-master-1 {{mode}};
+  upload-vm k3s-prod-1-master-2 {{mode}};
+  upload-vm k3s-prod-1-master-3 {{mode}};
+  upload-vm k3s-prod-1-worker-1 {{mode}};
+  upload-vm k3s-prod-1-worker-2 {{mode}};
   upload-vm k3s-prod-1-worker-3 {{mode}};
 
 [linux]
 [group('homelab')]
 upload-k3s-test mode="default":
   #!/usr/bin/env nu
-  use {{utils}} *; 
-  upload-vm k3s-test-1-master-1 {{mode}}; 
-  upload-vm k3s-test-1-master-2 {{mode}}; 
+  use {{utils}} *;
+  upload-vm k3s-test-1-master-1 {{mode}};
+  upload-vm k3s-test-1-master-2 {{mode}};
   upload-vm k3s-test-1-master-3 {{mode}};
 
 [linux]
