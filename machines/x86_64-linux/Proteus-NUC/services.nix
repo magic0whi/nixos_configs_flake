@@ -2,21 +2,22 @@
   server_pub_crt = "${myvars.secrets_dir}/proteus_server.pub.pem";
   server_priv_crt_base = {file = "${myvars.secrets_dir}/proteus_server.priv.pem.age"; mode = "0400";};
   # server_priv_crt_proteus = config.age.secrets."proteus_server.priv.pem".path;
+  domain = "proteus.eu.org";
 in {
   age.secrets."proteus_server.priv.pem" = server_priv_crt_base // {owner = myvars.username;};
   networking.firewall = {
     allowedTCPPorts = [
       53 # unbound TCP
-      443 # WebDAV
+      443 # Traefik
       636 # OpenLDAP (secure)
       853 # unbound DoT
       5201 # iperf3
-      8888 # Atuin Server
       22000 # Syncthing TCP transfers
       53317 # LocalSend (HTTP/TCP)
     ];
     allowedUDPPorts = [
       53 # unbound
+      443 # Traefik (QUIC)
       # 636 # OpenLDAP (secure, generally not used)
       853 # unbound DNS-over-QUIC
       5201 # iperf3
@@ -53,14 +54,18 @@ in {
     settings = {
       httpd.bindings = [{
         # address = "0.0.0.0";
-        enable_https = true;
+        client_ip_proxy_header = "X-Forwarded-For";
+        proxy_allowed = ["127.0.0.1"];
+        # enable_https = true;
         # certificate_file = server_pub_crt;
         # certificate_key_file = server_priv_crt_proteus;
       }];
       webdavd.bindings = [{
         # address = "0.0.0.0";
         port = 8443;
-        enable_https = false;
+        client_ip_proxy_header = "X-Forwarded-For";
+        proxy_allowed = ["127.0.0.1"];
+        # enable_https = true;
         # certificate_file = server_pub_crt;
         # certificate_key_file = server_priv_crt_proteus;
       }];
@@ -71,6 +76,7 @@ in {
   age.secrets."postgresql_server.priv.pem" = server_priv_crt_base // {
     owner = config.systemd.services.postgresql.serviceConfig.User;
   };
+  # TODO: Learn SQL
   services.postgresql = {
     enable = true;
     package = pkgs.postgresql.override {ldapSupport = true;};
@@ -81,16 +87,17 @@ in {
       ssl_cert_file = server_pub_crt;
       ssl_key_file = config.age.secrets."postgresql_server.priv.pem".path;
     };
-    ensureDatabases = ["mydatabase" "atuin"]; # TODO: Learn
+    ensureDatabases = ["mydatabase" "atuin" config.services.paperless.user];
     ensureUsers = [
       {name = "proteus"; ensureClauses = {login = true; /*superuser = true;*/ createdb = true;};}
       {name = "atuin"; ensureDBOwnership = true;}
+      {name = config.services.paperless.user; ensureDBOwnership = true;}
     ];
     authentication = ''
       #type database DBuser auth-method [auth-options]
       local all all trust
-      host all all 100.64.0.0/10 ldap ldapurl="ldaps://openldap.proteus.eu.org/ou=People,dc=tailba6c3f,dc=ts,dc=net?uid?sub"
-      host all all fd7a:115c:a1e0::/48 ldap ldapurl="ldaps://openldap.proteus.eu.org/ou=People,dc=tailba6c3f,dc=ts,dc=net?uid?sub"
+      host all all 100.64.0.0/10 ldap ldapurl="ldaps://openldap.${domain}/ou=People,dc=tailba6c3f,dc=ts,dc=net?uid?sub"
+      host all all fd7a:115c:a1e0::/48 ldap ldapurl="ldaps://openldap.${domain}/ou=People,dc=tailba6c3f,dc=ts,dc=net?uid?sub"
     '';
   };
   ## END services_postgresql.nix
@@ -99,9 +106,9 @@ in {
   systemd.services.atuin.serviceConfig.EnvironmentFile = config.age.secrets."atuin.env".path;
   services.atuin = {
     enable = true;
-    openFirewall = true;
+    # openFirewall = true;
     # host = "0.0.0.0";
-    database.uri = null;
+    database.uri = "postgres://atuin@postgresql.${domain}/atuin?sslmode=require";
     openRegistration = true;
   };
   ## END services_atuin.nix
@@ -109,15 +116,16 @@ in {
   age.secrets."immich.env" = {file = "${myvars.secrets_dir}/immich.env.age"; mode = "0400"; owner = "root";};
   services.immich = {
     enable = true;
-    openFirewall = true;
+    # openFirewall = true;
     host = "127.0.0.1";
-    database.host = "proteus-nuc.tailba6c3f.ts.net";
+    database.host = "postgresql.${domain}";
     secretsFile = config.age.secrets."immich.env".path;
+    mediaLocation = "/srv/immich";
   };
   ## END services_immich.nix
   ## START services_unbound.nix
   age.secrets."unbound_server.priv.pem" = server_priv_crt_base // {owner = config.services.unbound.user;};
-  services.resolved.settings.Resolve.Domains = "~proteus.eu.org";
+  services.resolved.settings.Resolve.Domains = "~${domain}";
   services.unbound = {
     enable = true;
     settings = {
@@ -154,7 +162,7 @@ in {
         ];
       };
       auth-zone = [
-        {name = "proteus.eu.org."; zonefile = "${myvars.secrets_dir}/proteus.eu.org.zone";}
+        {name = "${domain}."; zonefile = "${myvars.secrets_dir}/${domain}.zone";}
         {name = "161.64.100.in-addr.arpa."; zonefile = "${myvars.secrets_dir}/161.64.100.in-addr.arpa.zone";}
         {
           name = "0.e.1.a.c.5.1.1.a.7.d.f.ip6.arpa.";
@@ -176,7 +184,13 @@ in {
       entryPoints = {
         # Force HTTP to HTTPS redirect globally
         web = {address = ":80"; http.redirections.entryPoint = {to = "websecure"; scheme = "https";};};
-        websecure = {address = ":443";};
+        websecure = {
+          address = ":443";
+          http3 = {}; # For QUIC
+          # Prevent large video uploads from timing out and throwing Error 499.
+          # Ref: https://web.archive.org/web/20260217103328/https://docs.immich.app/administration/reverse-proxy/#traefik-proxy-example-config
+          transport.respondingTimeouts = {readTimeout = "600s"; idleTimeout = "600s";};
+        };
         # Dedicated entrypoint for secure LDAP traffic
         ldaps = {address = ":636";};
       };
@@ -192,36 +206,25 @@ in {
       tls.stores.default.defaultCertificate = {
         certFile = server_pub_crt; keyFile = config.age.secrets."traefik_server.priv.pem".path;
       };
-      http = let domain = "proteus.eu.org"; in {
+      http = {
         routers = {
-          atuin = {
-            rule = "Host(`atuin.${domain}`)";
-            entryPoints = ["websecure"];
-            service = "atuin";
-            tls = {}; # Enables TLS using the default cert provided above
-          };
-          immich = {
-            rule = "Host(`immich.${domain}`)";
-            entryPoints = ["websecure"];
-            service = "immich";
-            tls = {}; # Enables TLS using the default cert provided above
+          # `tls = {}` enables TLS using the default cert provided above
+          atuin = {rule = "Host(`atuin.${domain}`)"; entryPoints = ["websecure"]; service = "atuin"; tls = {};};
+          immich = {rule = "Host(`immich.${domain}`)"; entryPoints = ["websecure"]; service = "immich"; tls = {};};
+          paperless = {
+            rule = "Host(`paperless.${domain}`)"; entryPoints = ["websecure"]; service = "paperless"; tls = {};
           };
           sftpgo-webui = {
-            rule = "Host(`sftpgo.${domain}`)";
-            entryPoints = ["websecure"];
-            service = "sftpgo-webui";
-            tls = {};
+            rule = "Host(`sftpgo.${domain}`)"; entryPoints = ["websecure"]; service = "sftpgo-webui"; tls = {};
           };
           sftpgo-webdav = {
-            rule = "Host(`webdav.${domain}`)";
-            entryPoints = ["websecure"];
-            service = "sftpgo-webdav";
-            tls = {};
+            rule = "Host(`webdav.${domain}`)"; entryPoints = ["websecure"]; service = "sftpgo-webdav"; tls = {};
           };
         };
         services = {
           atuin.loadBalancer.servers = [{url = "http://127.0.0.1:${builtins.toString config.services.atuin.port}";}];
           immich.loadBalancer.servers = [{url = "http://127.0.0.1:${builtins.toString config.services.immich.port}";}];
+          paperless.loadBalancer.servers = [{url = "http://127.0.0.1:${builtins.toString config.services.paperless.port}";}];
           sftpgo-webui.loadBalancer.servers = [
             {url = "http://127.0.0.1:${builtins.toString (builtins.head config.services.sftpgo.settings.httpd.bindings).port}";}
           ];
@@ -232,24 +235,37 @@ in {
       };
       tcp = {
         routers = {
-          openldap-secure = {
-            # Catch-all for traffic on this port. standard LDAP clients (like
-            # ldapsearch and many older legacy systems) do not send SNI data.
-            rule = "HostSNI(`*`)";
-            entryPoints = ["ldaps"];
-            service = "openldap-backend";
-            tls = {};
-          };
+          # Catch-all for traffic on this port. standard LDAP clients (like
+          # ldapsearch and many older legacy systems) do not send SNI data.
+          openldap-secure = {rule = "HostSNI(`*`)"; entryPoints = ["ldaps"]; service = "openldap-backend"; tls = {};};
         };
-        services = {
-          openldap-backend.loadBalancer.servers = [
-            # Point to the standard UNENCRYPTED local LDAP port.
-            {address = "127.0.0.1:389";}
-          ];
-        };
+        # Instruct Traefik to inject the PROXY protocol v2 header
+        services.openldap-backend.loadBalancer = {proxyProtocol.version = 2; servers = [{address = "127.0.0.1:389";}];};
       };
     };
   };
   ## END services_traefik.nix
-  ## TODO: paperless to host receipts & statements for Beancount
+  ## START services_paperless.nix
+  age.secrets."paperless.env" = {file = "${myvars.secrets_dir}/paperless.env.age"; mode = "0400"; owner = "root";};
+  services.paperless = {
+    domain = "paperless.${domain}";
+    enable = true;
+    # address = "0.0.0.0";
+    settings = {
+      PAPERLESS_DBENGINE = "postgresql";
+      PAPERLESS_DBHOST = "postgresql.${domain}";
+      PAPERLESS_DBSSLMODE = "require";
+      PAPERLESS_DBNAME = config.services.paperless.user;
+      PAPERLESS_DBUSER = config.services.paperless.user;
+
+      PAPERLESS_OCR_LANGUAGES = "chi-sim chi-tra";
+      PAPERLESS_OCR_LANGUAGE = "chi_sim+chi_tra+eng";
+
+      PAPERLESS_ADMIN_USER = myvars.username;
+      PAPERLESS_USE_X_FORWARD_HOST = true;
+      PAPERLESS_USE_X_FORWARD_PORT = true;
+    };
+    environmentFile = config.age.secrets."paperless.env".path;
+    dataDir = "/srv/paperless";
+  };
 }

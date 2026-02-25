@@ -1,4 +1,4 @@
-_: {
+{myvars, ...}: {
   ## START services_monero.nix
   services.monero = {
     enable = true;
@@ -12,7 +12,8 @@ _: {
       confirm-external-bind=1
       rpc-bind-ipv6-address=fd7a:115c:a1e0::d901:e013
     '';
-    rpc.address = "100.109.224.13";
+    prune = true;
+    rpc.address = myvars.networking.hosts_addr.Proteus-Desktop.ipv4;
     rpc.restricted = true;
   };
   ## END services_monero.nix

@@ -363,9 +363,7 @@
     };
     bat = { # a cat-like with syntax highlighting and Git integration.
       enable = true;
-      config = {
-        pager = "less -FR";
-      };
+      config.pager = "less -FR";
     };
     # A command-line fuzzy finder. Interactively filter its input using fuzzy searching, not limit to filenames.
     fzf = {

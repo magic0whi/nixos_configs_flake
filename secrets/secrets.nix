@@ -45,4 +45,5 @@ in {
   "minio.env.age".publicKeys = machines ++ google_vps ++ huawei_vps;
   "atuin.env.age".publicKeys = machines ++ [Proteus-NUC];
   "immich.env.age".publicKeys = machines ++ [Proteus-NUC];
+  "paperless.env.age".publicKeys = machines ++ [Proteus-NUC];
 }

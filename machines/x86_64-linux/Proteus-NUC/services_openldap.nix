@@ -11,7 +11,7 @@ in {
     enable = true;
     # The `///` tells OpenLDAP to bind to the default port on all available
     # network interfaces (`0.0.0.0` and `::`)
-    urlList = [/*"ldaps:///"*/ "ldap://127.0.0.1/"];
+    urlList = [/*"ldaps:///"*/ "pldap://127.0.0.1:389/"];
     settings = {
       # dn: cn=config
       attrs = {
@@ -169,7 +169,7 @@ in {
         loginShell: /run/current-system/sw/bin/nologin
         uidNumber: 1001
         gidNumber: 1001
-        homeDirectory: /mnt/overlay/Services/atuin
+        homeDirectory: /
         description: Magical shell history
 
         dn: uid=${config.services.immich.user},ou=People,dc=tailba6c3f,dc=ts,dc=net
@@ -189,6 +189,24 @@ in {
         gidNumber: 1002
         homeDirectory: ${config.services.immich.mediaLocation}
         description: High performance self-hosted photo and video management solution.
+
+        dn: uid=${config.services.paperless.user},ou=People,dc=tailba6c3f,dc=ts,dc=net
+        objectClass: top
+        objectClass: person
+        objectClass: organizationalPerson
+        objectClass: inetOrgPerson
+        objectClass: posixAccount
+        objectClass: shadowAccount
+        uid: ${config.services.paperless.user}
+        o: paperless-ngx
+        sn: Paperless
+        cn: Paperless-ngx
+        userPassword: {SSHA}GjfwDvkxDonJWgXheFpWstrT3dZk+9OS
+        loginShell: /run/current-system/sw/bin/nologin
+        uidNumber: 1003
+        gidNumber: 1003
+        homeDirectory: ${config.services.paperless.dataDir}
+        description: A community-supported supercharged document management system: scan, index and archive all your documents
 
         dn: cn=${myvars.username},ou=Group,dc=tailba6c3f,dc=ts,dc=net
         objectClass: top
