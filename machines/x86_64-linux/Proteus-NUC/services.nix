@@ -8,8 +8,6 @@ in {
   networking.firewall = {
     allowedTCPPorts = [
       53 # unbound TCP
-      443 # Traefik
-      636 # OpenLDAP (secure)
       853 # unbound DoT
       5201 # iperf3
       22000 # Syncthing TCP transfers
@@ -17,9 +15,7 @@ in {
     ];
     allowedUDPPorts = [
       53 # unbound
-      443 # Traefik (QUIC)
-      # 636 # OpenLDAP (secure, generally not used)
-      853 # unbound DNS-over-QUIC
+      # 853 # unbound DNS-over-QUIC, bind don't support it
       5201 # iperf3
       21027 # Syncthing discovery broadcasts on IPv4 and multicasts on IPv6
       22000 # Syncthing QUIC transfers
@@ -130,150 +126,152 @@ in {
   };
   ## END services_immich.nix
   ## START services_unbound.nix
-  age.secrets."unbound_server.priv.pem" = server_priv_crt_base // {owner = config.services.unbound.user;};
-  services.resolved.settings.Resolve.Domains = "~${domain}";
-  services.unbound = {
-    enable = true;
-    settings = {
-      remote-control.control-enable = true;
-      server = {
-        log-local-actions = true;
-        log-servfail = true;
-        so-sndbuf = 0;
-        interface = with myvars.networking.hosts_addr.Proteus-NUC; [
-          "${ipv4}@53" "${ipv6}@53"
-          "${ipv4}@853" "${ipv6}@853"
-          "${ipv4}@9443" "${ipv6}@9443"
-        ];
-        tls-service-pem = server_pub_crt;
-        tls-service-key = config.age.secrets."unbound_server.priv.pem".path;
-        # https-port = 9443; # Unbound is not compiled with nghttp2
-        hide-identity = true;
-        hide-version = true;
-        # Setting module-config to just "iterator" disables DNSSEC validation
-        module-config = "iterator";
-        access-control = [
-          "127.0.0.0/8 allow" "::1/128 allow"
-          "100.64.0.0/10 allow" "fd7a:115c:a1e0::/48 allow"
-          "192.168.0.0/16 allow"
-          # Best practice: explicitly refuse everything else
-          "0.0.0.0/0 refuse"
-          "::0/0 refuse"
-        ];
-        # Good practice: explicitly tell Unbound it is answering locally for
-        # these reverse zones so it doesn't try to query the public root servers.
-        local-zone = [
-          "161.64.100.in-addr.arpa. nodefault"
-          "0.e.1.a.c.5.1.1.a.7.d.f.ip6.arpa. nodefault"
-        ];
-      };
-      auth-zone = [
-        {name = "${domain}."; zonefile = "${myvars.secrets_dir}/${domain}.zone";}
-        {name = "161.64.100.in-addr.arpa."; zonefile = "${myvars.secrets_dir}/161.64.100.in-addr.arpa.zone";}
-        {
-          name = "0.e.1.a.c.5.1.1.a.7.d.f.ip6.arpa.";
-          zonefile = "${myvars.secrets_dir}/0.e.1.a.c.5.1.1.a.7.d.f.ip6.arpa.zone";
-        }
-      ];
-    };
-  };
+  # age.secrets."unbound_server.priv.pem" = server_priv_crt_base // {owner = config.services.unbound.user;};
+  # services.unbound = {
+  #   enable = true;
+  #   settings = {
+  #     remote-control.control-enable = true;
+  #     server = {
+  #       log-local-actions = true;
+  #       log-servfail = true;
+  #       so-sndbuf = 0;
+  #       interface = with myvars.networking.hosts_addr.Proteus-NUC; [
+  #         "${ipv4}@53" "${ipv6}@53"
+  #         "${ipv4}@853" "${ipv6}@853"
+  #         "${ipv4}@9443" "${ipv6}@9443"
+  #       ];
+  #       tls-service-pem = server_pub_crt;
+  #       tls-service-key = config.age.secrets."unbound_server.priv.pem".path;
+  #       # https-port = 9443; # Unbound is not compiled with nghttp2
+  #       hide-identity = true;
+  #       hide-version = true;
+  #       # Setting module-config to just "iterator" disables DNSSEC validation
+  #       module-config = "iterator";
+  #       access-control = [
+  #         "127.0.0.0/8 allow" "::1/128 allow"
+  #         "100.64.0.0/10 allow" "fd7a:115c:a1e0::/48 allow"
+  #         "192.168.0.0/16 allow"
+  #         # Best practice: explicitly refuse everything else
+  #         "0.0.0.0/0 refuse"
+  #         "::0/0 refuse"
+  #       ];
+  #       # Good practice: explicitly tell Unbound it is answering locally for
+  #       # these reverse zones so it doesn't try to query the public root servers.
+  #       local-zone = [
+  #         "161.64.100.in-addr.arpa. nodefault"
+  #         "0.e.1.a.c.5.1.1.a.7.d.f.ip6.arpa. nodefault"
+  #       ];
+  #     };
+  #     auth-zone = [
+  #       {name = "${domain}."; zonefile = "${myvars.secrets_dir}/${domain}.zone";}
+  #       {name = "161.64.100.in-addr.arpa."; zonefile = "${myvars.secrets_dir}/161.64.100.in-addr.arpa.zone";}
+  #       {
+  #         name = "0.e.1.a.c.5.1.1.a.7.d.f.ip6.arpa.";
+  #         zonefile = "${myvars.secrets_dir}/0.e.1.a.c.5.1.1.a.7.d.f.ip6.arpa.zone";
+  #       }
+  #     ];
+  #   };
+  # };
   ## END services_unbound.nix
-  ## START services_traefik.nix
-  age.secrets."traefik_server.priv.pem" = server_priv_crt_base // {
-    owner = config.systemd.services.traefik.serviceConfig.User;
+  ## START services_bind.nix
+  # Authoritative-only server for "proteus.eu.org"
+  age.secrets."bind_server.priv.pem" = server_priv_crt_base // {
+    owner = config.systemd.services.bind.serviceConfig.User;
   };
-  services.traefik = {
+  # Append to the BIND preStart script
+  systemd.services.bind.preStart = lib.mkAfter ''
+    echo "Copying raw zone files from the secrets directory to the writable BIND directory..."
+    install -m 0644 ${myvars.secrets_dir}/${domain}.zone ${config.services.bind.directory}/${domain}.zone
+    install -m 0644 ${myvars.secrets_dir}/161.64.100.in-addr.arpa.zone ${config.services.bind.directory}/161.64.100.in-addr.arpa.zone
+    install -m 0644 ${myvars.secrets_dir}/0.e.1.a.c.5.1.1.a.7.d.f.ip6.arpa.zone ${config.services.bind.directory}/0.e.1.a.c.5.1.1.a.7.d.f.ip6.arpa.zone
+  '';
+  services.resolved.settings.Resolve = {
+    DNSSEC= "allow-downgrade";
+    Domains = [
+      "~proteus.eu.org" # The '~' prefix makes this a routing domain
+      "~161.64.100.in-addr.arpa" 
+      "~0.e.1.a.c.5.1.1.a.7.d.f.ip6.arpa"
+    ];
+    DNS = ["100.64.161.20#proteus.eu.org"];
+  };
+  environment.etc."dnssec-trust-anchors.d/proteus.eu.org.positive".text = ''
+    proteus.eu.org. IN DS 19905 15 2 ac53e45bd2ecd7e4d8ded050fb08e0f37095af97e0b6f73ce912a56ce5c542c0
+  '';
+  services.bind = {
     enable = true;
-    # Static configuration handles entrypoints (ports) and global settings
-    staticConfigOptions = {
-      global = {checkNewVersion = false; sendAnonymousUsage = false;};
-      api.dashboard = true;
-      entryPoints = {
-        # Force HTTP to HTTPS redirect globally
-        web = {address = ":80"; http.redirections.entryPoint = {to = "websecure"; scheme = "https";};};
-        websecure = {
-          address = ":443";
-          http3 = {}; # For QUIC
-          # Prevent large video uploads from timing out and throwing Error 499.
-          # Ref: https://web.archive.org/web/20260217103328/https://docs.immich.app/administration/reverse-proxy/#traefik-proxy-example-config
-          transport.respondingTimeouts = {readTimeout = "600s"; idleTimeout = "600s";};
-        };
-        # Dedicated entrypoint for secure LDAP traffic
-        ldaps = {address = ":636";};
-      };
-    };
-    # Dynamic configuration defines routing rules, backend services, and certificate management.
-    dynamicConfigOptions = {
-      # tls.certificates = [{certFile = server_pub_crt; keyFile = config.age.secrets."traefik_server.priv.pem".path;}];
+    # Persistent directory for DNSSEC key states.
+    # NixOS defaults to /run/named, which clears on reboot.
+    directory = "/srv/bind";
+    # Access-control of what networks are allowed for recursive queries 
+    cacheNetworks = [];
+    # cacheNetworks = [
+    #   "127.0.0.0/8" "::1/128"
+    #   "100.64.0.0/10" "fd7a:115c:a1e0::/48"
+    #   "192.168.0.0/16"
+    # ];
+    forwarders = [];
+    # Bind standard port 53 strictly to the specific interface IPs
+    listenOn = [myvars.networking.hosts_addr.Proteus-NUC.ipv4];
+    listenOnIpv6 = [myvars.networking.hosts_addr.Proteus-NUC.ipv6];
 
-      # Establish the default fallback certificate.
-      # This is critical for TCP clients (like `ldapsearch`) that do not send
-      # Server Name Indication (SNI) data during the TLS handshake. Without this,
-      # Traefik serves an untrusted dummy certificate.
-      tls.stores.default.defaultCertificate = {
-        certFile = server_pub_crt; keyFile = config.age.secrets."traefik_server.priv.pem".path;
+    # Inject the variables into the raw extraOptions string for DoT and DoH
+    extraOptions = with myvars.networking.hosts_addr.Proteus-NUC; ''
+      # Strictly Authoritative-Only Mode
+      recursion no;
+      # DNS-over-TLS (DoT) on port 853
+      listen-on port 853 tls mycert { ${ipv4}; };
+      listen-on-v6 port 853 tls mycert { ${ipv6}; };
+
+      # DNS-over-HTTPS (DoH) on port 9443 using the default HTTP endpoint
+      listen-on port 9443 tls mycert http default { ${ipv4}; };
+      listen-on-v6 port 9443 tls mycert http default { ${ipv6}; };
+
+      allow-transfer { none; };
+      allow-update { none; };
+      server-id none;
+
+      # Disable global validation if relying solely on the trusted island
+      dnssec-validation no;
+    '';
+    extraConfig = ''
+      tls mycert {
+        cert-file "${server_pub_crt}";
+        key-file "${config.age.secrets."bind_server.priv.pem".path}";
       };
-      http = {
-        middlewares.authelia-auth.forwardAuth = {
-          # Tell Traefik where to ask if a user is authenticated
-          address = "http://127.0.0.1:9092/api/verify?rd=https://auth.${domain}/";
-          trustForwardHeader = true;
-          authResponseHeaders = ["Remote-User" "Remote-Groups" "Remote-Email" "Remote-Name"];
+      # DNSSEC Trusted Island Policy
+      dnssec-policy custom {
+        keys {
+          csk key-directory lifetime unlimited algorithm 15; # ED25519
         };
-        routers = {
-          # Router for the login portal
-          # `tls = {}` enables TLS using the default cert provided above
-          authelia = {
-            rule = "Host(`auth.${domain}`)";
-            entryPoints = ["websecure"];
-            service = "authelia-backend";
-            tls = {};
-          };
-          traefik-dashboard = {
-            rule = "Host(`traefik.${domain}`)";
-            entryPoints = ["websecure"];
-            # Protect the dashboard
-            middlewares = ["authelia-auth"]; 
-            service = "api@internal";
-            tls = {};
-          };
-          atuin = {rule = "Host(`atuin.${domain}`)"; entryPoints = ["websecure"]; service = "atuin"; tls = {};};
-          immich = {rule = "Host(`immich.${domain}`)"; entryPoints = ["websecure"]; service = "immich"; tls = {};};
-          paperless = {
-            rule = "Host(`paperless.${domain}`)"; entryPoints = ["websecure"]; service = "paperless"; tls = {};
-          };
-          sftpgo-webui = {
-            rule = "Host(`sftpgo.${domain}`)"; entryPoints = ["websecure"]; service = "sftpgo-webui"; tls = {};
-          };
-          sftpgo-webdav = {
-            rule = "Host(`webdav.${domain}`)"; entryPoints = ["websecure"]; service = "sftpgo-webdav"; tls = {};
-          };
-        };
-        services = {
-          authelia-backend.loadBalancer.servers = [{url = "http://127.0.0.1:9092";}];
-          atuin.loadBalancer.servers = [{url = "http://127.0.0.1:${builtins.toString config.services.atuin.port}";}];
-          immich.loadBalancer.servers = [{url = "http://127.0.0.1:${builtins.toString config.services.immich.port}";}];
-          paperless.loadBalancer.servers = [{url = "http://127.0.0.1:${builtins.toString config.services.paperless.port}";}];
-          sftpgo-webui.loadBalancer.servers = [
-            {url = "http://127.0.0.1:${builtins.toString (builtins.head config.services.sftpgo.settings.httpd.bindings).port}";}
-          ];
-          sftpgo-webdav.loadBalancer.servers = [
-            {url = "http://127.0.0.1:${builtins.toString (builtins.head config.services.sftpgo.settings.webdavd.bindings).port}";}
-          ];
-        };
+        max-zone-ttl 24h;
+        signatures-refresh 8d; # Regenerate 8 days before expire
+        signatures-validity 10d; # ZSK validity last for 10 days
+        signatures-validity-dnskey 10d; # KSK validity last for 10 days
       };
-      tcp = {
-        routers = {
-          # Catch-all for traffic on this port. standard LDAP clients (like
-          # ldapsearch and many older legacy systems) do not send SNI data.
-          openldap-secure = {rule = "HostSNI(`*`)"; entryPoints = ["ldaps"]; service = "openldap-backend"; tls = {};};
-        };
-        # Instruct Traefik to inject the PROXY protocol v2 header
-        services.openldap-backend.loadBalancer = {proxyProtocol.version = 2; servers = [{address = "127.0.0.1:389";}];};
+    '';
+    zones = {
+      "${domain}" = {
+        master = true;
+        # file = "${myvars.secrets_dir}/${domain}.zone";
+        file = "${domain}.zone"; # Relative path
+        extraConfig = ''
+          # Apply the DNSSEC policy to sign the zone locally
+          dnssec-policy custom;
+        '';
+      };
+      "161.64.100.in-addr.arpa" = {
+        master = true;
+        # file = "${myvars.secrets_dir}/161.64.100.in-addr.arpa.zone";
+        file = "161.64.100.in-addr.arpa.zone"; # Relative path
+      };
+      "0.e.1.a.c.5.1.1.a.7.d.f.ip6.arpa" = {
+        master = true;
+        # file = "${myvars.secrets_dir}/0.e.1.a.c.5.1.1.a.7.d.f.ip6.arpa.zone";
+        file = "0.e.1.a.c.5.1.1.a.7.d.f.ip6.arpa.zone"; # Relative path
       };
     };
   };
-  ## END services_traefik.nix
+  ## END services_bind.nix
   ## START services_paperless.nix
   age.secrets."paperless.env" = {file = "${myvars.secrets_dir}/paperless.env.age"; mode = "0400"; owner = "root";};
   services.paperless = {

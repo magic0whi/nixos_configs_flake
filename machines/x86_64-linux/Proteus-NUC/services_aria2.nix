@@ -1,10 +1,9 @@
 {config, myvars, ...}: let
   path_prefix = "/srv";
 in {
-  # TODO: use Traefik
-  age.secrets = let high_security = {mode = "0400"; owner = "aria2";}; in {
+  age.secrets = let high_security = {mode = "0400"; owner = config.systemd.services.aria2.serviceConfig.User;}; in {
     "aria2rpc.priv" = {file = "${myvars.secrets_dir}/aria2rpc.priv.age";} // high_security;
-    "aria2rpc_proteus_server.priv.pem" = {file = "${myvars.secrets_dir}/proteus_server.priv.pem.age";} // high_security;
+    # "aria2rpc_proteus_server.priv.pem" = {file = "${myvars.secrets_dir}/proteus_server.priv.pem.age";} // high_security;
   };
   users.users.${myvars.username}.extraGroups = ["aria2"];
   services.aria2 = {
@@ -90,12 +89,13 @@ in {
 
       enable-rpc = true;
       rpc-allow-origin-all = true;
-      rpc-listen-all = true;
+      # We use Traefik
+      # rpc-listen-all = true;
       rpc-listen-port = 6800;
       rpc-max-request-size = "256M";
-      rpc-secure = true;
-      rpc-certificate = "${myvars.secrets_dir}/proteus_server.pub.pem";
-      rpc-private-key = config.age.secrets."aria2rpc_proteus_server.priv.pem".path;
+      # rpc-secure = true;
+      # rpc-certificate = "${myvars.secrets_dir}/proteus_server.pub.pem";
+      # rpc-private-key = config.age.secrets."aria2rpc_proteus_server.priv.pem".path;
       #event-poll=select
       #async-dns=true
       #async-dns-server=119.29.29.29,223.5.5.5,8.8.8.8,1.1.1.1
