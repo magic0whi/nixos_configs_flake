@@ -46,4 +46,9 @@ in {
   "atuin.env.age".publicKeys = machines ++ [Proteus-NUC];
   "immich.env.age".publicKeys = machines ++ [Proteus-NUC];
   "paperless.env.age".publicKeys = machines ++ [Proteus-NUC];
+  "authelia_jwt_secret.txt.age".publicKeys = machines ++ [Proteus-NUC];
+  "authelia_session_secret.txt.age".publicKeys = machines ++ [Proteus-NUC];
+  "authelia_storage_encryption_key.txt.age".publicKeys = machines ++ [Proteus-NUC];
+  "authelia_ldap_password.txt.age".publicKeys = machines ++ [Proteus-NUC];
+  "authelia_db_password.txt.age".publicKeys = machines ++ [Proteus-NUC];
 }

@@ -354,7 +354,34 @@
         local_bin = "${config.home.homeDirectory}/.local/bin";
         go_bin = "${config.home.homeDirectory}/go/bin";
         rust_bin = "${config.home.homeDirectory}/.cargo/bin";
-      in lib.mkAfter ''export PATH="$PATH:${local_bin}:${go_bin}:${rust_bin}"'';
+      in lib.mkAfter ''
+        get-ssh-key() {
+          # Check if the required key_id argument is provided
+          if [[ -z "$1" ]]; then
+            echo "Usage: get-ssh-key <pgp_key_id>" >&2
+            return 1
+          fi
+
+          # Run the core logic in a subshell to contain 'set -e' and the EXIT trap
+          (
+            set -eufo pipefail
+
+            TMP_KEY=$(mktemp)
+
+            # The EXIT trap will trigger exactly when this subshell finishes or fails
+            trap 'rm -f "$TMP_KEY"' EXIT
+
+            # Export the key securely to the temporary file
+            gpg --quiet --batch --yes -ao "$TMP_KEY" --export-secret-subkeys "$1"
+
+            # Pass the temp file path, a newline, and the index '1' to pgp2ssh
+            printf "%s\n1\n" "$TMP_KEY" \
+              | pgp2ssh 2>&1 \
+              | awk 'BEGIN { A=0; } /BEGIN OPENSSH PRIVATE KEY/ { A=1; } { if (A==1) { print; } }'
+          )
+        }
+        export PATH="$PATH:${local_bin}:${go_bin}:${rust_bin}"
+      '';
     };
     eza = { # A modern replacement for ‘ls’, useful in bash/zsh prompt, but not in nushell
       enable = if pkgs.stdenv.hostPlatform.isRiscV64 then false else true;

@@ -87,11 +87,17 @@ in {
       ssl_cert_file = server_pub_crt;
       ssl_key_file = config.age.secrets."postgresql_server.priv.pem".path;
     };
-    ensureDatabases = ["mydatabase" "atuin" config.services.paperless.user];
+    ensureDatabases = [
+      "mydatabase" # TODO: For learning
+      "atuin"
+      config.services.paperless.user
+      config.services.authelia.instances.main.user
+    ];
     ensureUsers = [
       {name = "proteus"; ensureClauses = {login = true; /*superuser = true;*/ createdb = true;};}
       {name = "atuin"; ensureDBOwnership = true;}
       {name = config.services.paperless.user; ensureDBOwnership = true;}
+      {name = config.services.authelia.instances.main.user; ensureDBOwnership =true;}
     ];
     authentication = ''
       #type database DBuser auth-method [auth-options]
@@ -181,6 +187,7 @@ in {
     # Static configuration handles entrypoints (ports) and global settings
     staticConfigOptions = {
       global = {checkNewVersion = false; sendAnonymousUsage = false;};
+      api.dashboard = true;
       entryPoints = {
         # Force HTTP to HTTPS redirect globally
         web = {address = ":80"; http.redirections.entryPoint = {to = "websecure"; scheme = "https";};};
@@ -207,8 +214,29 @@ in {
         certFile = server_pub_crt; keyFile = config.age.secrets."traefik_server.priv.pem".path;
       };
       http = {
+        middlewares.authelia-auth.forwardAuth = {
+          # Tell Traefik where to ask if a user is authenticated
+          address = "http://127.0.0.1:9092/api/verify?rd=https://auth.${domain}/";
+          trustForwardHeader = true;
+          authResponseHeaders = ["Remote-User" "Remote-Groups" "Remote-Email" "Remote-Name"];
+        };
         routers = {
+          # Router for the login portal
           # `tls = {}` enables TLS using the default cert provided above
+          authelia = {
+            rule = "Host(`auth.${domain}`)";
+            entryPoints = ["websecure"];
+            service = "authelia-backend";
+            tls = {};
+          };
+          traefik-dashboard = {
+            rule = "Host(`traefik.${domain}`)";
+            entryPoints = ["websecure"];
+            # Protect the dashboard
+            middlewares = ["authelia-auth"]; 
+            service = "api@internal";
+            tls = {};
+          };
           atuin = {rule = "Host(`atuin.${domain}`)"; entryPoints = ["websecure"]; service = "atuin"; tls = {};};
           immich = {rule = "Host(`immich.${domain}`)"; entryPoints = ["websecure"]; service = "immich"; tls = {};};
           paperless = {
@@ -222,6 +250,7 @@ in {
           };
         };
         services = {
+          authelia-backend.loadBalancer.servers = [{url = "http://127.0.0.1:9092";}];
           atuin.loadBalancer.servers = [{url = "http://127.0.0.1:${builtins.toString config.services.atuin.port}";}];
           immich.loadBalancer.servers = [{url = "http://127.0.0.1:${builtins.toString config.services.immich.port}";}];
           paperless.loadBalancer.servers = [{url = "http://127.0.0.1:${builtins.toString config.services.paperless.port}";}];
@@ -268,4 +297,90 @@ in {
     environmentFile = config.age.secrets."paperless.env".path;
     dataDir = "/srv/paperless";
   };
+  ## END services_paperless.nix
+  ## START services_authelia.nix
+  age.secrets = {
+    "authelia_jwt_secret.txt" = {
+      file = "${myvars.secrets_dir}/authelia_jwt_secret.txt.age";
+      mode = "0400";
+      owner = config.services.authelia.instances.main.user;
+    };
+    "authelia_session_secret.txt" = {
+      file = "${myvars.secrets_dir}/authelia_session_secret.txt.age";
+      mode = "0400";
+      owner = config.services.authelia.instances.main.user;
+    };
+    "authelia_storage_encryption_key.txt" = {
+      file = "${myvars.secrets_dir}/authelia_storage_encryption_key.txt.age";
+      mode = "0400";
+      owner = config.services.authelia.instances.main.user;
+    };
+    "authelia_ldap_password.txt" = {
+      file = "${myvars.secrets_dir}/authelia_ldap_password.txt.age";
+      mode = "0400";
+      owner = config.services.authelia.instances.main.user;
+    };
+    "authelia_db_password.txt" = {
+      file = "${myvars.secrets_dir}/authelia_db_password.txt.age";
+      mode = "0400";
+      owner = config.services.authelia.instances.main.user;
+    };
+  };
+  services.authelia.instances.main = {
+    enable = true;
+    secrets = {
+      # To generate, run
+      # nix run nixpkgs#authelia -- crypto rand --length 64 session_secret.txt storage_encryption_key.txt jwt_secret.txt
+      jwtSecretFile = config.age.secrets."authelia_jwt_secret.txt".path;
+      sessionSecretFile = config.age.secrets."authelia_session_secret.txt".path;
+      storageEncryptionKeyFile = config.age.secrets."authelia_storage_encryption_key.txt".path;
+    };
+    # LDAP Password Injection
+    # Using the _FILE suffix tells Authelia to read the contents of the secret path
+    environmentVariables = {
+      # Render to `settings.authentication_backend.ldap.password`
+      AUTHELIA_AUTHENTICATION_BACKEND_LDAP_PASSWORD_FILE = config.age.secrets."authelia_ldap_password.txt".path;
+      # Render to `settings.storage.postgres.password`
+      AUTHELIA_STORAGE_POSTGRES_PASSWORD_FILE = config.age.secrets."authelia_db_password.txt".path;
+    };
+    settings = {
+      theme = "dark";
+      default_2fa_method = "totp";
+      # Use the new server.address syntax required by the module
+      server.address = "tcp://127.0.0.1:9092";
+      # This allows the login cookie to work across all your subdomains
+      session.cookies = [{
+        inherit domain;
+        authelia_url = "https://auth.${domain}";
+        same_site = "lax";
+        inactivity = "5 minutes";
+        expiration = "1 hour";
+        remember_me = "1 month";
+      }];
+      storage.postgres = {
+        address = "tcp://postgresql.${domain}:${builtins.toString config.services.postgresql.settings.port}";
+        database = config.services.authelia.instances.main.user;
+        schema = "public";
+        username = config.services.authelia.instances.main.user;
+        # Password is injected via environment variable
+      };
+      notifier.filesystem.filename = "/var/lib/authelia-main/emails.txt";
+      authentication_backend = {
+        ldap = {
+          implementation = "custom";
+          url = "ldaps://openldap.${domain}:636";
+          timeout = "5s";
+          base_dn = "dc=tailba6c3f,dc=ts,dc=net";
+          additional_users_dn = "ou=People";
+          users_filter = "(&({username_attribute}={input})(objectClass=person))";
+          additional_groups_dn = "ou=Group";
+          groups_filter = "(member={dn})";
+          user = "cn=Manager,dc=tailba6c3f,dc=ts,dc=net";
+          # Password is injected via environment variable
+        };
+      };
+      access_control = {default_policy = "deny"; rules = [{domain = "*.${domain}"; policy = "one_factor";}];};
+    };
+  };
+  ## END services_authelia.nix
 }

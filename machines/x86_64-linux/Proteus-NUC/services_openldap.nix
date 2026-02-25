@@ -169,7 +169,7 @@ in {
         loginShell: /run/current-system/sw/bin/nologin
         uidNumber: 1001
         gidNumber: 1001
-        homeDirectory: /
+        homeDirectory: /var/empty
         description: Magical shell history
 
         dn: uid=${config.services.immich.user},ou=People,dc=tailba6c3f,dc=ts,dc=net
@@ -206,6 +206,25 @@ in {
         uidNumber: 1003
         gidNumber: 1003
         homeDirectory: ${config.services.paperless.dataDir}
+        description: A community-supported supercharged document management system: scan, index and archive all your documents
+
+        # Authelia postgresql user
+        dn: uid=${config.services.authelia.instances.main.user},ou=People,dc=tailba6c3f,dc=ts,dc=net
+        objectClass: top
+        objectClass: person
+        objectClass: organizationalPerson
+        objectClass: inetOrgPerson
+        objectClass: posixAccount
+        objectClass: shadowAccount
+        uid: ${config.services.authelia.instances.main.user}
+        o: authelia
+        sn: Authelia
+        cn: Authelia
+        userPassword: {SSHA}I15RtwzY9KQf3Pc/czOndnJxPuJ+sb9W
+        loginShell: /run/current-system/sw/bin/nologin
+        uidNumber: 1004
+        gidNumber: 1004
+        homeDirectory: /var/empty
         description: A community-supported supercharged document management system: scan, index and archive all your documents
 
         dn: cn=${myvars.username},ou=Group,dc=tailba6c3f,dc=ts,dc=net

@@ -188,7 +188,7 @@
       auth_provider = "ldap";
       chpass_provider = "ldap";
 
-      ldap_uri = "ldaps://proteus-nuc.tailba6c3f.ts.net:636";
+      ldap_uri = "ldaps://openldap.proteus.eu.org:636";
       ldap_search_base = "dc=tailba6c3f,dc=ts,dc=net";
       ldap_sudo_search_base = "ou=Sudoers,dc=tailba6c3f,dc=ts,dc=net";
       ldap_tls_reqcert = "demand";
