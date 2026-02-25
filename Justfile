@@ -11,9 +11,9 @@ utils := absolute_path("utils.sh")
 
 # List all the just commands
 default:
-    @just --list
+  @just --list
 
-# Run eval tests
+# Run eval tests on Proteus-NUC
 [group('nix')]
 test:
   nom build .#nixosConfigurations.Proteus-NUC.config.system.build.toplevel --show-trace --verbose
@@ -39,18 +39,18 @@ history:
 repl:
   nix repl -f flake:nixpkgs
 
-# remove all generations older than 7 days
+# Remove all generations older than 7 days
 # on darwin, you may need to switch to root user to run this command
 [group('nix')]
 clean:
-  sudo nix profile wipe-history --profile /nix/var/nix/profiles/system  --older-than 7d
+  sudo nix profile wipe-history --profile /nix/var/nix/profiles/system --older-than 7d
 
 # Garbage collect all unused nix store entries
 [group('nix')]
 gc:
-  # garbage collect all unused nix store entries(system-wide)
+  # Garbage collect all unused nix store entries (system-wide)
   sudo nix-collect-garbage --delete-older-than 7d
-  # garbage collect all unused nix store entries(for the user - home-manager)
+  # Garbage collect all unused nix store entries (for the user - home-manager)
   # https://github.com/NixOS/nix/issues/8508
   nix-collect-garbage --delete-older-than 7d
 
@@ -66,9 +66,9 @@ shell:
 shell:
   nix shell nixpkgs#git nixpkgs#neovim
 
+# Format the nix files in this repo
 [group('nix')]
 fmt:
-  # format the nix files in this repo
   nix fmt
 
 # Show all the auto gc roots in the nix store
@@ -77,9 +77,11 @@ gcroot:
   ls -al /nix/var/nix/gcroots/auto/
 
 # Verify all the store entries
-# Nix Store can contains corrupted entries if the nix store object has been modified unexpectedly.
-# This command will verify all the store entries,
-# and we need to fix the corrupted entries manually via `sudo nix store delete <store-path-1> <store-path-2> ...`
+# Nix Store can contains corrupted entries if the nix store object has been
+# modified unexpectedly.
+# This command will verify all the store entries, and we need to fix the
+# corrupted entries manually via
+# `sudo nix store delete <store-path-1> <store-path-2> ...`
 [group('nix')]
 verify-store:
   nix store verify --all
@@ -102,18 +104,12 @@ proteus-nuc mode="default":
   . {{utils}}
   nixos-switch Proteus-NUC {{mode}}
 
-[linux]
-[group('desktop')]
-proteus-desktop mode="default":
-  #!/usr/bin/env bash
-  . {{utils}}
-  nixos-switch Proteus-Desktop {{mode}}
-
 ############################################################################
 #
 #  Darwin related commands
 #
 ############################################################################
+
 [macos]
 [group('desktop')]
 darwin-rollback:
@@ -121,7 +117,6 @@ darwin-rollback:
   . {{utils}} *;
   darwin-rollback
 
-# Depoly to Proteus-MBP14M4P(macOS host)
 [macos]
 [group('desktop')]
 proteus-mbp mode="default":
@@ -148,6 +143,7 @@ reset-launchpad:
 deploy name:
   deploy .#{{name}} -- --verbose --show-trace
 
+# Local switch
 [linux]
 [group('homelab')]
 local name mode="default":
@@ -155,6 +151,7 @@ local name mode="default":
   . {{utils}}
   nixos-switch {{name}} {{mode}}
 
+# TODO
 # Build and upload a vm image
 [linux]
 [group('homelab')]
@@ -163,53 +160,28 @@ upload-vm name mode="default":
   use {{utils}} *;
   upload-vm {{name}} {{mode}}
 
-# Deploy all the KubeVirt nodes(Physical machines running KubeVirt)
+# TODO: Learn KubeVirt
+# Deploy all the nodes
 [linux]
 [group('homelab')]
 all:
-  deploy -s --targets /home/proteus/nixos_configs_flake#Proteus-NUC \
-  --targets /home/proteus/nixos_configs_flake#Proteus-Desktop \
-  --targets /home/proteus/nixos_configs_flake#Proteus-NixOS-1 \
-  --targets /home/proteus/nixos_configs_flake#Proteus-NixOS-2 \
-  --targets /home/proteus/nixos_configs_flake#Proteus-NixOS-3 \
-  --targets /home/proteus/nixos_configs_flake#Proteus-NixOS-4 \
-  --targets /home/proteus/nixos_configs_flake#Proteus-NixOS-5
+  deploy --targets \
+  .#Proteus-NUC \
+  .#Proteus-Desktop \
+  .#Proteus-NixOS-{1..6} \
+  -- --show-trace --verbose
 
 [linux]
 [group('homelab')]
-shoryu:
-  colmena apply --on '@kubevirt-shoryu' --verbose --show-trace
+proteus-desktop:
+  deploy .#Proteus-Desktop -- --verbose --show-trace
 
 [linux]
 [group('homelab')]
-shoryu-local mode="default":
-  #!/usr/bin/env nu
-  use {{utils}} *; 
-  nixos-switch kubevirt-shoryu {{mode}}
-
-[linux]
-[group('homelab')]
-shushou:
-  colmena apply --on '@kubevirt-shushou' --verbose --show-trace
-
-[linux]
-[group('homelab')]
-shushou-local mode="default":
-  #!/usr/bin/env nu
-  use {{utils}} *; 
-  nixos-switch kubevirt-shushou {{mode}}
-
-[linux]
-[group('homelab')]
-youko:
-  colmena apply --on '@kubevirt-youko' --verbose --show-trace
-
-[linux]
-[group('homelab')]
-youko-local mode="default":
-  #!/usr/bin/env nu
-  use {{utils}} *; 
-  nixos-switch kubevirt-youko {{mode}}
+proteus-desktop-local mode="default":
+  #!/usr/bin/env bash
+  . {{utils}}
+  nixos-switch Proteus-Desktop {{mode}}
 
 ############################################################################
 #
@@ -226,42 +198,6 @@ upload-idols mode="default":
   upload-vm aquamarine {{mode}}
   upload-vm ruby {{mode}}
   upload-vm kana {{mode}}
-
-[linux]
-[group('homelab')]
-aqua:
-  colmena apply --on '@aqua' --verbose --show-trace
-
-[linux]
-[group('homelab')]
-aqua-local mode="default":
-  #!/usr/bin/env nu
-  use {{utils}} *; 
-  nixos-switch aquamarine {{mode}}
-
-[linux]
-[group('homelab')]
-ruby:
-  colmena apply --on '@ruby' --verbose --show-trace
-
-[linux]
-[group('homelab')]
-ruby-local mode="default":
-  #!/usr/bin/env nu
-  use {{utils}} *; 
-  nixos-switch ruby {{mode}}
-
-[linux]
-[group('homelab')]
-kana:
-  colmena apply --on '@kana' --verbose --show-trace
-
-[linux]
-[group('homelab')]
-kana-local mode="default":
-  #!/usr/bin/env nu
-  use {{utils}} *; 
-  nixos-switch kana {{mode}}
 
 ############################################################################
 #
@@ -323,7 +259,6 @@ emacs-reload:
   systemctl --user restart emacs.service
   systemctl --user status emacs.service
 
-
 emacs-plist-path := "~/Library/LaunchAgents/org.nix-community.home.emacs.plist"
 
 [macos]
@@ -339,11 +274,12 @@ emacs-reload:
 # Other useful commands
 #
 # =================================================
-
+# TODO: Nushell-only commands
 [group('common')]
 path:
-   $env.PATH | split row ":"
+  $env.PATH | split row ":"
 
+# TODO: Nushell-only commands
 [group('common')]
 trace-access app *args:
   strace -f -t -e trace=file {{app}} {{args}} | complete | $in.stderr | lines | find -v -r "(/nix/store|/newroot|/proc)" | parse --regex '"(/.+)"' | sort | uniq
@@ -361,9 +297,10 @@ ggc:
 
 # Amend the last commit without changing the commit message
 [group('git')]
-game:
+gamend:
   git commit --amend -a --no-edit
 
+# TODO
 # Delete all failed pods
 [group('k8s')]
 del-failed:

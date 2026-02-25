@@ -41,6 +41,7 @@
         {name = "cpp"; auto-format = true;}
         {name = "markdown"; language-servers = ["marksman" "ltex"];}
         {name = "latex"; language-servers = ["texlab" "ltex"];}
+        {name = "just"; indent = {tab-width = 2; unit = "  ";};}
       ];
       language-server = {
         ltex = {
