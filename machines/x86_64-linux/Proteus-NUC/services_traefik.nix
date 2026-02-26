@@ -170,7 +170,7 @@ in {
           # Forward raw DNS to BIND's local 53
           dot.loadBalancer = {
             proxyProtocol.version = 2;
-            servers = [{address = "127.0.0.1:53";}{address = "[::1]:53";}];
+            servers = [{address = "127.0.0.1:8530";}{address = "[::1]:8530";}];
           };
         };
       };

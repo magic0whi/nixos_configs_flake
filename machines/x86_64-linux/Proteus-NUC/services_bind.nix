@@ -232,16 +232,19 @@ in {
       recursion no;
 
       # Raw DNS for local systemd-resolved and direct Tailscale clients
-      # and for Traefik's DoT proxy stream
-      listen-on port 53 proxy plain { 127.0.0.1; ${ipv4}; };
-      listen-on-v6 port 53 proxy plain { ::1; ${ipv6}; };
+      listen-on port 53 { 127.0.0.1; ${ipv4}; };
+      listen-on-v6 port 53 { ::1; ${ipv6}; };
       # DNS-over-TLS (DoT) on port 853
       # listen-on port 853 tls mycert { ${ipv4}; };
       # listen-on-v6 port 853 tls mycert { ${ipv6}; };
 
+      # Dedicated unencrypted TCP port strictly for Traefik's DoT proxy stream
+      listen-on port 8530 proxy plain { 127.0.0.1; };
+      listen-on-v6 port 8530 proxy plain { ::1; };
+
       # Plain HTTP endpoint strictly for Traefik's DoH forwarding
-      listen-on port 8053 proxy plain tls none http default { 127.0.0.1; };
-      listen-on-v6 port 8053 proxy plain tls none http default { ::1; };
+      listen-on port 8053 tls none http default { 127.0.0.1; };
+      listen-on-v6 port 8053 tls none http default { ::1; };
       # DNS-over-HTTPS (DoH) on port 9443 using the default HTTP endpoint
       # listen-on port 9443 tls mycert http default { ${ipv4}; };
       # listen-on-v6 port 9443 tls mycert http default { ${ipv6}; };
