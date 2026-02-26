@@ -1,0 +1,289 @@
+{myvars, lib, pkgs, config, ...}: let
+  domain = "proteus.eu.org";
+  tailnet = "tailba6c3f.ts.net";
+  tailnet_prefix_length = 48;
+  soa_parms = {
+    serial = "2026022403"; # Serial (YYYYMMDDNN)
+    refresh = "3600"; # Refresh (1 hour)
+    retry = "1800"; # Retry (30 minutes)
+    expire = "604800"; # Expire (1 week)
+    minimal_ttl = "86400"; # Minimum TTL
+  };
+  zone_head = _domain: ''
+    $ORIGIN ${_domain}.
+    $TTL ${soa_parms.minimal_ttl}
+    @ IN SOA  ns1.${domain}. admin.${domain}. (
+              ${soa_parms.serial}       ; Serial (YYYYMMDDNN)
+              ${soa_parms.refresh}      ; Refresh (1 hour)
+              ${soa_parms.retry}        ; Retry (30 minutes)
+              ${soa_parms.expire}       ; Expire (1 week)
+              ${soa_parms.minimal_ttl}) ; Minimum TTL
+    ; Nameserver definitions
+    @ IN NS   ns1.${domain}.
+  '';
+  nuc_ipv4 = myvars.networking.hosts_addr.Proteus-NUC.ipv4;
+  nuc_ipv6 = myvars.networking.hosts_addr.Proteus-NUC.ipv6;
+  desktop_ipv4 = myvars.networking.hosts_addr.Proteus-Desktop.ipv4;
+  desktop_ipv6 = myvars.networking.hosts_addr.Proteus-Desktop.ipv6;
+
+  server_pub_crt = "${myvars.secrets_dir}/proteus_server.pub.pem";
+
+  # =========================================
+  # IPv4 Reverse Logic
+  # =========================================
+  gen_reverse_prefix_v4 = ipv4: let
+    # 1. Split the IP into a list of octets
+    # e.g. "100.64.161.20" -> ["100" "64" "161" "20"]
+    octets = lib.splitString "." ipv4;
+    # 2. Extract the first 3 octets, reverse them, and join with dots
+    # e.g. ["100" "64" "161" "20"] -> ["100" "64" "161"] -> ["161" "64" "100"]
+    # -> "161.64.100"
+    reverse_prefix = builtins.concatStringsSep "." (
+      lib.reverseList (lib.take 3 octets)
+    );
+  # 3. Construct the full dynamic zone name
+  # e.g. "161.64.100.in-addr.arpa"
+  in "${reverse_prefix}.in-addr.arpa";
+
+  # ==========================================
+  # IPv6 Reverse Logic (Zero-Compression Expansion)
+  # ==========================================
+  gen_reversed_chars_v6 = ipv6: let
+    # 1. Split by "::" to handle zero-compression
+    # e.g. "fd7a:115c:a1e0::cd3a:a114" -> ["fd7a:115c:a1e0" "cd3a:a114"]
+    split_double_colon = lib.splitString "::" ipv6;
+    # 2. Split the IP into a list, and pad add segments to 4 characters
+    # e.g. Left part: ["fd7a" "115c" "a1e0"], right part: ["cd3a" "a114"]
+    # Helper: Pad a string to 4 characters with leading zeros
+    pad_hex = s: let len = builtins.stringLength s;
+    in if len == 0 then "0000"
+    else if len == 1 then "000" + s
+    else if len == 2 then "00" + s
+    else if len == 3 then "0" + s
+    else s;
+    left_padded = map pad_hex (
+      lib.splitString ":" (builtins.elemAt split_double_colon 0)
+    );
+    right_padded = map pad_hex (
+      lib.splitString ":" (builtins.elemAt split_double_colon 1)
+    );
+    # 3. Calculate and generate missing zero segments (IPv6 has 8 total segments)
+    # e.g. missing count is `8 - (3 + 5) = 3`, so the missing_segments is:
+    #  ["0000" "0000" "0000"]
+    missing_segments = let
+      missing_count = 8 - (
+        builtins.length left_padded + builtins.length right_padded
+      );
+    in builtins.genList (_: "0000") missing_count;
+    # 4. Construct the full 32-character string
+    # e.g.: ["fd7a" "115c" "a1e0", "0000" "0000" "0000" "cd3a" "a114"] ->
+    # "fd7a115ca1e0000000000000cd3aa114"
+    full_ipv6_str = builtins.concatStringsSep "" (
+      left_padded ++ missing_segments ++ right_padded
+    );
+  # 5. Reverse it character by character
+  # e.g. "fd7a115ca1e0000000000000cd3aa114"
+  # -> ["f" "d" "7" "a" "1" "1" "5" "c" "a" "1" "e" "0" "0" "0" "0" "0" "0" "0" "0" "0" "0" "0" "0" "0" "c" "d" "3" "a" "a" "1" "1" "4"]
+  # -> ["4" "1" "1" "a" "a" "3" "d" "c" "0" "0" "0" "0" "0" "0" "0" "0" "0" "0" "0" "0" "0" "e" "1" "a" "c" "5" "1" "1" "a" "7" "d" "f"]
+  in lib.reverseList (lib.stringToCharacters full_ipv6_str);
+
+  # Tailscale uses a /48 prefix. So the PTR length is `128 - 48 = 80` bits (20 hex chars).
+  # And the Zone Prefix is 48 bits (12 hex chars),
+  # e.g. ["4" "1" "1" "a" "a" "3" "d" "c" "0" "0" "0" "0" "0" "0" "0" "0" "0" "0" "0" "0" "0" "e" "1" "a" "c" "5" "1" "1" "a" "7" "d" "f"]
+  # -> ["4" "1" "1" "a" "a" "3" "d" "c" "0" "0" "0" "0" "0" "0" "0" "0" "0" "0" "0" "0"]
+  # -> "4.1.1.a.a.3.d.c.0.0.0.0.0.0.0.0.0.0.0.0"
+  gen_v6_ptr_host = {reversed_chars, prefix_len}:
+    builtins.concatStringsSep "." (lib.take ((128 - prefix_len) / 4) reversed_chars);
+  # e.g. ["4" "1" "1" "a" "a" "3" "d" "c" "0" "0" "0" "0" "0" "0" "0" "0" "0" "0" "0" "0" "0" "e" "1" "a" "c" "5" "1" "1" "a" "7" "d" "f"]
+  # -> ["0" "e" "1" "a" "c" "5" "1" "1" "a" "7" "d" "f"]
+  # -> "4.1.1.a.a.3.d.c.0.0.0.0.0.0.0.0.0.0.0.0"
+  # -> "0.e.1.a.c.5.1.1.a.7.d.f"
+  gen_v6_zone_prefix = {reversed_chars, prefix_len}:
+    builtins.concatStringsSep "." (lib.drop ((128 - prefix_len) / 4) reversed_chars);
+
+  # =========================================
+  # Forward Zone (proteus.eu.org)
+  # =========================================
+  proteus_zone = pkgs.writeText "${domain}.zone" ((zone_head domain) + ''
+    @ IN A    ${nuc_ipv4}
+    @ IN AAAA ${nuc_ipv6}
+
+    ; Nameserver A/AAAA records (Glue records)
+    ns1 IN A    ${nuc_ipv4}
+    ns1 IN AAAA ${nuc_ipv6}
+
+    ; Grouped Host Records
+    proteus-nuc     IN A    ${nuc_ipv4}
+                    IN AAAA ${nuc_ipv6}
+    proteus-desktop IN A    ${desktop_ipv4}
+                    IN AAAA ${desktop_ipv6}
+
+    ; Subdomain Services
+    immich     IN CNAME proteus-nuc
+    sftpgo     IN CNAME proteus-nuc
+    webdav     IN CNAME proteus-nuc
+    atuin      IN CNAME proteus-nuc
+    openldap   IN CNAME proteus-nuc
+    aria2      IN CNAME proteus-nuc
+    postgresql IN CNAME proteus-nuc
+    paperless  IN CNAME proteus-nuc
+    traefik    IN CNAME proteus-nuc
+    auth       IN CNAME proteus-nuc
+    ql         IN CNAME proteus-nuc
+
+    monero     IN CNAME proteus-desktop
+  '');
+  # =========================================
+  # IPv4 Reverse Zones
+  # =========================================
+  # In tailnet, the IPv4 reverse zone name are likely to vary
+  nuc_reverse_zone_v4_name = gen_reverse_prefix_v4 nuc_ipv4;
+  nuc_reverse_zone_v4 = pkgs.writeText
+    "${nuc_reverse_zone_v4_name}.zone"
+    ((zone_head nuc_reverse_zone_v4_name)+ ''
+    ; PTR Record for last octet pointing to Tailscale domain
+    ${lib.last (lib.splitString "." nuc_ipv4)} IN PTR proteus-nuc.${tailnet}.
+  '');
+  desktop_reverse_zone_v4_name = gen_reverse_prefix_v4 desktop_ipv4;
+  desktop_reverse_zone_v4 = pkgs.writeText
+    "${desktop_reverse_zone_v4_name}.zone"
+    ((zone_head desktop_reverse_zone_v4_name) + ''
+    ; PTR Record for last octet pointing to Tailscale domain
+    ${lib.last (lib.splitString "." desktop_ipv4)} IN PTR proteus-desktop.${tailnet}.
+  '');
+  # =========================================
+  # IPv6 Reverse Zone
+  # =========================================
+  reversed_chars = gen_reversed_chars_v6 nuc_ipv6;
+  nuc_ipv6_ptr_host = gen_v6_ptr_host {inherit reversed_chars; prefix_len = tailnet_prefix_length;};
+  desktop_ipv6_ptr_host = gen_v6_ptr_host {reversed_chars = gen_reversed_chars_v6 desktop_ipv6; prefix_len = tailnet_prefix_length;};
+  # e.g. "0.e.1.a.c.5.1.1.a.7.d.f.ip6.arpa"
+  reverse_zone_v6_name = "${gen_v6_zone_prefix {
+    inherit reversed_chars; prefix_len = tailnet_prefix_length;
+  }}.ip6.arpa";
+  reverse_zone_v6 = pkgs.writeText
+    "${reverse_zone_v6_name}.zone"
+    ((zone_head reverse_zone_v6_name) + ''
+    ; PTR Record for the host portion pointing to Tailscale domain
+    ${nuc_ipv6_ptr_host} IN PTR proteus-nuc.${tailnet}.
+    ${desktop_ipv6_ptr_host} IN PTR proteus-desktop.${tailnet}.
+  '');
+in {
+  # TODO: Traefik reverse proxy
+  systemd.services.bind.preStart = lib.mkAfter ''
+    install -m 0644 ${proteus_zone} ${config.services.bind.directory}/${domain}.zone
+    install -m 0644 ${nuc_reverse_zone_v4} ${config.services.bind.directory}/${nuc_reverse_zone_v4_name}.zone
+    install -m 0644 ${desktop_reverse_zone_v4} ${config.services.bind.directory}/${desktop_reverse_zone_v4_name}.zone
+    install -m 0644 ${reverse_zone_v6} ${config.services.bind.directory}/${reverse_zone_v6_name}.zone
+  '';
+  # Authoritative-only server for "proteus.eu.org"
+  age.secrets."bind_server.priv.pem" = {
+    file = "${myvars.secrets_dir}/proteus_server.priv.pem.age";
+    mode = "0400";
+    owner = config.systemd.services.bind.serviceConfig.User;
+  };
+  services.resolved.settings.Resolve = {
+    DNSSEC= "allow-downgrade";
+    Domains = [
+      "~${domain}" # The '~' prefix makes this a routing domain
+      "~${nuc_reverse_zone_v4_name}"
+      "~${desktop_reverse_zone_v4_name}"
+      "~${reverse_zone_v6_name}"
+    ];
+    DNS = ["${nuc_ipv4}#${domain}"];
+  };
+  # Trust Island
+  # NOTE: Query the zone apex (`proteus.eu.org`, `161.64.100.in-addr.arpa`
+  # `0.e.1.a.c.5.1.1.a.7.d.f.ip6.arpa`)
+  # nix run nixpkgs#dig -- @100.64.161.20 161.64.100.in-addr.arpa DNSKEY +noall +answer | nix shell nixpkgs#bind --command dnssec-dsfromkey -f - 161.64.100.in-addr.arpa
+  # Or
+  # nix run nixpkgs#dig -- @100.64.161.20 161.64.100.in-addr.arpa DNSKEY +noall +answer | nix shell nixpkgs#ldns.examples --command ldns-key2ds -n /dev/stdin
+  environment.etc."dnssec-trust-anchors.d/${domain}.positive".text = ''
+    ${domain}. IN DS 19905 15 2 AC53E45BD2ECD7E4D8DED050FB08E0F37095AF97E0B6F73CE912A56CE5C542C0
+  '';
+  environment.etc."dnssec-trust-anchors.d/${nuc_reverse_zone_v4_name}.positive".text = ''
+    ${nuc_reverse_zone_v4_name}. IN DS 32237 15 2 5F089BE41C87322212B05BAB4A760097235220F5346A1F51F6161728B77A0F8F
+  '';
+  environment.etc."dnssec-trust-anchors.d/${desktop_reverse_zone_v4_name}.positive".text = ''
+    ${desktop_reverse_zone_v4_name}. IN DS 25153 15 2 B5B5AC75FDCC85AACBDF747323AC5F7CA8D8FC482D03C848DEE4EFAD79F7CD50
+  '';
+  environment.etc."dnssec-trust-anchors.d/${reverse_zone_v6_name}.positive".text = ''
+    ${reverse_zone_v6_name}. IN DS 60960 15 2 DD09A9E95F7C7851FAC65FD39FDE55FAB2C001D5B37D744F98AA23C56FD63D16
+  '';
+  services.bind = {
+    enable = true;
+    # Persistent directory for DNSSEC key states.
+    # NixOS defaults to /run/named, which clears on reboot.
+    directory = "/srv/bind";
+    # Access-control of what networks are allowed for recursive queries
+    cacheNetworks = [
+      # "127.0.0.0/8" "::1/128"
+      # "100.64.0.0/10" "fd7a:115c:a1e0::/48"
+      # "192.168.0.0/16"
+    ];
+    forwarders = [];
+    # Bind standard port 53 strictly to the specific interface IPs
+    listenOn = [myvars.networking.hosts_addr.Proteus-NUC.ipv4];
+    listenOnIpv6 = [myvars.networking.hosts_addr.Proteus-NUC.ipv6];
+
+    # Inject the variables into the raw extraOptions string for DoT and DoH
+    extraOptions = with myvars.networking.hosts_addr.Proteus-NUC; ''
+      # Strictly Authoritative-Only Mode
+      recursion no;
+      # DNS-over-TLS (DoT) on port 853
+      listen-on port 853 tls mycert { ${ipv4}; };
+      listen-on-v6 port 853 tls mycert { ${ipv6}; };
+
+      # DNS-over-HTTPS (DoH) on port 9443 using the default HTTP endpoint
+      listen-on port 9443 tls mycert http default { ${ipv4}; };
+      listen-on-v6 port 9443 tls mycert http default { ${ipv6}; };
+
+      allow-transfer { none; };
+      allow-update { none; };
+      server-id none;
+
+      # Disable global validation if relying solely on the trusted island
+      dnssec-validation no;
+    '';
+    extraConfig = ''
+      tls mycert {
+        cert-file "${server_pub_crt}";
+        key-file "${config.age.secrets."bind_server.priv.pem".path}";
+      };
+      # DNSSEC Trusted Island Policy
+      dnssec-policy custom {
+        keys {
+          csk key-directory lifetime unlimited algorithm 15; # ED25519
+        };
+        max-zone-ttl 24h;
+        signatures-refresh 8d; # Regenerate 8 days before expire
+        signatures-validity 10d; # ZSK validity last for 10 days
+        signatures-validity-dnskey 10d; # KSK validity last for 10 days
+      };
+    '';
+    zones = {
+      "${domain}" = {
+        master = true;
+        # file = "${myvars.secrets_dir}/${domain}.zone";
+        file = "${domain}.zone"; # Relative path
+        # Apply the DNSSEC policy to sign the zone locally
+        extraConfig = "dnssec-policy custom;";
+      };
+      "${nuc_reverse_zone_v4_name}" = {
+        master = true;
+        file = "${nuc_reverse_zone_v4_name}.zone";
+        extraConfig = "dnssec-policy custom;";
+      };
+      "${desktop_reverse_zone_v4_name}" = {
+        master = true;
+        file = "${desktop_reverse_zone_v4_name}.zone";
+        extraConfig = "dnssec-policy custom;";
+      };
+      "${reverse_zone_v6_name}" = {
+        master = true;
+        file = "${reverse_zone_v6_name}.zone";
+        extraConfig = "dnssec-policy custom;";
+      };
+    };
+  };
+}

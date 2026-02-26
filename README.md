@@ -142,6 +142,19 @@ boot.initrd.systemd.services."zfs-rollback-root" = {
 
 Each NVMe drive has a LUKS container, then ZFS pools are created across the unlocked devices for redundancy and flexibility (RAID-0 striping for performance or raidz2 for balanced performance & redundancy).
 
+### Quick Debug
+
+Use the first machine as-is:
+```bash
+nix-repl> (builtins.head _DEBUG.nixos_systems.x86_64-linux._DEBUG.machines)._DEBUG.myvars.networking.hosts_addr.Proteus-NUC.ipv4
+```
+
+Or find the specific machine:
+```bash
+nix-repl> (builtins.elemAt _DEBUG.nixos_systems.x86_64-linux._DEBUG.machines 1)._DEBUG.name
+"Proteus-NUC"
+```
+
 ## License
 
 MIT

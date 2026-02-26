@@ -5,14 +5,20 @@ _: {
     # ============================================
     # Homelab's Physical Machines (KubeVirt Nodes)
     # ============================================
-    Proteus-MBP14M4P.ipv4 = "100.95.17.39";
+    Proteus-MBP14M4P = {
+      ipv4 = "100.95.17.39";
+      ipv6 = "fd7a:115c:a1e0::783a:1127";
+    };
     Proteus-NUC = { # Notebook
       iface = "wlo1";
       ipv4 = "100.64.161.20";
       ipv6 = "fd7a:115c:a1e0::cd3a:a114";
     };
-    Proteus-Desktop = {iface = "enp4s0"; ipv4 = "100.89.227.22";};
-
+    Proteus-Desktop = {
+      iface = "enp4s0";
+      ipv4 = "100.89.227.22";
+      ipv6 = "fd7a:115c:a1e0::1a01:e318";
+    };
     # ============================================
     # Other VMs and Physical Machines
     # ============================================
