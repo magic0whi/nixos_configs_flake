@@ -4,16 +4,13 @@
   # server_priv_crt_proteus = config.age.secrets."proteus_server.priv.pem".path;
   domain = "proteus.eu.org";
 in {
-  age.secrets."proteus_server.priv.pem" = server_priv_crt_base // {owner = myvars.username;};
   networking.firewall = {
     allowedTCPPorts = [
-      53 # unbound TCP
       5201 # iperf3
       22000 # Syncthing TCP transfers
       53317 # LocalSend (HTTP/TCP)
     ];
     allowedUDPPorts = [
-      53 # unbound
       5201 # iperf3
       21027 # Syncthing discovery broadcasts on IPv4 and multicasts on IPv6
       22000 # Syncthing QUIC transfers
