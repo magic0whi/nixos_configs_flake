@@ -174,6 +174,7 @@ in {
   # };
   ## END services_unbound.nix
   ## START services_bind.nix
+  # TODO: Nix Native Way for zonefile
   # Authoritative-only server for "proteus.eu.org"
   age.secrets."bind_server.priv.pem" = server_priv_crt_base // {
     owner = config.systemd.services.bind.serviceConfig.User;
@@ -189,7 +190,7 @@ in {
     DNSSEC= "allow-downgrade";
     Domains = [
       "~proteus.eu.org" # The '~' prefix makes this a routing domain
-      "~161.64.100.in-addr.arpa" 
+      "~161.64.100.in-addr.arpa"
       "~0.e.1.a.c.5.1.1.a.7.d.f.ip6.arpa"
     ];
     DNS = ["100.64.161.20#proteus.eu.org"];
@@ -202,7 +203,7 @@ in {
     # Persistent directory for DNSSEC key states.
     # NixOS defaults to /run/named, which clears on reboot.
     directory = "/srv/bind";
-    # Access-control of what networks are allowed for recursive queries 
+    # Access-control of what networks are allowed for recursive queries
     cacheNetworks = [];
     # cacheNetworks = [
     #   "127.0.0.0/8" "::1/128"

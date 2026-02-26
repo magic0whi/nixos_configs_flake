@@ -75,6 +75,27 @@
     # authKeyFile = "/var/lib/tailscale/authkey";
   };
   ## END network.nix
+  ## START journald.nix
+  services.journald = {
+     # The time window (1 minute) used to calculate the message limit.
+    rateLimitInterval = "1min";
+    # The maximum number of log lines a single service can generate within the
+    # time window before being throttled.
+    rateLimitBurst = 500;
+    extraConfig = ''
+      # Keep logs for 1 month max
+      MaxRetentionSec=1month
+      # Limit total disk usage to 1GB
+      SystemMaxUse=1G
+      # Limit individual file size to 64MB to ensure clean rotation
+      SystemMaxFileSize=128M
+      # Ensure at least 15% of disk stays free
+      SystemKeepFree=15%
+      # Prevent logs from eating up /run (RAM) during bursts
+      RuntimeMaxUse=64M
+    '';
+  };
+  ## END journald.nix
   ## START shell.nix
   programs.zsh = {
     autosuggestions = {
@@ -154,9 +175,7 @@
         monospace = [
           "Iosevka Nerd Font Mono"
           "Noto Sans Mono"
-          "Noto Sans Mono CJK SC"
-          "Noto Sans Mono CJK TC"
-          "Noto Sans Mono CJK JP"
+          "Noto Sans Mono CJK SC" "Noto Sans Mono CJK TC" "Noto Sans Mono CJK JP"
         ];
         emoji = ["Noto Color Emoji"];
       };
@@ -172,11 +191,7 @@
   services.sssd = {
     enable = true;
     settings = {
-    sssd = {
-      debug_level = 7;
-      services = "ifp, nss, pam, sudo";
-      domains = "LDAP";
-    };
+    sssd = {debug_level = 7; services = "ifp, nss, pam, sudo"; domains = "LDAP";};
     "pam".pam_verbosity = 3;
     "domain/LDAP" = {
       override_shell = "/run/current-system/sw/bin/${config.users.defaultUserShell.meta.mainProgram}";

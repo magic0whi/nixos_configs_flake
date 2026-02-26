@@ -129,8 +129,8 @@
     # qemu_kvm
 
     # QEMU (other architectures), provides:
-    # - qemu-loongarch64 qemu-system-loongarch64
-    #   qemu-riscv64 qemu-system-riscv64 qemu-riscv32  qemu-system-riscv32
+    #   qemu-loongarch64 qemu-system-loongarch64
+    #   qemu-riscv64 qemu-system-riscv64 qemu-riscv32 qemu-system-riscv32
     #   qemu-system-arm qemu-arm qemu-armeb qemu-system-aarch64 qemu-aarch64 qemu-aarch64_be
     #   qemu-system-xtensa qemu-xtensa qemu-system-xtensaeb qemu-xtensaeb
     #   ......

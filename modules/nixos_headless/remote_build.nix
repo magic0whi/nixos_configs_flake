@@ -1,10 +1,10 @@
 {myvars, ...}: {
-  #  NixOS's Configuration for Remote Building / Distributed Building
+  # NixOS's Configuration for Remote Building / Distributed Building
   #
-  #  Related Docs:
-  #    1. https://github.com/NixOS/nix/issues/7380
-  #    2. https://nixos.wiki/wiki/Distributed_build
-  #    3. https://github.com/NixOS/nix/issues/2589
+  # Related Docs:
+  #   1. https://github.com/NixOS/nix/issues/7380
+  #   2. https://nixos.wiki/wiki/Distributed_build
+  #   3. https://github.com/NixOS/nix/issues/2589
   #
   ####################################################################
 
@@ -23,7 +23,7 @@
       "riscv64-linux"
     ];
     # all available system features are poorly documentd here:
-    #  https://github.com/NixOS/nix/blob/e503ead/src/libstore/globals.hh#L673-L687
+    # https://github.com/NixOS/nix/blob/e503ead/src/libstore/globals.hh#L673-L687
     supportedFeatures = ["benchmark" "big-parallel" "kvm"];
   in [
     # Nix seems always try to build on the machine remotely

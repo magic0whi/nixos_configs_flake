@@ -17,9 +17,9 @@ in {
     # nvidia = true; # Sync prime
     settings = {
       # Configure your Display resolution, offset, scale and Monitors here, use `hyprctl monitors` to get the info.
-      #   highres:      get the best possible resolution
-      #   auto:         position automatically
-      #   bitdepth,10:  enable 10 bit support
+      #   highres:     get the best possible resolution
+      #   auto:        position automatically
+      #   bitdepth,10: enable 10 bit support
       monitor = [main_monitor secondary_monitor third_monitor];
       workspace = let
         main_iface = builtins.head (lib.strings.splitString "," main_monitor);

@@ -3,11 +3,11 @@ set shell := ["zsh", "-c"] # Use zsh for shell commands
 
 utils := absolute_path("utils.sh")
 
-############################################################################
+##############################################################
 #
-#  Common commands(suitable for all machines)
+# Common commands(suitable for all machines)
 #
-############################################################################
+##############################################################
 
 # List all the just commands
 default:
@@ -91,11 +91,11 @@ verify-store:
 repair-store *paths:
   nix store repair {{paths}}
 
-############################################################################
+##############################################################
 #
-#  NixOS Desktop related commands
+# NixOS Desktop related commands
 #
-############################################################################
+##############################################################
 
 [linux]
 [group('desktop')]
@@ -104,11 +104,11 @@ proteus-nuc mode="default":
   . {{utils}}
   nixos-switch Proteus-NUC {{mode}}
 
-############################################################################
+##############################################################
 #
-#  Darwin related commands
+# Darwin related commands
 #
-############################################################################
+##############################################################
 
 [macos]
 [group('desktop')]
@@ -131,11 +131,11 @@ reset-launchpad:
   defaults write com.apple.dock ResetLaunchPad -bool true
   killall Dock
 
-############################################################################
+##############################################################
 #
-#  Homelab - Kubevirt Cluster related commands
+# Homelab - Kubevirt Cluster related commands
 #
-############################################################################
+##############################################################
 
 # Remote deployment via deploy-rs
 [linux]
