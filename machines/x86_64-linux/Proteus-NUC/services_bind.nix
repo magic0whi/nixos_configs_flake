@@ -169,7 +169,7 @@
     ${desktop_ipv6_ptr_host} IN PTR proteus-desktop.${tailnet}.
   '');
 in {
-  # TODO: Traefik reverse proxy
+  networking.firewall = {allowedTCPPorts = [53]; allowedUDPPorts = [53];};
   systemd.services.bind.preStart = lib.mkAfter ''
     install -m 0644 ${proteus_zone} ${config.services.bind.directory}/${domain}.zone
     install -m 0644 ${nuc_reverse_zone_v4} ${config.services.bind.directory}/${nuc_reverse_zone_v4_name}.zone
@@ -177,11 +177,11 @@ in {
     install -m 0644 ${reverse_zone_v6} ${config.services.bind.directory}/${reverse_zone_v6_name}.zone
   '';
   # Authoritative-only server for "proteus.eu.org"
-  age.secrets."bind_server.priv.pem" = {
-    file = "${myvars.secrets_dir}/proteus_server.priv.pem.age";
-    mode = "0400";
-    owner = config.systemd.services.bind.serviceConfig.User;
-  };
+  # age.secrets."bind_server.priv.pem" = {
+  #   file = "${myvars.secrets_dir}/proteus_server.priv.pem.age";
+  #   mode = "0400";
+  #   owner = config.systemd.services.bind.serviceConfig.User;
+  # };
   services.resolved.settings.Resolve = {
     DNSSEC= "allow-downgrade";
     Domains = [
@@ -230,13 +230,27 @@ in {
     extraOptions = with myvars.networking.hosts_addr.Proteus-NUC; ''
       # Strictly Authoritative-Only Mode
       recursion no;
-      # DNS-over-TLS (DoT) on port 853
-      listen-on port 853 tls mycert { ${ipv4}; };
-      listen-on-v6 port 853 tls mycert { ${ipv6}; };
 
+      # Raw DNS for local systemd-resolved and direct Tailscale clients
+      # and for Traefik's DoT proxy stream
+      listen-on port 53 proxy plain { 127.0.0.1; ${ipv4}; };
+      listen-on-v6 port 53 proxy plain { ::1; ${ipv6}; };
+      # DNS-over-TLS (DoT) on port 853
+      # listen-on port 853 tls mycert { ${ipv4}; };
+      # listen-on-v6 port 853 tls mycert { ${ipv6}; };
+
+      # Plain HTTP endpoint strictly for Traefik's DoH forwarding
+      listen-on port 8053 proxy plain tls none http default { 127.0.0.1; };
+      listen-on-v6 port 8053 proxy plain tls none http default { ::1; };
       # DNS-over-HTTPS (DoH) on port 9443 using the default HTTP endpoint
-      listen-on port 9443 tls mycert http default { ${ipv4}; };
-      listen-on-v6 port 9443 tls mycert http default { ${ipv6}; };
+      # listen-on port 9443 tls mycert http default { ${ipv4}; };
+      # listen-on-v6 port 9443 tls mycert http default { ${ipv6}; };
+
+      # Trust PROXYv2 headers from Traefik
+      # Who is talking to me?
+      allow-proxy { 127.0.0.1; ::1; };
+      # Which of my doors are they knocking on?
+      allow-proxy-on { 127.0.0.1; ::1; };
 
       allow-transfer { none; };
       allow-update { none; };
@@ -246,10 +260,10 @@ in {
       dnssec-validation no;
     '';
     extraConfig = ''
-      tls mycert {
-        cert-file "${server_pub_crt}";
-        key-file "${config.age.secrets."bind_server.priv.pem".path}";
-      };
+      # tls mycert {
+        # cert-file "$${server_pub_crt}";
+        # key-file "$${config.age.secrets."bind_server.priv.pem".path}";
+      # };
       # DNSSEC Trusted Island Policy
       dnssec-policy custom {
         keys {

@@ -11,7 +11,7 @@ in {
     enable = true;
     # The `///` tells OpenLDAP to bind to the default port on all available
     # network interfaces (`0.0.0.0` and `::`)
-    urlList = [/*"ldaps:///"*/ "pldap://127.0.0.1:389/"];
+    urlList = [/*"ldaps:///"*/ "pldap://127.0.0.1:389/" "pldap://[::1]:389/"];
     settings = {
       # dn: cn=config
       attrs = {

@@ -8,14 +8,12 @@ in {
   networking.firewall = {
     allowedTCPPorts = [
       53 # unbound TCP
-      853 # unbound DoT
       5201 # iperf3
       22000 # Syncthing TCP transfers
       53317 # LocalSend (HTTP/TCP)
     ];
     allowedUDPPorts = [
       53 # unbound
-      # 853 # unbound DNS-over-QUIC, bind don't support it
       5201 # iperf3
       21027 # Syncthing discovery broadcasts on IPv4 and multicasts on IPv6
       22000 # Syncthing QUIC transfers
@@ -48,23 +46,41 @@ in {
     group = myvars.username;
     extraReadWriteDirs = [/srv];
     settings = {
-      httpd.bindings = [{
-        # address = "0.0.0.0";
-        client_ip_proxy_header = "X-Forwarded-For";
-        proxy_allowed = ["127.0.0.1"];
-        # enable_https = true;
-        # certificate_file = server_pub_crt;
-        # certificate_key_file = server_priv_crt_proteus;
-      }];
-      webdavd.bindings = [{
-        # address = "0.0.0.0";
-        port = 8443;
-        client_ip_proxy_header = "X-Forwarded-For";
-        proxy_allowed = ["127.0.0.1"];
-        # enable_https = true;
-        # certificate_file = server_pub_crt;
-        # certificate_key_file = server_priv_crt_proteus;
-      }];
+      httpd.bindings = [
+        {
+          # address = "0.0.0.0";
+          client_ip_proxy_header = "X-Forwarded-For";
+          proxy_allowed = ["127.0.0.1"];
+          # enable_https = true;
+          # certificate_file = server_pub_crt;
+          # certificate_key_file = server_priv_crt_proteus;
+        }
+        {
+          address = "[::1]";
+          client_ip_proxy_header = "X-Forwarded-For";
+          proxy_allowed = ["::1"];
+          # enable_https = true;
+          # certificate_file = server_pub_crt;
+          # certificate_key_file = server_priv_crt_proteus;
+        }
+      ];
+      webdavd.bindings = [
+        {
+          # address = "0.0.0.0";
+          port = 8443;
+          client_ip_proxy_header = "X-Forwarded-For";
+          proxy_allowed = ["127.0.0.1"];
+          # enable_https = true;
+          # certificate_file = server_pub_crt;
+          # certificate_key_file = server_priv_crt_proteus;
+        }
+        {
+          address = "[::1]";
+          port = 8443;
+          client_ip_proxy_header = "X-Forwarded-For";
+          proxy_allowed = ["::1"];
+        }
+      ];
     };
   };
   ## END services_sftpgo.nix
@@ -125,54 +141,6 @@ in {
     mediaLocation = "/srv/immich";
   };
   ## END services_immich.nix
-  ## START services_unbound.nix
-  # age.secrets."unbound_server.priv.pem" = server_priv_crt_base // {owner = config.services.unbound.user;};
-  # services.unbound = {
-  #   enable = true;
-  #   settings = {
-  #     remote-control.control-enable = true;
-  #     server = {
-  #       log-local-actions = true;
-  #       log-servfail = true;
-  #       so-sndbuf = 0;
-  #       interface = with myvars.networking.hosts_addr.Proteus-NUC; [
-  #         "${ipv4}@53" "${ipv6}@53"
-  #         "${ipv4}@853" "${ipv6}@853"
-  #         "${ipv4}@9443" "${ipv6}@9443"
-  #       ];
-  #       tls-service-pem = server_pub_crt;
-  #       tls-service-key = config.age.secrets."unbound_server.priv.pem".path;
-  #       # https-port = 9443; # Unbound is not compiled with nghttp2
-  #       hide-identity = true;
-  #       hide-version = true;
-  #       # Setting module-config to just "iterator" disables DNSSEC validation
-  #       module-config = "iterator";
-  #       access-control = [
-  #         "127.0.0.0/8 allow" "::1/128 allow"
-  #         "100.64.0.0/10 allow" "fd7a:115c:a1e0::/48 allow"
-  #         "192.168.0.0/16 allow"
-  #         # Best practice: explicitly refuse everything else
-  #         "0.0.0.0/0 refuse"
-  #         "::0/0 refuse"
-  #       ];
-  #       # Good practice: explicitly tell Unbound it is answering locally for
-  #       # these reverse zones so it doesn't try to query the public root servers.
-  #       local-zone = [
-  #         "161.64.100.in-addr.arpa. nodefault"
-  #         "0.e.1.a.c.5.1.1.a.7.d.f.ip6.arpa. nodefault"
-  #       ];
-  #     };
-  #     auth-zone = [
-  #       {name = "${domain}."; zonefile = "${myvars.secrets_dir}/${domain}.zone";}
-  #       {name = "161.64.100.in-addr.arpa."; zonefile = "${myvars.secrets_dir}/161.64.100.in-addr.arpa.zone";}
-  #       {
-  #         name = "0.e.1.a.c.5.1.1.a.7.d.f.ip6.arpa.";
-  #         zonefile = "${myvars.secrets_dir}/0.e.1.a.c.5.1.1.a.7.d.f.ip6.arpa.zone";
-  #       }
-  #     ];
-  #   };
-  # };
-  ## END services_unbound.nix
   ## START services_paperless.nix
   age.secrets."paperless.env" = {file = "${myvars.secrets_dir}/paperless.env.age"; mode = "0400"; owner = "root";};
   services.paperless = {
