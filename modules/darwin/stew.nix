@@ -16,7 +16,11 @@
       HOMEBREW_CORE_GIT_REMOTE = "https://mirror.nju.edu.cn/git/homebrew/homebrew-core.git";
       HOMEBREW_PIP_INDEX_URL = "https://pypi.tuna.tsinghua.edu.cn/simple";
     };
-  in lib.attrsets.foldlAttrs (acc: name: value: acc + "\nexport ${name}=${value}") "" homebrew_mirror_env;
+    homebrew_auto_update_env.HOMEBREW_AUTO_UPDATE_SECS = "86400";
+  in lib.attrsets.foldlAttrs (acc: name: value:
+    acc + "\nexport ${name}=${value}")
+    ""
+    (homebrew_mirror_env // homebrew_auto_update_env);
 in {
   system.primaryUser = myvars.username;
   ## START networking.nix
