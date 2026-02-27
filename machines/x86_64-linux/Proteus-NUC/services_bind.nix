@@ -3,7 +3,7 @@
   tailnet = "tailba6c3f.ts.net";
   tailnet_prefix_length = 48;
   soa_parms = {
-    serial = "2026022403"; # Serial (YYYYMMDDNN)
+    serial = "2026022701"; # Serial (YYYYMMDDNN)
     refresh = "3600"; # Refresh (1 hour)
     retry = "1800"; # Retry (30 minutes)
     expire = "604800"; # Expire (1 week)
@@ -25,8 +25,6 @@
   nuc_ipv6 = myvars.networking.hosts_addr.Proteus-NUC.ipv6;
   desktop_ipv4 = myvars.networking.hosts_addr.Proteus-Desktop.ipv4;
   desktop_ipv6 = myvars.networking.hosts_addr.Proteus-Desktop.ipv6;
-
-  server_pub_crt = "${myvars.secrets_dir}/proteus_server.pub.pem";
 
   # =========================================
   # IPv4 Reverse Logic
@@ -117,7 +115,7 @@
                     IN AAAA ${nuc_ipv6}
     proteus-desktop IN A    ${desktop_ipv4}
                     IN AAAA ${desktop_ipv6}
-
+    ; Don't forget update the SOA Serial
     ; Subdomain Services
     immich     IN CNAME proteus-nuc
     sftpgo     IN CNAME proteus-nuc
@@ -130,6 +128,7 @@
     traefik    IN CNAME proteus-nuc
     auth       IN CNAME proteus-nuc
     ql         IN CNAME proteus-nuc
+    sb         IN CNAME proteus-nuc
 
     monero     IN CNAME proteus-desktop
   '');
@@ -234,9 +233,6 @@ in {
       # Raw DNS for local systemd-resolved and direct Tailscale clients
       listen-on port 53 { 127.0.0.1; ${ipv4}; };
       listen-on-v6 port 53 { ::1; ${ipv6}; };
-      # DNS-over-TLS (DoT) on port 853
-      # listen-on port 853 tls mycert { ${ipv4}; };
-      # listen-on-v6 port 853 tls mycert { ${ipv6}; };
 
       # Dedicated unencrypted TCP port strictly for Traefik's DoT proxy stream
       listen-on port 8530 proxy plain { 127.0.0.1; };
@@ -245,9 +241,6 @@ in {
       # Plain HTTP endpoint strictly for Traefik's DoH forwarding
       listen-on port 8053 tls none http default { 127.0.0.1; };
       listen-on-v6 port 8053 tls none http default { ::1; };
-      # DNS-over-HTTPS (DoH) on port 9443 using the default HTTP endpoint
-      # listen-on port 9443 tls mycert http default { ${ipv4}; };
-      # listen-on-v6 port 9443 tls mycert http default { ${ipv6}; };
 
       # Trust PROXYv2 headers from Traefik
       # Who is talking to me?
@@ -263,10 +256,6 @@ in {
       dnssec-validation no;
     '';
     extraConfig = ''
-      # tls mycert {
-        # cert-file "$${server_pub_crt}";
-        # key-file "$${config.age.secrets."bind_server.priv.pem".path}";
-      # };
       # DNSSEC Trusted Island Policy
       dnssec-policy custom {
         keys {
@@ -281,7 +270,6 @@ in {
     zones = {
       "${domain}" = {
         master = true;
-        # file = "${myvars.secrets_dir}/${domain}.zone";
         file = "${domain}.zone"; # Relative path
         # Apply the DNSSEC policy to sign the zone locally
         extraConfig = "dnssec-policy custom;";

@@ -91,22 +91,8 @@ in {
           aria2-rpc = {
             rule = "Host(`aria2.${domain}`)"; entryPoints = ["websecure"]; service = "aria2-rpc"; tls = {};
           };
-          qinglong-webui = {
-            # Matches the root, but EXCLUDES the API paths
-            rule = "Host(`ql.${domain}`) && !PathPrefix(`/api`) && !PathPrefix(`/open`)";
-            entryPoints = ["websecure"];
-            # Force yourself to log in via OpenLDAP to see the dashboard
-            middlewares = ["authelia-auth"];
-            service = "qinglong-backend";
-            tls = {};
-          };
-          qinglong-api = {
-            # Matches ONLY the paths external scripts and bots need to talk to
-            rule = "Host(`ql.${domain}`) && (PathPrefix(`/api`) || PathPrefix(`/open`))";
-            entryPoints = ["websecure"];
-            # NO AUTHELIA MIDDLEWARE HERE!
-            service = "qinglong-backend";
-            tls = {};
+          qinglong = {
+            rule = "Host(`ql.${domain}`)"; entryPoints = ["websecure"]; service = "qinglong"; tls = {};
           };
           doh = {
             # Intercept standard DoH queries at the apex domain
@@ -114,6 +100,15 @@ in {
             entryPoints = ["websecure"];
             tls = {}; # Traefik decrypts the HTTPS traffic
             service = "doh";
+          };
+          sb = {
+            # Matches the root, but EXCLUDES the API paths
+            rule = "Host(`sb.${domain}`)";
+            entryPoints = ["websecure"];
+            # Force yourself to log in via OpenLDAP to see the dashboard
+            middlewares = ["authelia-auth"];
+            service = "sb-dashboard";
+            tls = {};
           };
         };
         services = {
@@ -137,12 +132,13 @@ in {
           ];
           # Even though it's WebSockets, we define it as http://
           aria2-rpc.loadBalancer.servers = [{url = "http://127.0.0.1:6800";}];
-          qinglong-backend.loadBalancer.servers = [{url = "http://127.0.0.1:5700"; }];
+          qinglong.loadBalancer.servers = [{url = "http://127.0.0.1:5700";}];
           # use HTTP/2 Cleartext (h2c) when talking to BIND's local port.
           doh.loadBalancer.servers = [
             {url = "h2c://127.0.0.1:8053";}
             {url = "h2c://[::1]:8053";}
           ];
+          sb-dashboard.loadBalancer.servers = [{url = "http://127.0.0.1:9091";}];
         };
       };
       tcp = {
