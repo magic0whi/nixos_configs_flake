@@ -319,7 +319,10 @@
   ## END zellij.nix
 
   home.sessionVariables = { # Environment variables that always set at login
-    LESS = "-R -N";
+    # Disable line-number since I use bat mostly and this will cause double line
+    # numbering
+    # LESS = "-R -N";
+    LESS = "-R";
     LESSHISTFILE = config.xdg.cacheHome + "/less/history";
     LESSKEY = config.xdg.configHome + "/less/lesskey";
     WINEPREFIX = config.xdg.dataHome + "/wine";
@@ -336,6 +339,9 @@
     cpr = "rsync --archive -hh --partial --info=stats1,progress2 --modify-window=1 \"$@\"";
     mvr = "rsync --archive -hh --partial --info=stats1,progress2 --modify-window=1 --remove-source-files \"$@\"";
     diff = "command diff --text --unified --new-file --color=auto \"$@\"";
+    # For `git filter-branch --help | bat -l man`, use
+    # `MANWIDTH=999 git filter-branch --help | bat -lman` instead to prevent
+    # git from baking ugly line breaks
     man = "MANPAGER=\"less -R --use-color -Dd+r -Du+b\"" # Set boldface -> red color, underline -> blue color
       + " MANROFFOPT=\"-P-c\"" # Enables groff's "continuous" (non-paginated) output mode
       + " MANWIDTH=$(($(tput cols) - 7))" # Adjustment manwidth when less' line number enabled
