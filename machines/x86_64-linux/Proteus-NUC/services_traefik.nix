@@ -8,6 +8,7 @@ in {
       443 # Traefik
       636 # OpenLDAP (secure)
       853 # BIND DoT
+      # config.home-manager.users.proteus.services.mpd.network.port
     ];
     allowedUDPPorts = [
       443 # Traefik (QUIC)
@@ -40,6 +41,7 @@ in {
         ldaps = {address = ":636";};
         # Add the standard DoT port as a TCP entrypoint
         dot = {address = ":853";};
+        # mpd = {address = ":6601";};
       };
     };
     # Dynamic configuration defines routing rules, backend services, and certificate management.
@@ -149,13 +151,20 @@ in {
             rule = "HostSNI(`*`)";
             entryPoints = ["ldaps"];
             service = "openldap-backend";
-            tls = {};};
+            tls = {};
+          };
           dot = {
             rule = "HostSNI(`${domain}`) || HostSNI(`ns1.${domain}`) || HostSNI(`proteus-nuc.${tailnet}`)";
             entryPoints = ["dot"];
-            tls = {}; # Traefik decrypts the TCP TLS tunnel
             service = "dot";
+            tls = {};
           };
+          # mpd = {
+          #   rule = "HostSNI(`*`)";
+          #   encryPoints = ["mpd"];
+          #   service = "mpd";
+          #   tls = {};
+          # };
         };
         services = {
           openldap-backend.loadBalancer = {
@@ -168,6 +177,7 @@ in {
             proxyProtocol.version = 2;
             servers = [{address = "127.0.0.1:8530";}{address = "[::1]:8530";}];
           };
+          # mpd.loadBalancer = [{address="127.0.0.1:${builtins.toString config.home-manager.users.${myvars.username}.services.mpd.network.port}";}];
         };
       };
     };

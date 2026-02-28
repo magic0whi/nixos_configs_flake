@@ -51,4 +51,5 @@ in {
   "authelia_storage_encryption_key.txt.age".publicKeys = machines ++ [Proteus-NUC];
   "authelia_ldap_password.txt.age".publicKeys = machines ++ [Proteus-NUC];
   "authelia_db_password.txt.age".publicKeys = machines ++ [Proteus-NUC];
+  "mpd_auth.conf.age".publicKeys = machines ++ [Proteus-NUC];
 }

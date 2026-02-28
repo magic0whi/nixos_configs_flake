@@ -1,4 +1,4 @@
-{pkgs, config, ...}: {
+{pkgs, config, myvars, ...}: {
   home.packages = with pkgs; [
     brightnessctl
     sound-theme-freedesktop
@@ -43,8 +43,10 @@
       };
     };
   };
+  age.secrets."mpd_auth.conf" = {file = "${myvars.secrets_dir}/mpd_auth.conf.age"; mode = "0400";};
   services.mpd = {
     enable = true;
+    network.startWhenNeeded = true;
     dbFile = "${config.xdg.dataHome}/mpd/database";
     extraConfig = ''
       auto_update "yes"
@@ -52,6 +54,11 @@
         type "pipewire"
         name "PipeWire Sound Server"
       }
+      # Lock down unauthenticated access. By default, all clients are
+      # unauthenticated and have a full set of permissions.
+      default_permissions ""
+      # MPD is badly support for NixOS
+      include "/run/user/1000/agenix/mpd_auth.conf"
     '';
   };
 }

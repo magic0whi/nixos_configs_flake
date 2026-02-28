@@ -76,4 +76,5 @@ in {
   #   };
   # };
   # modules.editors.emacs.enable = true;
+  services.mpd.musicDirectory = "/srv/sync/Music";
 }
