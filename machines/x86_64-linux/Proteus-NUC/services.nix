@@ -151,12 +151,18 @@ in {
       PAPERLESS_DBNAME = config.services.paperless.user;
       PAPERLESS_DBUSER = config.services.paperless.user;
 
+      # https://tesseract-ocr.github.io/tessdoc/Data-Files-in-different-versions.html
       PAPERLESS_OCR_LANGUAGES = "chi-sim chi-tra";
       PAPERLESS_OCR_LANGUAGE = "chi_sim+chi_tra+eng";
+      # https://dateparser.readthedocs.io/en/latest/supported_locales.html
+      PAPERLESS_DATE_PARSER_LANGUAGES = "en+zh+zh-Hant";
 
       PAPERLESS_ADMIN_USER = myvars.username;
       PAPERLESS_USE_X_FORWARD_HOST = true;
       PAPERLESS_USE_X_FORWARD_PORT = true;
+
+      APERLESS_WEBSERVER_WORKERS = 16;
+      PAPERLESS_WORKER_TIMEOUT= 300; # Default 1800 seconds (30min) is too long
     };
     environmentFile = config.age.secrets."paperless.env".path;
     dataDir = "/srv/paperless";
