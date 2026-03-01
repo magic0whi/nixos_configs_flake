@@ -3,10 +3,6 @@
     file = "${myvars.secrets_dir}/syncthing_Proteus-MBP14M4P.priv.pem.age";
     mode = "0500";
   };
-  launchd.agents.syncthing.config = {
-    StandardErrorPath = "/Users/${myvars.username}/Library/Logs/syncthing/stderr";
-    StandardOutPath = "/Users/${myvars.username}/Library/Logs/syncthing/stdout";
-  };
   services.syncthing = {
     key = config.age.secrets."syncthing_Proteus-MBP14M4P.priv.pem".path;
     cert = "${myvars.secrets_dir}/syncthing_Proteus-MBP14M4P.crt.pem";
