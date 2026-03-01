@@ -1,7 +1,4 @@
 {pkgs, lib, config, myvars, ...}: let
-  server_pub_crt = "${myvars.secrets_dir}/proteus_server.pub.pem";
-  server_priv_crt_base = {file = "${myvars.secrets_dir}/proteus_server.priv.pem.age"; mode = "0400";};
-  # server_priv_crt_proteus = config.age.secrets."proteus_server.priv.pem".path;
   domain = "proteus.eu.org";
 in {
   networking.firewall = {
@@ -44,45 +41,21 @@ in {
     extraReadWriteDirs = [/srv];
     settings = {
       httpd.bindings = [
-        {
-          # address = "0.0.0.0";
-          client_ip_proxy_header = "X-Forwarded-For";
-          proxy_allowed = ["127.0.0.1"];
-          # enable_https = true;
-          # certificate_file = server_pub_crt;
-          # certificate_key_file = server_priv_crt_proteus;
-        }
-        {
-          address = "[::1]";
-          client_ip_proxy_header = "X-Forwarded-For";
-          proxy_allowed = ["::1"];
-          # enable_https = true;
-          # certificate_file = server_pub_crt;
-          # certificate_key_file = server_priv_crt_proteus;
-        }
+        # Allow reverse proxy
+        {client_ip_proxy_header = "X-Forwarded-For"; proxy_allowed = ["127.0.0.1"];}
+        {address = "[::1]"; client_ip_proxy_header = "X-Forwarded-For"; proxy_allowed = ["::1"];}
       ];
       webdavd.bindings = [
-        {
-          # address = "0.0.0.0";
-          port = 8443;
-          client_ip_proxy_header = "X-Forwarded-For";
-          proxy_allowed = ["127.0.0.1"];
-          # enable_https = true;
-          # certificate_file = server_pub_crt;
-          # certificate_key_file = server_priv_crt_proteus;
-        }
-        {
-          address = "[::1]";
-          port = 8443;
-          client_ip_proxy_header = "X-Forwarded-For";
-          proxy_allowed = ["::1"];
-        }
+        {port = 8443; client_ip_proxy_header = "X-Forwarded-For"; proxy_allowed = ["127.0.0.1"];}
+        {address = "[::1]"; port = 8443; client_ip_proxy_header = "X-Forwarded-For"; proxy_allowed = ["::1"];}
       ];
     };
   };
   ## END services_sftpgo.nix
   ## START services_postgresql.nix
-  age.secrets."postgresql_server.priv.pem" = server_priv_crt_base // {
+  age.secrets."postgresql_server.priv.pem" = {
+    file = "${myvars.secrets_dir}/proteus_server.priv.pem.age";
+    mode = "0400";
     owner = config.systemd.services.postgresql.serviceConfig.User;
   };
   # TODO: Learn SQL
@@ -93,7 +66,7 @@ in {
     enableTCPIP = true;
     settings = {
       ssl = true;
-      ssl_cert_file = server_pub_crt;
+      ssl_cert_file = "${myvars.secrets_dir}/proteus_server.pub.pem";
       ssl_key_file = config.age.secrets."postgresql_server.priv.pem".path;
     };
     ensureDatabases = [
@@ -121,8 +94,6 @@ in {
   systemd.services.atuin.serviceConfig.EnvironmentFile = config.age.secrets."atuin.env".path;
   services.atuin = {
     enable = true;
-    # openFirewall = true;
-    # host = "0.0.0.0";
     database.uri = "postgres://atuin@postgresql.${domain}/atuin?sslmode=require";
     openRegistration = true;
   };
@@ -131,7 +102,6 @@ in {
   age.secrets."immich.env" = {file = "${myvars.secrets_dir}/immich.env.age"; mode = "0400"; owner = "root";};
   services.immich = {
     enable = true;
-    # openFirewall = true;
     host = "127.0.0.1";
     database.host = "postgresql.${domain}";
     secretsFile = config.age.secrets."immich.env".path;
@@ -143,7 +113,6 @@ in {
   services.paperless = {
     domain = "paperless.${domain}";
     enable = true;
-    # address = "0.0.0.0";
     settings = {
       PAPERLESS_DBENGINE = "postgresql";
       PAPERLESS_DBHOST = "postgresql.${domain}";

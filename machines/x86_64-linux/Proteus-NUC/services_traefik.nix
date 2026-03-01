@@ -2,13 +2,25 @@
   server_pub_crt = "${myvars.secrets_dir}/proteus_server.pub.pem";
   domain = "proteus.eu.org";
   tailnet = "tailba6c3f.ts.net";
+  syncthing_port = lib.last (lib.splitString
+    ":"
+    config.home-manager.users.${myvars.username}.services.syncthing.guiAddress
+  );
+  openldap_port = lib.removeSuffix "/" (lib.last (lib.splitString
+    ":" (lib.head config.services.openldap.urlList))
+  );
+  authelia_port = lib.last (lib.splitString
+    ":"
+    config.services.authelia.instances.main.settings.server.address
+  );
 in {
   networking.firewall = {
     allowedTCPPorts = [
       443 # Traefik
       636 # OpenLDAP (secure)
       853 # BIND DoT
-      # config.home-manager.users.proteus.services.mpd.network.port
+      (lib.strings.toInt syncthing_port) # Syncthing
+      # config.home-manager.users.${myvars.username}.services.mpd.network.port
     ];
     allowedUDPPorts = [
       443 # Traefik (QUIC)
@@ -58,7 +70,7 @@ in {
       http = {
         middlewares.authelia-auth.forwardAuth = {
           # Tell Traefik where to ask if a user is authenticated
-          address = "http://127.0.0.1:9092/api/verify?rd=https://auth.${domain}/";
+          address = "http://127.0.0.1:${authelia_port}/api/verify?rd=https://auth.${domain}/";
           trustForwardHeader = true;
           authResponseHeaders = ["Remote-User" "Remote-Groups" "Remote-Email" "Remote-Name"];
         };
@@ -104,7 +116,6 @@ in {
             service = "doh";
           };
           sb = {
-            # Matches the root, but EXCLUDES the API paths
             rule = "Host(`sb.${domain}`)";
             entryPoints = ["websecure"];
             # Force yourself to log in via OpenLDAP to see the dashboard
@@ -112,9 +123,16 @@ in {
             service = "sb-dashboard";
             tls = {};
           };
+          syncthing = {
+            rule = "Host(`syncthing.${domain}`)";
+            entryPoints = ["websecure"];
+            middlewares = ["authelia-auth"];
+            service = "syncthing-dashboard";
+            tls = {};
+          };
         };
         services = {
-          authelia-backend.loadBalancer.servers = [{url = "http://127.0.0.1:9092";}];
+          authelia-backend.loadBalancer.servers = [{url = "http://127.0.0.1:${authelia_port}";}];
           atuin.loadBalancer.servers = [
             {url = "http://127.0.0.1:${builtins.toString config.services.atuin.port}";}
           ];
@@ -133,7 +151,9 @@ in {
             {url = "http://[::1]:${builtins.toString (lib.last config.services.sftpgo.settings.webdavd.bindings).port}";}
           ];
           # Even though it's WebSockets, we define it as http://
-          aria2-rpc.loadBalancer.servers = [{url = "http://127.0.0.1:6800";}];
+          aria2-rpc.loadBalancer.servers = [{
+            url = "http://127.0.0.1:${builtins.toString config.home-manager.users.${myvars.username}.services.syncthing.guiAddress}";
+          }];
           qinglong.loadBalancer.servers = [{url = "http://127.0.0.1:5700";}];
           # use HTTP/2 Cleartext (h2c) when talking to BIND's local port.
           doh.loadBalancer.servers = [
@@ -141,6 +161,12 @@ in {
             {url = "h2c://[::1]:8053";}
           ];
           sb-dashboard.loadBalancer.servers = [{url = "http://127.0.0.1:9091";}];
+          syncthing-dashboard.loadBalancer = {
+            # By setting to false Traefik will overrides the Host header to
+            # 127.0.0.1
+            passHostHeader = false;
+            servers = [{url = "http://127.0.0.1:${syncthing_port}";}];
+          };
         };
       };
       tcp = {
@@ -170,7 +196,10 @@ in {
           openldap-backend.loadBalancer = {
             # Instruct Traefik to inject the PROXY protocol v2 header
             proxyProtocol.version = 2;
-            servers = [{address = "127.0.0.1:389";}{address = "[::1]:389";}];
+            servers = [
+              {address = "127.0.0.1:${openldap_port}";}
+              {address = "[::1]:${openldap_port}";}
+            ];
           };
           # Forward raw DNS to BIND's local 53
           dot.loadBalancer = {

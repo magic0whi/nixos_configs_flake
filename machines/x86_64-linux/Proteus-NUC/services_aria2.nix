@@ -8,7 +8,6 @@ in {
   users.users.${myvars.username}.extraGroups = ["aria2"];
   services.aria2 = {
     enable = true;
-    openPorts = true;
     rpcSecretFile = config.age.secrets."aria2rpc.priv".path;
     settings = {
       dir = "${path_prefix}/aria2";
