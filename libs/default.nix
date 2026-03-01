@@ -44,10 +44,10 @@ in {
     }: let
       inherit (inputs)
         home-manager
-        nixos-generators
         impermanence
         lanzaboote
         agenix
+        sops-nix
         catppuccin
         disko
         i915-sriov-dkms;
@@ -66,10 +66,11 @@ in {
           nixpkgs_modules
       )
       ++ (if pkgs.stdenv.isDarwin then [
-          agenix.darwinModules.default
+          agenix.darwinModules.age
+          sops-nix.nixosModules.sops
         ] else [
-          agenix.nixosModules.default
-          nixos-generators.nixosModules.all-formats
+          agenix.nixosModules.age
+          sops-nix.nixosModules.sops
           lanzaboote.nixosModules.lanzaboote
           catppuccin.nixosModules.catppuccin
           disko.nixosModules.disko
