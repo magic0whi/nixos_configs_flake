@@ -15,6 +15,9 @@
 
     boot.initrd.systemd.enable = true; # Hibernate alse requires this
     fileSystems."/persistent".neededForBoot = true;
+    # The assertion will throw even without set
+    # `environment.persistence."/persistent".users.${myvars.username}`
+    fileSystems."/home".neededForBoot = true;
 
     # NOTE: impermanence only mounts the directory/file list below to /persistent. If the directory/file already exists in
     # the root filesystem, you should move those files/directories to /persistent first!

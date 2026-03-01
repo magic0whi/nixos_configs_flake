@@ -13,7 +13,7 @@ in lib.runTests {
     expr = (mylib_sys.mk_out_of_store_symlink "/home/user/my unsafe path!@#.txt").name;
     expected = "custom_myunsafepath.txt";
   };
-  # Verifies that when enable_persistence = false, impermanence.nix files are
+  # Verifies that when generate_iso = true, impermanence.nix files are
   # correctly filtered out of the nixpkgs_modules array.
   test_gen_system_args_impermanence_filtered = {
     expr = let
@@ -24,13 +24,13 @@ in lib.runTests {
         nixpkgs_modules = ["bar_impermanence.nix" "impermanence.nix"];
         hm_modules = [];
         machine_path = ./.; # Using current dir just so readDir doesn't crash
-        enable_persistence = false;
+        generate_iso = true;
       };
     in (builtins.elem "bar_impermanence.nix" args.modules
         || builtins.elem "impermanence.nix" args.modules);
     expected = false;
   };
-  # Verifies that when enable_persistence = true, impermanence.nix files are
+  # Verifies that when generate_iso = false, impermanence.nix files are
   # kept in the module array.
   test_gen_system_args_impermanence_kept = {
     expr = let
@@ -41,7 +41,7 @@ in lib.runTests {
         nixpkgs_modules = ["foo_impermanence.nix" "impermanence.nix"];
         hm_modules = [];
         machine_path = ./.;
-        enable_persistence = true;
+        generate_iso = false;
       };
     in (builtins.elem "foo_impermanence.nix" args.modules
         && builtins.elem "impermanence.nix" args.modules);

@@ -39,7 +39,7 @@ in {
       nixpkgs_modules,
       hm_modules,
       machine_path,
-      enable_persistence ? true,
+      generate_iso ? false,
       system ? _system
     }: let
       inherit (inputs)
@@ -54,9 +54,7 @@ in {
       specialArgs = inputs // {inherit mylib myvars;};
     in {
       inherit system specialArgs;
-      modules = (if enable_persistence then
-        nixpkgs_modules
-      else
+      modules = (if generate_iso then
         builtins.filter (p: # Filter out the files with `impermanence.nix`
           # suffix
           # If it is not a path or string (i.e. an attribute set), return true
@@ -64,29 +62,32 @@ in {
           !(builtins.isPath p || builtins.isString p)
           || !lib.strings.hasSuffix "impermanence.nix" p)
           nixpkgs_modules
+      else
+        nixpkgs_modules
       )
       ++ (if pkgs.stdenv.isDarwin then [
           agenix.darwinModules.age
-          sops-nix.nixosModules.sops
+          # sops-nix.nixosModules.sops
         ] else [
           agenix.nixosModules.age
-          sops-nix.nixosModules.sops
+          # sops-nix.nixosModules.sops
           lanzaboote.nixosModules.lanzaboote
           catppuccin.nixosModules.catppuccin
           disko.nixosModules.disko
           i915-sriov-dkms.nixosModules.default
         ]
-        ++ (lib.optional enable_persistence impermanence.nixosModules.impermanence)
+        ++ (lib.optional (!generate_iso) impermanence.nixosModules.impermanence)
       )
       ++ [{
         imports = let
           all_machine_files = mylib.scan_path machine_path;
-        in if enable_persistence then
-          all_machine_files
-        else
+        in if generate_iso then
           builtins.filter
             (p: !lib.strings.hasSuffix "impermanence.nix" p)
-            all_machine_files;
+            all_machine_files
+        else
+          all_machine_files
+        ;
         networking.hostName = name;
       }]
       ++ (lib.optionals ((lib.lists.length hm_modules) > 0) [

@@ -22,9 +22,10 @@
     system = "x86_64-linux"; # Cross-compile
     machine_path = ./.;
   });
+  # TODO: WIP, broken
   nixos_sd_image = (inputs.nixpkgs.lib.nixosSystem (mylib.gen_system_args {
     inherit name mylib myvars hm_modules;
-    enable_persistence = false;
+    generate_iso = true;
     machine_path = ./.;
     nixpkgs_modules = nixpkgs_modules ++ [{
       # imports = ["${inputs.nixos-hardware}/starfive/visionfive/v2/sd-image-installer.nix"];
@@ -114,7 +115,7 @@
       })];
     }];
   # })); # For debug
-  })).config.system.build.sdImage;
+  })).config.system.build.images.sd-card;
 in {
   _DEBUG = {inherit name nixpkgs_modules hm_modules myvars mylib;};
   nixos_configurations.${name} = nixos_system;

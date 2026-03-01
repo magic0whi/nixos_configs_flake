@@ -1,6 +1,5 @@
 {myvars, ...}: {
   environment.persistence."/persistent".directories = ["/srv"];
-  fileSystems."/home".neededForBoot = true;
   environment.persistence."/persistent".users.${myvars.username} = {
     directories = [
       "Downloads"

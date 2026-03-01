@@ -21,11 +21,11 @@
     inherit name mylib myvars nixpkgs_modules hm_modules;
     machine_path = ./.;
   });
-  nixos_iso = inputs.nixos-generators.nixosGenerate ((mylib.gen_system_args {
+  nixos_iso = (inputs.nixpkgs.lib.nixosSystem (mylib.gen_system_args {
     inherit name mylib myvars nixpkgs_modules hm_modules;
-    enable_persistence = false;
+    generate_iso = true;
     machine_path = ./.;
-  }) // {format = "iso";});
+  })).config.system.build.images.iso;
 in {
   _DEBUG = {inherit name nixpkgs_modules hm_modules myvars mylib;};
   nixos_configurations.${name} = nixos_system;
