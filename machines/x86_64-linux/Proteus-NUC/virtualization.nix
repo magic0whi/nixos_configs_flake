@@ -1,4 +1,67 @@
-{pkgs, lib, ...}: {
+{pkgs, lib, config, ...}: {
+  ## START docker.nix
+  # =============================================================================
+  # Docker + sing-box auto_redirect & FakeIP Conflict Resolution
+  # =============================================================================
+  # Background:
+  #   sing-box runs a TUN interface with auto_redirect (TProxy-like) and FakeIP
+  #   (198.18.0.0/15) alongside Docker (172.18.0.0/16). A prior fix (96146a7d)
+  #   had disabled auto_redirect entirely to resolve a TProxy vs. Docker NAT
+  #   conflict. The following config re-enables it correctly.
+  #
+  # Root Cause of the Original Conflict:
+  #   sing-box's TProxy hooks prerouting at `dstnat - 1`, intercepting container
+  #   traffic BEFORE Docker's POSTROUTING MASQUERADE NAT, breaking outbound
+  #   container connectivity. Bypassing container IPs at routing level broke
+  #   FakeIP, since fake IPs sent to the host kernel were dropped as unroutable.
+  #
+  # Fix 1: bypass_docker nftables chain:
+  #   Inserted at `prerouting priority dstnat - 5` (ahead of sing-box's hook).
+  #   Tags all container-sourced traffic with the sing-box bypass mark
+  #   (ct mark 0x00002024), letting Docker's native NAT handle it normally.
+  #
+  #   Critical exception: traffic destined for FakeIP (198.18.0.0/15) hits a
+  #   `return` BEFORE the bypass mark, so TProxy can still catch and resolve
+  #   those connections.
+  networking.nftables.tables.bypass_docker = lib.mkIf config.services.sing-box.enable {
+    family = "inet";
+    content = ''
+      chain prerouting {
+        type filter hook prerouting priority dstnat - 5; policy accept;
+
+        # 1. Do NOT bypass FakeIP traffic. Let sing-box handle it.
+        ip daddr 198.18.0.0/15 return
+
+        # 2. Bypass everything else from Docker & Libvirt
+        ip saddr { 172.18.0.0/16, 192.168.122.1/24 } ct mark set 0x00002024
+      }
+    '';
+  };
+  # Fix 2: extraInputRules:
+  #   With auto_redirect enabled, sing-box allocates a dynamic local TCP port
+  #   and installs several nft rules. Because `redirect` rewrites the packet
+  #   destination to the host, traffic finally enters the INPUT chain. But
+  #   nixos-fw's default-drop INPUT policy silently dropped these packets.
+  #   Accepting 172.18.0.0/16 on INPUT covers all Docker bridge subnets
+  #   regardless of bridge name or port changes across restarts.
+  # =============================================================================
+  networking.firewall.extraInputRules = lib.mkIf config.services.sing-box.enable ''
+    ip saddr { 172.18.0.0/16 } accept comment "Allow Docker containers to reach auto_redirect ports"
+  '';
+  networking.firewall.trustedInterfaces = ["virbr0"];
+  systemd.services.docker.path = [pkgs.nftables];
+  virtualisation.docker = {
+    enable = true;
+    daemon.settings = {
+      firewall-backend = "nftables"; # Requires >= docker 29
+      # Enables pulling using containerd, which supports restarting from a
+      # partial pull, ref https://docs.docker.com/storage/containerd/
+      features = {containerd-snapshotter = true;};
+    };
+  };
+  ## END docker.nix
+  # virtualisation.waydroid.enable = true; Usage: https://wiki.nixos.org/wiki/Waydroid
+  ## START libvirtd.nix
   # Enable nested virtualization, required by security containers and nested vm.
   # This should be set per host in /hosts, not here.
   # - For AMD CPU, add "kvm-amd" to kernelModules.
@@ -8,21 +71,7 @@
   #   boot.kernelModules = ["kvm-intel"];
   #   boot.extraModprobeConfig = "options kvm_intel nested=1"; # for intel cpu
   # boot.kernelModules = ["vfio-pci"];
-  networking.firewall.trustedInterfaces = ["virbr0"];
-  systemd.services.docker.path = [pkgs.nftables];
   virtualisation = {
-    docker = {
-      enable = true;
-      daemon.settings = {
-        firewall-backend = "nftables"; # Requires >= docker 29
-        # Enables pulling using containerd, which supports restarting from a
-        # partial pull, ref https://docs.docker.com/storage/containerd/
-        features = {containerd-snapshotter = true;};
-      };
-    };
-
-    # waydroid.enable = true; Usage: https://wiki.nixos.org/wiki/Waydroid
-
     libvirtd = {
       enable = true;
       qemu.swtpm.enable = true;
@@ -107,10 +156,8 @@
       '';
     };
     spiceUSBRedirection.enable = true;
-
     # lxd.enable = true;
   };
-
   environment.systemPackages = with pkgs; [
     # This script is used to install the arm translation layer for waydroid
     # so that we can install arm apks on x86_64 waydroid
@@ -136,4 +183,5 @@
     #   ......
     # qemu
   ];
+  ## END libvirtd.nix
 }
