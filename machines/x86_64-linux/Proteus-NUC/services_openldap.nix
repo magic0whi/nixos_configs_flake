@@ -1,12 +1,4 @@
-{myvars, config, pkgs, ...}: let
-  # server_pub_crt = "${myvars.secrets_dir}/proteus_server.pub.pem";
-  # server_priv_crt = config.age.secrets."openldap_server.priv.pem".path;
-in {
-  # age.secrets."openldap_server.priv.pem" = {
-  #   file = "${myvars.secrets_dir}/proteus_server.priv.pem.age";
-  #   mode = "0400";
-  #   owner = config.services.openldap.user;
-  # };
+{myvars, config, pkgs, ...}: {
   services.openldap = {
     enable = true;
     # The `///` tells OpenLDAP to bind to the default port on all available

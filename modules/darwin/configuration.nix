@@ -3,7 +3,7 @@
 #     [System Preferences] -> [Keyboard] -> [Keyboard Shortcuts] -> [Mission Control]
 #   2. Disable use Caps Lock as 中/英 switch in:
 #     [System Preferences] -> [Keyboard] -> [Input Sources] -> [Edit] -> [Use 中/英 key to switch ] -> [Disable]
-{...}: {
+_: {
   system = {
     defaults = { ## NOTE: https://github.com/nix-darwin/nix-darwin/issues/1207#issuecomment-2510402916
       CustomUserPreferences = { # Customize settings that not supported by nix-darwin directly

@@ -26,8 +26,8 @@ in lib.runTests {
         machine_path = ./.; # Using current dir just so readDir doesn't crash
         generate_iso = true;
       };
-    in (builtins.elem "bar_impermanence.nix" args.modules
-        || builtins.elem "impermanence.nix" args.modules);
+    in builtins.elem "bar_impermanence.nix" args.modules
+        || builtins.elem "impermanence.nix" args.modules;
     expected = false;
   };
   # Verifies that when generate_iso = false, impermanence.nix files are
@@ -43,8 +43,8 @@ in lib.runTests {
         machine_path = ./.;
         generate_iso = false;
       };
-    in (builtins.elem "foo_impermanence.nix" args.modules
-        && builtins.elem "impermanence.nix" args.modules);
+    in builtins.elem "foo_impermanence.nix" args.modules
+        && builtins.elem "impermanence.nix" args.modules;
     expected = true;
   };
   ## END System Dependent Tests

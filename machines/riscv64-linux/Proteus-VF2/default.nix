@@ -74,8 +74,8 @@
         });
         pythonPackagesExtensions = prev.pythonPackagesExtensions ++ [
           (_: python_prev: {
-            fs = (python_prev.fs.override {pytestCheckHook = null;});
-            hypothesis = (python_prev.hypothesis.override {pytestCheckHook = null;});
+            fs = python_prev.fs.override {pytestCheckHook = null;};
+            hypothesis = python_prev.hypothesis.override {pytestCheckHook = null;};
           })
         ];
         git = prev.git.overrideAttrs (prev: {

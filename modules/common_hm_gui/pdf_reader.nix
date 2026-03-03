@@ -1,5 +1,5 @@
 {pkgs, ...}: {
-  programs = (if pkgs.stdenv.isDarwin then { # PDF reader
+  programs = if pkgs.stdenv.isDarwin then { # PDF reader
     sioyek = { # macOS
       enable = true;
       bindings = {
@@ -12,5 +12,5 @@
       enable = true;
       options.selection-clipboard = "clipboard";
     };
-  });
+  };
 }

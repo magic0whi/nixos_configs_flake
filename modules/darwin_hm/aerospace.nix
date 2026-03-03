@@ -111,7 +111,7 @@
       };
       mode.service.binding = { # See: https://nikitabobko.github.io/AeroSpace/guide#binding-modes
         esc = ["reload-config" "mode main"];
-        f = [ "layout floating tiling" "mode main" ]; # Toggle between floating and tiling layout
+        f = ["layout floating tiling" "mode main"]; # Toggle between floating and tiling layout
         r = ["flatten-workspace-tree" "mode main"]; # reset layout
         backspace = ["close-all-windows-but-current" "mode main"];
 

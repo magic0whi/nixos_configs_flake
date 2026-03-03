@@ -1,5 +1,5 @@
-{pkgs, deploy-rs, pgp2ssh, myvars, ...}: {
-  programs.yt-dlp.enable = if pkgs.stdenv.hostPlatform.isRiscV64 then false else true;
+{pkgs, deploy-rs, pgp2ssh, ...}: {
+  # programs.yt-dlp.enable = if pkgs.stdenv.hostPlatform.isRiscV64 then false else true;
   home.packages = with pkgs; [
     keepassxc # Offline password manager, provides both CLI and GUI
     just # A command runner like make, but simpler
