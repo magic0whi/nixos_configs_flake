@@ -1,4 +1,4 @@
-{pkgs, lib, config, myvars, ...}: let
+{pkgs, lib, config, myvars, nixpkgs-postgresql, ...}: let
   domain = "proteus.eu.org";
 in {
   networking.firewall = {
@@ -61,7 +61,8 @@ in {
   # TODO: Learn SQL
   services.postgresql = {
     enable = true;
-    package = pkgs.postgresql.override {ldapSupport = true;};
+    package = nixpkgs-postgresql.legacyPackages.${pkgs.stdenv.hostPlatform.system}
+      .postgresql.override {ldapSupport = true;};
     enableJIT = true;
     enableTCPIP = true;
     settings = {

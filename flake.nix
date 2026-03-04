@@ -1,8 +1,9 @@
 {
   description = "Proteus Qian's nix configuration for NixOS & WSL";
   inputs = {
-    # Pinned as of 2026-3-1 12:21, branch: nixos-unstable
-    nixpkgs.url = "github:NixOS/nixpkgs/dd9b079222d43e1943b6ebd802f04fd959dc8e61";
+    # Pinned as of 2026-3-3 22:00, branch: master
+    nixpkgs.url = "github:NixOS/nixpkgs/5bc33ec2d6e0f7d3a3afcf58f5e12f6ec288d14b";
+    nixpkgs-postgresql.url = "github:NixOS/nixpkgs/418bded2e8f06ec5d4c6b8c4b9711a4b111cc25e";
     home-manager = { # Pinned as of 2026-3-1 12:39
       url = "github:nix-community/home-manager/58fd7ff0eec2cda43e705c4c0585729ec471d400";
       # The `follows` keyword in inputs is used for inheritance.

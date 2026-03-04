@@ -380,17 +380,33 @@
     },
     "nixpkgs": {
       "locked": {
-        "lastModified": 1772198003,
-        "narHash": "sha256-I45esRSssFtJ8p/gLHUZ1OUaaTaVLluNkABkk6arQwE=",
+        "lastModified": 1772364368,
+        "narHash": "sha256-hk3vfv8KeXT+k2vCRsDYXSEGmPMJ014da1cXwzBVhpg=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "dd9b079222d43e1943b6ebd802f04fd959dc8e61",
+        "rev": "5bc33ec2d6e0f7d3a3afcf58f5e12f6ec288d14b",
         "type": "github"
       },
       "original": {
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "dd9b079222d43e1943b6ebd802f04fd959dc8e61",
+        "rev": "5bc33ec2d6e0f7d3a3afcf58f5e12f6ec288d14b",
+        "type": "github"
+      }
+    },
+    "nixpkgs-postgresql": {
+      "locked": {
+        "lastModified": 1772571235,
+        "narHash": "sha256-81Flugw3etKCFsFxl9UZTHwdgLNkONk+eirEIzISohA=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "418bded2e8f06ec5d4c6b8c4b9711a4b111cc25e",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "418bded2e8f06ec5d4c6b8c4b9711a4b111cc25e",
         "type": "github"
       }
     },
@@ -452,6 +468,7 @@
         "nixos-hardware": "nixos-hardware",
         "nixpak": "nixpak",
         "nixpkgs": "nixpkgs",
+        "nixpkgs-postgresql": "nixpkgs-postgresql",
         "pgp2ssh": "pgp2ssh",
         "sops-nix": "sops-nix"
       }
