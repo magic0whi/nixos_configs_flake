@@ -3,7 +3,7 @@
   tailnet = "tailba6c3f.ts.net";
   tailnet_prefix_length = 48;
   soa_parms = {
-    serial = "2026030101"; # Serial (YYYYMMDDNN)
+    serial = "2026030602"; # Serial (YYYYMMDDNN)
     refresh = "3600"; # Refresh (1 hour)
     retry = "1800"; # Retry (30 minutes)
     expire = "604800"; # Expire (1 week)
@@ -130,6 +130,7 @@
     ql         IN CNAME proteus-nuc
     sb         IN CNAME proteus-nuc
     syncthing  IN CNAME proteus-nuc
+    hass       IN CNAME proteus-nuc
 
     monero     IN CNAME proteus-desktop
   '');

@@ -130,6 +130,12 @@ in {
             service = "syncthing-dashboard";
             tls = {};
           };
+          home-assistant = {
+            rule = "Host(`hass.${domain}`)";
+            entryPoints = ["websecure"];
+            service = "home-assistant";
+            tls = {};
+          };
         };
         services = {
           authelia-backend.loadBalancer.servers = [{url = "http://127.0.0.1:${authelia_port}";}];
@@ -167,6 +173,10 @@ in {
             passHostHeader = false;
             servers = [{url = "http://127.0.0.1:${syncthing_port}";}];
           };
+          home-assistant.loadBalancer.servers = [
+            {url = "http://127.0.0.1:8123";}
+            {url = "http://[::1]:8123";}
+          ];
         };
       };
       tcp = {
