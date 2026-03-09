@@ -25,8 +25,9 @@
         # brightness-night = "0.8";
       };
       manual = { # Set geological position to Bilibili's headquarter, Shanghai, China.
-        lat = "31.094561";
-        lon = "121.497502";
+        # https://www.openstreetmap.org/node/7190124016
+        lat = "31.3113626";
+        lon = "121.5020943";
       };
     };
   };

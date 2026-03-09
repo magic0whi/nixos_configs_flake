@@ -45,8 +45,6 @@
       inputs.nixpkgs.follows = "nixpkgs";};
     deploy-rs = { # Pinned as of 2026-3-1 11:16
       url = "github:serokell/deploy-rs/77c906c0ba56aabdbc72041bf9111b565cdd6171";
-      # TODO: test if apple_sdk stubs still occur
-      # https://github.com/serokell/deploy-rs/issues/322
       inputs.nixpkgs.follows = "nixpkgs";
     };
     nix-darwin = { # Pinned as of 2026-3-1 12:42

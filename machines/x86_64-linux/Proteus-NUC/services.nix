@@ -251,6 +251,7 @@ in {
         unit_system = "metric"; # or "us_customary"
         latitude = config.home-manager.users.${myvars.username}.services.gammastep.settings.manual.lat;
         longitude = config.home-manager.users.${myvars.username}.services.gammastep.settings.manual.lon;
+        time_zone = "Asia/Hong_Kong";
       };
       logger.default = "info";
     };

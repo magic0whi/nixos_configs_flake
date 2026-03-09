@@ -44,7 +44,7 @@ in {
       "$file_manager" = "systemd-run --user --scope thunar";
       "$wlogout" = "~/.config/hypr/scripts/wlogout";
       "$mainMod" = "SUPER";
-      bind = [ # TODO make current focused window sticky (e.g. For mpv)
+      bind = [
         "$mainMod,E,exec,$file_manager"
         "$mainMod,Q,exec,$terminal"
         "$mainMod,W,killactive,"
