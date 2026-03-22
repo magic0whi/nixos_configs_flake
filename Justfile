@@ -141,7 +141,7 @@ reset-launchpad:
 [linux]
 [group('homelab')]
 deploy name:
-  deploy .#{{name}} -- --verbose --show-trace
+  deploy --skip-checks .#{{name}} -- --verbose --show-trace
 
 # Local switch
 [linux]
@@ -179,7 +179,7 @@ nodes:
 [linux]
 [group('homelab')]
 proteus-desktop:
-  deploy .#Proteus-Desktop -- --verbose --show-trace
+  deploy --skip-checks .#Proteus-Desktop -- --verbose --show-trace
 
 [linux]
 [group('homelab')]

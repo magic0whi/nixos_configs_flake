@@ -16,6 +16,7 @@
   #   };
   # };
   # networking.useDHCP = false;
+  services.vnstat.enable = true;
   services.syncthing.enable = false;
   ## START sing-box.nix
   age.secrets."sb_Proteus-NixOS-1.json" = {

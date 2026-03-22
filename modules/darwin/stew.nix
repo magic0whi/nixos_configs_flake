@@ -109,6 +109,7 @@ in {
       # "clash-verge-rev"
       "jordanbaird-ice" # Powerful menu bar manager
       "tor-browser"
+      "google-chrome"
 
       # Misc
       # "tencent-lemon" # macOS cleaner

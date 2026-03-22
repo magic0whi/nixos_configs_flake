@@ -1,5 +1,5 @@
 {myvars, config, ...}: {
-  time.timeZone = "Europe/London";
+  time.timeZone = "Asia/Hong_Kong";
   age.secrets."sb_client_darwin.json" = {
     file = "${myvars.secrets_dir}/sb_client_darwin.json.age";
     mode = "0000";

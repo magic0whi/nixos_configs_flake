@@ -40,15 +40,6 @@
   ];
   ## START browsers.nix
   programs.firefox.enable = true;
-  programs.google-chrome = { # https://github.com/nix-community/home-manager/blob/master/modules/programs/chromium.nix
-    enable = true;
-    # https://wiki.archlinux.org/title/Chromium#Native_Wayland_support
-    commandLineArgs = lib.optionals pkgs.stdenv.isLinux [
-      "--ozone-platform-hint=auto"
-      "--enable-wayland-ime" # Make it use text-input-v1, which works for kwin 5.27 and weston
-      # "--enable-features=Vulkan" # Enable hardware acceleration - vulkan api
-    ];
-  };
   ## END browsers.nix
   ## START vscode.nix
   # programs.vscode = {

@@ -1,5 +1,5 @@
 {
-  description = "Proteus Qian's nix configuration for NixOS & WSL";
+  description = "Proteus Qian's nix configuration for NixOS & nix-darwin";
   inputs = {
     # Pinned as of 2026-3-3 22:00, branch: master
     nixpkgs.url = "github:NixOS/nixpkgs/5bc33ec2d6e0f7d3a3afcf58f5e12f6ec288d14b";
