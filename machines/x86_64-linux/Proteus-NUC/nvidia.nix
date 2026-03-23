@@ -6,9 +6,12 @@
     open = true;
     powerManagement.enable = true;
     powerManagement.finegrained = true;
-    prime.intelBusId = "PCI:0:2:0";
-    prime.nvidiaBusId = "PCI:1:0:0";
-    prime.offload.enable = true;
-    prime.offload.enableOffloadCmd = true;
+    prime = {
+      # NOTE: Don't use sync.enable for hybrid laptop
+      intelBusId = "PCI:0:2:0";
+      nvidiaBusId = "PCI:1:0:0";
+      offload.enable = true;
+      offload.enableOffloadCmd = true;
+    };
   };
 }

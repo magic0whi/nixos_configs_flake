@@ -1,8 +1,12 @@
 {pkgs, lib, ...}: let
   hypr_pkg = pkgs.hyprland;
 in {
-  home.file.".wayland-session" = { # NOTE: this executable is used by greetd to start a wayland session when system boot up. With such a vendor-no-locking script, we can switch to another wayland compositor without modifying greetd's config in NixOS module
-    source = "${hypr_pkg}/bin/Hyprland";
+   # NOTE: this executable is used by greetd to start a wayland session when
+   # system boot up. With such a vendor-no-locking script, we can switch to
+   # another wayland compositor without modifying greetd's config in NixOS
+   # module
+   home.file.".wayland-session" = {
+    source = "${hypr_pkg}/bin/start-hyprland";
     executable = true;
   };
   wayland.windowManager.hyprland = {
@@ -141,7 +145,7 @@ in {
         "$mainMod,mouse:272,movewindow"
         "$mainMod,mouse:273,resizewindow"
       ];
-      gesture = ["3, horizontal, workspace"];
+      gesture = ["3,horizontal,workspace"];
       decoration = {
         rounding = 10;
 
@@ -194,7 +198,9 @@ in {
         "match:class ^org\.inkscape\.Inkscape$,match:title ^Function Plotter$,float true"
         "match:class ^org\.inkscape\.Inkscape$,match:title ^Function Plotter$,float true"
       ];
-      xwayland.force_zero_scaling = true; # This will get rid of the pixelated look, but will not scale applications properly. To do this, each toolkit has its own mechanism.
+      # This will get rid of the pixelated look, but will not scale
+      # applications properly. To do this, each toolkit has its own mechanism.
+      xwayland.force_zero_scaling = true;
     };
     systemd.variables = ["--all"];
   };

@@ -18,7 +18,7 @@
     ## Creative
     geogebra6 # Dynamic mathematics software with graphics, algebra and spreadsheets
     (if pkgs.stdenv.isLinux
-    then (anki-bin.overrideAttrs (_: prev: { # Add env 'QT_IM_MODULE=fcitx' to anki.desktop
+    then (anki-bin.overrideAttrs (prev: { # Add env 'QT_IM_MODULE=fcitx' to anki.desktop
       buildCommand = lib.strings.concatLines [
         prev.buildCommand # TIPS: `builtins.trace test.buildCommand {}` is useful in debugging
         ''unpacked=$(grep -Po '(?<=cp -R )\/nix\/store\/\S+(?=\/share\/applications)' <<< '${prev.buildCommand}')''

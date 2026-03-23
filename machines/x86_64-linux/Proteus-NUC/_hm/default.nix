@@ -1,20 +1,24 @@
-{lib, mylib, pkgs, ...}: let
+{lib, mylib, pkgs, config, ...}: let
   dpi_scale = lib.strings.substring 0 4 (lib.strings.floatToString 1.25);
   # Ref: https://wiki.hyprland.org/Configuring/Monitors/
   # ls /sys/class/drm/card*
-  main_monitor = "eDP-1,highres,auto,${dpi_scale},bitdepth,10";
-  secondary_monitor = "DP-3,highres,auto-left,2,bitdepth,10";
+  main_monitor = if config.wayland.windowManager.hyprland.nvidia then
+    # 10-bit will cause the internal monitor flickering when using PRIME Sync
+    "eDP-1,highres,auto,${dpi_scale},bitdepth,8"
+  else
+    "eDP-1,highres,auto,${dpi_scale},bitdepth,10";
+  secondary_monitor = "DP-3,highres,auto-left,1.67,bitdepth,10";
   third_monitor = "HDMI-A-1,highres,auto-left,2,bitdepth,10";
 in {
   imports = mylib.scan_path ./.;
   home.packages = with pkgs; [
-    nvtopPackages.intel
+    (nvtopPackages.intel.override {nvidia = true;})
     minicom # embedded development
     xmrig xmrig-cuda # Heating & Mining
     chezmoi
   ];
   wayland.windowManager.hyprland = {
-    # nvidia = true; # Sync prime
+    nvidia = true; # Prime Sync
     settings = {
       # Configure your Display resolution, offset, scale and Monitors here, use `hyprctl monitors` to get the info.
       #   highres:     get the best possible resolution
