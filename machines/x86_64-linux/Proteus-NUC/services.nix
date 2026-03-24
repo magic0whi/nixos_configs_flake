@@ -257,4 +257,14 @@ in {
     };
   };
   ## END services_home_assistant.nix
+  ## STASRT sunshine.nix
+  services.sunshine = {
+    enable = true;
+    capSysAdmin = true;
+    settings = {
+      adapter_name = "/dev/dri/${myvars.dgpu_sym_name}";
+      origin_web_ui_allowed = "pc";
+    };
+  };
+  ## END sunshine.nix
 }

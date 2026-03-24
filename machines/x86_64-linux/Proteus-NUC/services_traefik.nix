@@ -2,10 +2,6 @@
   server_pub_crt = "${myvars.secrets_dir}/proteus_server.pub.pem";
   domain = "proteus.eu.org";
   tailnet = "tailba6c3f.ts.net";
-  syncthing_port = lib.last (lib.splitString
-    ":"
-    config.home-manager.users.${myvars.username}.services.syncthing.guiAddress
-  );
   openldap_port = lib.removeSuffix "/" (lib.last (lib.splitString
     ":" (lib.head config.services.openldap.urlList))
   );
@@ -19,7 +15,6 @@ in {
       443 # Traefik
       636 # OpenLDAP (secure)
       853 # BIND DoT
-      (lib.strings.toInt syncthing_port) # Syncthing
       # config.home-manager.users.${myvars.username}.services.mpd.network.port
     ];
     allowedUDPPorts = [
@@ -68,6 +63,7 @@ in {
       # For other domains
       # tls.certificates = [{certFile = server_pub_crt; keyFile = config.age.secrets."traefik_server.priv.pem".path;}];
       http = {
+        serversTransports.ignorecert.insecureSkipVerify = true;
         middlewares.authelia-auth.forwardAuth = {
           # Tell Traefik where to ask if a user is authenticated
           address = "http://127.0.0.1:${authelia_port}/api/verify?rd=https://auth.${domain}/";
@@ -136,6 +132,12 @@ in {
             service = "home-assistant";
             tls = {};
           };
+          sunshine-webui = {
+            rule = "Host(`sunshine.${domain}`)";
+            entryPoints = ["websecure"];
+            service = "sunshine-webui";
+            tls = {};
+          };
         };
         services = {
           authelia-backend.loadBalancer.servers = [{url = "http://127.0.0.1:${authelia_port}";}];
@@ -158,7 +160,7 @@ in {
           ];
           # Even though it's WebSockets, we define it as http://
           aria2-rpc.loadBalancer.servers = [{
-            url = "http://127.0.0.1:${builtins.toString config.home-manager.users.${myvars.username}.services.syncthing.guiAddress}";
+            url = "http://127.0.0.1:${builtins.toString config.services.aria2.settings.rpc-listen-port}";
           }];
           qinglong.loadBalancer.servers = [{url = "http://127.0.0.1:5700";}];
           # use HTTP/2 Cleartext (h2c) when talking to BIND's local port.
@@ -171,12 +173,21 @@ in {
             # By setting to false Traefik will overrides the Host header to
             # 127.0.0.1
             passHostHeader = false;
-            servers = [{url = "http://127.0.0.1:${syncthing_port}";}];
+            servers = let syncthing_port = lib.last (lib.splitString
+              ":"
+              config.home-manager.users.${myvars.username}.services.syncthing.guiAddress);
+            in [{url = "http://127.0.0.1:${syncthing_port}";}];
           };
           home-assistant.loadBalancer.servers = [
             {url = "http://127.0.0.1:8123";}
             {url = "http://[::1]:8123";}
           ];
+          sunshine-webui.loadBalancer = {
+            serversTransport = "ignorecert";
+            servers = let
+              sunshine_port = config.services.sunshine.settings.port;
+            in [{url = "https://127.0.0.1:${builtins.toString (sunshine_port + 1)}";}];
+          };
         };
       };
       tcp = {
