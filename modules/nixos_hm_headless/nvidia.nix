@@ -13,9 +13,5 @@ in {
       # Verify: `glxinfo | grep -i "vendor string"`
       __GLX_VENDOR_LIBRARY_NAME = "nvidia";
     };
-    # PRIME Sync mode for Hyprland
-    wayland.windowManager.hyprland.settings.env = [
-      "AQ_DRM_DEVICES,/dev/dri/card1:/dev/dri/card2"
-    ];
   };
 }

@@ -60,10 +60,10 @@
     else if len == 3 then "0" + s
     else s;
     left_padded = map pad_hex (
-      lib.splitString ":" (builtins.elemAt split_double_colon 0)
+      lib.splitString ":" (builtins.head split_double_colon)
     );
     right_padded = map pad_hex (
-      lib.splitString ":" (builtins.elemAt split_double_colon 1)
+      lib.splitString ":" (lib.last split_double_colon)
     );
     # 3. Calculate and generate missing zero segments (IPv6 has 8 total segments)
     # e.g. missing count is `8 - (3 + 5) = 3`, so the missing_segments is:

@@ -41,6 +41,9 @@
     # LC_TIME = "en_US.UTF-8";
   # };
   ## END i18n.nix
+  ## START dbus.nix
+  services.dbus.implementation = "broker";
+  ## END dbus.nix
   ## START sysctl.nix
   boot.kernel.sysctl."net.ipv4.tcp_congestion_control" = "bbr";
   boot.kernel.sysctl."net.core.default_qdisc" = "cake";

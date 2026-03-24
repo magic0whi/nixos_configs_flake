@@ -1,4 +1,4 @@
-{lib, mylib, pkgs, config, ...}: let
+{lib, mylib, pkgs, config, myvars, ...}: let
   dpi_scale = lib.strings.substring 0 4 (lib.strings.floatToString 1.25);
   # Ref: https://wiki.hyprland.org/Configuring/Monitors/
   # ls /sys/class/drm/card*
@@ -44,7 +44,10 @@ in {
       env = [
         "GDK_DPI_SCALE,${dpi_scale}"
         "STEAM_FORCE_DESKTOPUI_SCALING,${dpi_scale}"
-      ];
+      ] ++ lib.optional # PRIME Sync mode for Hyprland
+        config.wayland.windowManager.hyprland.nvidia 
+        "AQ_DRM_DEVICES,/dev/dri/${myvars.dgpu_sym_name}:/dev/dri/${myvars.igpu_sym_name}"
+      ;
       bindl = [
         ",switch:on:Lid Switch,exec,[ $(hyprctl monitors -j | jq '.[].name' | wc -w) -ne 1 ] && hyprctl keyword monitor \"${main_monitor},disable\"" # Going to dock mode if has external monitor connected
         ",switch:off:Lid Switch,exec,hyprctl keyword monitor \"${main_monitor}\"" # Restore internal monitor

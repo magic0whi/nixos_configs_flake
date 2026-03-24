@@ -35,12 +35,12 @@
     imv # simple image viewer
 
     # Video/audio tools
-    # cava # for visualizing audio
-    libva-utils
+    # cava # For visualizing audio
+    # libva-utils
     # vdpauinfo
-    vulkan-tools
-    mesa-demos
-    clinfo
+    # vulkan-tools
+    # mesa-demos # Run `nix shell nixpkgs#mesa-demos -c glxgears` instead
+    # clinfo # Run `nix run nixpkgs#clinfo` instead
   ];
   # This allows fontconfig to discover fonts and configurations installed through home.packages, but I manage fonts at
   # system-level, not user-level

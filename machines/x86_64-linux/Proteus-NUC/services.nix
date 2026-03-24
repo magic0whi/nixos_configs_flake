@@ -83,7 +83,7 @@ in {
       {name = config.services.authelia.instances.main.user; ensureDBOwnership =true;}
     ];
     authentication = ''
-      #type database DBuser auth-method [auth-options]
+      # type database DBuser auth-method [auth-options]
       local all all trust
       host all all 100.64.0.0/10 ldap ldapurl="ldaps://openldap.${domain}/ou=People,dc=tailba6c3f,dc=ts,dc=net?uid?sub"
       host all all fd7a:115c:a1e0::/48 ldap ldapurl="ldaps://openldap.${domain}/ou=People,dc=tailba6c3f,dc=ts,dc=net?uid?sub"
