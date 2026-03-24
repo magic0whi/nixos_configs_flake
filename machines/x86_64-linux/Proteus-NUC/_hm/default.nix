@@ -45,7 +45,7 @@ in {
         "GDK_DPI_SCALE,${dpi_scale}"
         "STEAM_FORCE_DESKTOPUI_SCALING,${dpi_scale}"
       ] ++ lib.optional # PRIME Sync mode for Hyprland
-        config.wayland.windowManager.hyprland.nvidia 
+        config.wayland.windowManager.hyprland.nvidia
         "AQ_DRM_DEVICES,/dev/dri/${myvars.dgpu_sym_name}:/dev/dri/${myvars.igpu_sym_name}"
       ;
       bindl = [

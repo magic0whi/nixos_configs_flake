@@ -183,7 +183,7 @@ in {
         vrr = 1;
       };
       windowrule = [
-        "match:class ^yad|org\.pulseaudio\.pavucontrol|imv|qemu$,float true"
+        "match:class ^yad|org\\.pulseaudio\\.pavucontrol|imv|qemu$,float true"
         "match:class ^thunar$, match:title ^File Operation Progress$,float true"
 
         "match:class ^firefox$,idle_inhibit focus"
@@ -192,11 +192,21 @@ in {
         "match:class ^firefox$,match:title ^Picture-in-Picture$,size 480 270"
         "match:class ^firefox$,match:title ^Picture-in-Picture$,move 100%-w-5 100%-w-5"
 
-        "match:class ^anki$,match:title ^HyperTTS: Add Audio \(Collection\)$,float true"
-        "match:class ^anki$,match:title ^HyperTTS: Add Audio \(Collection\)$,size 1090 640"
+        "match:class ^anki$,match:title ^HyperTTS: Add Audio \\(Collection\\)$,float true"
+        "match:class ^anki$,match:title ^HyperTTS: Add Audio \\(Collection\\)$,size 1090 640"
 
-        "match:class ^org\.inkscape\.Inkscape$,match:title ^Function Plotter$,float true"
-        "match:class ^org\.inkscape\.Inkscape$,match:title ^Function Plotter$,float true"
+        "match:class ^org\\.inkscape\\.Inkscape$,match:title ^Function Plotter$,float true"
+        "match:class ^org\\.inkscape\\.Inkscape$,match:title ^Function Plotter$,float true"
+
+        "match:initial_class ^steam_app_\\d+$,match:initial_title negative:^(?i)(.*Launcher.*)$,content game"
+        "match:content 3,fullscreen on"
+        "match:content 3,immediate on"
+        "match:content 3,no_anim on"
+        "match:content 3,no_blur on"
+        "match:content 3,no_shadow on"
+        "match:content 3,opacity 1"
+        "match:content 3,border_size 1"
+        "match:content 3,rounding 0"
       ];
       # This will get rid of the pixelated look, but will not scale
       # applications properly. To do this, each toolkit has its own mechanism.

@@ -1,17 +1,33 @@
 {pkgs, lib, config, myvars, nixpkgs-postgresql, ...}: let
   domain = "proteus.eu.org";
 in {
-  networking.firewall = {
+  networking.firewall = let
+    sunshine_port = config.services.sunshine.settings.port;
+    s_https = builtins.toString (sunshine_port - 5); # Default: 47984 HTTPS
+    s_http = builtins.toString sunshine_port; # Default: 47989 HTTP
+    s_video = builtins.toString (sunshine_port + 9); # Default: 47998 UDP
+    s_ctrl = builtins.toString (sunshine_port + 10); # Default: 47999 UDP
+    s_audio = builtins.toString (sunshine_port + 11); # Default: 48000 UDP
+    s_rtsp = builtins.toString (sunshine_port + 21); # Default: 48010 TCP
+  in{
     allowedTCPPorts = [
       5201 # iperf3
       22000 # Syncthing TCP transfers
       53317 # LocalSend (HTTP/TCP)
+      # Open Sunshine TCP ports
+      (lib.strings.toInt s_https)
+      (lib.strings.toInt s_http)
+      (lib.strings.toInt s_rtsp)
     ];
     allowedUDPPorts = [
       5201 # iperf3
       21027 # Syncthing discovery broadcasts on IPv4 and multicasts on IPv6
       22000 # Syncthing QUIC transfers
       53317 # LocalSend (Multicast/UDP)
+      # Open Sunshine UDP ports
+      (lib.strings.toInt s_video)
+      (lib.strings.toInt s_ctrl)
+      (lib.strings.toInt s_audio)
     ];
   };
   ## START tor.nix

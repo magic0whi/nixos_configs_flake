@@ -15,7 +15,6 @@ in {
       443 # Traefik
       636 # OpenLDAP (secure)
       853 # BIND DoT
-      # config.home-manager.users.${myvars.username}.services.mpd.network.port
     ];
     allowedUDPPorts = [
       443 # Traefik (QUIC)
@@ -48,7 +47,6 @@ in {
         ldaps = {address = ":636";};
         # Add the standard DoT port as a TCP entrypoint
         dot = {address = ":853";};
-        # mpd = {address = ":6601";};
       };
     };
     # Dynamic configuration defines routing rules, backend services, and certificate management.
@@ -75,9 +73,7 @@ in {
           # `tls = {}` enables TLS using the default cert provided above
           authelia = {
             rule = "Host(`auth.${domain}`)";
-            entryPoints = ["websecure"];
-            service = "authelia-backend";
-            tls = {};
+            entryPoints = ["websecure"]; service = "authelia-backend"; tls = {};
           };
           traefik-dashboard = {
             rule = "Host(`traefik.${domain}`)";
@@ -87,22 +83,33 @@ in {
             service = "api@internal";
             tls = {};
           };
-          atuin = {rule = "Host(`atuin.${domain}`)"; entryPoints = ["websecure"]; service = "atuin"; tls = {};};
-          immich = {rule = "Host(`immich.${domain}`)"; entryPoints = ["websecure"]; service = "immich"; tls = {};};
+          atuin = {
+            rule = "Host(`atuin.${domain}`)";
+            entryPoints = ["websecure"]; service = "atuin"; tls = {};
+          };
+          immich = {
+            rule = "Host(`immich.${domain}`)";
+            entryPoints = ["websecure"]; service = "immich"; tls = {};
+          };
           paperless = {
-            rule = "Host(`paperless.${domain}`)"; entryPoints = ["websecure"]; service = "paperless"; tls = {};
+            rule = "Host(`paperless.${domain}`)";
+            entryPoints = ["websecure"]; service = "paperless"; tls = {};
           };
           sftpgo-webui = {
-            rule = "Host(`sftpgo.${domain}`)"; entryPoints = ["websecure"]; service = "sftpgo-webui"; tls = {};
+            rule = "Host(`sftpgo.${domain}`)";
+            entryPoints = ["websecure"]; service = "sftpgo-webui"; tls = {};
           };
           sftpgo-webdav = {
-            rule = "Host(`webdav.${domain}`)"; entryPoints = ["websecure"]; service = "sftpgo-webdav"; tls = {};
+            rule = "Host(`webdav.${domain}`)";
+            entryPoints = ["websecure"]; service = "sftpgo-webdav"; tls = {};
           };
           aria2-rpc = {
-            rule = "Host(`aria2.${domain}`)"; entryPoints = ["websecure"]; service = "aria2-rpc"; tls = {};
+            rule = "Host(`aria2.${domain}`)";
+            entryPoints = ["websecure"]; service = "aria2-rpc"; tls = {};
           };
           qinglong = {
-            rule = "Host(`ql.${domain}`)"; entryPoints = ["websecure"]; service = "qinglong"; tls = {};
+            rule = "Host(`ql.${domain}`)";
+            entryPoints = ["websecure"]; service = "qinglong"; tls = {};
           };
           doh = {
             # Intercept standard DoH queries at the apex domain
@@ -114,7 +121,6 @@ in {
           sb = {
             rule = "Host(`sb.${domain}`)";
             entryPoints = ["websecure"];
-            # Force yourself to log in via OpenLDAP to see the dashboard
             middlewares = ["authelia-auth"];
             service = "sb-dashboard";
             tls = {};
@@ -128,15 +134,11 @@ in {
           };
           home-assistant = {
             rule = "Host(`hass.${domain}`)";
-            entryPoints = ["websecure"];
-            service = "home-assistant";
-            tls = {};
+            entryPoints = ["websecure"]; service = "home-assistant"; tls = {};
           };
           sunshine-webui = {
             rule = "Host(`sunshine.${domain}`)";
-            entryPoints = ["websecure"];
-            service = "sunshine-webui";
-            tls = {};
+            entryPoints = ["websecure"]; service = "sunshine-webui"; tls = {};
           };
         };
         services = {
@@ -178,15 +180,15 @@ in {
               config.home-manager.users.${myvars.username}.services.syncthing.guiAddress);
             in [{url = "http://127.0.0.1:${syncthing_port}";}];
           };
-          home-assistant.loadBalancer.servers = [
-            {url = "http://127.0.0.1:8123";}
-            {url = "http://[::1]:8123";}
+          home-assistant.loadBalancer.servers = let
+            hass_port = builtins.toString config.services.home-assistant.config.http.server_port;
+          in [
+            {url = "http://127.0.0.1:${hass_port}";}
+            {url = "http://[::1]:${hass_port}";}
           ];
           sunshine-webui.loadBalancer = {
             serversTransport = "ignorecert";
-            servers = let
-              sunshine_port = config.services.sunshine.settings.port;
-            in [{url = "https://127.0.0.1:${builtins.toString (sunshine_port + 1)}";}];
+            servers = [{url = "https://127.0.0.1:${builtins.toString (config.services.sunshine.settings.port + 1)}";}];
           };
         };
       };
@@ -206,12 +208,6 @@ in {
             service = "dot";
             tls = {};
           };
-          # mpd = {
-          #   rule = "HostSNI(`*`)";
-          #   encryPoints = ["mpd"];
-          #   service = "mpd";
-          #   tls = {};
-          # };
         };
         services = {
           openldap-backend.loadBalancer = {
@@ -227,7 +223,6 @@ in {
             proxyProtocol.version = 2;
             servers = [{address = "127.0.0.1:8530";}{address = "[::1]:8530";}];
           };
-          # mpd.loadBalancer = [{address="127.0.0.1:${builtins.toString config.home-manager.users.${myvars.username}.services.mpd.network.port}";}];
         };
       };
     };
