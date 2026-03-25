@@ -1,4 +1,4 @@
-{pkgs, lib, ...}: {
+{pkgs, lib, config, ...}: {
   home.packages = with pkgs; [
     localsend # Alternative to AirDrop
     # discord # Update too frequently, use the web version instead
@@ -21,7 +21,7 @@
         ''unpacked=$(grep -Po '(?<=cp -R )\/nix\/store\/\S+(?=\/share\/applications)' <<< '${prev.buildCommand}')''
         ''perm_bak=$(stat -c '%a' $out/share/applications/anki.desktop)''
         ''chmod 644 $out/share/applications/anki.desktop''
-        ''sed 's/^Exec=\(anki\)/Exec=env QT_IM_MODULE=fcitx \1/' $unpacked/share/applications/anki.desktop > $out/share/applications/anki.desktop''
+        ''sed 's/^Exec=\(anki\)/Exec=env XCURSOR_SIZE=${builtins.toString config.home.pointerCursor.size} QT_IM_MODULE=fcitx \1/' $unpacked/share/applications/anki.desktop > $out/share/applications/anki.desktop''
         ''chmod $perm_bak $out/share/applications/anki.desktop''
       ];
     }))

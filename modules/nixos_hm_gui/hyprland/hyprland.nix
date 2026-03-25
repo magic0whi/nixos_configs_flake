@@ -237,6 +237,7 @@ in {
     };
   };
   programs.hyprlock.enable = true;
+  home.pointerCursor.hyprcursor.enable = true;
   services.cliphist.enable = true;
   xdg.configFile = { # hyprland configs, based on https://github.com/notwidow/hyprland
     "hypr/scripts" = {

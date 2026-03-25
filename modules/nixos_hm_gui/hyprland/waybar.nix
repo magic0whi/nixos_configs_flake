@@ -48,7 +48,7 @@
         special-visible-only = true; # special workspaces will be shown only if visible.
         window-rewrite-default = "&#xf059;"; # nf-fa-question_circle
         window-rewrite = {
-          "class<.virt-manager-wrapped>" = "&#xeb7b;"; # nf-cod-vm_running
+          "class<.virt-manager-wrapped|Qemu-system-x86_64>" = "&#xeb7b;"; # nf-cod-vm_running
           "class<ario>" = "&#xf0386;"; # music_circle
           "class<blender>" = "&#xf00ab;"; # blender_software
           "class<blueman-manager>" = "&#xf293;"; # nf-fa-bluetooth
