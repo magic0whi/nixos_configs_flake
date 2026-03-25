@@ -1,4 +1,4 @@
-{pkgs, lib, config, ...}: {
+{pkgs, lib, config, myvars, ...}: {
   ## START docker.nix
   # =============================================================================
   # Docker + sing-box auto_redirect & FakeIP Conflict Resolution
@@ -70,7 +70,11 @@
   # - For Intel CPU, add "kvm-intel" to kernelModules.
   #   boot.kernelModules = ["kvm-intel"];
   #   boot.extraModprobeConfig = "options kvm_intel nested=1"; # for intel cpu
-  # boot.kernelModules = ["vfio-pci"];
+  boot.kernelModules = ["vfio-pci"];
+  # Bind all i915 VFs (00:02.1 to 00:02.7) to vfio-pci
+  services.udev.extraRules = ''
+    ACTION=="add", SUBSYSTEM=="pci", KERNEL=="${builtins.head (lib.splitString "." myvars.igpu_pci_ids)}.[1-7]", ATTR{vendor}=="0x8086", ATTR{device}=="0x9a60", DRIVER!="vfio-pci", RUN+="/bin/sh -c 'echo \$kernel > /sys/bus/pci/devices/\$kernel/driver/unbind; echo vfio-pci > /sys/bus/pci/devices/\$kernel/driver_override; modprobe vfio-pci; echo \$kernel > /sys/bus/pci/drivers/vfio-pci/bind'"
+  '';
   virtualisation = {
     libvirtd = {
       enable = true;

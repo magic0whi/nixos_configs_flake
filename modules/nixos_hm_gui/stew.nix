@@ -4,6 +4,10 @@
     telegram-desktop # Instant messaging
     # foliate # e-book viewer(.epub/.mobi/...),do not support .pdf
 
+    ## Remote Desktop (RDP protocol)
+    remmina
+    freerdp # Required by remmina
+
     ## Custom Hardened Packages
     # nixpaks.qq
     # nixpaks.qq-desktop-item

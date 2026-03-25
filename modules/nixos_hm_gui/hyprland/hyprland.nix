@@ -199,14 +199,15 @@ in {
         "match:class ^org\\.inkscape\\.Inkscape$,match:title ^Function Plotter$,float true"
 
         "match:initial_class ^steam_app_\\d+$,match:initial_title negative:^(?i)(.*Launcher.*)$,content game"
-        "match:content 3,fullscreen on"
-        "match:content 3,immediate on"
-        "match:content 3,no_anim on"
-        "match:content 3,no_blur on"
-        "match:content 3,no_shadow on"
+        "match:content 3,fullscreen true"
+        "match:content 3,immediate true"
+        "match:content 3,no_anim true"
+        "match:content 3,no_blur true"
+        "match:content 3,no_shadow true"
         "match:content 3,opacity 1"
         "match:content 3,border_size 1"
         "match:content 3,rounding 0"
+        "match:initial_class ^Qemu-system-x86_64$, float true"
       ];
       # This will get rid of the pixelated look, but will not scale
       # applications properly. To do this, each toolkit has its own mechanism.

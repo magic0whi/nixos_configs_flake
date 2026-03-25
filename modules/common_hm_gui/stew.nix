@@ -5,9 +5,6 @@
 
     libnotify # notify-send
 
-    ## Remote Desktop (RDP protocol)
-    remmina
-    freerdp # Required by remmina
     # moonlight # Remote desktop client
 
     ## Games
