@@ -134,11 +134,11 @@ in {
       ];
       bindl = [
         "$mainMod,Z,exec,loginctl lock-session; sleep 0.6; hyprctl dispatch dpms off"
-        "$mainMod ALT,Q,exit," # Exit Hyprland
-        "$mainMod ALT,X,exec,systemctl suspend" # Suspend
-        "$mainMod ALT,C,exec,systemctl hibernate" # Hibernate
-        "$mainMod ALT,R,exec,systemctl reboot" # Reboot
-        "$mainMod ALT,S,exec,systemctl poweroff" # Shutdown
+        "$mainMod SHIFT,Q,exit," # Exit Hyprland
+        "$mainMod SHIFT,W,exec,systemctl suspend" # Suspend
+        "$mainMod SHIFT,E,exec,systemctl hibernate" # Hibernate
+        "$mainMod SHIFT,R,exec,systemctl reboot" # Reboot
+        "$mainMod SHIFT,T,exec,systemctl poweroff" # Shutdown
         ",switch:Lid Switch,exec,loginctl lock-session" # Lock when lid switch triggered
       ];
       bindm = [ # LMB/RMB and dragging to move/resize windows
@@ -181,6 +181,8 @@ in {
       misc = {
         key_press_enables_dpms = true;
         vrr = 1;
+        # https://github.com/hyprwm/hyprlock/issues/779
+        allow_session_lock_restore = true;
       };
       windowrule = [
         "match:class ^yad|org\\.pulseaudio\\.pavucontrol|imv|qemu$,float true"

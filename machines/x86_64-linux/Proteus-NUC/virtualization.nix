@@ -73,7 +73,7 @@
   boot.kernelModules = ["vfio-pci"];
   # Bind all i915 VFs (00:02.1 to 00:02.7) to vfio-pci
   services.udev.extraRules = ''
-    ACTION=="add", SUBSYSTEM=="pci", KERNEL=="${builtins.head (lib.splitString "." myvars.igpu_pci_ids)}.[1-7]", ATTR{vendor}=="0x8086", ATTR{device}=="0x9a60", DRIVER!="vfio-pci", RUN+="/bin/sh -c 'echo \$kernel > /sys/bus/pci/devices/\$kernel/driver/unbind; echo vfio-pci > /sys/bus/pci/devices/\$kernel/driver_override; modprobe vfio-pci; echo \$kernel > /sys/bus/pci/drivers/vfio-pci/bind'"
+    ACTION=="add", SUBSYSTEM=="pci", KERNEL=="${builtins.head (lib.strings.splitString "." myvars.igpu_pci_ids)}.[1-7]", ATTR{vendor}=="0x8086", ATTR{device}=="0x9a60", DRIVER!="vfio-pci", RUN+="/bin/sh -c 'echo \$kernel > /sys/bus/pci/devices/\$kernel/driver/unbind; echo vfio-pci > /sys/bus/pci/devices/\$kernel/driver_override; modprobe vfio-pci; echo \$kernel > /sys/bus/pci/drivers/vfio-pci/bind'"
   '';
   virtualisation = {
     libvirtd = {

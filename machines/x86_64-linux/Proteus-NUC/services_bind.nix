@@ -32,7 +32,7 @@
   gen_reverse_prefix_v4 = ipv4: let
     # 1. Split the IP into a list of octets
     # e.g. "100.64.161.20" -> ["100" "64" "161" "20"]
-    octets = lib.splitString "." ipv4;
+    octets = lib.strings.splitString "." ipv4;
     # 2. Extract the first 3 octets, reverse them, and join with dots
     # e.g. ["100" "64" "161" "20"] -> ["100" "64" "161"] -> ["161" "64" "100"]
     # -> "161.64.100"
@@ -49,7 +49,7 @@
   gen_reversed_chars_v6 = ipv6: let
     # 1. Split by "::" to handle zero-compression
     # e.g. "fd7a:115c:a1e0::cd3a:a114" -> ["fd7a:115c:a1e0" "cd3a:a114"]
-    split_double_colon = lib.splitString "::" ipv6;
+    split_double_colon = lib.strings.splitString "::" ipv6;
     # 2. Split the IP into a list, and pad add segments to 4 characters
     # e.g. Left part: ["fd7a" "115c" "a1e0"], right part: ["cd3a" "a114"]
     # Helper: Pad a string to 4 characters with leading zeros
@@ -60,10 +60,10 @@
     else if len == 3 then "0" + s
     else s;
     left_padded = map pad_hex (
-      lib.splitString ":" (builtins.head split_double_colon)
+      lib.strings.splitString ":" (builtins.head split_double_colon)
     );
     right_padded = map pad_hex (
-      lib.splitString ":" (lib.last split_double_colon)
+      lib.strings.splitString ":" (lib.last split_double_colon)
     );
     # 3. Calculate and generate missing zero segments (IPv6 has 8 total segments)
     # e.g. missing count is `8 - (3 + 5) = 3`, so the missing_segments is:
@@ -144,14 +144,14 @@
     "${nuc_reverse_zone_v4_name}.zone"
     ((zone_head nuc_reverse_zone_v4_name)+ ''
     ; PTR Record for last octet pointing to Tailscale domain
-    ${lib.last (lib.splitString "." nuc_ipv4)} IN PTR proteus-nuc.${tailnet}.
+    ${lib.last (lib.strings.splitString "." nuc_ipv4)} IN PTR proteus-nuc.${tailnet}.
   '');
   desktop_reverse_zone_v4_name = gen_reverse_prefix_v4 desktop_ipv4;
   desktop_reverse_zone_v4 = pkgs.writeText
     "${desktop_reverse_zone_v4_name}.zone"
     ((zone_head desktop_reverse_zone_v4_name) + ''
     ; PTR Record for last octet pointing to Tailscale domain
-    ${lib.last (lib.splitString "." desktop_ipv4)} IN PTR proteus-desktop.${tailnet}.
+    ${lib.last (lib.strings.splitString "." desktop_ipv4)} IN PTR proteus-desktop.${tailnet}.
   '');
   # =========================================
   # IPv6 Reverse Zone

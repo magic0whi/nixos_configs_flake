@@ -2,10 +2,10 @@
   server_pub_crt = "${myvars.secrets_dir}/proteus_server.pub.pem";
   domain = "proteus.eu.org";
   tailnet = "tailba6c3f.ts.net";
-  openldap_port = lib.removeSuffix "/" (lib.last (lib.splitString
+  openldap_port = lib.removeSuffix "/" (lib.last (lib.strings.splitString
     ":" (lib.head config.services.openldap.urlList))
   );
-  authelia_port = lib.last (lib.splitString
+  authelia_port = lib.last (lib.strings.splitString
     ":"
     config.services.authelia.instances.main.settings.server.address
   );
@@ -175,7 +175,7 @@ in {
             # By setting to false Traefik will overrides the Host header to
             # 127.0.0.1
             passHostHeader = false;
-            servers = let syncthing_port = lib.last (lib.splitString
+            servers = let syncthing_port = lib.last (lib.strings.splitString
               ":"
               config.home-manager.users.${myvars.username}.services.syncthing.guiAddress);
             in [{url = "http://127.0.0.1:${syncthing_port}";}];

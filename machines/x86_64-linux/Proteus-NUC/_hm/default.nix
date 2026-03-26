@@ -4,11 +4,11 @@
   # ls /sys/class/drm/card*
   main_monitor = if config.wayland.windowManager.hyprland.nvidia then
     # 10-bit will cause the internal monitor flickering when using PRIME Sync
-    "eDP-1,highres,auto,${dpi_scale},bitdepth,8, cm, auto"
+    "eDP-1,highres,auto-right,${dpi_scale},bitdepth,8,cm,auto"
   else
-    "eDP-1,highres,auto,${dpi_scale},bitdepth,10, cm, auto";
-  secondary_monitor = "DP-3,highres,auto-left,1.67,bitdepth,10, cm, auto";
-  third_monitor = "HDMI-A-1,highres,auto-left,2,bitdepth,10, cm, auto";
+    "eDP-1,highres,auto-right,${dpi_scale},bitdepth,10,cm,auto";
+  secondary_monitor = "DP-3,highres,auto-left,1.67,bitdepth,10,cm,auto";
+  third_monitor = "HDMI-A-1,highres,auto,2,bitdepth,10,cm,auto";
 in {
   imports = mylib.scan_path ./.;
   home.packages = with pkgs; [
@@ -46,8 +46,26 @@ in {
         "STEAM_FORCE_DESKTOPUI_SCALING,${dpi_scale}"
       ] ++ lib.optional # PRIME Sync mode for Hyprland
         config.wayland.windowManager.hyprland.nvidia
-        "AQ_DRM_DEVICES,/dev/dri/${myvars.dgpu_sym_name}:/dev/dri/${myvars.igpu_sym_name}"
-      ;
+        "AQ_DRM_DEVICES,/dev/dri/${myvars.dgpu_sym_name}:/dev/dri/${myvars.igpu_sym_name}";
+
+      bind = [
+        # Leave to main monitor for sunshine streaming
+        (builtins.concatStringsSep "" [
+          "$mainMod,Y,exec,"
+          "hyprctl keyword monitor "
+          "\"${builtins.head (lib.strings.splitString "," secondary_monitor)},disable\""
+          ";hyprctl keyword monitor "
+          "\"${builtins.head (lib.strings.splitString "," third_monitor)},disable\""
+          ";notify-send \"Hyprland\" \"Leave mode: on\""
+        ])
+        # Restore the three monitors
+        (builtins.concatStringsSep "" [
+          "$mainMod SHIFT,Y,exec,"
+          "hyprctl keyword monitor \"${secondary_monitor}\""
+          ";hyprctl keyword monitor \"${third_monitor}\""
+          ";notify-send \"Hyprland\" \"Leave mode: off\""
+        ])
+      ];
       bindl = [
         ",switch:on:Lid Switch,exec,[ $(hyprctl monitors -j | jq '.[].name' | wc -w) -ne 1 ] && hyprctl keyword monitor \"${main_monitor},disable\"" # Going to dock mode if has external monitor connected
         ",switch:off:Lid Switch,exec,hyprctl keyword monitor \"${main_monitor}\"" # Restore internal monitor
