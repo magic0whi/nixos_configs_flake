@@ -15,7 +15,6 @@
     lanzaboote = { # Pinned as of 2026-3-1 12:37
       url = "github:nix-community/lanzaboote/v1.0.0";
       inputs.nixpkgs.follows = "nixpkgs";
-      inputs.flake-compat.follows = "deploy-rs/flake-compat";
       inputs.rust-overlay.url = "github:oxalica/rust-overlay/stable";
     };
     # Pinned as of 2026-3-1 12:36
@@ -35,6 +34,7 @@
       # url = "github:ryan4yin/ragenix";
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.home-manager.follows = "home-manager";
+      inputs.systems.follows = "deploy-rs/utils/systems";
     };
     pgp2ssh = { # Pinned as of 2026-3-1 12:40
       url = "github:pinpox/pgp2ssh/792e3a3f107e6b4da7b96ded5d46b69efc45d8c1";
@@ -46,6 +46,7 @@
     deploy-rs = { # Pinned as of 2026-3-1 11:16
       url = "github:serokell/deploy-rs/77c906c0ba56aabdbc72041bf9111b565cdd6171";
       inputs.nixpkgs.follows = "nixpkgs";
+      inputs.flake-compat.follows = "lanzaboote/pre-commit/flake-compat";
     };
     nix-darwin = { # Pinned as of 2026-3-1 12:42
       url = "github:nix-darwin/nix-darwin/3bfa436c1975674ca465ce34586467be301ff509";
@@ -64,6 +65,13 @@
     i915-sriov-dkms = { # As of 2026-3-1 12:47
       url = "github:strongtz/i915-sriov-dkms/2026.02.09";
       inputs.nixpkgs.follows = "nixpkgs";
+    };
+    docspell = {
+      url = "github:eikek/docspell/2032c3ccdfbd5651983e11764227d0923f5ea2e8";
+      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.devshell-tools.inputs.flake-utils.follows = "deploy-rs/utils";
+      inputs.devshell-tools.inputs.nixpkgs.follows = "nixpkgs";
+      inputs.flake-utils.follows = "deploy-rs/utils";
     };
   };
   outputs = inputs: import ./main.nix inputs;

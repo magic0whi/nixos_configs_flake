@@ -9,7 +9,11 @@
         "nixpkgs": [
           "nixpkgs"
         ],
-        "systems": "systems"
+        "systems": [
+          "deploy-rs",
+          "utils",
+          "systems"
+        ]
       },
       "locked": {
         "lastModified": 1770165109,
@@ -86,7 +90,11 @@
     },
     "deploy-rs": {
       "inputs": {
-        "flake-compat": "flake-compat",
+        "flake-compat": [
+          "lanzaboote",
+          "pre-commit",
+          "flake-compat"
+        ],
         "nixpkgs": [
           "nixpkgs"
         ],
@@ -104,6 +112,30 @@
         "owner": "serokell",
         "repo": "deploy-rs",
         "rev": "77c906c0ba56aabdbc72041bf9111b565cdd6171",
+        "type": "github"
+      }
+    },
+    "devshell-tools": {
+      "inputs": {
+        "flake-utils": [
+          "deploy-rs",
+          "utils"
+        ],
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1738885662,
+        "narHash": "sha256-Yx6S9BDjWTsIa1axkSfohAcJd/c+atoHlnJ8DmiyQc0=",
+        "owner": "eikek",
+        "repo": "devshell-tools",
+        "rev": "c7bd3940f02bb04a52d987082b1f5e2ca3f8afc2",
+        "type": "github"
+      },
+      "original": {
+        "owner": "eikek",
+        "repo": "devshell-tools",
         "type": "github"
       }
     },
@@ -128,23 +160,33 @@
         "type": "github"
       }
     },
-    "flake-compat": {
-      "flake": false,
+    "docspell": {
+      "inputs": {
+        "devshell-tools": "devshell-tools",
+        "flake-utils": [
+          "deploy-rs",
+          "utils"
+        ],
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
       "locked": {
-        "lastModified": 1733328505,
-        "narHash": "sha256-NeCCThCEP3eCl2l/+27kNNK7QrwZB1IJCrXfrbv5oqU=",
-        "owner": "edolstra",
-        "repo": "flake-compat",
-        "rev": "ff81ac966bb2cae68946d5ed5fc4994f96d0ffec",
+        "lastModified": 1774902958,
+        "narHash": "sha256-k9RJcSPnTWl7AlmzIG3huU3pV/N9ty9z+xq/MMQAJZc=",
+        "owner": "eikek",
+        "repo": "docspell",
+        "rev": "2032c3ccdfbd5651983e11764227d0923f5ea2e8",
         "type": "github"
       },
       "original": {
-        "owner": "edolstra",
-        "repo": "flake-compat",
+        "owner": "eikek",
+        "repo": "docspell",
+        "rev": "2032c3ccdfbd5651983e11764227d0923f5ea2e8",
         "type": "github"
       }
     },
-    "flake-compat_2": {
+    "flake-compat": {
       "flake": false,
       "locked": {
         "lastModified": 1761588595,
@@ -433,7 +475,7 @@
     },
     "pre-commit": {
       "inputs": {
-        "flake-compat": "flake-compat_2",
+        "flake-compat": "flake-compat",
         "gitignore": "gitignore",
         "nixpkgs": [
           "lanzaboote",
@@ -460,6 +502,7 @@
         "catppuccin": "catppuccin",
         "deploy-rs": "deploy-rs",
         "disko": "disko",
+        "docspell": "docspell",
         "home-manager": "home-manager",
         "i915-sriov-dkms": "i915-sriov-dkms",
         "impermanence": "impermanence",
@@ -531,24 +574,9 @@
         "type": "github"
       }
     },
-    "systems_2": {
-      "locked": {
-        "lastModified": 1681028828,
-        "narHash": "sha256-Vy1rq5AaRuLzOxct8nz4T6wlgyUR7zLU309k9mBC768=",
-        "owner": "nix-systems",
-        "repo": "default",
-        "rev": "da67096a3b9bf56a91d16901293e51ba5b49a27e",
-        "type": "github"
-      },
-      "original": {
-        "owner": "nix-systems",
-        "repo": "default",
-        "type": "github"
-      }
-    },
     "utils": {
       "inputs": {
-        "systems": "systems_2"
+        "systems": "systems"
       },
       "locked": {
         "lastModified": 1731533236,

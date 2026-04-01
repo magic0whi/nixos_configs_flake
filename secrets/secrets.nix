@@ -52,4 +52,9 @@ in {
   "authelia_ldap_password.txt.age".publicKeys = machines ++ [Proteus-NUC];
   "authelia_db_password.txt.age".publicKeys = machines ++ [Proteus-NUC];
   "mpd_auth.conf.age".publicKeys = machines ++ [Proteus-NUC];
+  "docspell_db_password.txt.age".publicKeys = machines ++ [Proteus-NUC];
+  "docspell_jwt_secret.txt.age".publicKeys = machines ++ [Proteus-NUC];
+  "docspell_oidc_secret.txt.age".publicKeys = machines ++ [Proteus-NUC];
+  "authelia_oidc_hmac.txt.age".publicKeys = machines ++ [Proteus-NUC];
+  "authelia_oidc_rsa.pem.age".publicKeys = machines ++ [Proteus-NUC];
 }

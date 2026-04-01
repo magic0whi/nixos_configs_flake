@@ -140,6 +140,10 @@ in {
             rule = "Host(`sunshine.${domain}`)";
             entryPoints = ["websecure"]; service = "sunshine-webui"; tls = {};
           };
+          docspell = {
+            rule = "Host(`docspell.${domain}`)";
+            entryPoints = ["websecure"]; service = "docspell"; tls = {};
+          };
         };
         services = {
           authelia-backend.loadBalancer.servers = [{url = "http://127.0.0.1:${authelia_port}";}];
@@ -190,6 +194,9 @@ in {
             serversTransport = "ignorecert";
             servers = [{url = "https://127.0.0.1:${builtins.toString (config.services.sunshine.settings.port + 1)}";}];
           };
+          docspell.loadBalancer.servers = [
+            {url = "http://127.0.0.1:${builtins.toString config.services.docspell-restserver.bind.port}";}
+          ];
         };
       };
       tcp = {
