@@ -51,7 +51,7 @@
           "class<.virt-manager-wrapped|Qemu-system-x86_64>" = "&#xeb7b;"; # nf-cod-vm_running
           "class<ario>" = "&#xf0386;"; # music_circle
           "class<blender>" = "&#xf00ab;"; # blender_software
-          "class<blueman-manager>" = "&#xf293;"; # nf-fa-bluetooth
+          "class<blueman-manager|.blueman-manager-wrapped>" = "&#xf293;"; # nf-fa-bluetooth
           "class<com.obsproject.Studio>" = "&#xf0210;"; # fan
           "class<firefox>" = "&#xf0239;"; # firefox
           "class<gamescope>" = "&#xf0297;"; # gamepad_variant

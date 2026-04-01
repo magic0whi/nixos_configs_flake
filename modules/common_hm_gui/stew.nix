@@ -5,7 +5,7 @@
 
     libnotify # notify-send
 
-    # moonlight # Remote desktop client
+    moonlight-qt # Remote desktop client
 
     ## Games
     # modrinth-app
