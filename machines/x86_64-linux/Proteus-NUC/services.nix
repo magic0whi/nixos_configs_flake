@@ -394,6 +394,11 @@ in {
     base-url = "https://docspell.${domain}";
     bind.address = "127.0.0.1";
     internal-url = "http://${config.services.docspell-restserver.bind.address}:${builtins.toString config.services.docspell-restserver.bind.port}";
+    full-text-search = {
+      enabled = true;
+      backend = "postgresql";
+      postgresql.use-default-connection = true;
+    };
     backend.jdbc = {
       url = "jdbc:postgresql://postgresql.${domain}:${builtins.toString config.services.postgresql.settings.port}/docspell?sslmode=require";
       user = "docspell";
@@ -421,6 +426,11 @@ in {
     enable = true;
     base-url = "https://docspell.${domain}";
     bind.address = "127.0.0.1";
+    full-text-search = {
+      enabled = true;
+      backend = "postgresql";
+      postgresql.use-default-connection = true;
+    };
     jdbc = {
       url = "jdbc:postgresql://postgresql.${domain}:${builtins.toString config.services.postgresql.settings.port}/docspell?sslmode=require";
       user = "docspell";

@@ -194,9 +194,12 @@ in {
             serversTransport = "ignorecert";
             servers = [{url = "https://127.0.0.1:${builtins.toString (config.services.sunshine.settings.port + 1)}";}];
           };
-          docspell.loadBalancer.servers = [
-            {url = "http://127.0.0.1:${builtins.toString config.services.docspell-restserver.bind.port}";}
-          ];
+          docspell.loadBalancer = {
+            servers = [{url = "http://127.0.0.1:${builtins.toString config.services.docspell-restserver.bind.port}";}];
+            healthCheck = {
+              path = "/api/info/version"; interval = "15s"; timeout = "3s";
+            };
+          };
         };
       };
       tcp = {
