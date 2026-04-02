@@ -144,6 +144,10 @@ in {
             rule = "Host(`docspell.${domain}`)";
             entryPoints = ["websecure"]; service = "docspell"; tls = {};
           };
+          papra = {
+            rule = "Host(`papra.${domain}`)";
+            entryPoints = ["websecure"]; service = "papra"; tls = {};
+          };
         };
         services = {
           authelia-backend.loadBalancer.servers = [{url = "http://127.0.0.1:${authelia_port}";}];
@@ -199,6 +203,9 @@ in {
             healthCheck = {
               path = "/api/info/version"; interval = "15s"; timeout = "3s";
             };
+          };
+          papra.loadBalancer = {
+            servers = [{url = "http://127.0.0.1:1221";}];
           };
         };
       };

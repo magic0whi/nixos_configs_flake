@@ -16,6 +16,7 @@ in {
     minicom # embedded development
     xmrig xmrig-cuda # Heating & Mining
     chezmoi
+    libreoffice
   ];
   wayland.windowManager.hyprland = {
     nvidia = true; # Prime Sync

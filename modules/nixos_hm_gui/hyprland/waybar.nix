@@ -74,6 +74,7 @@
           "class<org.keepassxc.KeePassXC>" = "&#xf0bc4;"; # shield_key
           "class<Minecraft|modrinth-app>" = "&#xf0373;"; # minecraft
           "class<GeoGebra>" = "&#xf1ec;"; # nf-fa-calculator
+          "class<libreoffice-calc>" = "&#xf378;"; # nf-linux-libreofficecalc
         };
       };
       idle_inhibitor = {

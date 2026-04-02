@@ -33,7 +33,7 @@
         ip daddr 198.18.0.0/15 return
 
         # 2. Bypass everything else from Docker & Libvirt
-        ip saddr { 172.18.0.0/16, 192.168.122.1/24 } ct mark set 0x00002024
+        ip saddr { 172.17.0.0/16, 172.18.0.0/16, 172.20.0.0/14, 192.168.122.1/24 } ct mark set 0x00002024
       }
     '';
   };
@@ -46,7 +46,7 @@
   #   regardless of bridge name or port changes across restarts.
   # =============================================================================
   networking.firewall.extraInputRules = lib.mkIf config.services.sing-box.enable ''
-    ip saddr { 172.18.0.0/16 } accept comment "Allow Docker containers to reach auto_redirect ports"
+    ip saddr { 172.17.0.0/16, 172.18.0.0/16, 172.20.0.0/14, 192.168.122.0/24 } accept comment "Allow Docker/Libvirt to reach auto_redirect ports"
   '';
   networking.firewall.trustedInterfaces = ["virbr0"];
   systemd.services.docker.path = [pkgs.nftables];

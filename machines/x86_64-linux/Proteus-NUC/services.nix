@@ -110,7 +110,7 @@ in {
   services.postgresqlBackup = {
     enable = true;
     databases = ["docspell"];
-    location = "/srv/sync/Backups";
+    location = "/srv/Backups/psql";
     compression = "zstd";
     compressionLevel = 3;
   };
@@ -249,6 +249,7 @@ in {
           additional_groups_dn = "ou=Group";
           groups_filter = "(member={dn})";
           user = "cn=Manager,dc=tailba6c3f,dc=ts,dc=net";
+          display_name_attribute = "cn";
           # Password is injected via environment variable
         };
       };
@@ -257,22 +258,43 @@ in {
         oidc = {
           cors = {
             endpoints = ["authorization" "token" "revocation" "introspection" "userinfo"];
-            allowed_origins = ["https://docspell.${domain}"];
-          };
-          clients = [{
-            client_id = "docspell";
-            client_name = "Docspell";
-            client_secret = "$pbkdf2-sha512$310000$60.rKB0d1SCVlF6.bY8njg$EDUxCscYZn1T2B1DPkY8L.WZ.kHI7dxZUFMLcDOaAJjkrc/4wABUnYHvXqNLZ.AFQIIpGRXeyZI2auFE.uwxWw";
-            public = false;
-            authorization_policy = "two_factor"; # Require 2FA for Docspell
-            redirect_uris = [
-              "https://docspell.${domain}/api/v1/open/auth/openid/authelia/resume"
+            allowed_origins = [
+              "https://docspell.${domain}"
+              "https://papra.${domain}"
             ];
-            scopes = ["openid" "profile" "email" "groups"];
-            response_modes = ["form_post" "query"];
-            userinfo_signed_response_alg = "none";
-            token_endpoint_auth_method = "client_secret_post";
-          }];
+          };
+          clients = [
+            {
+              client_id = "docspell";
+              client_name = "Docspell";
+              client_secret = "$pbkdf2-sha512$310000$60.rKB0d1SCVlF6.bY8njg$EDUxCscYZn1T2B1DPkY8L.WZ.kHI7dxZUFMLcDOaAJjkrc/4wABUnYHvXqNLZ.AFQIIpGRXeyZI2auFE.uwxWw";
+              public = false;
+              authorization_policy = "two_factor"; # Require 2FA for Docspell
+              redirect_uris = [
+                "https://docspell.${domain}/api/v1/open/auth/openid/authelia/resume"
+              ];
+              scopes = ["openid" "profile" "email" "groups"];
+              response_modes = ["form_post" "query"];
+              userinfo_signed_response_alg = "none";
+              token_endpoint_auth_method = "client_secret_post";
+            }
+            {
+              client_id = "papra";
+              client_name = "Papra";
+              # nix run nixpkgs#authelia -- crypto rand --length 64 --charset alphanumeric
+              # nix run nixpkgs#authelia -- crypto hash generate pbkdf2 --variant sha512 --password <YOUR_RAW_SECRET>
+              client_secret = "$pbkdf2-sha512$310000$3KSvvBJnoLyJDoKDBIBcZQ$dMQmccJ6Y4hrj.tv.dD3KFzLcsPCsMNRZFTpHUiInVcSX0eBR5T6jemXfcUaob9PsbgHBwRNCjtXiBNl6lOc7g";
+              public = false;
+              authorization_policy = "two_factor"; # Or "one_factor"
+              redirect_uris = [
+                "https://papra.${domain}/api/auth/oauth2/callback/authelia"
+              ];
+              scopes = ["openid" "profile" "email" "groups"];
+              response_modes = ["form_post" "query"];
+              userinfo_signed_response_alg = "none";
+              token_endpoint_auth_method = "client_secret_post";
+            }
+          ];
         };
       };
     };
