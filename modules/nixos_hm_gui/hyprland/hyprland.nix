@@ -188,11 +188,11 @@ in {
         "match:class ^yad|org\\.pulseaudio\\.pavucontrol|imv|qemu$,float true"
         "match:class ^thunar$, match:title ^File Operation Progress$,float true"
 
-        "match:class ^firefox$,idle_inhibit focus"
-        "match:class ^firefox$,match:title ^Picture-in-Picture$,float true"
-        "match:class ^firefox$,match:title ^Picture-in-Picture$,pin true"
-        "match:class ^firefox$,match:title ^Picture-in-Picture$,size 480 270"
-        "match:class ^firefox$,match:title ^Picture-in-Picture$,move 100%-w-5 100%-w-5"
+        "match:class ^firefox|google-chrome$,idle_inhibit focus"
+        "match:tag video_pip,float true,pin true,size 480 270,move 100%-w-5 100%-w-5"
+        # Firefox PiP
+        "match:initial_class ^firefox$,match:initial_title ^Picture-in-Picture$,tag +video_pip"
+        "match:initial_title ^Picture\\ in\\ picture$,tag +video_pip" # Chrome PiP
 
         "match:class ^anki$,match:title ^HyperTTS: Add Audio \\(Collection\\)$,float true"
         "match:class ^anki$,match:title ^HyperTTS: Add Audio \\(Collection\\)$,size 1090 640"
@@ -200,16 +200,13 @@ in {
         "match:class ^org\\.inkscape\\.Inkscape$,match:title ^Function Plotter$,float true"
         "match:class ^org\\.inkscape\\.Inkscape$,match:title ^Function Plotter$,float true"
 
-        "match:initial_class ^steam_app_\\d+$,match:initial_title negative:^(?i)(.*Launcher.*)$,content game"
-        "match:content 3,fullscreen true"
-        "match:content 3,immediate true"
-        "match:content 3,no_anim true"
-        "match:content 3,no_blur true"
-        "match:content 3,no_shadow true"
-        "match:content 3,opacity 1"
-        "match:content 3,border_size 1"
-        "match:content 3,rounding 0"
-        "match:initial_class ^Qemu-system-x86_64$, float true"
+        "match:tag game,fullscreen true,immediate true"
+        "match:tag game,no_anim true,no_blur true,no_shadow true"
+        "match:tag game,opacity 1,border_size 1,rounding 0"
+        # Steam Proton Games
+        "match:initial_class ^steam_app_\\d+$,match:initial_title negative:^(?i)(.*Launcher.*)$,tag +game"
+
+        "match:initial_class ^Qemu-system-x86_64$,float true"
       ];
       # This will get rid of the pixelated look, but will not scale
       # applications properly. To do this, each toolkit has its own mechanism.

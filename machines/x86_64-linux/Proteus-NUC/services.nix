@@ -107,6 +107,13 @@ in {
       host all all fd7a:115c:a1e0::/48 ldap ldapurl="ldaps://openldap.${domain}/ou=People,dc=tailba6c3f,dc=ts,dc=net?uid?sub"
     '';
   };
+  services.postgresqlBackup = {
+    enable = true;
+    databases = ["docspell"];
+    location = "/srv/sync/Backups";
+    compression = "zstd";
+    compressionLevel = 3;
+  };
   ## END services_postgresql.nix
   ## START services_atuin.nix
   age.secrets."atuin.env" = {file = "${myvars.secrets_dir}/atuin.env.age"; mode = "0400"; owner = "root";};

@@ -42,7 +42,8 @@ in {
         "10,monitor:${secondary_iface}"
       ];
       env = [
-        "GDK_DPI_SCALE,${dpi_scale}"
+        # Not recommand set globally, make firefox scale twice
+        # "GDK_DPI_SCALE,${dpi_scale}"
         "STEAM_FORCE_DESKTOPUI_SCALING,${dpi_scale}"
       ] ++ lib.optional # PRIME Sync mode for Hyprland
         config.wayland.windowManager.hyprland.nvidia
