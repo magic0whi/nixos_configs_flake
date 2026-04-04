@@ -66,13 +66,14 @@
         update = "submodule update --init --recursive";
         foreach = "submodule foreach";
       };
+      core.hooksPath = ".git_hooks";
     };
-    includes = [
-      { # Use different email & name for work
-        condition = "gitdir:~/work/";
-        path = "~/work/.gitconfig";
-      }
-    ];
+    # includes = [
+    #   { # Use different email & name for work
+    #     condition = "gitdir:~/work/";
+    #     path = "~/work/.gitconfig";
+    #   }
+    # ];
     signing = {
       format = "openpgp";
       key = myvars.git_signingkey;

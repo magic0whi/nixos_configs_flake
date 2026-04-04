@@ -1,0 +1,31 @@
+#!/usr/bin/env sh
+
+# 1. Detect if a rebase or merge is currently in progress
+GIT_DIR="$(git rev-parse --git-dir)"
+
+if [ -d "$GIT_DIR/rebase-merge" ] || [ -d "$GIT_DIR/rebase-apply" ] || [ -f "$GIT_DIR/MERGE_HEAD" ]; then
+  echo "⚠️ Rebase or merge in progress. Skipping auto-pull/push to protect local state."
+  exit 0
+fi
+
+# 2. Detect if local history has diverged from remote (e.g., after resetting and amending a pushed commit)
+# This prevents pulling down the "old" history and overwriting your rewrites.
+UPSTREAM=$(git rev-parse --abbrev-ref @{u} 2>/dev/null)
+
+if [ -n "$UPSTREAM" ]; then
+  BEHIND=$(git rev-list --count HEAD..@{u} 2>/dev/null || echo 0)
+  AHEAD=$(git rev-list --count @{u}..HEAD 2>/dev/null || echo 0)
+
+  # If we are both ahead and behind, it means histories have diverged.
+  # A pull here would merge/rebase the old rewritten commit back in!
+  if [ "$BEHIND" -gt 0 ] && [ "$AHEAD" -gt 0 ]; then
+    echo "⚠️ Local branch has diverged from remote (behind: $BEHIND, ahead: $AHEAD)."
+    echo "⚠️ Skipping auto-pull to prevent restoring old rewritten commits."
+    echo "💡 If you rewrote history, use 'git push --force-with-lease' manually."
+    exit 0
+  fi
+fi
+
+# 3. Safe to sync
+echo "🔄 Auto-syncing with remote..."
+git pull && git push

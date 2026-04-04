@@ -77,6 +77,7 @@
     # extraUpFlags = "--accept-routes";
     # authKeyFile = "/var/lib/tailscale/authkey";
   };
+  services.vnstat.enable = true;
   ## END network.nix
   ## START journald.nix
   services.journald = {

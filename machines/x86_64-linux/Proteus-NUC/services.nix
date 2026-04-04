@@ -158,7 +158,7 @@ in {
 
       APERLESS_WEBSERVER_WORKERS = 16;
       PAPERLESS_WORKER_TIMEOUT = 300; # Default 1800 seconds (30min) is too long
-      PAPERLESS_FILENAME_FORMAT = "{{ created_year }}/{{ correspondent }}/{{ document_type }}/{{ created }}_{{ title }}";
+      PAPERLESS_FILENAME_FORMAT = "{{ created_year }}/{{ correspondent }}/{{ document_type }}/{{ created }}_{{ correspondent }}_{{ document_type }}_{{ title }}";
     };
     environmentFile = config.age.secrets."paperless.env".path;
     dataDir = "/srv/paperless";

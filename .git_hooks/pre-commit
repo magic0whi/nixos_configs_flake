@@ -1,0 +1,30 @@
+#!/usr/bin/env sh
+ERRORS_FOUND=0
+
+# Run Git's built-in whitespace check on staged changes
+if ! git --no-pager diff --cached --check; then
+  echo "❌ Commit rejected: Trailing whitespace found in your staged changes."
+  echo "Please fix the whitespace errors and stage the files again."
+  exit 1
+fi
+
+# Check for redundant spaces around '=' in added/modified lines
+# Explanation of the regex:
+# - ^\+[^+]    : Matches added lines in the diff (starts with +, but ignores +++ headers)
+# - .*         : Matches any characters leading up to the pattern
+# - [ \t]{2,}= : Matches 2 or more spaces or tabs immediately before an '='
+# - |          : OR
+# - =[ \t]{2,} : Matches 2 or more spaces or tabs immediately after an '='
+BAD_EQUALS=$(git diff --cached -U0 | rg "^\+[^+].*([ \t]{2,}=|=[ \t]{2,})")
+if [ -n "$BAD_EQUALS" ]; then
+  echo "❌ Redundant spaces around '=' found in your staged changes:"
+  # Print the offending lines in red for visibility
+  echo "$BAD_EQUALS" | rg --color=always "([ \t]{2,}=|=[ \t]{2,})"
+  ERRORS_FOUND=1
+fi
+
+# Reject the commit if any checks failed
+if [ "$ERRORS_FOUND" = "1" ]; then
+  echo "🚫 Commit rejected. Please fix the formatting issues and stage the files again."
+  exit 1
+fi

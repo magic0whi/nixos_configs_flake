@@ -1,8 +1,5 @@
 .DS_Store
-
-result
-result/*
-
 .stignore
 
+/result
 /.stfolder
