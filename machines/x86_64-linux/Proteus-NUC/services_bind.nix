@@ -216,6 +216,7 @@ in {
   '';
   services.bind = {
     enable = true;
+    checkConfig = false;
     # Persistent directory for DNSSEC key states.
     # NixOS defaults to /run/named, which clears on reboot.
     directory = "/srv/bind";
