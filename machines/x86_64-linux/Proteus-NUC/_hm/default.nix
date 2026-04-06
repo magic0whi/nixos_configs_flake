@@ -56,9 +56,9 @@ in {
           "$mainMod,Y,exec,"
           "hyprctl keyword monitor "
           "\"${builtins.head (lib.strings.splitString "," secondary_monitor)},disable\""
-          ";hyprctl keyword monitor "
+          "; hyprctl keyword monitor "
           "\"${builtins.head (lib.strings.splitString "," third_monitor)},disable\""
-          ";notify-send \"Hyprland\" \"Leave mode: on\""
+          "; notify-send \"Hyprland\" \"Leave mode: on\""
         ])
         # Restore the three monitors
         (builtins.concatStringsSep "" [
@@ -69,8 +69,20 @@ in {
         ])
       ];
       bindl = [
-        ",switch:on:Lid Switch,exec,[ $(hyprctl monitors -j | jq '.[].name' | wc -w) -ne 1 ] && hyprctl keyword monitor \"${main_monitor},disable\"" # Going to dock mode if has external monitor connected
-        ",switch:off:Lid Switch,exec,hyprctl keyword monitor \"${main_monitor}\"" # Restore internal monitor
+        # Going to dock mode if has external monitor connected
+        (builtins.concatStringsSep "" [
+          ",switch:on:Lid Switch,exec,"
+          # Hyprland interprets commands starting with [ as window rules, change
+          # it to `test`
+          "test $(hyprctl monitors -j | jq '.[].name' | wc -w) -ne 1"
+          " && hyprctl keyword monitor \"${
+            builtins.head (lib.strings.splitString "," main_monitor)
+          },disable\""
+        ])
+        # Restore internal monitor
+        ",switch:off:Lid Switch,exec,hyprctl keyword monitor \"${
+          main_monitor
+        }\""
       ];
     };
   };
