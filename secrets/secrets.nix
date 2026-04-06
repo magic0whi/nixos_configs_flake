@@ -20,7 +20,7 @@ let
   Proteus-NixOS-3 = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAILL3jAjZkkKHTUNqVf2ItJk2oObNDBiq8bylSF6f2Osi root@Proteus-NixOS-3";
   Proteus-NixOS-4 = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGvVGDKkAWK2gSnNB+dS8ie2WN5yzeH3/FQAiIXRZ1i8 root@Proteus-NixOS-4";
   Proteus-NixOS-5 = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIBwHWbs4PsCW9Ji6Z4GepwjrXxhrD1DWGPdtNk9LdXwZ root@Proteus-NixOS-5";
-  Proteus-NixOS-6 = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOUXCE7Ghu4cLl0xBCg+q69QqGuhyIu17KDgrCpz0Gvb root@Proteus-NixOS-6";
+  # Proteus-NixOS-6 = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOUXCE7Ghu4cLl0xBCg+q69QqGuhyIu17KDgrCpz0Gvb root@Proteus-NixOS-6";
   machines = [recovery_key opengpg];
   google_vps = [
     Proteus-NixOS-0
@@ -30,7 +30,7 @@ let
     Proteus-NixOS-4
     Proteus-NixOS-5
   ];
-  huawei_vps = [Proteus-NixOS-6];
+  # huawei_vps = [Proteus-NixOS-6];
 in {
   # To see & edit encrypted file, run:
   # agenix -e sb_client.json.age -i <(pgp2ssh <<< <(gpg -ao - --export-secret-subkeys subkey_with_[A]\!) <<< 1 2>&1 | awk 'BEGIN { A=0; S=0; } /BEGIN OPENSSH PRIVATE KEY/ { A=1; } { if (A==1) { print; } }')
@@ -39,12 +39,12 @@ in {
   "syncthing_Proteus-MBP14M4P.priv.pem.age".publicKeys = machines;
   "syncthing_proteus-nuc.priv.pem.age".publicKeys = machines ++ [Proteus-NUC];
   "syncthing_proteus-desktop.priv.pem.age".publicKeys = machines ++ [Proteus-Desktop];
-  "proteus_server.priv.pem.age".publicKeys = machines ++ [Proteus-NUC] ++ google_vps ++ huawei_vps;
+  "proteus_server.priv.pem.age".publicKeys = machines ++ [Proteus-NUC] ++ google_vps;
   "aria2rpc.priv.age".publicKeys = machines ++ [Proteus-NUC];
   "sb_Proteus-NixOS-1.json.age".publicKeys = machines ++ google_vps;
-  "sb_Proteus-NixOS-6.json.age".publicKeys = machines ++ huawei_vps;
+  # "sb_Proteus-NixOS-6.json.age".publicKeys = machines ++ huawei_vps;
   "proteus-ap.key.age".publicKeys = machines ++ [Proteus-Desktop];
-  "minio.env.age".publicKeys = machines ++ google_vps ++ huawei_vps;
+  "minio.env.age".publicKeys = machines ++ google_vps;
   "atuin.env.age".publicKeys = machines ++ [Proteus-NUC];
   "immich.env.age".publicKeys = machines ++ [Proteus-NUC];
   "paperless.env.age".publicKeys = machines ++ [Proteus-NUC];

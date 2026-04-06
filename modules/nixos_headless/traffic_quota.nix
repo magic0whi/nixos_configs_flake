@@ -1,6 +1,6 @@
 {pkgs, lib, ...}: let
-  # The threshold in bytes (198 GiB)
-  limitBytes = builtins.toString (198 * 1024 * 1024 * 1024);
+  # The threshold in bytes (196 GiB)
+  limitBytes = builtins.toString (196 * 1024 * 1024 * 1024);
   script = pkgs.writeShellScript "check-traffic-quota" ''
     export PATH=${pkgs.jq}/bin:${pkgs.vnstat}/bin:${pkgs.coreutils}/bin:$PATH
 
