@@ -4,11 +4,11 @@
   # ls /sys/class/drm/card*
   main_monitor = if config.wayland.windowManager.hyprland.nvidia then
     # 10-bit will cause the internal monitor flickering when using PRIME Sync
-    "eDP-1,highres,auto-right,${dpi_scale},bitdepth,8,cm,auto"
+    "eDP-1,highres,auto,${dpi_scale},bitdepth,8,cm,auto"
   else
-    "eDP-1,highres,auto-right,${dpi_scale},bitdepth,10,cm,auto";
-  secondary_monitor = "DP-3,highres,auto-left,1.67,bitdepth,10,cm,auto";
-  third_monitor = "HDMI-A-1,highres,auto,2,bitdepth,10,cm,auto";
+    "eDP-1,highres,auto,${dpi_scale},bitdepth,10,cm,auto";
+  secondary_monitor = "DP-3,3840x2160@60,auto-right,2,bitdepth,10,cm,dp3";
+  third_monitor = "HDMI-A-1,3440x1440@165,auto-left,1.67,bitdepth,10,cm,dp3";
 in {
   imports = mylib.scan_path ./.;
   home.packages = with pkgs; [

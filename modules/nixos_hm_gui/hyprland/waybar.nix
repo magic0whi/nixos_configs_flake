@@ -76,6 +76,7 @@
           "class<GeoGebra>" = "&#xf1ec;"; # nf-fa-calculator
           "class<libreoffice-calc>" = "&#xf378;"; # nf-linux-libreofficecalc
           "class<libreoffice-startcenter>" = "&#xf376;"; # nf-linux-libreoffice
+          "class<qemu>" = "&#xeb7b;"; # nf-cod-vm_running
         };
       };
       idle_inhibitor = {
