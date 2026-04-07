@@ -219,23 +219,6 @@
         homeDirectory: /var/empty
         description: A community-supported supercharged document management system: scan, index and archive all your documents
 
-        dn: uid=docspell,ou=People,dc=tailba6c3f,dc=ts,dc=net
-        objectClass: top
-        objectClass: person
-        objectClass: organizationalPerson
-        objectClass: inetOrgPerson
-        objectClass: posixAccount
-        objectClass: shadowAccount
-        uid: docspell
-        sn: Docspell
-        cn: Eikek Docspell
-        userPassword: {SSHA}Pr8tFcyIm+7jcbxUBgUroqwDWfjevjVy
-        loginShell: /run/current-system/sw/bin/nologin
-        uidNumber: 1005
-        gidNumber: 1005
-        homeDirectory: /var/empty
-        description: Simple document organizer
-
         dn: cn=${myvars.username},ou=Group,dc=tailba6c3f,dc=ts,dc=net
         objectClass: top
         objectClass: posixGroup

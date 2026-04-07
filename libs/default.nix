@@ -50,8 +50,7 @@ in {
         sops-nix
         catppuccin
         disko
-        i915-sriov-dkms
-        docspell;
+        i915-sriov-dkms;
       specialArgs = inputs // {inherit mylib myvars;};
     in {
       inherit system specialArgs;
@@ -76,7 +75,6 @@ in {
           catppuccin.nixosModules.catppuccin
           disko.nixosModules.disko
           i915-sriov-dkms.nixosModules.default
-          docspell.nixosModules.default
         ]
         ++ (lib.optional (!generate_iso) impermanence.nixosModules.impermanence)
       )

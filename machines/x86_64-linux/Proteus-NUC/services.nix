@@ -1,4 +1,11 @@
-{pkgs, lib, config, myvars, nixpkgs-postgresql, docspell, ...}: let
+{
+  pkgs,
+  lib,
+  config,
+  myvars,
+  # nixpkgs-postgresql,
+  ...
+}: let
   domain = "proteus.eu.org";
 in {
   networking.firewall = let
@@ -77,8 +84,10 @@ in {
   # TODO: Learn SQL
   services.postgresql = {
     enable = true;
-    package = nixpkgs-postgresql.legacyPackages.${pkgs.stdenv.hostPlatform.system}
-      .postgresql.override {ldapSupport = true;};
+    # package = nixpkgs-postgresql.legacyPackages.${
+    #   pkgs.stdenv.hostPlatform.system
+    # }.postgresql.override {ldapSupport = true;};
+    package = pkgs.postgresql.override {ldapSupport = true;};
     enableJIT = true;
     enableTCPIP = true;
     settings = {
@@ -91,14 +100,12 @@ in {
       "atuin"
       config.services.paperless.user
       config.services.authelia.instances.main.user
-      "docspell"
     ];
     ensureUsers = [
       {name = "proteus"; ensureClauses = {login = true; /*superuser = true;*/ createdb = true;};}
       {name = "atuin"; ensureDBOwnership = true;}
       {name = config.services.paperless.user; ensureDBOwnership = true;}
       {name = config.services.authelia.instances.main.user; ensureDBOwnership =true;}
-      {name = "docspell"; ensureDBOwnership = true;}
     ];
     authentication = ''
       # type database DBuser auth-method [auth-options]
@@ -109,7 +116,7 @@ in {
   };
   services.postgresqlBackup = {
     enable = true;
-    databases = ["docspell"];
+    # databases = ["docspell"];
     location = "/srv/Backups/psql";
     compression = "zstd";
     compressionLevel = 3;
@@ -259,25 +266,10 @@ in {
           cors = {
             endpoints = ["authorization" "token" "revocation" "introspection" "userinfo"];
             allowed_origins = [
-              "https://docspell.${domain}"
               "https://papra.${domain}"
             ];
           };
           clients = [
-            {
-              client_id = "docspell";
-              client_name = "Docspell";
-              client_secret = "$pbkdf2-sha512$310000$60.rKB0d1SCVlF6.bY8njg$EDUxCscYZn1T2B1DPkY8L.WZ.kHI7dxZUFMLcDOaAJjkrc/4wABUnYHvXqNLZ.AFQIIpGRXeyZI2auFE.uwxWw";
-              public = false;
-              authorization_policy = "two_factor"; # Require 2FA for Docspell
-              redirect_uris = [
-                "https://docspell.${domain}/api/v1/open/auth/openid/authelia/resume"
-              ];
-              scopes = ["openid" "profile" "email" "groups"];
-              response_modes = ["form_post" "query"];
-              userinfo_signed_response_alg = "none";
-              token_endpoint_auth_method = "client_secret_post";
-            }
             {
               client_id = "papra";
               client_name = "Papra";
@@ -344,127 +336,4 @@ in {
     };
   };
   ## END sunshine.nix
-  ## START docspell.nix
-  nixpkgs.overlays = [docspell.overlays.default];
-  age.secrets = {
-    "docspell_db_password.txt" = {
-      file = "${myvars.secrets_dir}/docspell_db_password.txt.age";
-      mode = "0400"; owner = "docspell";
-    };
-    "docspell_jwt_secret.txt" = { # For auth.server-secret
-      file = "${myvars.secrets_dir}/docspell_jwt_secret.txt.age";
-      mode = "0400"; owner = "docspell";
-    };
-    "docspell_oidc_secret.txt" = {
-      file = "${myvars.secrets_dir}/docspell_oidc_secret.txt.age";
-      mode = "0400"; owner = "docspell";
-    };
-  };
-  # Inject the age secrets into the systemd services as environment variables
-  systemd.services.docspell-restserver.serviceConfig.LoadCredential = [
-    "db_pass:${config.age.secrets."docspell_db_password.txt".path}"
-    "jwt_secret:${config.age.secrets."docspell_jwt_secret.txt".path}"
-    "oidc_secret:${config.age.secrets."docspell_oidc_secret.txt".path}"
-  ];
-  systemd.services.docspell-joex.serviceConfig.LoadCredential = [
-    "db_pass:${config.age.secrets."docspell_db_password.txt".path}"
-  ];
-  # Because Docspell configuration supports HOCON env variable substitution, we
-  # export the credentials to the environment for substitution in extraConfig.
-  # Override systemd services to natively use the docspell user and avoid `su`
-  # We use `jq` to safely inject the secrets into the JSON configuration at
-  # runtime to handle any special characters securely.
-  systemd.services.docspell-restserver = {
-    serviceConfig.User = lib.mkForce "docspell";
-    script = let
-      cfg = config.services.docspell-restserver;
-      args = builtins.concatStringsSep " " cfg.jvmArgs;
-      baseConfigFile = if cfg.configFile == null
-        then "/etc/docspell-restserver.conf"
-        else "${cfg.configFile}";
-      runtimeFile = "/var/docspell/restserver-runtime.json";
-    in lib.mkForce ''
-      export DOCSPELL_DB_PASS="$(cat "$CREDENTIALS_DIRECTORY/db_pass")"
-      export DOCSPELL_SERVER_SECRET="$(cat "$CREDENTIALS_DIRECTORY/jwt_secret")"
-      export DOCSPELL_OIDC_SECRET="$(cat "$CREDENTIALS_DIRECTORY/oidc_secret")"
-
-      ${lib.getExe pkgs.jq} --arg db_pass "$DOCSPELL_DB_PASS" \
-         --arg jwt_secret "$DOCSPELL_SERVER_SECRET" \
-         --arg oidc_secret "$DOCSPELL_OIDC_SECRET" \
-         '.docspell.server.backend.jdbc.password = $db_pass |
-          .docspell.server.auth."server-secret" = $jwt_secret |
-          .docspell.server.openid[0].provider."client-secret" = $oidc_secret' \
-         "${baseConfigFile}" > "${runtimeFile}"
-
-      exec ${lib.getExe' cfg.package "docspell-restserver"} ${args} -- "${runtimeFile}"
-    '';
-  };
-  systemd.services.docspell-joex = {
-    serviceConfig.User = lib.mkForce "docspell";
-    script = let
-      cfg = config.services.docspell-joex;
-      args = builtins.concatStringsSep " " cfg.jvmArgs;
-      baseConfigFile = if cfg.configFile == null
-        then "/etc/docspell-joex.conf"
-        else "${cfg.configFile}";
-      runtimeFile = "/var/docspell/joex-runtime.json";
-    in lib.mkForce ''
-      export DOCSPELL_DB_PASS="$(cat "$CREDENTIALS_DIRECTORY/db_pass")"
-
-      ${lib.getExe pkgs.jq} --arg db_pass "$DOCSPELL_DB_PASS" \
-         '.docspell.joex.jdbc.password = $db_pass' \
-         "${baseConfigFile}" > "${runtimeFile}"
-
-      exec ${lib.getExe' cfg.package "docspell-joex"} ${args} -- "${runtimeFile}"
-    '';
-  };
-  services.docspell-restserver = {
-    enable = true;
-    base-url = "https://docspell.${domain}";
-    bind.address = "127.0.0.1";
-    internal-url = "http://${config.services.docspell-restserver.bind.address}:${builtins.toString config.services.docspell-restserver.bind.port}";
-    full-text-search = {
-      enabled = true;
-      backend = "postgresql";
-      postgresql.use-default-connection = true;
-    };
-    backend.jdbc = {
-      url = "jdbc:postgresql://postgresql.${domain}:${builtins.toString config.services.postgresql.settings.port}/docspell?sslmode=require";
-      user = "docspell";
-      password = "OVERRIDDEN_BY_JVM_ARGS";
-    };
-    auth.server-secret = "OVERRIDDEN_BY_JVM_ARGS";
-    openid = [{
-      enabled = true;
-      display = "Login via Authelia";
-      user-key = "preferred_username";
-      provider = {
-        provider-id = "authelia";
-        client-id = "docspell";
-        client-secret = "OVERRIDDEN_BY_JVM_ARGS";
-        # Use internal localhost HTTP endpoint to bypass EmberClient TLS/SSL requirement
-        authorize-url = "https://auth.${domain}/api/oidc/authorization"; # Keep public for user redirect
-        token-url = "http://127.0.0.1:9092/api/oidc/token"; # Internal for server-to-server
-        user-url = "http://127.0.0.1:9092/api/oidc/userinfo"; # Internal for server-to-server
-        logout-url = "https://auth.${domain}/logout";
-        scope = "openid profile email";
-      };
-    }];
-  };
-  services.docspell-joex = {
-    enable = true;
-    base-url = "https://docspell.${domain}";
-    bind.address = "127.0.0.1";
-    full-text-search = {
-      enabled = true;
-      backend = "postgresql";
-      postgresql.use-default-connection = true;
-    };
-    jdbc = {
-      url = "jdbc:postgresql://postgresql.${domain}:${builtins.toString config.services.postgresql.settings.port}/docspell?sslmode=require";
-      user = "docspell";
-      password = "OVERRIDDEN_BY_JVM_ARGS";
-    };
-  };
-  ## END docspell.nix
 }

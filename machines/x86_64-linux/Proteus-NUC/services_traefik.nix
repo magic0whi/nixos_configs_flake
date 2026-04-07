@@ -140,10 +140,6 @@ in {
             rule = "Host(`sunshine.${domain}`)";
             entryPoints = ["websecure"]; service = "sunshine-webui"; tls = {};
           };
-          docspell = {
-            rule = "Host(`docspell.${domain}`)";
-            entryPoints = ["websecure"]; service = "docspell"; tls = {};
-          };
           papra = {
             rule = "Host(`papra.${domain}`)";
             entryPoints = ["websecure"]; service = "papra"; tls = {};
@@ -197,12 +193,6 @@ in {
           sunshine-webui.loadBalancer = {
             serversTransport = "ignorecert";
             servers = [{url = "https://127.0.0.1:${builtins.toString (config.services.sunshine.settings.port + 1)}";}];
-          };
-          docspell.loadBalancer = {
-            servers = [{url = "http://127.0.0.1:${builtins.toString config.services.docspell-restserver.bind.port}";}];
-            healthCheck = {
-              path = "/api/info/version"; interval = "15s"; timeout = "3s";
-            };
           };
           papra.loadBalancer = {
             servers = [{url = "http://127.0.0.1:1221";}];
