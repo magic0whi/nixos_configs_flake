@@ -206,7 +206,7 @@ in {
         # Steam Proton Games
         "match:initial_class ^steam_app_\\d+$,match:initial_title negative:^(?i)(.*Launcher.*)$,tag +game"
 
-        "match:initial_class ^Qemu-system-x86_64$,float true"
+        # "match:initial_class ^Qemu-system-x86_64$,float true"
       ];
       # This will get rid of the pixelated look, but will not scale
       # applications properly. To do this, each toolkit has its own mechanism.

@@ -6,7 +6,7 @@
     name = "fhs";
     targetPkgs = pkgs: (base.targetPkgs pkgs) ++ [pkgs.pkg-config];
     profile = "export FHS=1";
-    runScript = "bash";
+    runScript = "zsh";
     extraOutputsToInstall = ["dev"];
   }))];
   # nix-ld will install itself at `/lib64/ld-linux-x86-64.so.2` so that it can be used as the dynamic linker for non-NixOS binaries.

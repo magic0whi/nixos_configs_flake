@@ -4,11 +4,11 @@
   # ls /sys/class/drm/card*
   main_monitor = if config.wayland.windowManager.hyprland.nvidia then
     # 10-bit will cause the internal monitor flickering when using PRIME Sync
-    "eDP-1,highres,auto,${dpi_scale},bitdepth,8,cm,auto"
+    "eDP-1,highres,auto,${dpi_scale},bitdepth,8,cm,adobe"
   else
-    "eDP-1,highres,auto,${dpi_scale},bitdepth,10,cm,auto";
-  secondary_monitor = "DP-3,3840x2160@60,auto-right,2,bitdepth,10,cm,dp3";
-  third_monitor = "HDMI-A-1,3440x1440@165,auto-left,1.67,bitdepth,10,cm,dp3";
+    "eDP-1,highres,auto,${dpi_scale},bitdepth,10,cm,adobe";
+  secondary_monitor = "DP-3,3840x2160@59.98200,auto-right,2,bitdepth,10,cm,adobe";
+  third_monitor = "HDMI-A-1,3440x1440@99.99200,auto-left,1.67,bitdepth,10,cm,srgb";
 in {
   imports = mylib.scan_path ./.;
   home.packages = with pkgs; [
@@ -21,7 +21,8 @@ in {
   wayland.windowManager.hyprland = {
     nvidia = true; # Prime Sync
     settings = {
-      # Configure your Display resolution, offset, scale and Monitors here, use `hyprctl monitors` to get the info.
+      # Configure your Display resolution, offset, scale and Monitors here, use
+      # `hyprctl monitors` to get the info.
       #   highres:     get the best possible resolution
       #   auto:        position automatically
       #   bitdepth,10: enable 10 bit support
@@ -31,16 +32,16 @@ in {
         secondary_iface = builtins.head (lib.strings.splitString "," secondary_monitor);
         third_iface = builtins.head (lib.strings.splitString "," third_monitor);
       in [
-        "1,monitor:${main_iface}"
-        "2,monitor:${main_iface}"
-        "3,monitor:${main_iface}"
-        "4,monitor:${main_iface}"
-        "5,monitor:${third_iface}"
-        "6,monitor:${third_iface}"
-        "7,monitor:${third_iface}"
-        "8,monitor:${secondary_iface}"
-        "9,monitor:${secondary_iface}"
-        "10,monitor:${secondary_iface}"
+        "1,monitor:${third_iface}"
+        "2,monitor:${third_iface}"
+        "3,monitor:${third_iface}"
+        "4,monitor:${third_iface}"
+        "5,monitor:${secondary_iface}"
+        "6,monitor:${secondary_iface}"
+        "7,monitor:${secondary_iface}"
+        "8,monitor:${main_monitor}"
+        "9,monitor:${main_monitor}"
+        "10,monitor:${main_monitor}"
       ];
       env = [
         # Not recommand set globally, make firefox scale twice
@@ -84,6 +85,8 @@ in {
           main_monitor
         }\""
       ];
+      # Cause black screen if the bandwidth doesn't enough
+      render = {cm_auto_hdr = 0; cm_fs_passthrough = 0;};
     };
   };
   services.hypridle.settings.general = {

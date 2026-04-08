@@ -5,7 +5,7 @@
     enable =true;
     tray = true;
     temperature = {
-      day = 5700;
+      day = 6500;
       night = 4000;
     };
     settings = { # https://gitlab.com/chinstrap/gammastep/-/blob/master/gammastep.conf.sample?ref_type=heads
