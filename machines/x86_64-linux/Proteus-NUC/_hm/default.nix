@@ -7,8 +7,8 @@
     "eDP-1,highres,auto,${dpi_scale},bitdepth,8,cm,adobe"
   else
     "eDP-1,highres,auto,${dpi_scale},bitdepth,10,cm,adobe";
-  secondary_monitor = "DP-3,3840x2160@59.98200,auto-right,2,bitdepth,10,cm,adobe";
-  third_monitor = "HDMI-A-1,3440x1440@99.99200,auto-left,1.67,bitdepth,10,cm,srgb";
+  secondary_monitor = "HDMI-A-1,highres,auto-left,2,bitdepth,10,cm,adobe";
+  third_monitor = "DP-3,highres,auto-left,1.67,bitdepth,10,cm,adobe";
 in {
   imports = mylib.scan_path ./.;
   home.packages = with pkgs; [
@@ -39,9 +39,9 @@ in {
         "5,monitor:${secondary_iface}"
         "6,monitor:${secondary_iface}"
         "7,monitor:${secondary_iface}"
-        "8,monitor:${main_monitor}"
-        "9,monitor:${main_monitor}"
-        "10,monitor:${main_monitor}"
+        "8,monitor:${main_iface}"
+        "9,monitor:${main_iface}"
+        "10,monitor:${main_iface}"
       ];
       env = [
         # Not recommand set globally, make firefox scale twice
@@ -86,7 +86,7 @@ in {
         }\""
       ];
       # Cause black screen if the bandwidth doesn't enough
-      render = {cm_auto_hdr = 0; cm_fs_passthrough = 0;};
+      # render = {cm_auto_hdr = 0; cm_fs_passthrough = 0;};
     };
   };
   services.hypridle.settings.general = {
