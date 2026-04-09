@@ -10,7 +10,11 @@
   } else { # Linux
     zathura = {
       enable = true;
-      options.selection-clipboard = "clipboard";
+      options = {
+        selection-clipboard = "clipboard";
+        # catppuccin enables it, lowering the PDF's readability, set it to false
+        recolor = false;
+      };
     };
   };
 }
