@@ -28,7 +28,7 @@
         bold_italic.family = "Iosevka Nerd Font Mono";
         italic.family = "Iosevka Nerd Font Mono";
         normal.family = "Iosevka Nerd Font Mono";
-        size = if pkgs.stdenv.isDarwin then 14 else 12;
+        size = if pkgs.stdenv.isDarwin then 14 else 10;
       };
       terminal = {
         # shell = { # Spawn a nushell in login mode via `bash`
