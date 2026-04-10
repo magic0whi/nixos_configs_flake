@@ -80,5 +80,12 @@
       createDirectories = true;
       extraConfig.XDG_SCREENSHOTS_DIR = "${config.xdg.userDirs.pictures}/Screenshots";
     };
+    terminal-exec = {
+      enable = true;
+      settings = {
+        # rg -L '(GenericName=Terminal)|(Keywords=.*terminal.*)' /run/current-system/etc/profiles/per-user/proteus/share/applications/
+        default = ["Alacritty.desktop" "com.mitchellh.ghostty.desktop"];
+      };
+    };
   };
 }
