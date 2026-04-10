@@ -35,7 +35,10 @@
         #   program = "${pkgs.bash}/bin/bash";
         #   args = ["--login" "-c" "nu --login --interactive"];
         # };
-        osc52 = "CopyPaste"; # Controls the ability to write to the system clipboard with the OSC 52 escape sequence. It's used by zellij to copy text to the system clipboard.
+        # Controls the ability to write to the system clipboard with the OSC 52
+        # escape sequence. It's used by zellij to copy text to the system
+        # clipboard.
+        osc52 = "CopyPaste";
       };
     };
   };

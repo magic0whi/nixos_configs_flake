@@ -195,8 +195,12 @@
   services.sssd = {
     enable = true;
     settings = {
-    sssd = {debug_level = 7; services = "ifp, nss, pam, sudo"; domains = "LDAP";};
-    "pam".pam_verbosity = 3;
+    sssd = {
+      # debug_level = 7;
+      services = "ifp, nss, pam, sudo";
+      domains = "LDAP";
+    };
+    # "pam".pam_verbosity = 3;
     "domain/LDAP" = {
       override_shell = "/run/current-system/sw/bin/${config.users.defaultUserShell.meta.mainProgram}";
       cache_credentials = true;

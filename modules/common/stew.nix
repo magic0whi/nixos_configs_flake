@@ -92,6 +92,7 @@
   #     owner = "SagerNet";
   #     repo = "sing-box";
   #     tag = "v${final.version}";
+  #     # Use lib.fakeHash generate dummy hash
   #     hash = "sha256-lhkz/mXydZz5iJllqSp4skA4+jxs8oUmon/oFs98Zfc=";
   #   };
   #   vendorHash = "sha256-vVLaG0PV1OXA+YL67BnrHJiSkNVzJbZ8TeMKbO2rMu0=";
