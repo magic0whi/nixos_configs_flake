@@ -111,6 +111,7 @@ in {
         home = {
           type = "zfs_fs";
           mountpoint = "/home";
+          mountOptions = ["defaults" "x-gvfs-trash"];
           # Used by `services.zfs.autoSnapshot.*` options.
           options."com.sun:auto-snapshot" = "false";
         };
