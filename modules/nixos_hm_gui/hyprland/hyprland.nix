@@ -134,7 +134,8 @@ in {
       ];
       bindl = [
         "$mainMod,Z,exec,loginctl lock-session; sleep 0.6; hyprctl dispatch dpms off"
-        "$mainMod SHIFT,Q,exit," # Exit Hyprland
+        # Logout & Exit Hyprland
+        "$mainMod SHIFT,Q,exec,loginctl terminate-user $USER"
         "$mainMod SHIFT,W,exec,systemctl suspend" # Suspend
         "$mainMod SHIFT,E,exec,systemctl hibernate" # Hibernate
         "$mainMod SHIFT,R,exec,systemctl reboot" # Reboot
