@@ -65,8 +65,8 @@ in {
     settings = {
       httpd.bindings = [
         # Allow reverse proxy
-        {client_ip_proxy_header = "X-Forwarded-For"; proxy_allowed = ["127.0.0.1"];}
-        {address = "[::1]"; client_ip_proxy_header = "X-Forwarded-For"; proxy_allowed = ["::1"];}
+        {port = 8081; client_ip_proxy_header = "X-Forwarded-For"; proxy_allowed = ["127.0.0.1"];}
+        {address = "[::1]"; port = 8081; client_ip_proxy_header = "X-Forwarded-For"; proxy_allowed = ["::1"];}
       ];
       webdavd.bindings = [
         {port = 8443; client_ip_proxy_header = "X-Forwarded-For"; proxy_allowed = ["127.0.0.1"];}
