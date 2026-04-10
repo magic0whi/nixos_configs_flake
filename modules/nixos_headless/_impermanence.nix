@@ -58,6 +58,9 @@
           # ".config/emacs"
 
           # neovim / remmina / flatpak / ...
+          # Since the `$XDG_DATA_HOME/Trash` is usually `~/.local/share/Trash`
+          # Programs following freedesktop.org trash specification will refuse
+          # to delete files that not coverd by impermance
           ".local/share"
           ".local/state"
 
