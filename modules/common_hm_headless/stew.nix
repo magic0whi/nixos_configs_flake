@@ -62,6 +62,13 @@
         sort_dir_first = true;
       };
     };
+    plugins.drag = pkgs.yaziPlugins.drag;
+    extraPackages = [pkgs.ripdrag];
+    keymap = {
+      mgr.prepend_keymap = [
+        {run = "plugin drag"; on = ["<C-d>"]; desc = "Drag Files";}
+      ];
+    };
   };
   ## END yazi.nix
   ## START direnv.nix
