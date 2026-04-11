@@ -39,7 +39,7 @@
       };
       "custom/powermenu" = {
         "format" = "&#xf011;"; # nf-fa-power_off
-        "on-click" = "$HOME/.config/hypr/scripts/wlogout";
+        "on-click" = "${config.programs.wlogout.wrapper_script}";
         "tooltip" = false;
       };
       "hyprland/workspaces" = {

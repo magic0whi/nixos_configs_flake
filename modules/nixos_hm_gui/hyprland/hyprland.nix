@@ -46,7 +46,7 @@ in {
       # "$clip_manager" = "systemd-run --user --scope sh -c 'cliphist list | rofi -dmenu | cliphist decode | wl-copy'";
       "$colorpicker" = "~/.config/hypr/scripts/colorpicker";
       "$file_manager" = "systemd-run --user --scope thunar";
-      "$wlogout" = "~/.config/hypr/scripts/wlogout";
+      "$wlogout" = "${config.programs.wlogout.wrapper_script}";
       "$mainMod" = "SUPER";
       bind = [
         "$mainMod,E,exec,$file_manager"
