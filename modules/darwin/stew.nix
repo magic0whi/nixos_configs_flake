@@ -139,6 +139,7 @@ in {
       "gimp" # As of 11/6/2025, currently not supported on nixpkgs
 
       "windows-app" # Formerly microsoft-remote-desktop
+      "spacedrive"
     ];
   };
   ## END brew.nix

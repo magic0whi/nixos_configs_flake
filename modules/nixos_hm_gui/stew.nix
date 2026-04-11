@@ -1,12 +1,12 @@
 {pkgs, ...}: {
   home.packages = with pkgs; [
-    blender
+    # blender
     telegram-desktop # Instant messaging
     # foliate # e-book viewer(.epub/.mobi/...),do not support .pdf
 
     ## Remote Desktop (RDP protocol)
-    remmina
-    freerdp # Required by remmina
+    # remmina
+    # freerdp # Required by remmina
 
     ## Custom Hardened Packages
     # nixpaks.qq
@@ -21,11 +21,11 @@
 
     ## Creative
     inkscape # Vector graphics
-    gimp3 # Image editing, I prefer using figma in browser instead of this one
+    # gimp3 # Image editing, I prefer using figma in browser instead of this one
     # krita # digital painting
     # sonic-pi # music programming
     # kicad # Consumes a lot of storage, as of 7/24/2025, it's broken on macOS
-    kicad-small # 3D printing, eletrical engineering (without 3D models)
+    # kicad-small # 3D printing, eletrical engineering (without 3D models)
 
     ## 2D game design
     # ldtk # A modern, versatile 2D level editor

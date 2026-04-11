@@ -17,24 +17,7 @@ in {
     xmrig xmrig-cuda # Heating & Mining
     chezmoi
     libreoffice
-    (spacedrive.overrideAttrs(final: _: rec {
-      version = "v2.0.0-alpha.2";
-      src = fetchurl {
-        aarch64-darwin = {
-          url = "https://github.com/spacedriveapp/spacedrive/releases/download/${version}/Spacedrive-darwin-aarch64.dmg";
-          hash = "sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
-        };
-        x86_64-darwin = {
-          url = "https://github.com/spacedriveapp/spacedrive/releases/download/${version}/Spacedrive-darwin-x86_64.dmg";
-          hash = "sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
-        };
-        x86_64-linux = {
-          url = "https://github.com/spacedriveapp/spacedrive/releases/download/${version}/Spacedrive-linux-x86_64.deb";
-          hash = "sha256-KzRPBtyX5x4ZLlZd6SgAS/cy/7irXt7v+b3Yuq9GETo=";
-        };
-      }.${stdenv.system} or (throw "${pname}-${version}: ${stdenv.system} is unsupported.");
-    }))
-
+    qpdf
   ];
   wayland.windowManager.hyprland = {
     nvidia = true; # Prime Sync

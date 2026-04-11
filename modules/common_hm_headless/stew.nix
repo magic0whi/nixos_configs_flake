@@ -8,6 +8,7 @@
   programs.home-manager.enable = true; # Let Home Manager install and manage itself.
   home.packages = with pkgs; [
     fastfetch
+    bc
     ## Modern cli tools, replacement of grep/sed/...
     # A fast and polyglot tool for code searching, linting, rewriting at large scale
     # supported languages: only some mainstream languages currently (don't support nix/nginx/yaml/toml/...)
