@@ -1,26 +1,22 @@
 {pkgs, lib, config, ...}: {
-  options = {
-    programs.anyrun = {
-      menu_script = lib.mkOption {
-        type = lib.types.path;
-        description = "Path to the Anyrun menu wrapper script";
-        default = pkgs.writeShellScript "menu" ''
-          #!/usr/bin/env sh
-          set -eufo pipefail
-          anyrun close || true
-          anyrun
-        '';
-      };
-      clip_script = lib.mkOption {
-        type = lib.types.path;
-        description = "Path to the Anyrun clip_manager wrapper script";
-        default = pkgs.writeShellScript "clip_manager" ''
-          #!/usr/bin/env sh
-          set -eufo pipefail
-          anyrun close || true
-          cliphist list | anyrun --plugins ${config.programs.anyrun.package}/lib/libstdin.so --show-results-immediately true | cliphist decode | wl-copy
-        '';
-      };
+  options.programs.anyrun = {
+    menu_script = lib.mkOption {
+      type = lib.types.path;
+      description = "Path to the Anyrun menu wrapper script";
+      default = pkgs.writeShellScript "menu" ''
+        set -eufo pipefail
+        anyrun close || true
+        anyrun
+      '';
+    };
+    clip_script = lib.mkOption {
+      type = lib.types.path;
+      description = "Path to the Anyrun clip_manager wrapper script";
+      default = pkgs.writeShellScript "clip_manager" ''
+        set -eufo pipefail
+        anyrun close || true
+        cliphist list | anyrun --plugins ${config.programs.anyrun.package}/lib/libstdin.so --show-results-immediately true | cliphist decode | wl-copy
+      '';
     };
   };
   config = {

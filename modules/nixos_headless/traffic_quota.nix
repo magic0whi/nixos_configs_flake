@@ -2,6 +2,8 @@
   # The threshold in bytes (196 GiB)
   limitBytes = builtins.toString (196 * 1024 * 1024 * 1024);
   script = pkgs.writeShellScript "check-traffic-quota" ''
+    set -eufo pipefail
+
     export PATH=${pkgs.jq}/bin:${pkgs.vnstat}/bin:${pkgs.coreutils}/bin:$PATH
 
     CURRENT_YEAR=$(date +%Y)

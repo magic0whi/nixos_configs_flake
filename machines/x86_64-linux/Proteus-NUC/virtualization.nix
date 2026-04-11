@@ -85,7 +85,7 @@
       qemu.swtpm.enable = true;
       qemu.vhostUserPackages = [pkgs.virtiofsd];
       # hooks.qemu."99-hugepages.sh" = pkgs.writeShellScript "99-hugepages.sh" ''
-      #   #!/usr/bin/env bash
+      #   set -eufo pipefail
       #   # ## START DEBUG
       #   # LOG=/var/log/libvirt/hooks-qemu.log
       #   # exec >>"$LOG" 2>&1
@@ -94,7 +94,6 @@
       #   # echo "argv: $0 $*"
       #   # env | sort
       #   # ## END DEBUG
-      #   set -eufo pipefail
 
       #   DOMAIN_XML="$(cat)"
       #   VM="$1"
@@ -163,7 +162,6 @@
       #   esac
       # '';
       hooks.qemu."10-igpu-sriov.sh" = pkgs.writeShellScript "10-igpu-sriov.sh" ''
-        #!/usr/bin/env bash
         set -eufo pipefail
 
         VM="$1"
