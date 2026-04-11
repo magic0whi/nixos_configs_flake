@@ -1,4 +1,4 @@
-{pkgs, lib, ...}: let
+{pkgs, lib, config, ...}: let
   hypr_pkg = pkgs.hyprland;
 in {
    # NOTE: this executable is used by greetd to start a wayland session when
@@ -40,9 +40,9 @@ in {
         ];
       };
       "$terminal" = "systemd-run --user --scope alacritty";
-      "$menu" = "systemd-run --user --scope ~/.config/hypr/scripts/menu";
+      "$menu" = "systemd-run --user --scope ${config.programs.anyrun.menu_script}";
       # "$menu" = "systemd-run --user --scope rofi -show combi"
-      "$clip_manager" = "systemd-run --user --scope sh -c 'cliphist list | anyrun --show-results-immediately true | cliphist decode | wl-copy'";
+      "$clip_manager" = "systemd-run --user --scope ${config.programs.anyrun.clip_script}";
       # "$clip_manager" = "systemd-run --user --scope sh -c 'cliphist list | rofi -dmenu | cliphist decode | wl-copy'";
       "$colorpicker" = "~/.config/hypr/scripts/colorpicker";
       "$file_manager" = "systemd-run --user --scope thunar";

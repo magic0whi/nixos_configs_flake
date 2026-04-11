@@ -33,7 +33,7 @@
       "custom/launcher" = {
         format = "&#xf313;"; # nf-linux-nixos
         tooltip = false;
-        on-click = "$HOME/.\config/hypr/scripts/menu";
+        on-click = "systemd-run --user --scope ${config.programs.anyrun.menu_script}";
         # on-click-middle = ""; # TODO: Impl random wallpaper
         # on-click-right = ""; # TODO: Impl next wallpaper
       };
