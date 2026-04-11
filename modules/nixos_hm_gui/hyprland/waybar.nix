@@ -39,7 +39,7 @@
       };
       "custom/powermenu" = {
         "format" = "&#xf011;"; # nf-fa-power_off
-        "on-click" = "${config.programs.wlogout.wrapper_script}";
+        "on-click" = "systemd-run --user --scope ${config.programs.wlogout.wrapper_script}";
         "tooltip" = false;
       };
       "hyprland/workspaces" = {
