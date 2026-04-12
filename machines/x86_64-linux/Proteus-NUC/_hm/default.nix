@@ -20,7 +20,7 @@ in {
     qpdf
   ];
   wayland.windowManager.hyprland = {
-    nvidia = true; # Prime Sync
+    # nvidia = true; # Prime Sync
     settings = {
       # Configure your Display resolution, offset, scale and Monitors here, use
       # `hyprctl monitors` to get the info.

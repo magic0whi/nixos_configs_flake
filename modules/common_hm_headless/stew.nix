@@ -63,10 +63,15 @@
       };
     };
     plugins.drag = pkgs.yaziPlugins.drag;
-    extraPackages = [pkgs.ripdrag];
+    plugins.recycle-bin = pkgs.yaziPlugins.recycle-bin;
+    initLua = ''
+      require("recycle-bin"):setup()
+    '';
+    extraPackages = [pkgs.ripdrag pkgs.trash-cli];
     keymap = {
       mgr.prepend_keymap = [
         {run = "plugin drag"; on = ["<C-d>"]; desc = "Drag Files";}
+        {run = "plugin recycle-bin"; on = ["R" "b"]; desc = "Open Trash";}
       ];
     };
   };
