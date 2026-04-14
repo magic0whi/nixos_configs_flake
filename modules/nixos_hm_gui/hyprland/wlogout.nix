@@ -22,7 +22,7 @@
     share = lib.mkOption {
       type = lib.types.path;
       description = "Path to wlogout assets directory (e.g., icons)";
-      default = ./_conf/wlogout;
+      default = ./_assets/wlogout;
     };
   };
   config = {

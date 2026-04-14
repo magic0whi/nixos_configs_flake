@@ -12,7 +12,9 @@ in {
   wayland.windowManager.hyprland = {
     enable = true;
     package = hypr_pkg;
-    settings = {
+    settings = let
+      launch_prefix = "systemd-run --user --scope --";
+    in {
       animations = {
         bezier = [
           "easeOutQuint,0.23,1,0.32,1" # https://easings.net/#easeOutQuint
@@ -39,23 +41,36 @@ in {
           "workspacesOut,1,1.94,almostLinear,fade"
         ];
       };
-      "$terminal" = "systemd-run --user --scope alacritty";
-      "$menu" = "systemd-run --user --scope ${config.programs.anyrun.menu_script}";
-      # "$menu" = "systemd-run --user --scope rofi -show combi"
-      "$clip_manager" = "systemd-run --user --scope ${config.programs.anyrun.clip_script}";
-      # "$clip_manager" = "systemd-run --user --scope sh -c 'cliphist list | rofi -dmenu | cliphist decode | wl-copy'";
-      "$colorpicker" = "~/.config/hypr/scripts/colorpicker";
-      "$file_manager" = "systemd-run --user --scope yazi";
-      "$wlogout" = "systemd-run --user --scope ${config.programs.wlogout.wrapper_script}";
+      "$terminal" = "alacritty";
+      # "$menu" = "rofi -show combi"
+      "$menu" = config.programs.anyrun.menu_script;
+      "$clip_manager" = "sh -c 'cliphist list | rofi -dmenu | cliphist decode | wl-copy'";
+      # "$clip_manager" = config.programs.anyrun.clip_script;
+      "$colorpicker" = pkgs.writeShellScript "menu" ''
+        ## Simple Script To Pick Color Quickly.
+        color=$(hyprpicker)
+        image=/tmp/$color.png
+
+        if [ -n "$color" ]; then
+          # Copy color code to clipboard
+          echo $color | tr -d "\n" | wl-copy
+          # Generate preview
+          convert -size 48x48 xc:"$color" $image
+          # Notify about it
+          notify-send -h string:x-canonical-private-synchronous:sys-notify -u low -i $image "$color, copied to clipboard."
+        fi
+      '';
+      "$file_manager" = "xdg-terminal-exec yazi";
+      "$wlogout" = config.programs.wlogout.wrapper_script;
       "$mainMod" = "SUPER";
       bind = [
-        "$mainMod,E,exec,$file_manager"
-        "$mainMod,Q,exec,$terminal"
+        "$mainMod,E,exec,${launch_prefix} $file_manager"
+        "$mainMod,Q,exec,${launch_prefix} $terminal"
         "$mainMod,W,killactive,"
-        "$mainMod,SPACE,exec,$menu"
-        "$mainMod,V,exec,$clip_manager"
-        "$mainMod CTRL,P,exec,$colorpicker"
-        "$mainMod,X,exec,$wlogout"
+        "$mainMod,SPACE,exec,${launch_prefix} $menu"
+        "$mainMod,V,exec,${launch_prefix} $clip_manager"
+        "$mainMod CTRL,P,exec,${launch_prefix} $colorpicker"
+        "$mainMod,X,exec,${launch_prefix} $wlogout"
         "$mainMod,F,fullscreen,"
         "$mainMod SHIFT,F,togglefloating"
         "$mainMod,G,exec,hyprctl dispatch setfloating && hyprctl dispatch pin"
@@ -110,9 +125,9 @@ in {
         "$mainMod,mouse_up,workspace,e-1"
 
         # Functional keys
-        ",Print,exec,hyprshot -m output -o ~/Pictures/Screenshots -- imv"
-        "ALT,Print,exec,hyprshot -m window -o ~/Pictures/Screenshots -- imv"
-        "CTRL,Print,exec,hyprshot -m region -o ~/Pictures/Screenshots -- imv"
+        ",Print,exec,${launch_prefix} hyprshot -m output -o ~/Pictures/Screenshots -- imv"
+        "ALT,Print,exec,${launch_prefix} hyprshot -m window -o ~/Pictures/Screenshots -- imv"
+        "CTRL,Print,exec,${launch_prefix} hyprshot -m region -o ~/Pictures/Screenshots -- imv"
       ];
       binde = [ # Resize windows
         "$mainMod ALT,H,resizeactive,-5% 0"
@@ -242,14 +257,4 @@ in {
   programs.hyprlock.enable = true;
   home.pointerCursor.hyprcursor.enable = true;
   services.cliphist.enable = true;
-  xdg.configFile = { # hyprland configs, based on https://github.com/notwidow/hyprland
-    "hypr/scripts" = {
-      source = ./_conf/scripts;
-      recursive = true;
-    };
-    "hypr/wlogout" = {
-      source = ./_conf/wlogout;
-      recursive = true;
-    };
-  };
 }

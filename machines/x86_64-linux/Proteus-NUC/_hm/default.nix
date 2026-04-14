@@ -18,6 +18,7 @@ in {
     chezmoi
     libreoffice
     qpdf
+    act # Run your Github Actions locally
   ];
   wayland.windowManager.hyprland = {
     # nvidia = true; # Prime Sync
