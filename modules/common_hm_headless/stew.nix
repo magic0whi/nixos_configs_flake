@@ -54,8 +54,9 @@
   ## END btop.nix
   ## START yazi.nix
   programs.yazi = { # terminal file manager
+    # NOTE: Home Mabnager provides `y` to allow changing working directory when
+    # exitig Yazi
     enable = true;
-    # enableZshIntegration = false; # Don't changing working directory when exiting Yazi
     settings = {
       manager = {
         show_hidden = true;
@@ -67,7 +68,7 @@
     initLua = ''
       require("recycle-bin"):setup()
     '';
-    extraPackages = [pkgs.ripdrag pkgs.trash-cli];
+    extraPackages = with pkgs; [ripdrag trash-cli ueberzugpp];
     keymap = {
       mgr.prepend_keymap = [
         {run = "plugin drag"; on = ["<C-d>"]; desc = "Drag Files";}

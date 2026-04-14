@@ -200,12 +200,16 @@ in {
         "match:class ^org\\.inkscape\\.Inkscape$,match:title ^Function Plotter$,float true"
         "match:class ^org\\.inkscape\\.Inkscape$,match:title ^Function Plotter$,float true"
 
+        # Game
         "match:tag game,fullscreen true,immediate true"
         "match:tag game,no_anim true,no_blur true,no_shadow true"
         "match:tag game,opacity 1,border_size 1,rounding 0"
         # Steam Proton Games
         "match:initial_class ^steam_app_\\d+$,match:initial_title negative:^(?i)(.*Launcher.*)$,tag +game"
 
+        # Previewer
+        "match:tag previewer,float true,no_initial_focus true,opaque true"
+        "match:initial_class ^(ueberzugpp_.*),tag +previewer"
         # "match:initial_class ^Qemu-system-x86_64$,float true"
       ];
       # This will get rid of the pixelated look, but will not scale

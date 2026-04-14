@@ -299,7 +299,7 @@ in {
     # python-miio) and assign Bluetooth capabilities for BLE sensors.
     extraComponents = [
       "default_config"
-      "met" # Meteorologisk institutt (Met.no)
+      "met" # Meteorologisk institute (Met.no)
       "homekit" # xiaomi_miot requires pyhap
     ];
     # Include custom components if specific devices are better supported by the

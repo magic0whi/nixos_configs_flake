@@ -1,12 +1,12 @@
 {
   description = "Proteus Qian's nix configuration for NixOS & nix-darwin";
   inputs = {
-    # Pinned as of 2026-04-07 06:51, branch: nixos-unstable
-    nixpkgs.url = "github:NixOS/nixpkgs/68d8aa3d661f0e6bd5862291b5bb263b2a6595c9";
+    # Pinned as of 2026-04-14 10:49, branch: nixos-unstable
+    nixpkgs.url = "github:NixOS/nixpkgs/4c1018dae018162ec878d42fec712642d214fdfa";
     # Pinned as of 2026-04-05 17:10, branch: nixos-unstable
     # nixpkgs-postgresql.url = "github:NixOS/nixpkgs/6201e203d09599479a3b3450ed24fa81537ebc4e";
-    home-manager = { # Pinned as of 2026-04-07 06:52, branch: master
-      url = "github:nix-community/home-manager/5de7dbd151b0bd65d45785553d4a22d832733ffc";
+    home-manager = { # Pinned as of 2026-04-14 10:49, branch: master
+      url = "github:nix-community/home-manager/2de7205ce6e10b031151033e69b7ef89708dc282";
       # The `follows` keyword in inputs is used for inheritance.
       # Here, `inputs.nixpkgs` of home-manager is kept consistent with the
       # `inputs.nixpkgs` of the current flake, to avoid problems caused by
@@ -41,15 +41,15 @@
       url = "github:pinpox/pgp2ssh/792e3a3f107e6b4da7b96ded5d46b69efc45d8c1";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    sops-nix = { # Pinned as of 2026-04-07 06:54
-      url = "github:Mic92/sops-nix/a4ee2de76efb759fe8d4868c33dec9937897916f";
+    sops-nix = { # Pinned as of 2026-04-14 10:53
+      url = "github:Mic92/sops-nix/d4971dd58c6627bfee52a1ad4237637c0a2fb0cd";
       inputs.nixpkgs.follows = "nixpkgs";};
     deploy-rs = { # Pinned as of 2026-04-07 06:56
       url = "github:serokell/deploy-rs/77c906c0ba56aabdbc72041bf9111b565cdd6171";
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.flake-compat.follows = "lanzaboote/pre-commit/flake-compat";
     };
-    nix-darwin = { # Pinned as of 2026-04-01 06:57
+    nix-darwin = { # Pinned as of 2026-04-14 10:55
       url = "github:nix-darwin/nix-darwin/06648f4902343228ce2de79f291dd5a58ee12146";
       inputs.nixpkgs.follows = "nixpkgs";
     };
