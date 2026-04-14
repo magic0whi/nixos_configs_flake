@@ -346,6 +346,7 @@
       + " MANROFFOPT=\"-P-c\"" # Enables groff's "continuous" (non-paginated) output mode
       + " MANWIDTH=$(($(tput cols) - 7))" # Adjustment manwidth when less' line number enabled
       + " command man \"$@\"";
+    llag = "eza -agl";
   };
   programs = {
     zsh = {

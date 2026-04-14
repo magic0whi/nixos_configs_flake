@@ -140,9 +140,10 @@ in {
             rule = "Host(`sunshine.${domain}`)";
             entryPoints = ["websecure"]; service = "sunshine-webui"; tls = {};
           };
-          papra = {
-            rule = "Host(`papra.${domain}`)";
-            entryPoints = ["websecure"]; service = "papra"; tls = {};
+          papra = {rule = "Host(`papra.${domain}`)"; entryPoints = ["websecure"]; service = "papra"; tls = {};};
+          notebook = {
+            rule = "Host(`notebook.${domain}`)";
+            entryPoints = ["websecure"]; service = "notebook"; tls = {};
           };
         };
         services = {
@@ -169,19 +170,17 @@ in {
             url = "http://127.0.0.1:${builtins.toString config.services.aria2.settings.rpc-listen-port}";
           }];
           qinglong.loadBalancer.servers = [{url = "http://127.0.0.1:5700";}];
-          # use HTTP/2 Cleartext (h2c) when talking to BIND's local port.
-          doh.loadBalancer.servers = [
-            {url = "h2c://127.0.0.1:8053";}
-            {url = "h2c://[::1]:8053";}
-          ];
+          # Use HTTP/2 Cleartext (h2c) when talking to BIND's local port.
+          doh.loadBalancer.servers = [{url = "h2c://127.0.0.1:8053";} {url = "h2c://[::1]:8053";}];
           sb-dashboard.loadBalancer.servers = [{url = "http://127.0.0.1:9091";}];
           syncthing-dashboard.loadBalancer = {
             # By setting to false Traefik will overrides the Host header to
             # 127.0.0.1
             passHostHeader = false;
-            servers = let syncthing_port = lib.last (lib.strings.splitString
-              ":"
-              config.home-manager.users.${myvars.username}.services.syncthing.guiAddress);
+            servers = let
+              syncthing_port = lib.last (lib.strings.splitString
+                ":"
+                config.home-manager.users.${myvars.username}.services.syncthing.guiAddress);
             in [{url = "http://127.0.0.1:${syncthing_port}";}];
           };
           home-assistant.loadBalancer.servers = let
@@ -194,10 +193,9 @@ in {
             serversTransport = "ignorecert";
             servers = [{url = "https://127.0.0.1:${builtins.toString (config.services.sunshine.settings.port + 1)}";}];
           };
-          papra.loadBalancer = {
-            servers = [{url = "http://127.0.0.1:1221";}];
-          };
-        };
+          papra.loadBalancer.servers = [{url = "http://127.0.0.1:1221";}];
+          notebook.loadBalancer.servers = [{url = "http://127.0.0.1:8080";}];
+         };
       };
       tcp = {
         routers = {

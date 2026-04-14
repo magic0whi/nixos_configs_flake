@@ -336,4 +336,27 @@ in {
     };
   };
   ## END sunshine.nix
+  ## START caddy.nix
+  services.caddy = {
+    enable = true;
+    # Caddy doesn't need to bind to public ports (80/443) since Traefik handles
+    # that. We can tell Caddy's global config not to attempt ACME/HTTPS bindings.
+    globalConfig = ''auto_https off'';
+    virtualHosts."http://notebook.${domain}:8080" = {
+      listenAddresses = [ "127.0.0.1" "[::1]" ];
+      extraConfig = ''
+        # respond "Hello, world!" # For debug
+        root * /var/www/notebook
+        file_server
+      '';
+    };
+  };
+  # Ensure the web root exists with the correct permissions.
+  # Caddy runs as user 'caddy', group 'caddy' by default according to the module.
+  # CI script will run as 'proteus', so we make the folder owned by 'proteus'
+  # but give the group (which we will add 'caddy' to) read access.
+  systemd.tmpfiles.rules = [
+    "d /var/www/notebook 0755 ${myvars.username} ${config.services.caddy.group} - -"
+  ];
+  ## END caddy.nix
 }
