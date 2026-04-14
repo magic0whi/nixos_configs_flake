@@ -44,8 +44,8 @@ in {
       "$terminal" = "alacritty";
       # "$menu" = "rofi -show combi"
       "$menu" = config.programs.anyrun.menu_script;
-      "$clip_manager" = "sh -c 'cliphist list | rofi -dmenu | cliphist decode | wl-copy'";
-      # "$clip_manager" = config.programs.anyrun.clip_script;
+      # "$clip_manager" = "sh -c 'cliphist list | rofi -dmenu | cliphist decode | wl-copy'";
+      "$clip_manager" = config.programs.anyrun.clip_script;
       "$colorpicker" = pkgs.writeShellScript "menu" ''
         ## Simple Script To Pick Color Quickly.
         color=$(hyprpicker)
