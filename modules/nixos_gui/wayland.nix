@@ -48,12 +48,6 @@
   xdg.portal.config.common."org.freedesktop.impl.portal.Secret" = ["gnome-keyring"];
   ## END security.nix
   ## START misc.nix
-  programs = {
-    dconf.enable = true;
-    thunar = { # thunar file manager
-      enable = true;
-      plugins = with pkgs; [thunar-archive-plugin thunar-volman];
-    };
-  };
+  programs.dconf.enable = true;
   ## END misc.nix
 }

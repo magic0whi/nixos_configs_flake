@@ -45,7 +45,7 @@ in {
       "$clip_manager" = "systemd-run --user --scope ${config.programs.anyrun.clip_script}";
       # "$clip_manager" = "systemd-run --user --scope sh -c 'cliphist list | rofi -dmenu | cliphist decode | wl-copy'";
       "$colorpicker" = "~/.config/hypr/scripts/colorpicker";
-      "$file_manager" = "systemd-run --user --scope thunar";
+      "$file_manager" = "systemd-run --user --scope yazi";
       "$wlogout" = "systemd-run --user --scope ${config.programs.wlogout.wrapper_script}";
       "$mainMod" = "SUPER";
       bind = [
