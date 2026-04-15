@@ -1,6 +1,5 @@
-{pkgs, lib, ...}: let
-  # The threshold in bytes (196 GiB)
-  limitBytes = builtins.toString (196 * 1024 * 1024 * 1024);
+{config, pkgs, lib, ...}: let
+  cfg = config.services.traffic-quota;
   script = pkgs.writeShellScript "check-traffic-quota" ''
     set -eufo pipefail
 
@@ -23,7 +22,7 @@
       ] | add // 0
     ')
 
-    LIMIT=${limitBytes}
+    LIMIT=$((${builtins.toString cfg.limit} * 1024**3)) # The threshold in bytes
 
     if [ "$TOTAL_BYTES" -ge "$LIMIT" ]; then
       echo "Traffic quota exceeded: $TOTAL_BYTES bytes >= $LIMIT bytes. Shutting down."
@@ -33,15 +32,25 @@
     fi
   '';
 in {
-  services.vnstat.enable = true;
-  systemd.services.traffic-quota = {
-    description = "Check vnstat traffic quota and shutdown if exceeded";
-    after = ["vnstat.service"];
-    serviceConfig = {Type = "oneshot"; ExecStart = "${script}";};
+  options.services.traffic-quota = {
+    enable = lib.mkEnableOption "traffic quota checker";
+    limit = lib.mkOption {
+      type = lib.types.int;
+      default = 196;
+      description = "Traffic quota limit in GiB";
+    };
   };
-  systemd.timers.traffic-quota = {
-    description = "Timer for traffic quota checker";
-    wantedBy = ["timers.target"];
-    timerConfig = {OnBootSec = "5m"; OnUnitActiveSec = "5m";};
+  config = lib.mkIf cfg.enable {
+    services.vnstat.enable = true;
+    systemd.services.traffic-quota = {
+      description = "Check vnstat traffic quota and shutdown if exceeded";
+      after = ["vnstat.service"];
+      serviceConfig = {Type = "oneshot"; ExecStart = script;};
+    };
+    systemd.timers.traffic-quota = {
+      description = "Timer for traffic quota checker";
+      wantedBy = ["timers.target"];
+      timerConfig = {OnBootSec = "5m"; OnUnitActiveSec = "5m";};
+    };
   };
 }

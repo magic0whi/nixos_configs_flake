@@ -6,6 +6,7 @@
     "consoleblank=0"
     "intel_iommu=off"
   ];
+  services.traffic-quota.enable = true;
   ## START sing-box.nix
   age.secrets."sb_Proteus-NixOS-1.json" = {
     file = "${myvars.secrets_dir}/sb_Proteus-NixOS-1.json.age";

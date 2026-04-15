@@ -11,6 +11,7 @@
     # "crashkernel=0M-1G:0M,1G-4G:192M,4G-128G:384M,128G-:512M"
   ];
   networking.nameservers = ["223.5.5.5" "8.8.8.8"];
+  services.traffic-quota.enable = true;
   ## START sing-box.nix
   age.secrets."sb_Proteus-NixOS-6.json" = {
     file = "${myvars.secrets_dir}/sb_Proteus-NixOS-6.json.age";
