@@ -113,6 +113,7 @@ in {
           mountpoint = "/home";
           # Used by `services.zfs.autoSnapshot.*` options.
           options."com.sun:auto-snapshot" = "false";
+          # postCreateHook = "zfs list -t snapshot -H -o name | grep -E '^${zroot}/home@blank$' || zfs snapshot ${zroot}/home@blank";
         };
         "home/root" = {
           type = "zfs_fs";

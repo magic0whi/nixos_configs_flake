@@ -6,7 +6,6 @@
     "consoleblank=0"
     "intel_iommu=off"
   ];
-  services.syncthing.enable = false;
   ## START sing-box.nix
   age.secrets."sb_Proteus-NixOS-1.json" = {
     file = "${myvars.secrets_dir}/sb_Proteus-NixOS-1.json.age";

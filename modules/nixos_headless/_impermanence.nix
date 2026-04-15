@@ -39,8 +39,6 @@
 
       users.${myvars.username} = { # The following directories will be passed to /persistent/home/$USER
         directories = [
-          "nixos_configs_flake"
-
           {directory = ".gnupg"; mode = "0700";}
           {directory = ".ssh"; mode = "0700";}
 

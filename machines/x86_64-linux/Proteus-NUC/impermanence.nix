@@ -2,11 +2,14 @@
   environment.persistence."/persistent".directories = ["/srv"];
   environment.persistence."/persistent".users.${myvars.username} = {
     directories = [
+      "Documents"
       "Downloads"
+      "Games"
       "Music"
       "Pictures"
-      "Documents"
+      "Secrets"
       "Videos"
+      "Works"
 
       # Games
       ".steam" # Steam games

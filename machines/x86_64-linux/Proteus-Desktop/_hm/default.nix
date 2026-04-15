@@ -4,4 +4,5 @@
     nvtopPackages.intel
     xmrig # Heating & Mining
   ];
+  services.syncthing.enable = false;
 }

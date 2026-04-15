@@ -6,17 +6,6 @@
     "consoleblank=0"
     "intel_iommu=off"
   ];
-  # services.cloud-init = {
-  #   enable = true;
-  #   network.enable = true; # Let cloud-init manage networking/DNS
-  #   settings = {
-  #     preserve_hostname = true; # Let NixOS manage hostname
-  #     manage_etc_hosts = false; # Let NixOS manage /etc/hosts
-  #     datasource_list = ["GCE"];
-  #   };
-  # };
-  # networking.useDHCP = false;
-  services.syncthing.enable = false;
   ## START sing-box.nix
   age.secrets."sb_Proteus-NixOS-1.json" = {
     file = "${myvars.secrets_dir}/sb_Proteus-NixOS-1.json.age";

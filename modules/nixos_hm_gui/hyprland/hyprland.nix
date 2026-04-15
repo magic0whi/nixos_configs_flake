@@ -149,11 +149,11 @@ in {
       ];
       bindl = [
         "$mainMod,Z,exec,loginctl lock-session; sleep 0.6; hyprctl dispatch dpms off"
-        "$mainMod SHIFT,Q,exec,loginctl terminate-user $USER" # Logout & Exit Hyprland
-        "$mainMod SHIFT,W,exec,systemctl suspend" # Suspend
-        "$mainMod SHIFT,E,exec,systemctl hibernate" # Hibernate
-        "$mainMod SHIFT,R,exec,systemctl reboot" # Reboot
-        "$mainMod SHIFT,T,exec,systemctl poweroff" # Shutdown
+        "$mainMod CTRL SHIFT,Q,exec,loginctl terminate-user $USER" # Logout & Exit Hyprland
+        "$mainMod CTRL SHIFT,W,exec,systemctl suspend" # Suspend
+        "$mainMod CTRL SHIFT,E,exec,systemctl hibernate" # Hibernate
+        "$mainMod CTRL SHIFT,R,exec,systemctl reboot" # Reboot
+        "$mainMod CTRL SHIFT,T,exec,systemctl poweroff" # Shutdown
         ",switch:Lid Switch,exec,loginctl lock-session" # Lock when lid switch triggered
       ];
       bindm = [ # LMB/RMB and dragging to move/resize windows
