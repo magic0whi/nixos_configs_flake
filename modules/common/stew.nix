@@ -68,11 +68,11 @@
     # remote builders.
     # This config will be written to /etc/ssh/ssh_known_hosts
     knownHosts = lib.attrsets.mapAttrs (name: val: {
-      hostNames = [name] # Hostname and its IPv4
-      ++ (lib.optional
-        (!builtins.isNull myvars.networking.hosts_addr.${name}.ipv4)
-        myvars.networking.hosts_addr.${name}.ipv4
-      );
+      hostNames = [name] # Hostname and its IPv4 & IPv6
+      ++ (lib.optional (!builtins.isNull myvars.networking.hosts_addr.${name}.ipv4)
+        myvars.networking.hosts_addr.${name}.ipv4)
+      ++ (lib.optional (!builtins.isNull myvars.networking.hosts_addr.${name}.ipv6)
+        myvars.networking.hosts_addr.${name}.ipv6);
       publicKey = val.public_key;
       })
       myvars.networking.known_hosts;

@@ -64,10 +64,10 @@
       };
     };
     plugins.drag = pkgs.yaziPlugins.drag;
-    plugins.recycle-bin = pkgs.yaziPlugins.recycle-bin;
-    initLua = ''
-      require("recycle-bin"):setup()
-    '';
+    plugins.recycle-bin = if pkgs.stdenv.isDarwin then pkgs.emptyFile else pkgs.yaziPlugins.recycle-bin;
+    initLua = if pkgs.stdenv.isDarwin
+    then null
+    else ''require("recycle-bin"):setup()'';
     extraPackages = with pkgs; [ripdrag trash-cli ueberzugpp];
     keymap = {
       mgr.prepend_keymap = [

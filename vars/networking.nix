@@ -1,33 +1,22 @@
-_: {
+{
   hosts_addr = {
-    "github.com".ipv4 = null;
-    "ssh.github.com".ipv4 = null;
+    "github.com" = {ipv4 = null; ipv6 = null;};
+    "ssh.github.com" = {ipv4 = null; ipv6 = null;};
     # ============================================
     # Homelab's Physical Machines (KubeVirt Nodes)
     # ============================================
-    Proteus-MBP14M4P = {
-      ipv4 = "100.95.17.39";
-      ipv6 = "fd7a:115c:a1e0::783a:1127";
-    };
-    Proteus-NUC = { # Notebook
-      iface = "wlo1";
-      ipv4 = "100.64.161.20";
-      ipv6 = "fd7a:115c:a1e0::cd3a:a114";
-    };
-    Proteus-Desktop = {
-      iface = "enp4s0";
-      ipv4 = "100.89.227.22";
-      ipv6 = "fd7a:115c:a1e0::1a01:e318";
-    };
+    Proteus-MBP14M4P = {ipv4 = "100.95.17.39"; ipv6 = "fd7a:115c:a1e0::783a:1127";};
+    Proteus-NUC = {ipv4 = "100.64.161.20"; ipv6 = "fd7a:115c:a1e0::cd3a:a114";};
+    Proteus-Desktop = {ipv4 = "100.89.227.22"; ipv6 = "fd7a:115c:a1e0::1a01:e318";};
     # ============================================
     # Other VMs and Physical Machines
     # ============================================
-    Proteus-NixOS-0.ipv4 = "100.74.72.29";
-    Proteus-NixOS-1.ipv4 = "100.121.95.98";
-    Proteus-NixOS-2.ipv4 = "100.78.150.50";
-    Proteus-NixOS-3.ipv4 = "100.113.250.94";
-    Proteus-NixOS-4.ipv4 = "100.118.72.118";
-    Proteus-NixOS-5.ipv4 = "100.90.238.8";
+    Proteus-NixOS-0 = {ipv4 = "100.74.72.29"; ipv6= "fd7a:115c:a1e0::563a:481d";};
+    Proteus-NixOS-1 = {ipv4 = "100.121.95.98"; ipv6= "fd7a:115c:a1e0::df3a:5f62";};
+    Proteus-NixOS-2 = {ipv4 = "100.78.150.50"; ipv6= "fd7a:115c:a1e0::823a:9632";};
+    Proteus-NixOS-3 = {ipv4 = "100.113.250.94"; ipv6= "fd7a:115c:a1e0::703a:fa5e";};
+    Proteus-NixOS-4 = {ipv4 = "100.118.72.118"; ipv6= "fd7a:115c:a1e0::e33a:4876";};
+    Proteus-NixOS-5 = {ipv4 = "100.90.238.8"; ipv6= "fd7a:115c:a1e0::c53a:ee08";};
     # Proteus-NixOS-6.ipv4 = "100.126.174.68";
     nozomi = {
       # LicheePi 4A's wireless interface - RISC-V
@@ -67,9 +56,18 @@ _: {
   in {
     "github.com".public_key = github_key;
     "ssh.github.com".public_key = github_key;
-    Proteus-MBP14M4P.public_key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIC+ekT5jrD2KuLEqVeIASQ9A/VaBcrCE7xfcBqxsWbQ8";
-    Proteus-NUC.public_key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGkreuZakzaKdfQL+YNAvcr6WRsIz5c3eoFcK3NAUmLu root@Proteus-NUC";
-    Proteus-Desktop.public_key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJla2bgFUIxlMyfqiS/BIxkFXFiIh4dhjjOvWzHnr6IL root@Proteus-Desktop";
+    Proteus-MBP14M4P = {
+      public_key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIC+ekT5jrD2KuLEqVeIASQ9A/VaBcrCE7xfcBqxsWbQ8";
+      syncthing_id = "UF2KT6R-ISVDLBM-UJW3JKP-YZJTOES-7K55HS2-IGPE5MQ-OO4D6HK-LZRSLAE";
+    };
+    Proteus-NUC = {
+      public_key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGkreuZakzaKdfQL+YNAvcr6WRsIz5c3eoFcK3NAUmLu root@Proteus-NUC";
+      syncthing_id = "3P2RWV6-RQMHBFS-L3Z5JTF-O6HOR66-7INJZNM-XW3WUSG-XCIB454-UITNPAF";
+    };
+    Proteus-Desktop = {
+      public_key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJla2bgFUIxlMyfqiS/BIxkFXFiIh4dhjjOvWzHnr6IL root@Proteus-Desktop";
+      syncthing_id = "DFKVKXA-MHOUCDP-2DXEZGE-VUGGQXP-MRQCOZL-BOOBXAV-4IDSU26-B3GOUAF";
+    };
     Proteus-NixOS-0.public_key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGqgfVyb6hCdQmzbls0NNjMJ6Zxp3zq+XClR1OZIPnCD root@Proteus-NixOS-1";
     Proteus-NixOS-1.public_key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAII8MZfS8gzTEb6sSBaLBALNabJ5sy1nBeNbiRzOo1Kyq root@Proteus-NixOS-1";
     Proteus-NixOS-2.public_key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIkal1+TGfarUm7uL4q4XdTTqKRtIlFo2pfsu04LoBFF root@Proteus-NixOS-2";
