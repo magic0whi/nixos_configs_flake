@@ -169,17 +169,22 @@
           additional_groups_dn = "ou=Group";
           groups_filter = "(member={dn})";
           user = "cn=Manager,dc=tailba6c3f,dc=ts,dc=net";
-          display_name_attribute = "cn";
+          attributes.display_name = "cn";
           # Password is injected via environment variable
         };
       };
       access_control = {default_policy = "deny"; rules = [{domain = "*.${myvars.domain}"; policy = "one_factor";}];};
       identity_providers = {
         oidc = {
+          authorization_policies.policy_name = {
+            default_policy = "two_factor";
+            rules = [{policy = "one_factor"; networks = ["100.64.0.0/10"];}];
+          };
           cors = {
             endpoints = ["authorization" "token" "revocation" "introspection" "userinfo"];
             allowed_origins = [
               "https://papra.${myvars.domain}"
+              # "https://git.${myvars.domain}"
             ];
           };
           clients = [
@@ -191,9 +196,7 @@
               client_secret = "$pbkdf2-sha512$310000$3KSvvBJnoLyJDoKDBIBcZQ$dMQmccJ6Y4hrj.tv.dD3KFzLcsPCsMNRZFTpHUiInVcSX0eBR5T6jemXfcUaob9PsbgHBwRNCjtXiBNl6lOc7g";
               public = false;
               authorization_policy = "two_factor"; # Or "one_factor"
-              redirect_uris = [
-                "https://papra.${myvars.domain}/api/auth/oauth2/callback/authelia"
-              ];
+              redirect_uris = ["https://papra.${myvars.domain}/api/auth/oauth2/callback/authelia"];
               scopes = ["openid" "profile" "email" "groups"];
               response_modes = ["form_post" "query"];
               userinfo_signed_response_alg = "none";
@@ -202,14 +205,16 @@
             {
               client_id = "forgejo";
               client_name = "Forgejo";
-              client_secret = "$pbkdf2-sha512$310000$T2C0F.ETceBFQK9zFQP1cQ$I22KX..r3UDb6ydnzjU0Dr.vLDWdsvakHFl5x0vFvv7Is.QsN25sWA/6A7GEPftr0gqqvumotigm2zBg7.lEyA";
+              client_secret = "$pbkdf2-sha512$310000$hHi.uSu97kUzfh.X9ijhXA$.IL0RMznXtdwXGTYq9eKV.83nIXI0glK7v.IaFYu5xVpweng.zo5L5PpuC6aQgY6R9ROgSFQrHbve3LK50j/yg";
               public = false;
               authorization_policy = "two_factor"; # Require 2FA to access code
+              require_pkce = true;
+              pkce_challenge_method = "S256";
               redirect_uris = ["https://git.${myvars.domain}/user/oauth2/Authelia/callback"];
               scopes = ["openid" "profile" "email" "groups"];
               response_modes = ["form_post" "query"];
               userinfo_signed_response_alg = "none";
-              token_endpoint_auth_method = "client_secret_post";
+              token_endpoint_auth_method = "client_secret_basic";
             }
           ];
         };
@@ -284,7 +289,13 @@
   ## END caddy.nix
   ## START forgejo.nix
   # Decrypt the runner token using your existing age setup
-  # Create a file secrets/forgejo_runner_token.env.age containing: TOKEN=your_generated_token
+  # Create a file secrets/forgejo_runner_token.env.age containing:
+  # TOKEN=your_generated_token,
+  # see below:
+  # `services.authelia.instances.main.settings.identity_providers.oidc.clients`
+  age.secrets."forgejo_authelia_secret" = {
+    file = "${myvars.secrets_dir}/forgejo_authelia_secret.age"; mode = "0400"; owner = "forgejo";
+  };
   services.forgejo = {
     enable = true;
     database.type = "postgres"; # Module will automatically provision PostgreSQL
@@ -296,14 +307,57 @@
         HTTP_ADDR = "127.0.0.1";
         # PROTOCOL = "http+unix"; # http through unix
       };
+      oauth2_client = {
+        ENABLE_AUTO_REGISTRATION = true;
+        ACCOUNT_LINKING = "auto";
+      };
       # Delegating registration entirely to Authelia
       service = {DISABLE_REGISTRATION = true; ALLOW_ONLY_EXTERNAL_REGISTRATION = true;};
       # Add support for actions, based on act: https://github.com/nektos/act
       actions = {ENABLED = true; DEFAULT_ACTIONS_URL = "github";};
     };
   };
+  systemd.services.forgejo.postStart = let
+    forgejo_exe = lib.getExe config.services.forgejo.package;
+  in ''
+    # Wait for Forgejo to be fully ready to accept CLI commands
+    sleep 5
+
+    # Read the secret from your age file
+    OIDC_SECRET=$(cat ${config.age.secrets."forgejo_authelia_secret".path})
+
+    # The environment variables (FORGEJO_WORK_DIR, etc.) are already injected by systemd.
+    FORGEJO_CLI="${forgejo_exe} --config ${config.services.forgejo.stateDir}/custom/conf/app.ini admin auth"
+
+    # Check if the Authelia auth source already exists
+    if ! $FORGEJO_CLI list | grep -q "Authelia"; then
+      echo "Adding Authelia OIDC provider..."
+      $FORGEJO_CLI add-oauth \
+        --name Authelia \
+        --provider openidConnect \
+        --key "forgejo" \
+        --secret "$OIDC_SECRET" \
+        --auto-discover-url "https://auth.${myvars.domain}/.well-known/openid-configuration" \
+        --icon-url "https://github.com/authelia/authelia/blob/b5bf61b58c2af95efae14ea463ebcd2ad20c2fb1/docs/static/images/branding/logo.png"
+    else
+      echo "Updating existing Authelia OIDC provider..."
+      AUTHELIA_ID=$($FORGEJO_CLI list | ${lib.getExe pkgs.gawk} '/Authelia/ {print $1;}')
+      $FORGEJO_CLI update-oauth \
+        --name Authelia \
+        --id $AUTHELIA_ID \
+        --provider openidConnect \
+        --key "forgejo" \
+        --secret "$OIDC_SECRET" \
+        --auto-discover-url "https://auth.${myvars.domain}/.well-known/openid-configuration" \
+        --icon-url "https://github.com/authelia/authelia/blob/b5bf61b58c2af95efae14ea463ebcd2ad20c2fb1/docs/static/images/branding/logo.png"
+    fi
+  '';
+  # Generate the Runner Token:
+  # `sudo -u forgejo ${pkgs.forgejo} forgejo-cli --config ${config.services.forgejo.stateDir}/custom/conf/app.ini forgejo-cli actions generate-runner-token`
   age.secrets."forgejo_runner_token.env" = {
-    file = "${myvars.secrets_dir}/forgejo_runner_token.env.age"; mode = "0400"; owner = "gitea-runner";
+    file = "${myvars.secrets_dir}/forgejo_runner_token.env.age";
+    mode = "0400";
+    owner = config.systemd.services."gitea-runner-${builtins.head (builtins.attrNames config.services.gitea-actions-runner.instances)}".serviceConfig.User;
   };
   # Local Action Runner connecting to your Forgejo instance
   # Docker is required to execute Docker-based action labels

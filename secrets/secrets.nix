@@ -56,5 +56,6 @@ in {
   "mpd_auth.conf.age".publicKeys = machines ++ [Proteus-NUC];
   "authelia_oidc_hmac.txt.age".publicKeys = machines ++ [Proteus-NUC];
   "authelia_oidc_rsa.pem.age".publicKeys = machines ++ [Proteus-NUC];
+  "forgejo_authelia_secret.age".publicKeys = machines ++ [Proteus-NUC];
   "forgejo_runner_token.env.age".publicKeys = machines ++ [Proteus-NUC];
 }
