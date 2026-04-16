@@ -27,8 +27,8 @@
   ## START systemd_tmpfiles.nix
   systemd.tmpfiles.rules = [ # See tmpfiles.d(5)
     # Type Path       Mode User    Group Age Argument
-    "d /srv/sync      0775 proteus users -   -"
-    "d /srv/sync_work 0775 proteus users -   -"
+    "d /srv/sync      0775 ${myvars.username} users -   -"
+    "d /srv/sync_work 0775 ${myvars.username} users -   -"
   ];
   ## END systemd_tmpfiles.nix
   boot.binfmt.emulatedSystems = ["riscv64-linux"]; # Cross compilation

@@ -1,5 +1,4 @@
 {myvars, lib, pkgs, config, ...}: let
-  domain = "proteus.eu.org";
   tailnet = "tailba6c3f.ts.net";
   tailnet_prefix_length = 48;
   soa_parms = {
@@ -12,14 +11,14 @@
   zone_head = _domain: ''
     $ORIGIN ${_domain}.
     $TTL ${soa_parms.minimal_ttl}
-    @ IN SOA  ns1.${domain}. admin.${domain}. (
+    @ IN SOA  ns1.${myvars.domain}. admin.${myvars.domain}. (
               ${soa_parms.serial}       ; Serial (YYYYMMDDNN)
               ${soa_parms.refresh}      ; Refresh (1 hour)
               ${soa_parms.retry}        ; Retry (30 minutes)
               ${soa_parms.expire}       ; Expire (1 week)
               ${soa_parms.minimal_ttl}) ; Minimum TTL
     ; Nameserver definitions
-    @ IN NS   ns1.${domain}.
+    @ IN NS   ns1.${myvars.domain}.
   '';
   nuc_ipv4 = myvars.networking.hosts_addr.Proteus-NUC.ipv4;
   nuc_ipv6 = myvars.networking.hosts_addr.Proteus-NUC.ipv6;
@@ -102,7 +101,7 @@
   # =========================================
   # Forward Zone (proteus.eu.org)
   # =========================================
-  proteus_zone = pkgs.writeText "${domain}.zone" ((zone_head domain) + ''
+  proteus_zone = pkgs.writeText "${myvars.domain}.zone" ((zone_head myvars.domain) + ''
     @ IN A    ${nuc_ipv4}
     @ IN AAAA ${nuc_ipv6}
 
@@ -175,7 +174,7 @@
 in {
   networking.firewall = {allowedTCPPorts = [53]; allowedUDPPorts = [53];};
   systemd.services.bind.preStart = lib.mkAfter ''
-    install -m 0644 ${proteus_zone} ${config.services.bind.directory}/${domain}.zone
+    install -m 0644 ${proteus_zone} ${config.services.bind.directory}/${myvars.domain}.zone
     install -m 0644 ${nuc_reverse_zone_v4} ${config.services.bind.directory}/${nuc_reverse_zone_v4_name}.zone
     install -m 0644 ${desktop_reverse_zone_v4} ${config.services.bind.directory}/${desktop_reverse_zone_v4_name}.zone
     install -m 0644 ${reverse_zone_v6} ${config.services.bind.directory}/${reverse_zone_v6_name}.zone
@@ -189,12 +188,12 @@ in {
   services.resolved.settings.Resolve = {
     DNSSEC= "allow-downgrade";
     Domains = [
-      "~${domain}" # The '~' prefix makes this a routing domain
+      "~${myvars.domain}" # The '~' prefix makes this a routing domain
       "~${nuc_reverse_zone_v4_name}"
       "~${desktop_reverse_zone_v4_name}"
       "~${reverse_zone_v6_name}"
     ];
-    DNS = ["${nuc_ipv4}#${domain}"];
+    DNS = ["${nuc_ipv4}#${myvars.domain}"];
   };
   # Trust Island
   # NOTE: Query the zone apex (`proteus.eu.org`, `161.64.100.in-addr.arpa`
@@ -202,8 +201,8 @@ in {
   # nix run nixpkgs#dig -- @100.64.161.20 161.64.100.in-addr.arpa DNSKEY +noall +answer | nix shell nixpkgs#bind --command dnssec-dsfromkey -f - 161.64.100.in-addr.arpa
   # Or
   # nix run nixpkgs#dig -- @100.64.161.20 161.64.100.in-addr.arpa DNSKEY +noall +answer | nix shell nixpkgs#ldns.examples --command ldns-key2ds -n /dev/stdin
-  environment.etc."dnssec-trust-anchors.d/${domain}.positive".text = ''
-    ${domain}. IN DS 19905 15 2 AC53E45BD2ECD7E4D8DED050FB08E0F37095AF97E0B6F73CE912A56CE5C542C0
+  environment.etc."dnssec-trust-anchors.d/${myvars.domain}.positive".text = ''
+    ${myvars.domain}. IN DS 19905 15 2 AC53E45BD2ECD7E4D8DED050FB08E0F37095AF97E0B6F73CE912A56CE5C542C0
   '';
   environment.etc."dnssec-trust-anchors.d/${nuc_reverse_zone_v4_name}.positive".text = ''
     ${nuc_reverse_zone_v4_name}. IN DS 32237 15 2 5F089BE41C87322212B05BAB4A760097235220F5346A1F51F6161728B77A0F8F
@@ -274,9 +273,9 @@ in {
       };
     '';
     zones = {
-      "${domain}" = {
+      "${myvars.domain}" = {
         master = true;
-        file = "${domain}.zone"; # Relative path
+        file = "${myvars.domain}.zone"; # Relative path
         # Apply the DNSSEC policy to sign the zone locally
         extraConfig = "dnssec-policy custom;";
       };

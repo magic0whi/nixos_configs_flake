@@ -5,9 +5,7 @@
   myvars,
   # nixpkgs-postgresql,
   ...
-}: let
-  domain = "proteus.eu.org";
-in {
+}: {
   networking.firewall = let
     sunshine_port = config.services.sunshine.settings.port;
     s_https = builtins.toString (sunshine_port - 5); # Default: 47984 HTTPS
@@ -61,7 +59,7 @@ in {
     enable = true;
     user = myvars.username;
     group = myvars.username;
-    extraReadWriteDirs = [/srv];
+    extraReadWriteDirs = [/srv/aria2 config.home-manager.users.proteus.xdg.userDirs.documents];
     settings = {
       httpd.bindings = [
         # Allow reverse proxy
@@ -75,58 +73,12 @@ in {
     };
   };
   ## END services_sftpgo.nix
-  ## START services_postgresql.nix
-  age.secrets."postgresql_server.priv.pem" = {
-    file = "${myvars.secrets_dir}/proteus_server.priv.pem.age";
-    mode = "0400"; owner = config.systemd.services.postgresql.serviceConfig.User;
-  };
-  # TODO: Learn SQL
-  services.postgresql = {
-    enable = true;
-    # package = nixpkgs-postgresql.legacyPackages.${
-    #   pkgs.stdenv.hostPlatform.system
-    # }.postgresql.override {ldapSupport = true;};
-    package = pkgs.postgresql.override {ldapSupport = true;};
-    enableJIT = true;
-    enableTCPIP = true;
-    settings = {
-      ssl = true;
-      ssl_cert_file = "${myvars.secrets_dir}/proteus_server.pub.pem";
-      ssl_key_file = config.age.secrets."postgresql_server.priv.pem".path;
-    };
-    ensureDatabases = [
-      "mydatabase" # TODO: For learning
-      "atuin"
-      config.services.paperless.user
-      config.services.authelia.instances.main.user
-    ];
-    ensureUsers = [
-      {name = "proteus"; ensureClauses = {login = true; /*superuser = true;*/ createdb = true;};}
-      {name = "atuin"; ensureDBOwnership = true;}
-      {name = config.services.paperless.user; ensureDBOwnership = true;}
-      {name = config.services.authelia.instances.main.user; ensureDBOwnership =true;}
-    ];
-    authentication = ''
-      # type database DBuser auth-method [auth-options]
-      local all all trust
-      host all all 100.64.0.0/10 ldap ldapurl="ldaps://openldap.${domain}/ou=People,dc=tailba6c3f,dc=ts,dc=net?uid?sub"
-      host all all fd7a:115c:a1e0::/48 ldap ldapurl="ldaps://openldap.${domain}/ou=People,dc=tailba6c3f,dc=ts,dc=net?uid?sub"
-    '';
-  };
-  services.postgresqlBackup = {
-    enable = true;
-    # databases = ["docspell"];
-    location = "/srv/Backups/psql";
-    compression = "zstd";
-    compressionLevel = 3;
-  };
-  ## END services_postgresql.nix
   ## START services_atuin.nix
   age.secrets."atuin.env" = {file = "${myvars.secrets_dir}/atuin.env.age"; mode = "0400"; owner = "root";};
-  systemd.services.atuin.serviceConfig.EnvironmentFile = config.age.secrets."atuin.env".path;
+  systemd.services.atuin.serviceConfig.EnvironmentFile = lib.mkIf config.services.atuin.enable config.age.secrets."atuin.env".path;
   services.atuin = {
     enable = true;
-    database.uri = "postgres://atuin@postgresql.${domain}/atuin?sslmode=require";
+    database.uri = "postgres://atuin@postgresql.${myvars.domain}/atuin?sslmode=require";
     openRegistration = true;
   };
   ## END services_atuin.nix
@@ -135,19 +87,21 @@ in {
   services.immich = {
     enable = true;
     host = "127.0.0.1";
-    database.host = "postgresql.${domain}";
+    database.host = "postgresql.${myvars.domain}";
     secretsFile = config.age.secrets."immich.env".path;
     mediaLocation = "/srv/immich";
   };
   ## END services_immich.nix
   ## START services_paperless.nix
-  age.secrets."paperless.env" = {file = "${myvars.secrets_dir}/paperless.env.age"; mode = "0400"; owner = "root";};
+  age.secrets."paperless.env" = {
+    file = "${myvars.secrets_dir}/paperless.env.age"; mode = "0400"; owner = config.services.paperless.user;
+  };
   services.paperless = {
-    domain = "paperless.${domain}";
+    domain = "paperless.${myvars.domain}";
     enable = true;
     settings = {
       PAPERLESS_DBENGINE = "postgresql";
-      PAPERLESS_DBHOST = "postgresql.${domain}";
+      PAPERLESS_DBHOST = "postgresql.${myvars.domain}";
       PAPERLESS_DBSSLMODE = "require";
       PAPERLESS_DBNAME = config.services.paperless.user;
       PAPERLESS_DBUSER = config.services.paperless.user;
@@ -164,12 +118,22 @@ in {
 
       APERLESS_WEBSERVER_WORKERS = 16;
       PAPERLESS_WORKER_TIMEOUT = 300; # Default 1800 seconds (30min) is too long
-      PAPERLESS_FILENAME_FORMAT = "{{ created_year }}/{{ correspondent }}/{{ document_type }}/{{ created }}_{{ correspondent }}_{{ document_type }}_{{ title }}";
+      PAPERLESS_FILENAME_FORMAT = "{{ created_year }}/{{ correspondent }}/{{ document_type }}/{{ title }}";
     };
     environmentFile = config.age.secrets."paperless.env".path;
     dataDir = "/srv/paperless";
     exporter.enable = true;
   };
+  systemd.services.paperless-exporter.serviceConfig = lib.mkIf config.services.paperless.exporter.enable {
+    EnvironmentFile = config.age.secrets."paperless.env".path;
+    ExecStartPost = [
+      "+${pkgs.coreutils}/bin/chown -R ${myvars.username}:${config.services.paperless.user} ${config.services.paperless.dataDir}/export"
+      "+${pkgs.coreutils}/bin/chmod -R u+rwX,g+rwX ${config.services.paperless.dataDir}/export"
+    ];
+  };
+  systemd.tmpfiles.rules = lib.mkIf config.services.paperless.exporter.enable [
+    "z '${config.services.paperless.dataDir}/export' 2770 ${myvars.username} ${config.services.paperless.user} - -"
+  ];
   ## END services_paperless.nix
   ## START services_authelia.nix
   age.secrets = {
@@ -228,15 +192,15 @@ in {
       server.address = "tcp://127.0.0.1:9092";
       # This allows the login cookie to work across all your subdomains
       session.cookies = [{
-        inherit domain;
-        authelia_url = "https://auth.${domain}";
+        inherit (myvars) domain;
+        authelia_url = "https://auth.${myvars.domain}";
         same_site = "lax";
         inactivity = "5 minutes";
         expiration = "1 hour";
         remember_me = "1 month";
       }];
       storage.postgres = {
-        address = "tcp://postgresql.${domain}:${builtins.toString config.services.postgresql.settings.port}";
+        address = "tcp://postgresql.${myvars.domain}:${builtins.toString config.services.postgresql.settings.port}";
         database = config.services.authelia.instances.main.user;
         schema = "public";
         username = config.services.authelia.instances.main.user;
@@ -247,7 +211,7 @@ in {
       authentication_backend = {
         ldap = {
           implementation = "custom";
-          address = "ldaps://openldap.${domain}:636";
+          address = "ldaps://openldap.${myvars.domain}:636";
           timeout = "5s";
           base_dn = "dc=tailba6c3f,dc=ts,dc=net";
           additional_users_dn = "ou=People";
@@ -259,13 +223,13 @@ in {
           # Password is injected via environment variable
         };
       };
-      access_control = {default_policy = "deny"; rules = [{domain = "*.${domain}"; policy = "one_factor";}];};
+      access_control = {default_policy = "deny"; rules = [{domain = "*.${myvars.domain}"; policy = "one_factor";}];};
       identity_providers = {
         oidc = {
           cors = {
             endpoints = ["authorization" "token" "revocation" "introspection" "userinfo"];
             allowed_origins = [
-              "https://papra.${domain}"
+              "https://papra.${myvars.domain}"
             ];
           };
           clients = [
@@ -278,7 +242,7 @@ in {
               public = false;
               authorization_policy = "two_factor"; # Or "one_factor"
               redirect_uris = [
-                "https://papra.${domain}/api/auth/oauth2/callback/authelia"
+                "https://papra.${myvars.domain}/api/auth/oauth2/callback/authelia"
               ];
               scopes = ["openid" "profile" "email" "groups"];
               response_modes = ["form_post" "query"];
@@ -312,7 +276,7 @@ in {
       http = {
         server_port = 8123; server_host = ["127.0.0.1" "::1"];
         use_x_forwarded_for = true; trusted_proxies = ["127.0.0.1" "::1"];
-        cors_allowed_origins = ["https://hass.${domain}"];
+        cors_allowed_origins = ["https://hass.${myvars.domain}"];
       };
       homeassistant = {
         name = "Proteus' Homo";
@@ -341,7 +305,7 @@ in {
     # Caddy doesn't need to bind to public ports (80/443) since Traefik handles
     # that. We can tell Caddy's global config not to attempt ACME/HTTPS bindings.
     globalConfig = ''auto_https off'';
-    virtualHosts."http://notebook.${domain}:8080" = {
+    virtualHosts."http://notebook.${myvars.domain}:8080" = {
       listenAddresses = [ "127.0.0.1" "[::1]" ];
       extraConfig = ''
         # respond "Hello, world!" # For debug

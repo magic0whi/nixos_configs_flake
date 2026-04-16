@@ -1,6 +1,5 @@
 {config, myvars, lib, ...}: let
   server_pub_crt = "${myvars.secrets_dir}/proteus_server.pub.pem";
-  domain = "proteus.eu.org";
   tailnet = "tailba6c3f.ts.net";
   openldap_port = lib.removeSuffix "/" (lib.last (lib.strings.splitString
     ":" (lib.head config.services.openldap.urlList))
@@ -64,7 +63,7 @@ in {
         serversTransports.ignorecert.insecureSkipVerify = true;
         middlewares.authelia-auth.forwardAuth = {
           # Tell Traefik where to ask if a user is authenticated
-          address = "http://127.0.0.1:${authelia_port}/api/verify?rd=https://auth.${domain}/";
+          address = "http://127.0.0.1:${authelia_port}/api/verify?rd=https://auth.${myvars.domain}/";
           trustForwardHeader = true;
           authResponseHeaders = ["Remote-User" "Remote-Groups" "Remote-Email" "Remote-Name"];
         };
@@ -72,11 +71,11 @@ in {
           # Router for the login portal
           # `tls = {}` enables TLS using the default cert provided above
           authelia = {
-            rule = "Host(`auth.${domain}`)";
+            rule = "Host(`auth.${myvars.domain}`)";
             entryPoints = ["websecure"]; service = "authelia-backend"; tls = {};
           };
           traefik-dashboard = {
-            rule = "Host(`traefik.${domain}`)";
+            rule = "Host(`traefik.${myvars.domain}`)";
             entryPoints = ["websecure"];
             # Protect the dashboard
             middlewares = ["authelia-auth"];
@@ -84,65 +83,65 @@ in {
             tls = {};
           };
           atuin = {
-            rule = "Host(`atuin.${domain}`)";
+            rule = "Host(`atuin.${myvars.domain}`)";
             entryPoints = ["websecure"]; service = "atuin"; tls = {};
           };
           immich = {
-            rule = "Host(`immich.${domain}`)";
+            rule = "Host(`immich.${myvars.domain}`)";
             entryPoints = ["websecure"]; service = "immich"; tls = {};
           };
           paperless = {
-            rule = "Host(`paperless.${domain}`)";
+            rule = "Host(`paperless.${myvars.domain}`)";
             entryPoints = ["websecure"]; service = "paperless"; tls = {};
           };
           sftpgo-webui = {
-            rule = "Host(`sftpgo.${domain}`)";
+            rule = "Host(`sftpgo.${myvars.domain}`)";
             entryPoints = ["websecure"]; service = "sftpgo-webui"; tls = {};
           };
           sftpgo-webdav = {
-            rule = "Host(`webdav.${domain}`)";
+            rule = "Host(`webdav.${myvars.domain}`)";
             entryPoints = ["websecure"]; service = "sftpgo-webdav"; tls = {};
           };
           aria2-rpc = {
-            rule = "Host(`aria2.${domain}`)";
+            rule = "Host(`aria2.${myvars.domain}`)";
             entryPoints = ["websecure"]; service = "aria2-rpc"; tls = {};
           };
           qinglong = {
-            rule = "Host(`ql.${domain}`)";
+            rule = "Host(`ql.${myvars.domain}`)";
             entryPoints = ["websecure"]; service = "qinglong"; tls = {};
           };
           doh = {
             # Intercept standard DoH queries at the apex domain
-            rule = "(Host(`${domain}`) || Host(`ns1.${domain}`) || Host(`proteus-nuc.${tailnet}`)) && Path(`/dns-query`)";
+            rule = "(Host(`${myvars.domain}`) || Host(`ns1.${myvars.domain}`) || Host(`proteus-nuc.${tailnet}`)) && Path(`/dns-query`)";
             entryPoints = ["websecure"];
             tls = {}; # Traefik decrypts the HTTPS traffic
             service = "doh";
           };
           sb = {
-            rule = "Host(`sb.${domain}`)";
+            rule = "Host(`sb.${myvars.domain}`)";
             entryPoints = ["websecure"];
             middlewares = ["authelia-auth"];
             service = "sb-dashboard";
             tls = {};
           };
           syncthing = {
-            rule = "Host(`syncthing.${domain}`)";
+            rule = "Host(`syncthing.${myvars.domain}`)";
             entryPoints = ["websecure"];
             middlewares = ["authelia-auth"];
             service = "syncthing-dashboard";
             tls = {};
           };
           home-assistant = {
-            rule = "Host(`hass.${domain}`)";
+            rule = "Host(`hass.${myvars.domain}`)";
             entryPoints = ["websecure"]; service = "home-assistant"; tls = {};
           };
           sunshine-webui = {
-            rule = "Host(`sunshine.${domain}`)";
+            rule = "Host(`sunshine.${myvars.domain}`)";
             entryPoints = ["websecure"]; service = "sunshine-webui"; tls = {};
           };
-          papra = {rule = "Host(`papra.${domain}`)"; entryPoints = ["websecure"]; service = "papra"; tls = {};};
+          papra = {rule = "Host(`papra.${myvars.domain}`)"; entryPoints = ["websecure"]; service = "papra"; tls = {};};
           notebook = {
-            rule = "Host(`notebook.${domain}`)";
+            rule = "Host(`notebook.${myvars.domain}`)";
             entryPoints = ["websecure"]; service = "notebook"; tls = {};
           };
         };
@@ -208,7 +207,7 @@ in {
             tls = {};
           };
           dot = {
-            rule = "HostSNI(`${domain}`) || HostSNI(`ns1.${domain}`) || HostSNI(`proteus-nuc.${tailnet}`)";
+            rule = "HostSNI(`${myvars.domain}`) || HostSNI(`ns1.${myvars.domain}`) || HostSNI(`proteus-nuc.${tailnet}`)";
             entryPoints = ["dot"];
             service = "dot";
             tls = {};

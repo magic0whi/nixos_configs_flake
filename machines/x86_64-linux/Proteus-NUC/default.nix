@@ -19,6 +19,7 @@
     igpu_pci_ids = "0000:00:02.0"; # `lspci -Dnnd 8086::03xx | cut -f1 -d' '`
     dgpu_sym_name = "nvidia";
     dgpu_pci_ids = "0000:01:00.0"; # `lspci -Dnnd 10de::03xx | cut -f1 -d' '`
+    domain = "proteus.eu.org";
   };
   nixos_system = inputs.nixpkgs.lib.nixosSystem (mylib.gen_system_args {
     inherit name mylib nixpkgs_modules hm_modules;
