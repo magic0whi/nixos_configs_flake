@@ -199,6 +199,18 @@
               userinfo_signed_response_alg = "none";
               token_endpoint_auth_method = "client_secret_post";
             }
+            {
+              client_id = "forgejo";
+              client_name = "Forgejo";
+              client_secret = "$pbkdf2-sha512$310000$T2C0F.ETceBFQK9zFQP1cQ$I22KX..r3UDb6ydnzjU0Dr.vLDWdsvakHFl5x0vFvv7Is.QsN25sWA/6A7GEPftr0gqqvumotigm2zBg7.lEyA";
+              public = false;
+              authorization_policy = "two_factor"; # Require 2FA to access code
+              redirect_uris = ["https://git.${myvars.domain}/user/oauth2/Authelia/callback"];
+              scopes = ["openid" "profile" "email" "groups"];
+              response_modes = ["form_post" "query"];
+              userinfo_signed_response_alg = "none";
+              token_endpoint_auth_method = "client_secret_post";
+            }
           ];
         };
       };
@@ -270,4 +282,44 @@
   # but give the group (which we will add 'caddy' to) read access.
   systemd.tmpfiles.rules = ["d /var/www/notebook 0755 ${myvars.username} ${config.services.caddy.group} - -"];
   ## END caddy.nix
+  ## START forgejo.nix
+  # Decrypt the runner token using your existing age setup
+  # Create a file secrets/forgejo_runner_token.env.age containing: TOKEN=your_generated_token
+  services.forgejo = {
+    enable = true;
+    database.type = "postgres"; # Module will automatically provision PostgreSQL
+    lfs.enable = true;
+    settings = {
+      server = {
+        DOMAIN = "git.${myvars.domain}";
+        ROOT_URL = "https://git.${myvars.domain}/";
+        HTTP_ADDR = "127.0.0.1";
+        # PROTOCOL = "http+unix"; # http through unix
+      };
+      # Delegating registration entirely to Authelia
+      service = {DISABLE_REGISTRATION = true; ALLOW_ONLY_EXTERNAL_REGISTRATION = true;};
+      # Add support for actions, based on act: https://github.com/nektos/act
+      actions = {ENABLED = true; DEFAULT_ACTIONS_URL = "github";};
+    };
+  };
+  age.secrets."forgejo_runner_token.env" = {
+    file = "${myvars.secrets_dir}/forgejo_runner_token.env.age"; mode = "0400"; owner = "gitea-runner";
+  };
+  # Local Action Runner connecting to your Forgejo instance
+  # Docker is required to execute Docker-based action labels
+  virtualisation.docker.enable = true;
+  services.gitea-actions-runner = {
+    package = pkgs.forgejo-runner;
+    instances.default = {
+      enable = true;
+      name = "${config.networking.hostName}-runner";
+      url = "https://git.${myvars.domain}";
+      tokenFile = config.age.secrets."forgejo_runner_token.env".path;
+      labels = [
+        "ubuntu-latest:docker://node:20-bookworm"
+        "debian-latest:docker://node:20-bookworm"
+      ];
+    };
+  };
+  ## END forgejo.nix
 }

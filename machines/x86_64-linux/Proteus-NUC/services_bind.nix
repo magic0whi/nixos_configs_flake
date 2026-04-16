@@ -2,7 +2,7 @@
   tailnet = "tailba6c3f.ts.net";
   tailnet_prefix_length = 48;
   soa_parms = {
-    serial = "2026041401"; # Serial (YYYYMMDDNN)
+    serial = "2026041601"; # Serial (YYYYMMDDNN)
     refresh = "3600"; # Refresh (1 hour)
     retry = "1800"; # Retry (30 minutes)
     expire = "604800"; # Expire (1 week)
@@ -62,7 +62,7 @@
       lib.strings.splitString ":" (builtins.head split_double_colon)
     );
     right_padded = map pad_hex (
-      lib.strings.splitString ":" (lib.last split_double_colon)
+      lib.strings.splitString ":" (lib.lists.last split_double_colon)
     );
     # 3. Calculate and generate missing zero segments (IPv6 has 8 total segments)
     # e.g. missing count is `8 - (3 + 5) = 3`, so the missing_segments is:
@@ -133,6 +133,7 @@
     sunshine   IN CNAME proteus-nuc
     papra      IN CNAME proteus-nuc
     notebook   IN CNAME proteus-nuc
+    git        IN CNAME proteus-nuc
 
     monero     IN CNAME proteus-desktop
   '');
@@ -145,14 +146,14 @@
     "${nuc_reverse_zone_v4_name}.zone"
     ((zone_head nuc_reverse_zone_v4_name)+ ''
     ; PTR Record for last octet pointing to Tailscale domain
-    ${lib.last (lib.strings.splitString "." nuc_ipv4)} IN PTR proteus-nuc.${tailnet}.
+    ${lib.lists.last (lib.strings.splitString "." nuc_ipv4)} IN PTR proteus-nuc.${tailnet}.
   '');
   desktop_reverse_zone_v4_name = gen_reverse_prefix_v4 desktop_ipv4;
   desktop_reverse_zone_v4 = pkgs.writeText
     "${desktop_reverse_zone_v4_name}.zone"
     ((zone_head desktop_reverse_zone_v4_name) + ''
     ; PTR Record for last octet pointing to Tailscale domain
-    ${lib.last (lib.strings.splitString "." desktop_ipv4)} IN PTR proteus-desktop.${tailnet}.
+    ${lib.lists.last (lib.strings.splitString "." desktop_ipv4)} IN PTR proteus-desktop.${tailnet}.
   '');
   # =========================================
   # IPv6 Reverse Zone

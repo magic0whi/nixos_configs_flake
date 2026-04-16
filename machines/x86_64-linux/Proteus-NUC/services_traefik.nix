@@ -71,8 +71,7 @@ in {
           # Router for the login portal
           # `tls = {}` enables TLS using the default cert provided above
           authelia = {
-            rule = "Host(`auth.${myvars.domain}`)";
-            entryPoints = ["websecure"]; service = "authelia-backend"; tls = {};
+            rule = "Host(`auth.${myvars.domain}`)"; entryPoints = ["websecure"]; service = "authelia-backend"; tls = {};
           };
           traefik-dashboard = {
             rule = "Host(`traefik.${myvars.domain}`)";
@@ -83,32 +82,25 @@ in {
             tls = {};
           };
           atuin = {
-            rule = "Host(`atuin.${myvars.domain}`)";
-            entryPoints = ["websecure"]; service = "atuin"; tls = {};
+            rule = "Host(`atuin.${myvars.domain}`)"; entryPoints = ["websecure"]; service = "atuin"; tls = {};
           };
           immich = {
-            rule = "Host(`immich.${myvars.domain}`)";
-            entryPoints = ["websecure"]; service = "immich"; tls = {};
+            rule = "Host(`immich.${myvars.domain}`)"; entryPoints = ["websecure"]; service = "immich"; tls = {};
           };
           paperless = {
-            rule = "Host(`paperless.${myvars.domain}`)";
-            entryPoints = ["websecure"]; service = "paperless"; tls = {};
+            rule = "Host(`paperless.${myvars.domain}`)"; entryPoints = ["websecure"]; service = "paperless"; tls = {};
           };
           sftpgo-webui = {
-            rule = "Host(`sftpgo.${myvars.domain}`)";
-            entryPoints = ["websecure"]; service = "sftpgo-webui"; tls = {};
+            rule = "Host(`sftpgo.${myvars.domain}`)"; entryPoints = ["websecure"]; service = "sftpgo-webui"; tls = {};
           };
           sftpgo-webdav = {
-            rule = "Host(`webdav.${myvars.domain}`)";
-            entryPoints = ["websecure"]; service = "sftpgo-webdav"; tls = {};
+            rule = "Host(`webdav.${myvars.domain}`)"; entryPoints = ["websecure"]; service = "sftpgo-webdav"; tls = {};
           };
           aria2-rpc = {
-            rule = "Host(`aria2.${myvars.domain}`)";
-            entryPoints = ["websecure"]; service = "aria2-rpc"; tls = {};
+            rule = "Host(`aria2.${myvars.domain}`)"; entryPoints = ["websecure"]; service = "aria2-rpc"; tls = {};
           };
           qinglong = {
-            rule = "Host(`ql.${myvars.domain}`)";
-            entryPoints = ["websecure"]; service = "qinglong"; tls = {};
+            rule = "Host(`ql.${myvars.domain}`)"; entryPoints = ["websecure"]; service = "qinglong"; tls = {};
           };
           doh = {
             # Intercept standard DoH queries at the apex domain
@@ -132,8 +124,7 @@ in {
             tls = {};
           };
           home-assistant = {
-            rule = "Host(`hass.${myvars.domain}`)";
-            entryPoints = ["websecure"]; service = "home-assistant"; tls = {};
+            rule = "Host(`hass.${myvars.domain}`)"; entryPoints = ["websecure"]; service = "home-assistant"; tls = {};
           };
           sunshine-webui = {
             rule = "Host(`sunshine.${myvars.domain}`)";
@@ -141,8 +132,10 @@ in {
           };
           papra = {rule = "Host(`papra.${myvars.domain}`)"; entryPoints = ["websecure"]; service = "papra"; tls = {};};
           notebook = {
-            rule = "Host(`notebook.${myvars.domain}`)";
-            entryPoints = ["websecure"]; service = "notebook"; tls = {};
+            rule = "Host(`notebook.${myvars.domain}`)"; entryPoints = ["websecure"]; service = "notebook"; tls = {};
+          };
+          forgejo = {
+            rule = "Host(`git.${myvars.domain}`)"; entryPoints = ["websecure"];  service = "forgejo";  tls = {};
           };
         };
         services = {
@@ -193,8 +186,22 @@ in {
             servers = [{url = "https://127.0.0.1:${builtins.toString (config.services.sunshine.settings.port + 1)}";}];
           };
           papra.loadBalancer.servers = [{url = "http://127.0.0.1:1221";}];
-          notebook.loadBalancer.servers = [{url = "http://127.0.0.1:8080";}];
-         };
+          notebook.loadBalancer.servers = [{
+            url = let
+              attrset_find_first_name = key: set: builtins.elemAt
+                (lib.attrsets.attrNames set)
+                (lib.lists.findFirstIndex (i: lib.strings.hasInfix key i) null (lib.attrsets.attrNames set));
+              port = lib.lists.last (
+                lib.strings.splitString
+                  ":"
+                  (attrset_find_first_name "notebook.${myvars.domain}" config.services.caddy.virtualHosts)
+              );
+            in "http://127.0.0.1:${port}";
+          }];
+          forgejo.loadBalancer.servers = [{
+            url = "http://127.0.0.1:${builtins.toString config.services.forgejo.settings.server.HTTP_PORT}";
+          }];
+        };
       };
       tcp = {
         routers = {

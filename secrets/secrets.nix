@@ -33,7 +33,7 @@ let
   # huawei_vps = [Proteus-NixOS-6];
 in {
   # To see & edit encrypted file, run:
-  # agenix -e sb_client.json.age -i <(pgp2ssh <<< <(gpg -ao - --export-secret-subkeys subkey_with_[A]\!) <<< 1 2>&1 | awk 'BEGIN { A=0; S=0; } /BEGIN OPENSSH PRIVATE KEY/ { A=1; } { if (A==1) { print; } }')
+  # agenix -e sb_client.json.age -i <(get-ssh-key 30973F79B17F9ED3\!)
   "sb_client_darwin.json.age".publicKeys = machines;
   "sb_client_linux.json.age".publicKeys = machines ++ [Proteus-NUC Proteus-Desktop];
   "syncthing_Proteus-MBP14M4P.priv.pem.age".publicKeys = machines;
@@ -56,4 +56,5 @@ in {
   "mpd_auth.conf.age".publicKeys = machines ++ [Proteus-NUC];
   "authelia_oidc_hmac.txt.age".publicKeys = machines ++ [Proteus-NUC];
   "authelia_oidc_rsa.pem.age".publicKeys = machines ++ [Proteus-NUC];
+  "forgejo_runner_token.env.age".publicKeys = machines ++ [Proteus-NUC];
 }
