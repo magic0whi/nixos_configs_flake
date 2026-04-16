@@ -1,11 +1,4 @@
-{
-  pkgs,
-  lib,
-  config,
-  myvars,
-  # nixpkgs-postgresql,
-  ...
-}: {
+{pkgs, lib, config, myvars, ...}: {
   networking.firewall = let
     sunshine_port = config.services.sunshine.settings.port;
     s_https = builtins.toString (sunshine_port - 5); # Default: 47984 HTTPS

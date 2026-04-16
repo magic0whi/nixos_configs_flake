@@ -29,6 +29,8 @@
     environmentFile = config.age.secrets."paperless.env".path;
     dataDir = "/srv/paperless";
     exporter.enable = true;
+    exporter.settings.no-archive = true;
+    exporter.settings.no-thumbnail = true;
   };
   systemd.tmpfiles.rules = lib.mkIf config.services.paperless.exporter.enable [
     "z '${config.services.paperless.exporter.directory}' 2770 ${myvars.username} ${config.services.paperless.user} - -"
@@ -42,9 +44,7 @@
     # paperless:paperless.
     Type = "oneshot";
     EnvironmentFile = config.age.secrets."paperless.env".path;
-    ExecStartPost = let
-      cfg = config.services.paperless;
-    in [
+    ExecStartPost = let cfg = config.services.paperless; in [
       "+${pkgs.coreutils}/bin/chown -R ${myvars.username}:${config.services.paperless.user} ${cfg.exporter.directory}"
       "+${pkgs.coreutils}/bin/chmod -R u+rwX,g+rwX ${config.services.paperless.dataDir}/export"
     ];

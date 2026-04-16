@@ -1,4 +1,11 @@
-{myvars, config, pkgs, lib, ...}: {
+{
+  myvars,
+  config,
+  pkgs,
+  lib,
+  # nixpkgs-postgresql,
+  ...
+}: {
   age.secrets."postgresql_server.priv.pem" = {
     file = "${myvars.secrets_dir}/proteus_server.priv.pem.age";
     mode = "0400"; owner = config.systemd.services.postgresql.serviceConfig.User;
