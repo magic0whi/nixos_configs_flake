@@ -162,6 +162,8 @@
         ldap = {
           implementation = "custom";
           address = "ldaps://openldap.${myvars.domain}:636";
+          # Password is injected via environment variable
+          # password = "password";
           timeout = "5s";
           base_dn = "dc=tailba6c3f,dc=ts,dc=net";
           additional_users_dn = "ou=People";
@@ -169,8 +171,13 @@
           additional_groups_dn = "ou=Group";
           groups_filter = "(member={dn})";
           user = "cn=Manager,dc=tailba6c3f,dc=ts,dc=net";
-          attributes.display_name = "cn";
-          # Password is injected via environment variable
+          attributes = {
+            username = "uid";
+            display_name = "cn";
+            mail = "mail";
+            group_name = "cn";
+            nickname = "givenName";
+          };
         };
       };
       access_control = {default_policy = "deny"; rules = [{domain = "*.${myvars.domain}"; policy = "one_factor";}];};
@@ -307,12 +314,15 @@
         HTTP_ADDR = "127.0.0.1";
         # PROTOCOL = "http+unix"; # http through unix
       };
+        # Only allow auth methods added through CLI
+      openid.ENABLE_OPENID_SIGNIN = false;
       oauth2_client = {
         ENABLE_AUTO_REGISTRATION = true;
         ACCOUNT_LINKING = "auto";
+        USERNAME = "userid";
       };
       # Delegating registration entirely to Authelia
-      service = {DISABLE_REGISTRATION = true; ALLOW_ONLY_EXTERNAL_REGISTRATION = true;};
+      service.ALLOW_ONLY_EXTERNAL_REGISTRATION = true;
       # Add support for actions, based on act: https://github.com/nektos/act
       actions = {ENABLED = true; DEFAULT_ACTIONS_URL = "github";};
     };
@@ -321,7 +331,9 @@
     forgejo_exe = lib.getExe config.services.forgejo.package;
   in ''
     # Wait for Forgejo to be fully ready to accept CLI commands
-    sleep 5
+    while [ "$(${lib.getExe pkgs.curl} -sSf https://git.${myvars.domain}/api/healthz | ${lib.getExe pkgs.jq} -r '.status')" != "pass" ]; do
+      sleep 1
+    done
 
     # Read the secret from your age file
     OIDC_SECRET=$(cat ${config.age.secrets."forgejo_authelia_secret".path})
