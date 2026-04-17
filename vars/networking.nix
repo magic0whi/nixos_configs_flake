@@ -7,7 +7,12 @@
     # ============================================
     Proteus-MBP14M4P = {ipv4 = "100.95.17.39"; ipv6 = "fd7a:115c:a1e0::783a:1127";};
     Proteus-NUC = {ipv4 = "100.64.161.20"; ipv6 = "fd7a:115c:a1e0::cd3a:a114";};
-    Proteus-Desktop = {ipv4 = "100.89.227.22"; ipv6 = "fd7a:115c:a1e0::1a01:e318";};
+    Proteus-Desktop = {
+      ipv4 = "100.89.227.22";
+      ipv6 = "fd7a:115c:a1e0::1a01:e318";
+      iface = "enp4s0";
+      iface_wlan = "wlp0s20u9";
+    };
     # ============================================
     # Other VMs and Physical Machines
     # ============================================

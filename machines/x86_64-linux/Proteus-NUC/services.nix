@@ -383,6 +383,17 @@
         "ubuntu-latest:docker://node:20-bookworm"
         "debian-latest:docker://node:20-bookworm"
       ];
+      # https://gitea.com/gitea/act_runner/src/commit/40dcee0991c3bd33b657bb77aa1f2f46d69cc0e2/internal/pkg/config/config.example.yaml
+      settings = {
+        # In case nodejs still don't recognize my self-signed cert
+        # runner.envs = {
+        #   NODE_EXTRA_CA_CERTS = "/etc/ssl/certs/ca-certificates.crt";
+        # };
+        container = {
+          options = "-v /etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt:ro";
+          valid_volumes = ["/etc/ssl/certs/ca-certificates.crt"];
+        };
+      };
     };
   };
   ## END forgejo.nix
