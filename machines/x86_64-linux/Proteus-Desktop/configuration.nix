@@ -12,10 +12,10 @@ in {
   ## START systemd_tmpfiles.nix
   systemd.tmpfiles.rules = [
     # Grant 'rwx' to primary user via ACL. `getfacl /path` to show
-    "A /mnt/storage/data - - - - u:${myvars.username}:rwx"
+    "A ${myvars.storage_path} - - - - u:${myvars.username}:rwx"
     # Optional: Default ACL so new files created there inherit these rights
     # A+: Adds an ACL entry to the existing ones
-    "A+ /mnt/storage/data - - - - d:u:${myvars.username}:rwx"
+    "A+ ${myvars.storage_path} - - - - d:u:${myvars.username}:rwx"
   ];
   ## END systemd_tmpfiles.nix
   boot.binfmt.emulatedSystems = ["riscv64-linux"]; # Cross compilation

@@ -2,7 +2,7 @@
   tailnet = "tailba6c3f.ts.net";
   tailnet_prefix_length = 48;
   soa_parms = {
-    serial = "2026041601"; # Serial (YYYYMMDDNN)
+    serial = "2026041703"; # Serial (YYYYMMDDNN)
     refresh = "3600"; # Refresh (1 hour)
     retry = "1800"; # Retry (30 minutes)
     expire = "604800"; # Expire (1 week)
@@ -117,8 +117,7 @@
     ; Don't forget update the SOA Serial
     ; Subdomain Services
     immich     IN CNAME proteus-nuc
-    sftpgo     IN CNAME proteus-nuc
-    webdav     IN CNAME proteus-nuc
+    ;sftpgo     IN CNAME proteus-nuc
     atuin      IN CNAME proteus-nuc
     openldap   IN CNAME proteus-nuc
     aria2      IN CNAME proteus-nuc
@@ -135,7 +134,11 @@
     notebook   IN CNAME proteus-nuc
     git        IN CNAME proteus-nuc
 
-    monero     IN CNAME proteus-desktop
+    monero            IN CNAME proteus-desktop
+    webdav            IN CNAME proteus-desktop
+    traefik-desktop   IN CNAME proteus-desktop
+    sb-desktop        IN CNAME proteus-desktop
+    syncthing-desktop IN CNAME proteus-desktop
   '');
   # =========================================
   # IPv4 Reverse Zones

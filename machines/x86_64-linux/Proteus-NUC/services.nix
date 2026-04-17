@@ -48,23 +48,25 @@
   };
   ## END tor.nix
   ## START services_sftpgo.nix
-  services.sftpgo = {
-    enable = true;
-    user = myvars.username;
-    group = myvars.username;
-    extraReadWriteDirs = [/srv/aria2 config.home-manager.users.proteus.xdg.userDirs.documents];
-    settings = {
-      httpd.bindings = [
-        # Allow reverse proxy
-        {port = 8081; client_ip_proxy_header = "X-Forwarded-For"; proxy_allowed = ["127.0.0.1"];}
-        {address = "[::1]"; port = 8081; client_ip_proxy_header = "X-Forwarded-For"; proxy_allowed = ["::1"];}
-      ];
-      webdavd.bindings = [
-        {port = 8443; client_ip_proxy_header = "X-Forwarded-For"; proxy_allowed = ["127.0.0.1"];}
-        {address = "[::1]"; port = 8443; client_ip_proxy_header = "X-Forwarded-For"; proxy_allowed = ["::1"];}
-      ];
-    };
-  };
+  # services.sftpgo = {
+  #   enable = true;
+  #   user = myvars.username;
+  #   group = myvars.username;
+  #   extraReadWriteDirs = [/srv/aria2 config.home-manager.users.proteus.xdg.userDirs.documents];
+  #   settings = {
+  #     httpd = {
+  #       bindings = [
+  #         # Allow reverse proxy
+  #         {port = 8081; client_ip_proxy_header = "X-Forwarded-For"; proxy_allowed = ["127.0.0.1"];}
+  #         {address = "[::1]"; port = 8081; client_ip_proxy_header = "X-Forwarded-For"; proxy_allowed = ["::1"];}
+  #       ];
+  #     };
+  #     webdavd.bindings = [
+  #       {port = 8443; client_ip_proxy_header = "X-Forwarded-For"; proxy_allowed = ["127.0.0.1"];}
+  #       {address = "[::1]"; port = 8443; client_ip_proxy_header = "X-Forwarded-For"; proxy_allowed = ["::1"];}
+  #     ];
+  #   };
+  # };
   ## END services_sftpgo.nix
   ## START services_atuin.nix
   age.secrets."atuin.env" = {file = "${myvars.secrets_dir}/atuin.env.age"; mode = "0400"; owner = "root";};
@@ -183,10 +185,6 @@
       access_control = {default_policy = "deny"; rules = [{domain = "*.${myvars.domain}"; policy = "one_factor";}];};
       identity_providers = {
         oidc = {
-          authorization_policies.policy_name = {
-            default_policy = "two_factor";
-            rules = [{policy = "one_factor"; networks = ["100.64.0.0/10"];}];
-          };
           cors = {
             endpoints = ["authorization" "token" "revocation" "introspection" "userinfo"];
             allowed_origins = [

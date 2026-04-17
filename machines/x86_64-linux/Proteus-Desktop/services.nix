@@ -1,12 +1,10 @@
-{myvars, config, lib, ...}: let
-  storage_path = "/mnt/storage/data";
-in {
+{myvars, config, lib, pkgs, ...}: {
   ## START services_monero.nix
   services.monero = {
     enable = true;
-    dataDir = "/mnt/storage/data/monero";
+    dataDir = "${myvars.storage_path}/monero";
     extraConfig = ''
-      # log-file=/mnt/storage1/monero/monero.log
+      # log-file=${config.services.monero.dataDir}/monero.log
       # log-level=0
       p2p-use-ipv6=1
       rpc-use-ipv6=1
@@ -44,32 +42,32 @@ in {
 
       folders = {
         "Documents" = {
-          path = "${storage_path}/Documents";
+          path = "${myvars.storage_path}/Documents";
           # All devices
           devices = builtins.attrNames config.services.syncthing.settings.devices;
         };
         "Games" = {
-          path = "${storage_path}/Games";
+          path = "${myvars.storage_path}/Games";
           devices = lib.lists.subtractLists
             (builtins.attrNames mobile_devices)
             (builtins.attrNames config.services.syncthing.settings.devices);
         };
         "Music" = {
-          path = "${storage_path}/Music";
+          path = "${myvars.storage_path}/Music";
           devices = builtins.attrNames config.services.syncthing.settings.devices;
         };
         "Pictures" = {
-          path = "${storage_path}/Pictures";
+          path = "${myvars.storage_path}/Pictures";
           devices = builtins.attrNames config.services.syncthing.settings.devices;
         };
         "Secrets" = {
-          path = "${storage_path}/Secrets";
+          path = "${myvars.storage_path}/Secrets";
           devices = lib.lists.subtractLists
             (builtins.attrNames mobile_devices)
             (builtins.attrNames config.services.syncthing.settings.devices);
         };
         "Works" = {
-          path = "${storage_path}/Works";
+          path = "${myvars.storage_path}/Works";
           devices = lib.lists.subtractLists
             (builtins.attrNames mobile_devices)
             (builtins.attrNames config.services.syncthing.settings.devices);
@@ -78,4 +76,37 @@ in {
     };
   };
   ## END syncthing.nix
+  ## START webdav.nix
+  services.webdav = {
+    enable = true;
+    package = pkgs.dufs;
+    # https://github.com/sigoden/dufs/tree/v0.45.0?tab=readme-ov-file#configuration-file
+    settings = {
+      serve-path = myvars.storage_path;
+      bind = "127.0.0.1";
+      hidden = ["tmp" "*.log" "*.lock"];
+      port = 5000;
+      # `:`to separate the username and password
+      # `@` to separate the account and paths
+      # `,` to separate paths
+      #  suffix `:rw`/`:ro` set permissions
+      auth = [
+        "${myvars.username}:$6$JXjsG/C9M.vh0viR$7nTJDOpisqjjtRLMCDktrJp8zYSQuwgP34ZRdD2UXll31XHqi1nqIX2.hLCC9EX2lM0vq92v5G0W0m68TQdaf/@/:ro"
+      ];
+      allow-all = true; # Allow all operations
+      allow-upload = true;
+      allow-delete = true;
+      allow-search = true;
+      allow-symlink = true; # Allow symlink to files/folders outside root directory
+      allow-archive = true; # Allow download folders as archive file
+      allow-hash = true; # Allow `?hash` query to get file sha256 hash
+      enable-cors = true; # Sets `Access-Control-Allow-Origin: *`
+      render-try-index = true; # Serve index.html when requesting a directory, returns directory listing if not found index.html
+      render-spa = true; # Serve SPA(Single Page Application)
+      # assets = "<path>" # Set the path to the assets directory for overriding the built-in assets
+      log-format = "$remote_addr $$http_X_FORWARDED_FOR $remote_user \"$request\" $status";
+      compress = "low"; # Set zip compress level [default: low] [possible values: none, low, medium, high]
+    };
+  };
+  ## END webdav.nix
 }
