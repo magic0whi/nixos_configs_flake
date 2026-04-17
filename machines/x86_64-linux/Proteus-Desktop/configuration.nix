@@ -80,7 +80,10 @@ in {
       chain prerouting {
         type filter hook prerouting priority dstnat - 5; policy accept;
 
-        # Bypass everything else from hostapd managed iface
+        # 1. Do NOT bypass FakeIP traffic. Let sing-box handle it.
+        ip daddr 198.18.0.0/15 return
+
+        # 2. Bypass everything else from hostapd managed iface
         ip saddr ${(builtins.head config.networking.interfaces.${iface_wlan}.ipv4.addresses).address} ct mark set 0x00002024
       }
     '';
@@ -88,15 +91,17 @@ in {
   networking.firewall.extraInputRules = ''
     ip saddr ${(builtins.head config.networking.interfaces.${iface_wlan}.ipv4.addresses).address} accept comment "Allow hostapd clients to reach auto_redirect ports"
   '';
-  # Tell systemd-resolved NOT to listen on port 53 (Stub Listener)
-  services.resolved.settings.Resolve.DNSStubListener = false;
-  # Ensure dnsmasq starts AFTER resolved to avoid race conditions
-  systemd.services.dnsmasq.after = ["systemd-resolved.service"];
+  # We can keep systemd-resolved listening on 127.0.0.53:53 and
+  # use dnsmasq solely on the wlan interface by telling it to only bind there.
+  # This prevents conflicts with systemd-resolved!
   services.dnsmasq = {
     enable = true;
     settings = {
       interface = iface_wlan;
+      bind-interfaces = true;
       dhcp-range = ["192.168.12.10,192.168.12.240,12h"];
+      # Tell DHCP clients to use 223.5.5.5 as their DNS server
+      dhcp-option = ["option:dns-server,223.5.5.5"];
     };
   };
   networking.nat = {
