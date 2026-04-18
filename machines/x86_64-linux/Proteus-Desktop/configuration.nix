@@ -30,39 +30,44 @@ in {
     enable = true;
     radios.${iface_wlan} = {
       band = "2g"; # "5g" is `hw_mode=a`, "2g" is `hw_mode=g`
-      channel = 7; # `0` use ACS
+      # Primary control channel, `0` use ACS (not all devices supported)
+      channel = 6;
       countryCode = "US";
+      # Band 1 Capabilities
+      # NOTE on Band 2 some wifi4 capibilities is unavailable
       wifi4.capabilities = [
         "HT40+"
+        "SMPS-STATIC"
         "SHORT-GI-20"
         "SHORT-GI-40"
         "RX-STBC1"
         "MAX-AMSDU-7935"
         "DSSS_CCK-40"
       ];
-      # wifi5.operatingChannelWidth = "20or40"; # "80" doesn't start
-      # wifi5.capabilities = [
+      # wifi5.operatingChannelWidth = "80";
+      # wifi5.capabilities = [ # Band 2 Capabilities
       #   "MAX-MPDU-11454"
       #   "SHORT-GI-80"
       #   "TX-STBC-2BY1"
-      #   "RX-STBC-1"
       #   "SU-BEAMFORMEE"
       #   "HTC-VHT"
-      #   "MAX-A-MPDU-LEN-EXP3"
       # ];
       networks = {
         ${iface_wlan} = {
-          ssid = "Proteus_5G";
+          ssid = "Proteus_AP";
           settings = {
-            vht_oper_chwidth = "0";
-            # vht_oper_centr_freq_seg0_idx = "42";
-            ieee80211w = 0;
-            ieee80211d = false;
-            ieee80211h = false;
+            # vht_oper_centr_freq_seg0_idx = "155"; # Center frequency index (only for 80MHz or wider)
+            # Disable Protected Management Frames (802.11w), WPA3 (SAE) requires
+            # this to be enabled
+            # ieee80211w = 0;
+            ieee80211d = true; # Advertises the country_code
+            ieee80211h = true; # Dynamic Frequency Selection
           };
           authentication = {
-            mode = "none";
-            # wpaPasswordFile = config.age.secrets."proteus-ap.key".path;
+            # "wpa2-sha1" is standard WPA2-PSK (AES/CCMP). "wpa2-sha256" causes
+            # issues.
+            mode = "wpa2-sha1";
+            wpaPasswordFile = config.age.secrets."proteus-ap.key".path;
             # mode = "wpa3-sae";
             # saePasswords = [{passwordFile = config.age.secrets."proteus-ap.key".path;}];
           };
@@ -76,7 +81,7 @@ in {
   }];
   networking.nftables.tables.bypass_hostapd = {
     family = "inet";
-    content = ''
+    content = with (builtins.head config.networking.interfaces.${iface_wlan}.ipv4.addresses); ''
       chain prerouting {
         type filter hook prerouting priority dstnat - 5; policy accept;
 
@@ -84,19 +89,19 @@ in {
         ip daddr 198.18.0.0/15 return
 
         # 2. Bypass everything else from hostapd managed iface
-        ip saddr ${(builtins.head config.networking.interfaces.${iface_wlan}.ipv4.addresses).address} ct mark set 0x00002024
+        # ip saddr ${address}/${toString prefixLength} ct mark set 0x00002024
       }
     '';
   };
-  networking.firewall.extraInputRules = ''
-    ip saddr ${(builtins.head config.networking.interfaces.${iface_wlan}.ipv4.addresses).address} accept comment "Allow hostapd clients to reach auto_redirect ports"
+  networking.firewall.extraInputRules = with (builtins.head config.networking.interfaces.${iface_wlan}.ipv4.addresses); ''
+    ip saddr ${address}/${toString prefixLength} accept comment "Allow hostapd clients to reach auto_redirect ports"
   '';
-  # We can keep systemd-resolved listening on 127.0.0.53:53 and
-  # use dnsmasq solely on the wlan interface by telling it to only bind there.
-  # This prevents conflicts with systemd-resolved!
   services.dnsmasq = {
     enable = true;
     settings = {
+      # We can keep systemd-resolved listening on 127.0.0.53:53 and use dnsmasq
+      # solely on the wlan interface by telling it to only bind there.
+      # This prevents conflicts with systemd-resolved!
       interface = iface_wlan;
       bind-interfaces = true;
       dhcp-range = ["192.168.12.10,192.168.12.240,12h"];
