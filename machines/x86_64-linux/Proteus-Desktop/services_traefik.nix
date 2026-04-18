@@ -1,4 +1,4 @@
-{config, myvars, lib, ...}: let
+{config, myvars, ...}: let
   server_pub_crt = "${myvars.secrets_dir}/proteus_server.pub.pem";
 in {
   networking.firewall = { allowedTCPPorts = [80 443]; allowedUDPPorts = [443];};
@@ -33,44 +33,38 @@ in {
         routers = {
           traefik-dashboard = {
             rule = "Host(`traefik-desktop.${myvars.domain}`)";
-            entryPoints = ["websecure"];
-            # Protect the dashboard
-            middlewares = ["authelia-auth"];
-            service = "api@internal";
-            tls = {};
+            entryPoints = ["websecure"]; middlewares = ["authelia-auth"]; service = "api@internal"; tls = {};
           };
           sb = {
             rule = "Host(`sb-desktop.${myvars.domain}`)";
-            entryPoints = ["websecure"];
-            middlewares = ["authelia-auth"];
-            service = "sb-dashboard";
-            tls = {};
+            entryPoints = ["websecure"]; middlewares = ["authelia-auth"]; service = "sb-dashboard"; tls = {};
           };
           syncthing = {
             rule = "Host(`syncthing-desktop.${myvars.domain}`)";
-            entryPoints = ["websecure"];
-            middlewares = ["authelia-auth"];
-            service = "syncthing-dashboard";
-            tls = {};
+            entryPoints = ["websecure"]; middlewares = ["authelia-auth"]; service = "syncthing-dashboard"; tls = {};
           };
           webdav = {
             rule = "Host(`webdav.${myvars.domain}`)"; entryPoints = ["websecure"]; service = "webdav"; tls = {};
+          };
+          minio-dashboard = {
+            rule = "Host(`minio.${myvars.domain}`)"; entryPoints = ["websecure"]; service = "minio-dashboard"; tls = {};
+          };
+          s3 = {
+            rule = "Host(`s3.${myvars.domain}`)"; entryPoints = ["websecure"]; service = "s3"; tls = {};
           };
         };
         services = {
           sb-dashboard.loadBalancer.servers = [{url = "http://127.0.0.1:9091";}];
           syncthing-dashboard.loadBalancer = {
             passHostHeader = false;
-            servers = let
-              syncthing_port = lib.last (lib.strings.splitString
-                ":"
-                config.home-manager.users.${myvars.username}.services.syncthing.guiAddress);
-            in [{url = "http://127.0.0.1:${syncthing_port}";}];
+            servers = [{url = "http://${config.home-manager.users.${myvars.username}.services.syncthing.guiAddress}";}];
           };
           webdav.loadBalancer = {
             servers = [{url = "http://127.0.0.1:${builtins.toString config.services.webdav.settings.port}";}];
             healthCheck = {path = "/__dufs__/health"; interval = "15s"; timeout = "3s";};
           };
+          minio-dashboard.loadBalancer = {servers = [{url = "http://${config.services.minio.consoleAddress}";}];};
+          s3.loadBalancer = {servers = [{url = "http://${config.services.minio.listenAddress}";}];};
         };
       };
     };

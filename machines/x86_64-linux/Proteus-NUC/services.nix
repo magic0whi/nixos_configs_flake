@@ -266,7 +266,10 @@
     enable = true;
     capSysAdmin = true;
     settings = {
-      adapter_name = "/dev/dri/${myvars.dgpu_sym_name}";
+      adapter_name = if config.home-manager.users.${myvars.username}.wayland.windowManager.hyprland.nvidia then
+        "/dev/dri/${myvars.dgpu_sym_name}"
+      else
+        "/dev/dri/${myvars.igpu_sym_name}";
       origin_web_ui_allowed = "pc";
     };
   };
@@ -278,7 +281,7 @@
     # that. We can tell Caddy's global config not to attempt ACME/HTTPS bindings.
     globalConfig = ''auto_https off'';
     virtualHosts."http://notebook.${myvars.domain}:8080" = {
-      listenAddresses = [ "127.0.0.1" "[::1]" ];
+      listenAddresses = ["127.0.0.1" "[::1]"];
       extraConfig = ''
         # respond "Hello, world!" # For debug
         root * /var/www/notebook

@@ -180,11 +180,7 @@ in {
             # By setting to false Traefik will overrides the Host header to
             # 127.0.0.1
             passHostHeader = false;
-            servers = let
-              syncthing_port = lib.last (lib.strings.splitString
-                ":"
-                config.home-manager.users.${myvars.username}.services.syncthing.guiAddress);
-            in [{url = "http://127.0.0.1:${syncthing_port}";}];
+            servers = [{url = "http://${config.home-manager.users.${myvars.username}.services.syncthing.guiAddress}";}];
           };
           home-assistant.loadBalancer.servers = let
             hass_port = builtins.toString config.services.home-assistant.config.http.server_port;

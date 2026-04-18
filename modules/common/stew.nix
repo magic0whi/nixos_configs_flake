@@ -36,6 +36,9 @@
     trusted-public-keys = ["nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="];
     builders-use-substitutes = true;
     sandbox = true;
+    # The substituter will be appended to the default substituters when fetching packages.
+    extra-substituters = ["https://s3.proteus.eu.org/nix-cache/"];
+    extra-trusted-public-keys = ["s3.proteus.eu.org-1:IxrRwk4uC5ittHeG9menkuajABnrX9cboEWwZz/m4+E="];
   };
   ## END nix.nix
   ## START i18n.nix

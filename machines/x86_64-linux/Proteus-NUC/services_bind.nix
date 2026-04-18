@@ -2,7 +2,7 @@
   tailnet = "tailba6c3f.ts.net";
   tailnet_prefix_length = 48;
   soa_parms = {
-    serial = "2026041703"; # Serial (YYYYMMDDNN)
+    serial = "2026041801"; # Serial (YYYYMMDDNN)
     refresh = "3600"; # Refresh (1 hour)
     retry = "1800"; # Retry (30 minutes)
     expire = "604800"; # Expire (1 week)
@@ -139,6 +139,8 @@
     traefik-desktop   IN CNAME proteus-desktop
     sb-desktop        IN CNAME proteus-desktop
     syncthing-desktop IN CNAME proteus-desktop
+    minio             IN CNAME proteus-desktop
+    s3                IN CNAME proteus-desktop
   '');
   # =========================================
   # IPv4 Reverse Zones

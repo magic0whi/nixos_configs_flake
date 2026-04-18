@@ -44,7 +44,7 @@ in {
   "sb_Proteus-NixOS-1.json.age".publicKeys = machines ++ google_vps;
   # "sb_Proteus-NixOS-6.json.age".publicKeys = machines ++ huawei_vps;
   "proteus-ap.key.age".publicKeys = machines ++ [Proteus-Desktop];
-  "minio.env.age".publicKeys = machines ++ google_vps;
+  "minio.env.age".publicKeys = machines ++ [Proteus-Desktop] ++ google_vps;
   "atuin.env.age".publicKeys = machines ++ [Proteus-NUC];
   "immich.env.age".publicKeys = machines ++ [Proteus-NUC];
   "paperless.env.age".publicKeys = machines ++ [Proteus-NUC];
