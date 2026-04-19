@@ -137,6 +137,7 @@
       # Render to `settings.storage.postgres.password`
       AUTHELIA_STORAGE_POSTGRES_PASSWORD_FILE = config.age.secrets."authelia_db_password.txt".path;
     };
+    # https://github.com/authelia/authelia/blob/8a7b642dd78f29c76d126b6f53806472b2a360bd/config.template.yml
     settings = {
       theme = "dark";
       default_2fa_method = "totp";
@@ -192,6 +193,7 @@
               # "https://git.${myvars.domain}"
             ];
           };
+          # https://www.authelia.com/configuration/identity-providers/openid-connect/clients/
           clients = [
             {
               client_id = "papra";
@@ -199,27 +201,23 @@
               # nix run nixpkgs#authelia -- crypto rand --length 64 --charset alphanumeric
               # nix run nixpkgs#authelia -- crypto hash generate pbkdf2 --variant sha512 --password <YOUR_RAW_SECRET>
               client_secret = "$pbkdf2-sha512$310000$3KSvvBJnoLyJDoKDBIBcZQ$dMQmccJ6Y4hrj.tv.dD3KFzLcsPCsMNRZFTpHUiInVcSX0eBR5T6jemXfcUaob9PsbgHBwRNCjtXiBNl6lOc7g";
-              public = false;
-              authorization_policy = "two_factor"; # Or "one_factor"
               redirect_uris = ["https://papra.${myvars.domain}/api/auth/oauth2/callback/authelia"];
-              scopes = ["openid" "profile" "email" "groups"];
-              response_modes = ["form_post" "query"];
-              userinfo_signed_response_alg = "none";
+              # authorization_policy = "one_factor";
               token_endpoint_auth_method = "client_secret_post";
             }
             {
               client_id = "forgejo";
               client_name = "Forgejo";
               client_secret = "$pbkdf2-sha512$310000$hHi.uSu97kUzfh.X9ijhXA$.IL0RMznXtdwXGTYq9eKV.83nIXI0glK7v.IaFYu5xVpweng.zo5L5PpuC6aQgY6R9ROgSFQrHbve3LK50j/yg";
-              public = false;
-              authorization_policy = "two_factor"; # Require 2FA to access code
-              require_pkce = true;
-              pkce_challenge_method = "S256";
               redirect_uris = ["https://git.${myvars.domain}/user/oauth2/Authelia/callback"];
-              scopes = ["openid" "profile" "email" "groups"];
-              response_modes = ["form_post" "query"];
-              userinfo_signed_response_alg = "none";
-              token_endpoint_auth_method = "client_secret_basic";
+              pkce_challenge_method = "S256"; # effectively enables the require_pkce
+            }
+            { # https://www.reddit.com/r/selfhosted/comments/1llq665/minio_oidc_login_removed_in_latest_release/
+              # TODO: Migrate to Garage
+              client_id = "minio";
+              client_name = "MinIO";
+              client_secret = "$pbkdf2-sha512$310000$QdCiXrZt/Z67VAHrkiX5.Q$L3yWQD5Zp9l7WWdLx5dNB6Rqigz8BjH0iTD4NPp48K89wundrn9JaeQT6UG/IwhsEm30uKE39q9VrOi4mU64TA";
+              redirect_uris = ["https://minio.${myvars.domain}/oauth_callback"];
             }
           ];
         };

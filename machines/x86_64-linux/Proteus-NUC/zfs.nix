@@ -12,8 +12,7 @@
 in {
   # Note this might jump back and forth as kernels are added or removed.
   boot.kernelPackages = latestKernelPackage;
-  # As of 2026-03-03 14:08, i915-sriov-dkms builds fail on 6.19.5; pinning to
-  # 6.19.3
+  # Example of pinning the kernel package
   # boot.kernelPackages = pkgs.linuxPackagesFor (pkgs.linuxKernel.kernels.linux_6_19.override {
   #   argsOverride = let version = "6.19.3"; in {
   #     inherit version;
@@ -25,4 +24,5 @@ in {
   #   };
   # });
   services.zfs.autoScrub.enable = true;
+  services.zfs.trim.enable = true;
 }

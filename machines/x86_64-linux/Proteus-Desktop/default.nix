@@ -24,7 +24,8 @@
     machine_path = ./.;
   });
   nixos_iso = (inputs.nixpkgs.lib.nixosSystem (mylib.gen_system_args {
-    inherit name mylib myvars nixpkgs_modules hm_modules;
+    inherit name mylib nixpkgs_modules hm_modules;
+    myvars = desktop_myvars;
     generate_iso = true;
     machine_path = ./.;
   })).config.system.build.images.iso;
