@@ -30,9 +30,9 @@ jobs:
           extra-trusted-public-keys = s3.proteus.eu.org-1:IxrRwk4uC5ittHeG9menkuajABnrX9cboEWwZz/m4+E=
           EOF
 
-      # # Debug
-      # - name: Setup tmate session
-      #   uses: mxschmitt/action-tmate@v3.23
+      # Debug
+      - name: Setup tmate session
+        uses: mxschmitt/action-tmate@v3.23
       # You can also try https://upterm.dev/
 
       - name: Run nix flake check
