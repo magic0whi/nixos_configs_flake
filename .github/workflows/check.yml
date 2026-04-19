@@ -7,6 +7,10 @@ jobs:
       - name: Set up Git repository
         uses: actions/checkout@v6.0.2
 
+      - name: Install sudo (for minimal containers)
+        if: env.ACT == 'true' || github.server_url != 'https://github.com'
+        run: apt-get update && apt-get install -y sudo
+
       - name: Install Nix
         uses: cachix/install-nix-action@v31.10.4
         with:
