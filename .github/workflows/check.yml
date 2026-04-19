@@ -12,5 +12,10 @@ jobs:
       - name: Magic Nix Cache
         uses: DeterminateSystems/magic-nix-cache-action@v13
 
+      # Debug
+      - name: Setup tmate session
+        uses: mxschmitt/action-tmate@v3.23
+      # You can also try https://upterm.dev/
+
       - name: Run nix flake check
         run: nix flake check --show-trace --verbose --system $(nix eval --raw --impure --expr 'builtins.currentSystem')
