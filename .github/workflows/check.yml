@@ -1,39 +1,36 @@
 name: Check Nix Flake
 on: [push]
 jobs:
-  check:
-    runs-on: ubuntu-latest
+  check-linux:
+    name: Run Flake checks (${{ matrix.system }})
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            system: x86_64-linux
+          - os: ubuntu-24.04-arm
+            system: aarch64-linux
+        os: [ubuntu-latest, ubuntu-24.04-arm]
+    runs-on: ${{ matrix.os }}
     steps:
       - name: Set up Git repository
         uses: actions/checkout@v6.0.2
-
-      - name: Install sudo (for minimal containers)
-        if: env.ACT == 'true' || github.server_url != 'https://github.com'
-        run: apt-get update && apt-get install -y sudo
-
-      - name: Install Nix
-        uses: cachix/install-nix-action@v31.10.4
+      - name: Run Nix Check
+        uses: ./.github/actions/nix-check
         with:
-          nix_path: nixpkgs=channel:nixos-unstable
-
-      - name: Magic Nix Cache
-        if: github.server_url == 'https://github.com'
-        uses: DeterminateSystems/magic-nix-cache-action@v13
-
-      # Proteus' Nix Cache (For self-hosted runners like Forgejo/Gitea)
-      - name: Proteus' Nix Cache
-        if: github.server_url != 'https://github.com'
-        run: |
-          mkdir -p ~/.config/nix
-          cat <<EOF >> ~/.config/nix/nix.conf
-          extra-substituters = https://s3.proteus.eu.org/nix-cache/
-          extra-trusted-public-keys = s3.proteus.eu.org-1:IxrRwk4uC5ittHeG9menkuajABnrX9cboEWwZz/m4+E=
-          EOF
-
-      # Debug
-      - name: Setup tmate session
-        uses: mxschmitt/action-tmate@v3.23
-      # You can also try https://upterm.dev/
-
-      - name: Run nix flake check
-        run: nix flake check --show-trace --verbose --no-build
+          system: ${{ matrix.system }}
+  check-macos:
+    name: Run Flake checks (aarch64-darwin)
+    # Only run macOS checks on GitHub, skip them on Forgejo
+    if: github.server_url == 'https://github.com'
+    # Use a dynamic runs-on so Forgejo doesn't hang waiting for a macos runner
+    # before evaluating the `if` condition
+    runs-on: ${{ github.server_url == 'https://github.com' && 'macos-latest' || 'ubuntu-latest' }}
+    steps:
+      - name: Set up Git repository
+        uses: actions/checkout@v6.0.2
+      - name: Run Nix Check
+        uses: ./.github/actions/nix-check
+        with:
+          system: aarch64-darwin

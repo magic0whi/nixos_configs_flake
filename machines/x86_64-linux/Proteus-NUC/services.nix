@@ -388,11 +388,13 @@
       tokenFile = config.age.secrets."forgejo_runner_token.env".path;
       labels = [
         "ubuntu-latest:docker://node:20-bookworm"
+        "ubuntu-24.04-arm:docker://node:20-bookworm"
         "debian-latest:docker://node:20-bookworm"
       ];
       # https://gitea.com/gitea/act_runner/src/commit/40dcee0991c3bd33b657bb77aa1f2f46d69cc0e2/internal/pkg/config/config.example.yaml
       settings = {
         # The nodejs still couldn't recognize my self-signed cert
+        runner.capacity = 3; # Set to your desired number of simultaneous jobs
         runner.envs = {
           NODE_EXTRA_CA_CERTS = "/etc/ssl/certs/ca-certificates.crt";
         };

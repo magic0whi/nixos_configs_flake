@@ -31,7 +31,7 @@
     "d /srv/sync_work 0775 ${myvars.username} users -   -"
   ];
   ## END systemd_tmpfiles.nix
-  boot.binfmt.emulatedSystems = ["riscv64-linux"]; # Cross compilation
+  boot.binfmt.emulatedSystems = ["riscv64-linux" "aarch64-linux"]; # Cross compilation
   ## START sriov.nix
   boot.extraModulePackages = with pkgs; [i915-sriov xe-sriov];
   boot.kernelParams = [
