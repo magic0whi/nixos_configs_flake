@@ -282,16 +282,22 @@
       listenAddresses = ["127.0.0.1" "[::1]"];
       extraConfig = ''
         # respond "Hello, world!" # For debug
-        root * /var/www/notebook
+        root * /srv/www
         file_server
       '';
     };
   };
   # Ensure the web root exists with the correct permissions.
-  # Caddy runs as user 'caddy', group 'caddy' by default according to the module.
-  # CI script will run as 'proteus', so we make the folder owned by 'proteus'
-  # but give the group (which we will add 'caddy' to) read access.
-  systemd.tmpfiles.rules = ["d /var/www/notebook 0755 ${myvars.username} ${config.services.caddy.group} - -"];
+  # Caddy runs as user 'caddy', group 'caddy' by default according to the
+  # module. CI script will run as 'proteus', so we make the folder owned by
+  # `myvars.username` but give the group (which default to 'caddy') read access.
+  systemd.tmpfiles.rules = let
+    root_path = builtins.head (builtins.match
+      ''.*root \* ([a-zA-Z0-9/_-]+).*''
+      # Get the first attrset under services.caddy.virtualHosts
+      (builtins.head (builtins.attrValues config.services.caddy.virtualHosts)).extraConfig
+    );
+  in ["d ${root_path} 2755 ${myvars.username} ${config.services.caddy.group} - -"];
   ## END caddy.nix
   ## START forgejo.nix
   # Decrypt the runner token using your existing age setup
