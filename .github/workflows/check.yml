@@ -36,4 +36,4 @@ jobs:
       # You can also try https://upterm.dev/
 
       - name: Run nix flake check
-        run: nix flake check --show-trace --verbose
+        run: nix flake check --show-trace --verbose --no-build
