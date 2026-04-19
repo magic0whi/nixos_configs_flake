@@ -12,6 +12,7 @@ let
   #   cat /etc/ssh/ssh_host_ed25519_key.pub
   # If you do not have this file, you can generate all the host keys by command:
   #   sudo ssh-keygen -A
+  Proteus-MBP14M4P = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIC+ekT5jrD2KuLEqVeIASQ9A/VaBcrCE7xfcBqxsWbQ8";
   Proteus-NUC = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGkreuZakzaKdfQL+YNAvcr6WRsIz5c3eoFcK3NAUmLu root@Proteus-NUC";
   Proteus-Desktop = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJla2bgFUIxlMyfqiS/BIxkFXFiIh4dhjjOvWzHnr6IL root@Proteus-Desktop";
   Proteus-NixOS-0 = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGqgfVyb6hCdQmzbls0NNjMJ6Zxp3zq+XClR1OZIPnCD root@Proteus-NixOS-1";
@@ -34,7 +35,7 @@ let
 in {
   # To see & edit encrypted file, run:
   # agenix -e sb_client.json.age -i <(get-ssh-key 30973F79B17F9ED3\!)
-  "sb_client_darwin.json.age".publicKeys = machines;
+  "sb_client_darwin.json.age".publicKeys = machines ++ [Proteus-MBP14M4P];
   "sb_client_linux.json.age".publicKeys = machines ++ [Proteus-NUC Proteus-Desktop];
   "syncthing_Proteus-MBP14M4P.priv.pem.age".publicKeys = machines;
   "syncthing_proteus-nuc.priv.pem.age".publicKeys = machines ++ [Proteus-NUC];
