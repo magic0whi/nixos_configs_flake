@@ -387,6 +387,28 @@
               | awk 'BEGIN { A=0; } /BEGIN OPENSSH PRIVATE KEY/ { A=1; } { if (A==1) { print; } }'
           )
         }
+        # Export my GPG primary keys and subkeys
+        export-gpg-keys() (
+          set -eufo pipefail
+
+          OUTPUT_DIR=$(zoxide query --list Secrets | grep --max-count=1 'Secrets' || echo ${config.home.homeDirectory}/Secrets)
+          KEYS=(
+            "primary:75DB252683B07650"
+            "auth:30973F79B17F9ED3"
+            "enc:940B76AB99D87247"
+            "sig:FC4881A7361DF34E"
+          )
+
+          for pair in "''${KEYS[@]}"; do
+            local key="''${pair%%:*}"
+            local key_id="''${pair##*:}"
+            if gpg --armor --export-secret-keys $key_id! > $OUTPUT_DIR/sudaku233@outlook.com.''${key}.priv.asc; then
+              echo "Key: $key, ID: $key_id exported successful!"
+            else
+              echo "Key: $key, ID: $key_id export failed!"
+            fi
+          done
+        )
         export PATH="$PATH:${local_bin}:${go_bin}:${rust_bin}"
       '';
     };
