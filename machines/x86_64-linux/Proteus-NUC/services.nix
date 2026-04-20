@@ -260,6 +260,30 @@
   };
   ## END services_home_assistant.nix
   ## STASRT sunshine.nix
+  # https://github.com/orgs/LizardByte/discussions/439#discussioncomment-15813284
+  security.wrappers.conntrack = lib.mkIf config.services.sunshine.enable {
+    source = "${pkgs.conntrack-tools}/bin/conntrack";
+    # conntrack needs cap_net_admin to run as a normal user
+    capabilities = "cap_net_admin+ep";
+    owner = "root"; group = "root";
+  };
+  # Adapted for Hyprland
+  systemd.user.services.sunshine-wake-monitor= lib.mkIf config.services.sunshine.enable {
+    description = "Monitor Sunshine TCP connections and wake monitors";
+    after = ["hyprland-session.target"];
+    wantedBy = ["graphical-session.target"];
+    serviceConfig = {
+      ExecStart = pkgs.writeShellScript "sunshine_wake_monitor" ''
+        ${config.security.wrapperDir}/conntrack -E -e new -p tcp --dport ${builtins.toString (config.services.sunshine.settings.port - 5)} | \
+        while read line; do
+          echo "New Sunshine connection detected, waking up the monitors"
+          ${lib.getExe' pkgs.hyprland "hyprctl"} --instance 0 'dispatch dpms on'
+          sleep 5
+        done
+      '';
+      Restart = "on-failure";
+    };
+  };
   services.sunshine = {
     enable = true;
     capSysAdmin = true;
