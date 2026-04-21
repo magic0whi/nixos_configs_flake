@@ -186,13 +186,7 @@
       access_control = {default_policy = "deny"; rules = [{domain = "*.${myvars.domain}"; policy = "one_factor";}];};
       identity_providers = {
         oidc = {
-          cors = {
-            endpoints = ["authorization" "token" "revocation" "introspection" "userinfo"];
-            allowed_origins = [
-              "https://papra.${myvars.domain}"
-              # "https://git.${myvars.domain}"
-            ];
-          };
+          cors = {endpoints = ["authorization" "token" "revocation" "introspection" "userinfo"];};
           # https://www.authelia.com/configuration/identity-providers/openid-connect/clients/
           clients = [
             {
@@ -218,6 +212,14 @@
               client_name = "MinIO";
               client_secret = "$pbkdf2-sha512$310000$QdCiXrZt/Z67VAHrkiX5.Q$L3yWQD5Zp9l7WWdLx5dNB6Rqigz8BjH0iTD4NPp48K89wundrn9JaeQT6UG/IwhsEm30uKE39q9VrOi4mU64TA";
               redirect_uris = ["https://minio.${myvars.domain}/oauth_callback"];
+            }
+            {
+              client_id = "plane";
+              client_name = "Plane";
+              client_secret = "$pbkdf2-sha512$310000$js.q7nxEc0JzjQN3NRyyrA$0F2fFhnC3HJspJUhFSp56F4Rl0PhzaYV.J9TytIfxZfiE7GDAuHIYKxSa262k/rf7d/vgOVHVa5a9C9P1YIYRg";
+              redirect_uris = ["https://plane.${myvars.domain}/auth/gitea/callback" "https://plane.${myvars.domain}/auth/gitea/callback/"];
+              scopes = ["openid" "email" "profile"];
+              token_endpoint_auth_method = "client_secret_post";
             }
           ];
         };
@@ -356,6 +358,11 @@
       actions = {ENABLED = true; DEFAULT_ACTIONS_URL = "github";};
     };
   };
+  systemd.services.forgejo.preStart = ''
+    mkdir -p ${config.services.forgejo.stateDir}/custom/public/assets/img/auth/
+    cp -f ${pkgs.authelia.src}/docs/static/images/branding/logo.png ${config.services.forgejo.stateDir}/custom/public/assets/img/auth/authelia.png
+  '';
+
   systemd.services.forgejo.postStart = let
     forgejo_exe = lib.getExe config.services.forgejo.package;
   in ''
@@ -379,7 +386,7 @@
         --key "forgejo" \
         --secret "$OIDC_SECRET" \
         --auto-discover-url "https://auth.${myvars.domain}/.well-known/openid-configuration" \
-        --icon-url "https://github.com/authelia/authelia/blob/b5bf61b58c2af95efae14ea463ebcd2ad20c2fb1/docs/static/images/branding/logo.png"
+        --icon-url "/assets/img/auth/authelia.png"
     else
       echo "Updating existing Authelia OIDC provider..."
       AUTHELIA_ID=$($FORGEJO_CLI list | ${lib.getExe pkgs.gawk} '/Authelia/ {print $1;}')
@@ -390,7 +397,7 @@
         --key "forgejo" \
         --secret "$OIDC_SECRET" \
         --auto-discover-url "https://auth.${myvars.domain}/.well-known/openid-configuration" \
-        --icon-url "https://github.com/authelia/authelia/blob/b5bf61b58c2af95efae14ea463ebcd2ad20c2fb1/docs/static/images/branding/logo.png"
+        --icon-url "/assets/img/auth/authelia.png"
     fi
   '';
   # Generate the Runner Token:
