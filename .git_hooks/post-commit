@@ -29,3 +29,4 @@ fi
 # 3. Safe to sync
 echo "🔄 Auto-syncing with remote..."
 git pull && git push
+git pull && git push homelab
