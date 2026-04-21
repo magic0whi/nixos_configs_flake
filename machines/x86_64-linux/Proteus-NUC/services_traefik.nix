@@ -148,6 +148,7 @@ in {
           forgejo = {
             rule = "Host(`git.${myvars.domain}`)"; entryPoints = ["websecure"];  service = "forgejo";  tls = {};
           };
+        plane = {rule = "Host(`plane.${myvars.domain}`)"; entryPoints = ["websecure"]; service = "plane"; tls = {};};
         };
         services = {
           authelia-backend.loadBalancer.servers = [{url = "http://127.0.0.1:${authelia_port}";}];
@@ -205,6 +206,7 @@ in {
           forgejo.loadBalancer.servers = [{
             url = "http://127.0.0.1:${builtins.toString config.services.forgejo.settings.server.HTTP_PORT}";
           }];
+          plane.loadBalancer.servers = [{url = "http://127.0.0.1:8081";}];
         };
       };
       tcp = {
