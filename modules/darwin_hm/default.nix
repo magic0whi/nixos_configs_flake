@@ -14,7 +14,7 @@
   };
   ## END shell.nix
   ## START gpg.nix
-  # Don't bootout the 'system/com.openssh.ssh-agent', as it seizes the '$SSH_AUTH_SOCK'
+  # NOTE: Don't bootout the 'system/com.openssh.ssh-agent', as it seizes the '$SSH_AUTH_SOCK'
   home.sessionVariablesExtra = ''
     export SSH_AUTH_SOCK="$(${config.programs.gpg.package}/bin/gpgconf --list-dirs agent-ssh-socket)"
   '';
