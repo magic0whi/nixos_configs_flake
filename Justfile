@@ -181,13 +181,6 @@ nodes:
 proteus-desktop:
   deploy --skip-checks .#Proteus-Desktop -- --verbose --show-trace
 
-[linux]
-[group('homelab')]
-proteus-desktop-local mode="default":
-  #!/usr/bin/env bash
-  . {{utils}}
-  nixos-switch Proteus-Desktop {{mode}}
-
 ############################################################################
 #
 # Commands for other Virtual Machines
