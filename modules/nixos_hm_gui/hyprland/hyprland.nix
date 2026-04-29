@@ -200,8 +200,11 @@ in {
         allow_session_lock_restore = true;
       };
       windowrule = [
-        "match:class ^yad|org\\.pulseaudio\\.pavucontrol|imv|qemu$,float true"
+        "match:class ^imv$,float true"
+        "match:class ^org\\.pulseaudio\\.pavucontrol$,float true"
         "match:class ^thunar$, match:title ^File Operation Progress$,float true"
+        "match:class ^xdg-desktop-portal-gtk$,float true"
+        "match:class ^yad$,float true"
 
         "match:class ^firefox|google-chrome$,idle_inhibit focus"
         "match:tag video_pip,float true,pin true,size 480 270,move 100%-w-5 100%-w-5"
