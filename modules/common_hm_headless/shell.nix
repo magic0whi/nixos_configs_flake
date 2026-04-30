@@ -29,7 +29,7 @@
     bc = "bc -lq"; # `-l` load ath lib, `-q` quiet
     cpr = "rsync --archive -hh --partial --info=stats1,progress2 --modify-window=1";
     mvr = "rsync --archive -hh --partial --info=stats1,progress2 --modify-window=1 --remove-source-files";
-    diff = "diff --text --expand-tabs --unified --new-file -recursive --color=auto";
+    diff = "diff --text --expand-tabs --unified --new-file --recursive --color=auto";
     # For `git filter-branch --help | bat -l man`, use
     # `MANWIDTH=999 git filter-branch --help | bat -lman` instead to prevent
     # git from baking ugly line breaks
