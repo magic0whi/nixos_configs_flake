@@ -49,9 +49,7 @@ in {
           minio-dashboard = {
             rule = "Host(`minio.${myvars.domain}`)"; entryPoints = ["websecure"]; service = "minio-dashboard"; tls = {};
           };
-          s3 = {
-            rule = "Host(`s3.${myvars.domain}`)"; entryPoints = ["websecure"]; service = "s3"; tls = {};
-          };
+          s3 = {rule = "Host(`s3.${myvars.domain}`)"; entryPoints = ["websecure"]; service = "s3"; tls = {};};
         };
         services = {
           sb-dashboard.loadBalancer.servers = [{url = "http://127.0.0.1:9091";}];
