@@ -153,4 +153,5 @@
     flavor = myvars.catppuccin_flavor;
   };
   ## END catppuccin.nix
+  programs.rclone.enable = true;
 }
