@@ -115,7 +115,7 @@
     defaultUserShell = pkgs.zsh;
     mutableUsers = false; # Don't allow mutate users outside the config
     groups = {
-      ${myvars.username} = {gid = 1000;};
+      # ${myvars.username} = {gid = 1000;};
       docker = {};
     };
     users.${myvars.username} = {
@@ -133,7 +133,7 @@
       # - Or just use hardware security keys like Yubikey/CanoKey.
       uid = 1000;
       home = "/home/${myvars.username}";
-      initialHashedPassword = myvars.initial_hashed_password;
+      # initialHashedPassword = myvars.initial_hashed_password;
       isNormalUser = true;
       extraGroups = [
         myvars.username
@@ -146,7 +146,7 @@
       ];
     };
     users.root = { # root's ssh key are heavily used for remote deployment
-      initialHashedPassword = lib.mkDefault config.users.users."${myvars.username}".initialHashedPassword;
+      # initialHashedPassword = config.users.users."${myvars.username}".initialHashedPassword;
       openssh.authorizedKeys.keys = config.users.users."${myvars.username}".openssh.authorizedKeys.keys;
     };
   };
