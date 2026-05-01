@@ -16,9 +16,9 @@
         domain = hex_str_to_int_str (builtins.head colon_splited);
         bus = hex_str_to_int_str (builtins.elemAt colon_splited 1);
 
-        dot_splited = lib.strings.splitString "." (lib.last colon_splited);
+        dot_splited = lib.strings.splitString "." (lib.lists.last colon_splited);
         device = hex_str_to_int_str (builtins.head dot_splited);
-        func = hex_str_to_int_str (lib.last dot_splited);
+        func = hex_str_to_int_str (lib.lists.last dot_splited);
       in "PCI:${bus}@${domain}:${device}:${func}";
     in {
       # NOTE: It's unnecessary to use sync.enable for hybrid laptop since it

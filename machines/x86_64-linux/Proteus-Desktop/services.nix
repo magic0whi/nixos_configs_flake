@@ -1,4 +1,11 @@
-{myvars, config, lib, pkgs, ...}: {
+{
+  myvars,
+  config,
+  lib,
+  pkgs,
+  # mylib,
+  ...
+}: {
   ## START services_monero.nix
   services.monero = {
     enable = true;
@@ -22,9 +29,11 @@
     file = "${myvars.secrets_dir}/syncthing_proteus-desktop.priv.pem.age";
     mode = "0500"; owner = config.services.syncthing.user;
   };
+  # If without `users.groups.storage` and rely on LDAP group
+  # systemd.services.syncthing.serviceConfig.SupplementaryGroups = ["storage"];
   services.syncthing = {
     enable = true;
-    group = "users";
+    group = "storage"; # Don't work for a LDAP group
     key = config.age.secrets."syncthing_proteus-desktop.priv.pem".path;
     cert = "${myvars.secrets_dir}/syncthing_proteus-desktop.crt.pem";
     settings = let
@@ -42,32 +51,32 @@
 
       folders = {
         "Documents" = {
-          path = "${myvars.storage_path}/Documents";
+          path = "${myvars.storage_path}/share/Documents";
           # All devices
           devices = builtins.attrNames config.services.syncthing.settings.devices;
         };
         "Games" = {
-          path = "${myvars.storage_path}/Games";
+          path = "${myvars.storage_path}/share/Games";
           devices = lib.lists.subtractLists
             (builtins.attrNames mobile_devices)
             (builtins.attrNames config.services.syncthing.settings.devices);
         };
         "Music" = {
-          path = "${myvars.storage_path}/Music";
+          path = "${myvars.storage_path}/share/Music";
           devices = builtins.attrNames config.services.syncthing.settings.devices;
         };
         "Pictures" = {
-          path = "${myvars.storage_path}/Pictures";
+          path = "${myvars.storage_path}/share/Pictures";
           devices = builtins.attrNames config.services.syncthing.settings.devices;
         };
         "Secrets" = {
-          path = "${myvars.storage_path}/Secrets";
+          path = "${myvars.storage_path}/share/Secrets";
           devices = lib.lists.subtractLists
             (builtins.attrNames mobile_devices)
             (builtins.attrNames config.services.syncthing.settings.devices);
         };
         "Works" = {
-          path = "${myvars.storage_path}/Works";
+          path = "${myvars.storage_path}/share/Works";
           devices = lib.lists.subtractLists
             (builtins.attrNames mobile_devices)
             (builtins.attrNames config.services.syncthing.settings.devices);
@@ -77,35 +86,31 @@
   };
   ## END syncthing.nix
   ## START webdav.nix
-  services.webdav = {
+  security.pam.services.webdav = {};
+  services.webdav-server-rs = {
     enable = true;
-    package = pkgs.dufs;
-    # https://github.com/sigoden/dufs/tree/v0.45.0?tab=readme-ov-file#configuration-file
+    group = "storage";
+    debug = true;
+    # https://github.com/miquels/webdav-server-rs/blob/547602e78783935b4ddd038fb795366c9c476bcc/webdav-server.toml
     settings = {
-      serve-path = myvars.storage_path;
-      bind = "127.0.0.1";
-      hidden = ["tmp" "*.log" "*.lock"];
-      port = 5000;
-      # `:`to separate the username and password
-      # `@` to separate the account and paths
-      # `,` to separate paths
-      #  suffix `:rw`/`:ro` set permissions
-      auth = [
-        "${myvars.username}:$6$JXjsG/C9M.vh0viR$7nTJDOpisqjjtRLMCDktrJp8zYSQuwgP34ZRdD2UXll31XHqi1nqIX2.hLCC9EX2lM0vq92v5G0W0m68TQdaf/@/:ro"
-      ];
-      allow-all = true; # Allow all operations
-      allow-upload = true;
-      allow-delete = true;
-      allow-search = true;
-      allow-symlink = true; # Allow symlink to files/folders outside root directory
-      allow-archive = true; # Allow download folders as archive file
-      allow-hash = true; # Allow `?hash` query to get file sha256 hash
-      enable-cors = true; # Sets `Access-Control-Allow-Origin: *`
-      render-try-index = true; # Serve index.html when requesting a directory, returns directory listing if not found index.html
-      render-spa = true; # Serve SPA(Single Page Application)
-      # assets = "<path>" # Set the path to the assets directory for overriding the built-in assets
-      log-format = "$remote_addr $$http_X_FORWARDED_FOR $remote_user \"$request\" $status";
-      compress = "low"; # Set zip compress level [default: low] [possible values: none, low, medium, high]
+      server.listen = ["127.0.0.1:4918" "[::1]:4918"];
+      accounts = {
+        auth-type = "htpasswd.default";
+        # auth-type = "pam";
+        # acct-type = "unix";
+      };
+      htpasswd.default.htpasswd = toString (pkgs.writeText "webdav.htpasswd" "${myvars.username}:$6$bk8n5IqElcXC8PM2$U8ej4dXiJ2LpejhIEv/xv3kL0j5Fq6o4hm6Y.ygxnl4P33nrtYz/MdvmhAz12gdWFvPGbE30V0qsff1lQcVpb1");
+      pam.service = "webdav";
+      location = [{
+        route = ["/*path"]; # `path` is a keyword
+        directory = "${myvars.storage_path}/share";
+        handler = "filesystem";
+        methods = ["webdav-rw"];
+        autoindex = true;
+        auth = "true";
+        hide-symlinks = true;
+        # setuid = true;
+      }];
     };
   };
   ## END webdav.nix

@@ -226,6 +226,14 @@
         cn: ${myvars.username}
         gidNumber: 1000
         member: uid=${myvars.username},ou=People,dc=tailba6c3f,dc=ts,dc=net
+
+        dn: cn=storage,ou=Group,dc=tailba6c3f,dc=ts,dc=net
+        objectClass: top
+        objectClass: posixGroup
+        objectClass: groupOfMembers
+        cn: storage
+        gidNumber: 1001
+        member: uid=${myvars.username},ou=People,dc=tailba6c3f,dc=ts,dc=net
       '';
     };
   };

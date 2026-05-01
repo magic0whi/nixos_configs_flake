@@ -1,10 +1,10 @@
 {config, myvars, lib, ...}: let
   server_pub_crt = "${myvars.secrets_dir}/proteus_server.pub.pem";
   tailnet = "tailba6c3f.ts.net";
-  openldap_port = lib.removeSuffix "/" (lib.last (lib.strings.splitString
-    ":" (lib.head config.services.openldap.urlList))
+  openldap_port = lib.removeSuffix "/" (lib.lists.last (lib.strings.splitString
+    ":" (builtins.head config.services.openldap.urlList))
   );
-  authelia_port = lib.last (lib.strings.splitString
+  authelia_port = lib.lists.last (lib.strings.splitString
     ":"
     config.services.authelia.instances.main.settings.server.address
   );
@@ -167,7 +167,7 @@ in {
           # ];
           # sftpgo-webdav.loadBalancer.servers = [
           #   {url = "http://127.0.0.1:${builtins.toString (builtins.head config.services.sftpgo.settings.webdavd.bindings).port}";}
-          #   {url = "http://[::1]:${builtins.toString (lib.last config.services.sftpgo.settings.webdavd.bindings).port}";}
+          #   {url = "http://[::1]:${builtins.toString (lib.lists.last config.services.sftpgo.settings.webdavd.bindings).port}";}
           # ];
           # Even though it's WebSockets, we define it as http://
           aria2-rpc.loadBalancer.servers = [{

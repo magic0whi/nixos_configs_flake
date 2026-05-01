@@ -1,4 +1,4 @@
-{config, myvars, ...}: let
+{config, myvars, lib, ...}: let
   server_pub_crt = "${myvars.secrets_dir}/proteus_server.pub.pem";
 in {
   networking.firewall = { allowedTCPPorts = [80 443]; allowedUDPPorts = [443];};
@@ -57,12 +57,11 @@ in {
             passHostHeader = false;
             servers = [{url = "http://${config.home-manager.users.${myvars.username}.services.syncthing.guiAddress}";}];
           };
-          webdav.loadBalancer = {
-            servers = [{url = "http://127.0.0.1:${builtins.toString config.services.webdav.settings.port}";}];
-            healthCheck = {path = "/__dufs__/health"; interval = "15s"; timeout = "3s";};
-          };
-          minio-dashboard.loadBalancer = {servers = [{url = "http://${config.services.minio.consoleAddress}";}];};
-          s3.loadBalancer = {servers = [{url = "http://${config.services.minio.listenAddress}";}];};
+          webdav.loadBalancer.servers = let listens = config.services.webdav-server-rs.settings.server.listen; in [
+            {url = "http://${builtins.head listens}";}{url = "http://${lib.lists.last listens}";}
+          ];
+          minio-dashboard.loadBalancer.servers = [{url = "http://${config.services.minio.consoleAddress}";}];
+          s3.loadBalancer.servers = [{url = "http://${config.services.minio.listenAddress}";}];
         };
       };
     };

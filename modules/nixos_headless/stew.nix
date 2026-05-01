@@ -117,6 +117,7 @@
     groups = {
       # ${myvars.username} = {gid = 1000;};
       docker = {};
+      storage = {gid=1001;};
     };
     users.${myvars.username} = {
       # Public Keys that can be used to login to all my PCs, Macbooks, and servers.

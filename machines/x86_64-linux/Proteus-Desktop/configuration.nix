@@ -10,13 +10,15 @@ in {
   services.sing-box.config_file = config.age.secrets."sb_client_linux.json".path;
   ## END sing-box.nix
   ## START systemd_tmpfiles.nix
-  systemd.tmpfiles.rules = [
-    # Grant 'rwx' to primary user via ACL. `getfacl /path` to show
-    "A ${myvars.storage_path} - - - - u:${myvars.username}:rwx"
-    # Optional: Default ACL so new files created there inherit these rights
-    # A+: Adds an ACL entry to the existing ones
-    "A+ ${myvars.storage_path} - - - - d:u:${myvars.username}:rwx"
-  ];
+  systemd.tmpfiles.settings = {
+    # Setgid so new files inherit group; give rw to group members
+    "00-create-data-share"."${myvars.storage_path}/share".d = {group = "storage"; mode = "2775";};
+    # Even with setgid, services may create files with restrictive umasks. Lock in permissions with default ACLs
+    # TIP: You may change type to `A+` to recursively modify exists dirs/files' ACLs
+    # TIP: Run `getfacl /path` to show rule list
+    "01-acl-data-share-default"."${myvars.storage_path}/share"."a+".argument = "d:g:storage:rwX";
+    "01-acl-data-share"."${myvars.storage_path}/share".a.argument = "g:storage:rwX";
+  };
   ## END systemd_tmpfiles.nix
   boot.binfmt.emulatedSystems = ["riscv64-linux"]; # Cross compilation
   ## START hostapd.nix

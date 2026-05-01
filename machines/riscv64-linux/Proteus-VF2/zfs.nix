@@ -4,7 +4,7 @@
     && (builtins.tryEval kernelPackages).success
     && (!kernelPackages.${config.boot.zfs.package.kernelModuleAttribute}.meta.broken)
   ) pkgs.linuxKernel.packages;
-  latestKernelPackage = lib.last (
+  latestKernelPackage = lib.lists.last (
     lib.sort (a: b: (lib.versionOlder a.kernel.version b.kernel.version)) (
       builtins.attrValues zfsCompatibleKernelPackages
     )
