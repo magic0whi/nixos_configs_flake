@@ -37,7 +37,7 @@
       + " MANROFFOPT=\"-P-c\"" # Enables groff's "continuous" (non-paginated) output mode
       + " MANWIDTH=$(($(tput cols) - 7))" # Adjustment manwidth when less' line number enabled
       + " command man";
-    llag = "eza -agl";
+    llag = "eza -aagl";
     tmux = "tmux -2"; # `-2` force assume the terminal supports 256 colors
     # Run `TERM=xterm-ghostty command ssh` if the remote machine has the
     # corresponding terminfo installed
