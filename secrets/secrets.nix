@@ -22,7 +22,7 @@ let
   Proteus-NixOS-4 = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGvVGDKkAWK2gSnNB+dS8ie2WN5yzeH3/FQAiIXRZ1i8 root@Proteus-NixOS-4";
   Proteus-NixOS-5 = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIBwHWbs4PsCW9Ji6Z4GepwjrXxhrD1DWGPdtNk9LdXwZ root@Proteus-NixOS-5";
   # Proteus-NixOS-6 = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOUXCE7Ghu4cLl0xBCg+q69QqGuhyIu17KDgrCpz0Gvb root@Proteus-NixOS-6";
-  machines = [recovery_key opengpg];
+  trusted_machines = [recovery_key opengpg Proteus-MBP14M4P Proteus-NUC];
   google_vps = [
     Proteus-NixOS-0
     Proteus-NixOS-1
@@ -33,30 +33,36 @@ let
   ];
   # huawei_vps = [Proteus-NixOS-6];
 in {
-  # To see & edit encrypted file, run:
-  # agenix -e sb_client.json.age -i <(get-ssh-key 30973F79B17F9ED3\!)
-  "sb_client_darwin.json.age".publicKeys = machines ++ [Proteus-MBP14M4P];
-  "sb_client_linux.json.age".publicKeys = machines ++ [Proteus-NUC Proteus-Desktop];
-  "syncthing_Proteus-MBP14M4P.priv.pem.age".publicKeys = machines;
-  "syncthing_proteus-nuc.priv.pem.age".publicKeys = machines ++ [Proteus-NUC];
-  "syncthing_proteus-desktop.priv.pem.age".publicKeys = machines ++ [Proteus-Desktop];
-  "proteus_server.priv.pem.age".publicKeys = machines ++ [Proteus-NUC Proteus-Desktop] ++ google_vps;
-  "aria2rpc.priv.age".publicKeys = machines ++ [Proteus-NUC];
-  "sb_Proteus-NixOS-1.json.age".publicKeys = machines ++ google_vps;
-  # "sb_Proteus-NixOS-6.json.age".publicKeys = machines ++ huawei_vps;
-  "proteus-ap.key.age".publicKeys = machines ++ [Proteus-Desktop];
-  "minio.env.age".publicKeys = machines ++ [Proteus-Desktop] ++ google_vps;
-  "atuin.env.age".publicKeys = machines ++ [Proteus-NUC];
-  "immich.env.age".publicKeys = machines ++ [Proteus-NUC];
-  "paperless.env.age".publicKeys = machines ++ [Proteus-NUC];
-  "authelia_jwt_secret.txt.age".publicKeys = machines ++ [Proteus-NUC];
-  "authelia_session_secret.txt.age".publicKeys = machines ++ [Proteus-NUC];
-  "authelia_storage_encryption_key.txt.age".publicKeys = machines ++ [Proteus-NUC];
-  "authelia_ldap_password.txt.age".publicKeys = machines ++ [Proteus-NUC];
-  "authelia_db_password.txt.age".publicKeys = machines ++ [Proteus-NUC];
-  "mpd_auth.conf.age".publicKeys = machines ++ [Proteus-NUC];
-  "authelia_oidc_hmac.txt.age".publicKeys = machines ++ [Proteus-NUC];
-  "authelia_oidc_rsa.pem.age".publicKeys = machines ++ [Proteus-NUC];
-  "forgejo_authelia_secret.age".publicKeys = machines ++ [Proteus-NUC];
-  "forgejo_runner_token.env.age".publicKeys = machines ++ [Proteus-NUC];
+  # To see & edit encrypted file, run `agenix -e sb_client.json.age -i <(get-ssh-key 30973F79B17F9ED3\!)`
+  "sb_client_darwin.json.age".publicKeys = trusted_machines;
+  "sb_client_linux.json.age".publicKeys = trusted_machines ++ [Proteus-Desktop];
+
+  "sb_Proteus-NixOS-1.json.age".publicKeys = trusted_machines ++ google_vps;
+  # "sb_Proteus-NixOS-6.json.age".publicKeys = trusted_machines ++ huawei_vps;
+
+  "syncthing_Proteus-MBP14M4P.priv.pem.age".publicKeys = trusted_machines;
+  "syncthing_proteus-nuc.priv.pem.age".publicKeys = trusted_machines;
+  "syncthing_proteus-desktop.priv.pem.age".publicKeys = trusted_machines ++ [Proteus-Desktop];
+
+  "proteus_server.priv.pem.age".publicKeys = trusted_machines ++ [Proteus-Desktop] ++ google_vps;
+  "aria2rpc.priv.age".publicKeys = trusted_machines;
+  "proteus-ap.key.age".publicKeys = trusted_machines ++ [Proteus-Desktop];
+  "minio.env.age".publicKeys = trusted_machines ++ [Proteus-Desktop] ++ google_vps;
+  "atuin.env.age".publicKeys = trusted_machines;
+  "immich.env.age".publicKeys = trusted_machines;
+  "paperless.env.age".publicKeys = trusted_machines;
+  "mpd_auth.conf.age".publicKeys = trusted_machines;
+
+  "authelia_jwt_secret.txt.age".publicKeys = trusted_machines;
+  "authelia_session_secret.txt.age".publicKeys = trusted_machines;
+  "authelia_storage_encryption_key.txt.age".publicKeys = trusted_machines;
+  "authelia_ldap_password.txt.age".publicKeys = trusted_machines;
+  "authelia_db_password.txt.age".publicKeys = trusted_machines;
+  "authelia_oidc_hmac.txt.age".publicKeys = trusted_machines;
+  "authelia_oidc_rsa.pem.age".publicKeys = trusted_machines;
+
+  "forgejo_authelia_secret.age".publicKeys = trusted_machines;
+  "forgejo_runner_token.env.age".publicKeys = trusted_machines;
+
+  "nix-secret.key.age".publicKeys = trusted_machines;
 }
