@@ -27,7 +27,7 @@
   ## START syncthing.nix
   age.secrets."syncthing_proteus-desktop.priv.pem" = {
     file = "${myvars.secrets_dir}/syncthing_proteus-desktop.priv.pem.age";
-    mode = "0500"; owner = config.services.syncthing.user;
+    mode = "0400"; owner = config.services.syncthing.user;
   };
   # If without `users.groups.storage` and rely on LDAP group
   # systemd.services.syncthing.serviceConfig.SupplementaryGroups = ["storage"];
@@ -148,7 +148,7 @@
   ## START minio.nix
   age.secrets."minio.env" = {
     file = "${myvars.secrets_dir}/minio.env.age";
-    mode = "0500"; owner = config.systemd.services.minio.serviceConfig.User;
+    mode = "0400"; owner = config.systemd.services.minio.serviceConfig.User;
   };
   systemd.services.minio.after = ["mnt-storage-data.mount"];
   services.minio = {

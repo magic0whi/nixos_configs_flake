@@ -26,11 +26,11 @@
   age.secrets = {
     "minio/private.key" = {
       file = "${myvars.secrets_dir}/proteus_server.priv.pem.age";
-      mode = "0500"; owner = config.systemd.services.minio.serviceConfig.User;
+      mode = "0400"; owner = config.systemd.services.minio.serviceConfig.User;
     };
     "minio/minio.env" = {
       file = "${myvars.secrets_dir}/minio.env.age";
-      mode = "0500"; owner = config.systemd.services.minio.serviceConfig.User;
+      mode = "0400"; owner = config.systemd.services.minio.serviceConfig.User;
     };
   };
   services.minio = {

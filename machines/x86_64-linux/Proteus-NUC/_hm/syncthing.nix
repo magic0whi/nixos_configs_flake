@@ -1,7 +1,7 @@
 {myvars, config, lib, osConfig, ...}: {
   age.secrets."syncthing_proteus-nuc.priv.pem" = {
     file = "${myvars.secrets_dir}/syncthing_proteus-nuc.priv.pem.age";
-    mode = "0500";
+    mode = "0400";
   };
   services.syncthing = {
     # nix run nixpkgs#syncthing -- generate --config myconfig/"
