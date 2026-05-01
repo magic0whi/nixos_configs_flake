@@ -15,9 +15,8 @@ in {
   xdg.configFile."nix/public.key".source = "${myvars.secrets_dir}/nix-public.key";
   age.secrets."nix-secret.key" = {
     file = "${myvars.secrets_dir}/nix-secret.key.age";
-    name = "secret.key";
     mode = "0400";
-    path = "${config.xdg.configHome}/nix";
+    path = "${config.xdg.configHome}/nix/secret.key";
   };
   ## END nix.nix
   home.packages = with pkgs; [
