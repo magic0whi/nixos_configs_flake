@@ -2,6 +2,7 @@
   age.secrets."paperless.env" = {
     file = "${myvars.secrets_dir}/paperless.env.age"; mode = "0400"; owner = config.services.paperless.user;
   };
+  # As of 2026-05-01, paperless.nix still hardcoded group to be same with uesr
   services.paperless = {
     domain = "paperless.${myvars.domain}";
     enable = true;
@@ -27,26 +28,22 @@
       PAPERLESS_FILENAME_FORMAT = "{{ created_year }}/{{ correspondent }}/{{ document_type }}/{{ title }}";
     };
     environmentFile = config.age.secrets."paperless.env".path;
-    dataDir = "/srv/paperless";
+    # dataDir = "/srv/paperless";
     exporter.enable = true;
+    exporter.directory = "/srv/Backups/paperless-export";
     exporter.settings.no-archive = true;
     exporter.settings.no-thumbnail = true;
   };
-  systemd.tmpfiles.rules = lib.mkIf config.services.paperless.exporter.enable [
-    "z '${config.services.paperless.exporter.directory}' 2770 ${myvars.username} ${config.services.paperless.user} - -"
-  ];
-  systemd.services.paperless-exporter.serviceConfig = lib.mkIf config.services.paperless.exporter.enable {
-    # Type=oneshot forces systemd to wait until the paperless-exporter-start
-    # script completely finishes (which spawns python to export the PDFs to a
-    # temporary folder, then atomically renames it to `cfg.exporter.directory`).
-    # If this is Type=simple (the default), systemd will run ExecStartPost
-    # instantly, before the PDFs are generated, causing them to be owned by
-    # paperless:paperless.
+  systemd.tmpfiles.settings = let cfg = config.services.paperless.exporter; in lib.mkIf cfg.enable {
+    "10-paperless-exporter-change-group".${cfg.directory}.z = {mode = "2750"; group = "storage";};
+  };
+  systemd.services.paperless-exporter.serviceConfig = let cfg = config.services.paperless.exporter;
+  in lib.mkIf cfg.enable {
+    # Type=oneshot forces systemd to wait until the paperless-exporter-start script completely finishes (which spawns
+    # python to export the PDFs to a temporary folder, then atomically renames it to `cfg.exporter.directory`).
+    # If this is Type=simple (the default), systemd will run ExecStartPost instantly, before the PDFs are generated,
+    # causing them to be owned by paperless:paperless.
     Type = "oneshot";
-    EnvironmentFile = config.age.secrets."paperless.env".path;
-    ExecStartPost = let cfg = config.services.paperless; in [
-      "+${pkgs.coreutils}/bin/chown -R ${myvars.username}:${config.services.paperless.user} ${cfg.exporter.directory}"
-      "+${pkgs.coreutils}/bin/chmod -R u+rwX,g+rwX ${config.services.paperless.dataDir}/export"
-    ];
+    ExecStartPost = ["+${pkgs.coreutils}/bin/chmod -R g+r ${cfg.directory}"];
   };
 }
