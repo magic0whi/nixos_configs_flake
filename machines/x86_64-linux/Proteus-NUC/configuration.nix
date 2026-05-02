@@ -1,4 +1,4 @@
-{pkgs, config, myvars, ...}: {
+{pkgs, config, myvars, lib, ...}: {
   time.timeZone = "Europe/London";
   age.identityPaths = ["/srv/sync_work/3keys/pgp2ssh.priv.key"];
   ## START iwd.nix
@@ -31,7 +31,6 @@
     "d /srv/sync_work 0775 ${myvars.username} users -   -"
   ];
   ## END systemd_tmpfiles.nix
-  boot.binfmt.emulatedSystems = ["riscv64-linux" "aarch64-linux"]; # Cross compilation
   ## START sriov.nix
   boot.extraModulePackages = with pkgs; [i915-sriov xe-sriov];
   boot.kernelParams = [
@@ -46,4 +45,12 @@
     # "module_blacklist=i915"
   ];
   ## END sriov.nix
+  ## BEGIN binfmt.nix
+  boot.binfmt.emulatedSystems = ["riscv64-linux" "aarch64-linux"]; # Cross compilation
+  boot.binfmt.registrations."riscv64-linux" = {
+    interpreter = "${lib.getExe' pkgs.pkgsStatic.qemu-user "qemu-riscv64"}";
+    fixBinary = true;
+    wrapInterpreterInShell = false;
+  };
+  ## END binfmt.nix
 }

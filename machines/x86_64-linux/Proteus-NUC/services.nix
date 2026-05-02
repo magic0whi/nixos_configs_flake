@@ -418,9 +418,11 @@
       url = "https://git.${myvars.domain}";
       tokenFile = config.age.secrets."forgejo_runner_token.env".path;
       labels = [
-        "ubuntu-latest:docker://node:20-bookworm"
-        "ubuntu-24.04-arm:docker://node:20-bookworm"
         "debian-latest:docker://node:20-bookworm"
+        # fake the ubuntu name, because node provides no ubuntu builds
+        "ubuntu-latest:docker://node:20-bookworm"
+        # "ubuntu-24.04-arm:docker://node:20-bookworm"
+        "ubuntu-24.04-riscv64:docker://gounthar/node-riscv64:22.22.0-trixie"
       ];
       # https://gitea.com/gitea/act_runner/src/commit/40dcee0991c3bd33b657bb77aa1f2f46d69cc0e2/internal/pkg/config/config.example.yaml
       settings = {
