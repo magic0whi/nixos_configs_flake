@@ -77,6 +77,7 @@
           "class<libreoffice-calc>" = "&#xf378;"; # nf-linux-libreofficecalc
           "class<libreoffice-startcenter>" = "&#xf376;"; # nf-linux-libreoffice
           "class<qemu>" = "&#xeb7b;"; # nf-cod-vm_running
+          "class<superProductivity>" = "&#xf1ad0;"; # nf-md-timer_check
         };
       };
       idle_inhibitor = {

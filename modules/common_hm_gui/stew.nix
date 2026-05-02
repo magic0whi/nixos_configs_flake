@@ -34,6 +34,8 @@
     # Dev-tools
     # insomnia # REST client
     # wireshark # Network analyzer
+
+    super-productivity
   ];
   ## START browsers.nix
   programs.firefox.enable = true;
