@@ -421,7 +421,6 @@
         # fake the ubuntu name, because node provides no ubuntu builds
         "ubuntu-latest:docker://node:20-bookworm"
         # "ubuntu-24.04-arm:docker://node:20-bookworm"
-        "ubuntu-24.04-riscv64:docker://node:20-bookworm"
       ];
       # https://gitea.com/gitea/act_runner/src/commit/40dcee0991c3bd33b657bb77aa1f2f46d69cc0e2/internal/pkg/config/config.example.yaml
       settings = {
@@ -431,6 +430,7 @@
         container = {
           options = "-v /etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt:ro";
           valid_volumes = ["/etc/ssl/certs/ca-certificates.crt"];
+          force_pull = false;
         };
       };
     };
@@ -444,14 +444,16 @@
         settings = {
           runner.capacity = 1;
           container.options = default_instance.settings.container.options + " --platform=linux/arm64";
+          force_pull = false;
         };
       };
       riscv64 = lib.recursiveUpdate default_instance {
         name = "${config.networking.hostName}-runner-riscv64";
-        labels = ["ubuntu-24.04-riscv64:docker://gounthar/node-riscv64:22.22.0-trixie"];
+        labels = ["ubuntu-24.04-riscv64:docker://custom-node-riscv64:22.22.0"];
         settings = {
           runner.capacity = 1;
           container.options = default_instance.settings.container.options + " --platform=linux/riscv64";
+          force_pull = false;
         };
       };
     };
