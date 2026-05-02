@@ -410,9 +410,8 @@
   # Local Action Runner connecting to your Forgejo instance
   # Docker is required to execute Docker-based action labels
   virtualisation.docker.enable = true;
-  services.gitea-actions-runner = {
-    package = pkgs.forgejo-runner;
-    instances.default = {
+  services.gitea-actions-runner = let
+    default_instance = {
       enable = true;
       name = "${config.networking.hostName}-runner";
       url = "https://git.${myvars.domain}";
@@ -422,18 +421,37 @@
         # fake the ubuntu name, because node provides no ubuntu builds
         "ubuntu-latest:docker://node:20-bookworm"
         # "ubuntu-24.04-arm:docker://node:20-bookworm"
-        "ubuntu-24.04-riscv64:docker://gounthar/node-riscv64:22.22.0-trixie"
+        "ubuntu-24.04-riscv64:docker://node:20-bookworm"
       ];
       # https://gitea.com/gitea/act_runner/src/commit/40dcee0991c3bd33b657bb77aa1f2f46d69cc0e2/internal/pkg/config/config.example.yaml
       settings = {
         # The nodejs still couldn't recognize my self-signed cert
         runner.capacity = 3; # Set to your desired number of simultaneous jobs
-        runner.envs = {
-          NODE_EXTRA_CA_CERTS = "/etc/ssl/certs/ca-certificates.crt";
-        };
+        runner.envs.NODE_EXTRA_CA_CERTS = "/etc/ssl/certs/ca-certificates.crt";
         container = {
           options = "-v /etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt:ro";
           valid_volumes = ["/etc/ssl/certs/ca-certificates.crt"];
+        };
+      };
+    };
+  in {
+    package = pkgs.forgejo-runner;
+    instances = {
+      x86_64 = default_instance;
+      arm64 = lib.recursiveUpdate default_instance {
+        name = "${config.networking.hostName}-runner-arm64";
+        labels = ["ubuntu-24.04-arm:docker://node:20-bookworm"];
+        settings = {
+          runner.capacity = 1;
+          container.options = default_instance.settings.container.options + " --platform=linux/arm64";
+        };
+      };
+      riscv64 = lib.recursiveUpdate default_instance {
+        name = "${config.networking.hostName}-runner-riscv64";
+        labels = ["ubuntu-24.04-riscv64:docker://gounthar/node-riscv64:22.22.0-trixie"];
+        settings = {
+          runner.capacity = 1;
+          container.options = default_instance.settings.container.options + " --platform=linux/riscv64";
         };
       };
     };
