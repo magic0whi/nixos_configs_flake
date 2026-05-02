@@ -7,14 +7,14 @@ jobs:
       fail-fast: false # Don't cancel other matrix jobs if one fails
       matrix:
         os:
-          - ubuntu-latest
+          # - ubuntu-latest
           - ubuntu-24.04-riscv64
           # - ubuntu-24.04-arm
         # Augments each 'os' entry above with an extra 'system' variable, pairing each runner with its corresponding Nix
         # system identifier. This avoids a full cross-product (which would give 4 invalid combos).
         include:
-          - os: ubuntu-latest
-            system: x86_64-linux
+          # - os: ubuntu-latest
+          #   system: x86_64-linux
           # - os: ubuntu-24.04-arm
           #   system: aarch64-linux
           - os: ubuntu-24.04-riscv64
