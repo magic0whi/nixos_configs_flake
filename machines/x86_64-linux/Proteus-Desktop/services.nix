@@ -150,7 +150,7 @@
     file = "${myvars.secrets_dir}/minio.env.age";
     mode = "0400"; owner = config.systemd.services.minio.serviceConfig.User;
   };
-  systemd.services.minio.after = ["mnt-storage-data.mount"];
+  systemd.services.minio.unitConfig.RequiresMountsFor = ["/mnt/storage/data"];
   services.minio = {
     enable = true;
     listenAddress = "127.0.0.1:9000";
