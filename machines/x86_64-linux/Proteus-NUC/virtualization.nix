@@ -23,7 +23,7 @@
   #   Critical exception: traffic destined for FakeIP (198.18.0.0/15) hits a
   #   `return` BEFORE the bypass mark, so TProxy can still catch and resolve
   #   those connections.
-  networking.nftables.tables.bypass_docker = lib.mkIf config.services.sing-box.enable {
+  networking.nftables.tables = lib.mkIf config.services.sing-box.enable {bypass_docker = {
     family = "inet";
     content = ''
       chain prerouting {
@@ -36,7 +36,7 @@
         ip saddr { 172.17.0.0/16, 172.18.0.0/16, 172.20.0.0/14, 192.168.122.1/24 } ct mark set 0x00002024
       }
     '';
-  };
+  };};
   # Fix 2: extraInputRules:
   #   With auto_redirect enabled, sing-box allocates a dynamic local TCP port
   #   and installs several nft rules. Because `redirect` rewrites the packet

@@ -37,13 +37,13 @@
   systemd.tmpfiles.settings = let cfg = config.services.paperless.exporter; in lib.mkIf cfg.enable {
     "10-paperless-exporter-change-group".${cfg.directory}.z = {mode = "2750"; group = "storage";};
   };
-  systemd.services.paperless-exporter.serviceConfig = let cfg = config.services.paperless.exporter;
-  in lib.mkIf cfg.enable {
+  systemd.services = let cfg = config.services.paperless.exporter;
+  in lib.mkIf cfg.enable {paperless-exporter.serviceConfig = {
     # Type=oneshot forces systemd to wait until the paperless-exporter-start script completely finishes (which spawns
     # python to export the PDFs to a temporary folder, then atomically renames it to `cfg.exporter.directory`).
     # If this is Type=simple (the default), systemd will run ExecStartPost instantly, before the PDFs are generated,
     # causing them to be owned by paperless:paperless.
     Type = "oneshot";
     ExecStartPost = ["+${pkgs.coreutils}/bin/chmod -R g+r ${cfg.directory}"];
-  };
+  };};
 }

@@ -1,6 +1,6 @@
 {lib, config, ...}: {
   # Waybar sometimes starts too fast before hyprland is ready
-  systemd.user.services.waybar.Service.RestartSec = lib.mkIf config.programs.waybar.enable "3.02s";
+  systemd.user.services = lib.mkIf config.programs.waybar.enable {waybar.Service.RestartSec = "3.02s";};
   programs.waybar = {
     enable = true;
     systemd.enable = true;
