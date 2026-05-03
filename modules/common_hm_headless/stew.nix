@@ -57,11 +57,10 @@
     # NOTE: Home Mabnager provides `y` to allow changing working directory when
     # exitig Yazi
     enable = true;
-    settings = {
-      manager = {
-        show_hidden = true;
-        sort_dir_first = true;
-      };
+    settings.mgr = {
+      linemode = "mtime";
+      show_hidden = true;
+      sort_dir_first = true;
     };
     plugins.drag = pkgs.yaziPlugins.drag;
     plugins.recycle-bin = if pkgs.stdenv.isDarwin then pkgs.emptyFile else pkgs.yaziPlugins.recycle-bin;
