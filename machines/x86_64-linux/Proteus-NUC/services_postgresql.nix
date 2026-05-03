@@ -50,11 +50,10 @@
     compression = "zstd";
     compressionLevel = 3;
   };
-  systemd.tmpfiles.rules = lib.mkIf config.services.postgresqlBackup.enable [
-    "z '${config.services.postgresqlBackup.location}' 2770 ${myvars.username} ${config.systemd.services.postgresql.serviceConfig.User} - -"
-  ];
+  systemd.tmpfiles.settings = let cfg = config.services.postgresqlBackup; in lib.mkIf cfg.enable {
+    "10-postgresqlBackup-change-group".${cfg.location}.z = {mode = "2770"; group = "storage";};
+  };
   systemd.services.postgresqlBackup.serviceConfig.ExecStartPost = [
-    "+${pkgs.coreutils}/bin/chown -R ${myvars.username}:${config.services.paperless.user} ${config.services.postgresqlBackup.location}"
-    "+${pkgs.coreutils}/bin/chmod -R u+rwX,g+rwX ${config.services.postgresqlBackup.location}"
+    "+${pkgs.coreutils}/bin/chmod -R g+r ${config.services.postgresqlBackup.location}"
   ];
 }
