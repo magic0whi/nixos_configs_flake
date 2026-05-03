@@ -110,7 +110,9 @@
               client_id = "papra";
               client_name = "Papra";
               # nix run nixpkgs#authelia -- crypto rand --length 64 --charset alphanumeric
-              # nix run nixpkgs#authelia -- crypto hash generate pbkdf2 --variant sha512 --password <YOUR_RAW_SECRET>
+              # nix run nixpkgs#authelia -- crypto hash generate pbkdf2 --variant sha512 --password "$(systemd-ask-password)"
+              # To test the PBKDF2 digest, run
+              # nix run nixpkgs#authelia -- crypto hash validate --password "$(systemd-ask-password)" '$pbkdf2-sha512$310000$...'
               client_secret = "$pbkdf2-sha512$310000$3KSvvBJnoLyJDoKDBIBcZQ$dMQmccJ6Y4hrj.tv.dD3KFzLcsPCsMNRZFTpHUiInVcSX0eBR5T6jemXfcUaob9PsbgHBwRNCjtXiBNl6lOc7g";
               redirect_uris = ["https://papra.${myvars.domain}/api/auth/oauth2/callback/authelia"];
               # authorization_policy = "one_factor";
@@ -136,6 +138,14 @@
               client_secret = "$pbkdf2-sha512$310000$js.q7nxEc0JzjQN3NRyyrA$0F2fFhnC3HJspJUhFSp56F4Rl0PhzaYV.J9TytIfxZfiE7GDAuHIYKxSa262k/rf7d/vgOVHVa5a9C9P1YIYRg";
               redirect_uris = ["https://plane.${myvars.domain}/auth/gitea/callback" "https://plane.${myvars.domain}/auth/gitea/callback/"];
               scopes = ["openid" "email" "profile"];
+              token_endpoint_auth_method = "client_secret_post";
+            }
+            {
+              client_id = "paperless";
+              client_name = "Paperless-ngx";
+              client_secret = "$pbkdf2-sha512$310000$utOYjxWkjgXCc1TIfgg5ZQ$KA7m4g/DPTj17MWYa2nOaunrF6ZXSBlDoddd5xuCXY5cVRhgHuZ7hObedPFwRhnc772ngzbTNqy1WhANklh1CQ";
+              redirect_uris = ["https://paperless.${myvars.domain}/accounts/oidc/authelia/login/callback/"];
+              scopes = ["openid" "profile" "email"];
               token_endpoint_auth_method = "client_secret_post";
             }
           ];

@@ -26,6 +26,14 @@
       APERLESS_WEBSERVER_WORKERS = 16;
       PAPERLESS_WORKER_TIMEOUT = 300; # Default 1800 seconds (30min) is too long
       PAPERLESS_FILENAME_FORMAT = "{{ created_year }}/{{ correspondent }}/{{ document_type }}/{{ title }}";
+
+      # Enable OIDC
+      REQUESTS_CA_BUNDLE = config.security.pki.caBundle;
+      PAPERLESS_APPS = "allauth.socialaccount.providers.openid_connect";
+      # Optional flags to streamline the SSO experience
+      PAPERLESS_SOCIALACCOUNT_AUTO_SIGNUP = true; # Automatically create users on first login
+      PAPERLESS_DISABLE_REGULAR_LOGIN = true; # Disable Paperless' login
+      PAPERLESS_REDIRECT_LOGIN_TO_SSO = true; # Auto-redirect to Authelia, bypassing the Paperless login screen
     };
     environmentFile = config.age.secrets."paperless.env".path;
     # dataDir = "/srv/paperless";

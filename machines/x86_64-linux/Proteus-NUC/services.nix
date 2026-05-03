@@ -281,10 +281,10 @@
       settings = {
         # The nodejs still couldn't recognize my self-signed cert
         runner.capacity = 3; # Set to your desired number of simultaneous jobs
-        runner.envs.NODE_EXTRA_CA_CERTS = "/etc/ssl/certs/ca-certificates.crt";
+        runner.envs.NODE_EXTRA_CA_CERTS = config.security.pki.caBundle;
         container = {
-          options = "-v /etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt:ro";
-          valid_volumes = ["/etc/ssl/certs/ca-certificates.crt"];
+          options = "-v ${config.security.pki.caBundle}:/etc/ssl/certs/ca-certificates.crt:ro";
+          valid_volumes = [config.security.pki.caBundle];
           force_pull = false;
         };
       };
