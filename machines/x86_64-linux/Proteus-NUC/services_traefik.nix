@@ -151,13 +151,18 @@ in {
         plane = {rule = "Host(`plane.${myvars.domain}`)"; entryPoints = ["websecure"]; service = "plane"; tls = {};};
         };
         services = {
-          authelia-backend.loadBalancer.servers = [{url = "http://127.0.0.1:${authelia_port}";}];
-          atuin.loadBalancer.servers = [
-            {url = "http://127.0.0.1:${builtins.toString config.services.atuin.port}";}
-          ];
-          immich.loadBalancer.servers = [
-            {url = "http://127.0.0.1:${builtins.toString config.services.immich.port}";}
-          ];
+          authelia-backend.loadBalancer = {
+            servers = [{url = "http://127.0.0.1:${authelia_port}";}];
+            healthCheck = {path = "/api/health"; interval = "30s"; timeout = "5s";};
+          };
+          atuin.loadBalancer = {
+            servers = [{url = "http://127.0.0.1:${builtins.toString config.services.atuin.port}";}];
+            healthCheck = {path = "/healthz"; interval = "30s"; timeout = "5s";};
+          };
+          immich.loadBalancer = {
+            servers = [{url = "http://127.0.0.1:${builtins.toString config.services.immich.port}";}];
+            healthCheck = {path = "/api/server/ping"; interval = "30s"; timeout = "5s";};
+          };
           paperless.loadBalancer.servers = [
             {url = "http://127.0.0.1:${builtins.toString config.services.paperless.port}";}
           ];
@@ -182,6 +187,7 @@ in {
             # 127.0.0.1
             passHostHeader = false;
             servers = [{url = "http://${config.home-manager.users.${myvars.username}.services.syncthing.guiAddress}";}];
+            healthCheck = {path = "/rest/noauth/health"; interval = "30s"; timeout = "5s";};
           };
           home-assistant.loadBalancer.servers = let
             hass_port = builtins.toString config.services.home-assistant.config.http.server_port;
@@ -203,9 +209,12 @@ in {
               );
             in "http://127.0.0.1:${port}";
           }];
-          forgejo.loadBalancer.servers = [{
-            url = "http://127.0.0.1:${builtins.toString config.services.forgejo.settings.server.HTTP_PORT}";
-          }];
+          forgejo.loadBalancer = {
+            servers = [{
+              url = "http://127.0.0.1:${builtins.toString config.services.forgejo.settings.server.HTTP_PORT}";
+            }];
+            healthCheck = {path = "/api/healthz"; interval = "30s"; timeout = "5s";};
+          };
           plane.loadBalancer.servers = [{url = "http://127.0.0.1:8081";}];
         };
       };
