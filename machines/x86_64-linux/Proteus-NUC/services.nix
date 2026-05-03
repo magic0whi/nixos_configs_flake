@@ -28,7 +28,7 @@
       (lib.strings.toInt s_audio)
     ];
   };
-  ## START tor.nix
+  ## BEGIN services_tor.nix
   services.tor = {
     enable = true;
     client.enable = true;
@@ -46,13 +46,13 @@
       ];
     };
   };
-  ## END tor.nix
-  ## START services_sftpgo.nix
+  ## END services_tor.nix
+  ## BEGIN services_sftpgo.nix
   # services.sftpgo = {
   #   enable = true;
   #   user = myvars.username;
   #   group = myvars.username;
-  #   extraReadWriteDirs = [/srv/aria2 config.home-manager.users.proteus.xdg.userDirs.documents];
+  #   extraReadWriteDirs = [/srv/aria2 config.home-manager.users.${myvars.username}.xdg.userDirs.documents];
   #   settings = {
   #     httpd = {
   #       bindings = [
@@ -68,7 +68,7 @@
   #   };
   # };
   ## END services_sftpgo.nix
-  ## START services_immich.nix
+  ## BEGIN services_immich.nix
   age.secrets."immich.env" = {file = "${myvars.secrets_dir}/immich.env.age"; mode = "0400"; owner = "root";};
   services.immich = {
     enable = true;
@@ -218,7 +218,7 @@
     };
   };
   ## END services_authelia.nix
-  ## START services_home_assistant.nix
+  ## BEGIN services_home_assistant.nix
   services.home-assistant = {
     enable = true;
     # NixOS will automatically fetch the required Python dependencies (like
@@ -252,7 +252,7 @@
     };
   };
   ## END services_home_assistant.nix
-  ## STASRT sunshine.nix
+  ## BEGIN services_sunshine.nix
   # Wake monitor when connect
   # Ref: https://github.com/orgs/LizardByte/discussions/439#discussioncomment-15813284
   security.wrappers = lib.mkIf config.services.sunshine.enable {conntrack = {
@@ -291,8 +291,8 @@
       origin_web_ui_allowed = "pc";
     };
   };
-  ## END sunshine.nix
-  ## START caddy.nix
+  ## END services_sunshine.nix
+  ## BEGIN services_caddy.nix
   services.caddy = {
     enable = true;
     # Caddy doesn't need to bind to public ports (80/443) since Traefik handles
@@ -318,8 +318,8 @@
       (builtins.head (builtins.attrValues config.services.caddy.virtualHosts)).extraConfig
     );
   in ["d ${root_path} 2755 ${myvars.username} ${config.services.caddy.group} - -"];
-  ## END caddy.nix
-  ## START forgejo.nix
+  ## END services_caddy.nix
+  ## BEGIN services_forgejo.nix
   # Decrypt the runner token using your existing age setup
   # Create a file secrets/forgejo_runner_token.env.age containing:
   # TOKEN=your_generated_token,
@@ -452,5 +452,5 @@
       };
     };
   };
-  ## END forgejo.nix
+  ## END services_forgejo.nix
 }

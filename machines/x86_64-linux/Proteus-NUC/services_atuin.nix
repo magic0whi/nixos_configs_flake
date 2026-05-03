@@ -8,5 +8,4 @@
     database.uri = "postgres://atuin@postgresql.${myvars.domain}/atuin?sslmode=require";
     openRegistration = true;
   };
-  ## END services_atuin.nix
 }
