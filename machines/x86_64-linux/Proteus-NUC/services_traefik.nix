@@ -152,16 +152,15 @@ in {
         };
         services = {
           authelia-backend.loadBalancer = {
-            servers = [{url = "http://127.0.0.1:${authelia_port}";}];
-            healthCheck = {path = "/api/health"; interval = "30s"; timeout = "5s";};
+            servers = [{url = "http://127.0.0.1:${authelia_port}";}]; healthCheck.path = "/api/health";
           };
           atuin.loadBalancer = {
             servers = [{url = "http://127.0.0.1:${builtins.toString config.services.atuin.port}";}];
-            healthCheck = {path = "/healthz"; interval = "30s"; timeout = "5s";};
+            healthCheck.path = "/healthz";
           };
           immich.loadBalancer = {
             servers = [{url = "http://127.0.0.1:${builtins.toString config.services.immich.port}";}];
-            healthCheck = {path = "/api/server/ping"; interval = "30s"; timeout = "5s";};
+            healthCheck.path = "/api/server/ping";
           };
           paperless.loadBalancer.servers = [
             {url = "http://127.0.0.1:${builtins.toString config.services.paperless.port}";}
@@ -187,7 +186,7 @@ in {
             # 127.0.0.1
             passHostHeader = false;
             servers = [{url = "http://${config.home-manager.users.${myvars.username}.services.syncthing.guiAddress}";}];
-            healthCheck = {path = "/rest/noauth/health"; interval = "30s"; timeout = "5s";};
+            healthCheck.path = "/rest/noauth/health";
           };
           home-assistant.loadBalancer.servers = let
             hass_port = builtins.toString config.services.home-assistant.config.http.server_port;
@@ -213,7 +212,7 @@ in {
             servers = [{
               url = "http://127.0.0.1:${builtins.toString config.services.forgejo.settings.server.HTTP_PORT}";
             }];
-            healthCheck = {path = "/api/healthz"; interval = "30s"; timeout = "5s";};
+            healthCheck.path = "/api/healthz";
           };
           plane.loadBalancer.servers = [{url = "http://127.0.0.1:8081";}];
         };

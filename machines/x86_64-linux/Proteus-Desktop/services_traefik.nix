@@ -56,12 +56,26 @@ in {
           syncthing-dashboard.loadBalancer = {
             passHostHeader = false;
             servers = [{url = "http://${config.home-manager.users.${myvars.username}.services.syncthing.guiAddress}";}];
+            healthCheck.path = "/rest/noauth/health";
           };
-          webdav.loadBalancer.servers = let listens = config.services.webdav-server-rs.settings.server.listen; in [
-            {url = "http://${builtins.head listens}";}{url = "http://${lib.lists.last listens}";}
-          ];
-          minio-dashboard.loadBalancer.servers = [{url = "http://${config.services.minio.consoleAddress}";}];
-          s3.loadBalancer.servers = [{url = "http://${config.services.minio.listenAddress}";}];
+          webdav.loadBalancer = {
+            servers = let listens = config.services.webdav-server-rs.settings.server.listen; in [
+              {url = "http://${builtins.head listens}";}{url = "http://${lib.lists.last listens}";}
+            ];
+            healthCheck = {path = "/"; status = 401;}; # Treat 401 Unauthorized as health
+          };
+          minio-dashboard.loadBalancer = {
+            servers = [{url = "http://${config.services.minio.consoleAddress}";}];
+            healthCheck = {
+              # Probe the S3 API port, not the dashboard's port
+              port = lib.lists.last (lib.strings.splitString ":" config.services.minio.listenAddress);
+              path = "/minio/health/ready";
+            };
+          };
+          s3.loadBalancer = {
+            servers = [{url = "http://${config.services.minio.listenAddress}";}];
+            healthCheck.path = "/minio/health/ready";
+          };
         };
       };
     };
