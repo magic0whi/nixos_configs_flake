@@ -12,10 +12,10 @@
 in {
   imports = mylib.scan_path ./.;
   ## START nix.nix
-  xdg.configFile."nix/public.key".source = "${myvars.secrets_dir}/nix-public.key";
+  xdg.configFile."nix/public.key".source = "${myvars.secrets_dir}/nix_public.key";
   age.secrets = {
-    "nix-secret.key" = {
-      file = "${myvars.secrets_dir}/nix-secret.key.age";
+    "nix_secret.key" = {
+      file = "${myvars.secrets_dir}/nix_secret.key.age";
       mode = "0400";
       path = "${config.xdg.configHome}/nix/secret.key";
     };

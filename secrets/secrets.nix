@@ -46,7 +46,7 @@ in {
 
   "proteus_server.priv.pem.age".publicKeys = trusted_machines ++ [Proteus-Desktop] ++ google_vps;
   "aria2rpc.priv.age".publicKeys = trusted_machines;
-  "proteus-ap.key.age".publicKeys = trusted_machines ++ [Proteus-Desktop];
+  "proteus_ap.key.age".publicKeys = trusted_machines ++ [Proteus-Desktop];
   "minio.env.age".publicKeys = trusted_machines ++ [Proteus-Desktop] ++ google_vps;
   "atuin.env.age".publicKeys = trusted_machines;
   "immich.env.age".publicKeys = trusted_machines;
@@ -65,6 +65,6 @@ in {
   "forgejo_authelia_secret.age".publicKeys = trusted_machines;
   "forgejo_runner_token.env.age".publicKeys = trusted_machines;
 
-  "nix-secret.key.age".publicKeys = trusted_machines;
+  "nix_secret.key.age".publicKeys = trusted_machines;
   "aws_credentials.age".publicKeys = trusted_machines;
 }
