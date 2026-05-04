@@ -1,4 +1,4 @@
-{myvars, config, pkgs, ...}: {
+{myvars, config, ...}: {
   time.timeZone = "America/Los_Angeles";
   boot.kernelParams = [
     "console=ttyS0,115200"
@@ -19,8 +19,7 @@
   services.traffic-quota.enable = true;
   ## START sing-box.nix
   age.secrets."sb_Proteus-NixOS-1.json" = {
-    file = "${myvars.secrets_dir}/sb_Proteus-NixOS-1.json.age";
-    mode = "0000"; owner = "root";
+    file = "${myvars.secrets_dir}/sb_Proteus-NixOS-1.json.age"; mode = "0000"; owner = "root";
   };
   networking.firewall = {allowedTCPPorts = [443];}; # Reality
   services.sing-box.enable = true;

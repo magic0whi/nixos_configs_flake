@@ -3,8 +3,7 @@
 in {
   ## START sing-box.nix
   age.secrets."sb_client_linux.json" = {
-    file = "${myvars.secrets_dir}/sb_client_linux.json.age";
-    mode = "0000"; owner = "root";
+    file = "${myvars.secrets_dir}/sb_client_linux.json.age"; mode = "0000"; owner = "root";
   };
   services.sing-box.enable = true;
   services.sing-box.config_file = config.age.secrets."sb_client_linux.json".path;
