@@ -69,13 +69,29 @@
   # };
   ## END services_sftpgo.nix
   ## BEGIN services_immich.nix
-  age.secrets."immich.env" = {file = "${myvars.secrets_dir}/immich.env.age"; mode = "0400"; owner = "root";};
+  age.secrets = {
+    "immich.env" = {file = "${myvars.secrets_dir}/immich.env.age"; mode = "0400"; owner = "root";};
+    "immich_oauth_secret.txt" = {
+      file = "${myvars.secrets_dir}/immich_oauth_secret.txt.age"; mode = "0400";  owner = "immich";
+    };
+  };
   services.immich = {
     enable = true;
     host = "127.0.0.1";
     database.host = "postgresql.${myvars.domain}";
     secretsFile = config.age.secrets."immich.env".path;
     mediaLocation = "/srv/immich";
+    settings = { # https://immich.proteus.eu.org/admin/system-settings?isOpen=authentication -> Export as JSON
+      server.externalDomain = "https://immich.${myvars.domain}";
+      oauth = {
+        enabled = true;
+        issuerUrl = "https://auth.${myvars.domain}";
+        clientId = "immich";
+        # NixOS will dynamically inject the contents of this file at runtime
+        clientSecret._secret = config.age.secrets."immich_oauth_secret.txt".path;
+        autoLaunch = true;
+      };
+    };
   };
   ## END services_immich.nix
   ## BEGIN services_home_assistant.nix
@@ -293,24 +309,24 @@
     package = pkgs.forgejo-runner;
     instances = {
       x86_64 = default_instance;
-      arm64 = lib.recursiveUpdate default_instance {
-        name = "${config.networking.hostName}-runner-arm64";
-        labels = ["ubuntu-24.04-arm:docker://node:20-bookworm"];
-        settings = {
-          runner.capacity = 1;
-          container.options = default_instance.settings.container.options + " --platform=linux/arm64";
-          force_pull = false;
-        };
-      };
-      riscv64 = lib.recursiveUpdate default_instance {
-        name = "${config.networking.hostName}-runner-riscv64";
-        labels = ["ubuntu-24.04-riscv64:docker://custom-node-riscv64:22.22.0"];
-        settings = {
-          runner.capacity = 1;
-          container.options = default_instance.settings.container.options + " --platform=linux/riscv64";
-          force_pull = false;
-        };
-      };
+      # arm64 = lib.recursiveUpdate default_instance {
+      #   name = "${config.networking.hostName}-runner-arm64";
+      #   labels = ["ubuntu-24.04-arm:docker://node:20-bookworm"];
+      #   settings = {
+      #     runner.capacity = 1;
+      #     container.options = default_instance.settings.container.options + " --platform=linux/arm64";
+      #     force_pull = false;
+      #   };
+      # };
+      # riscv64 = lib.recursiveUpdate default_instance {
+      #   name = "${config.networking.hostName}-runner-riscv64";
+      #   labels = ["ubuntu-24.04-riscv64:docker://custom-node-riscv64:22.22.0"];
+      #   settings = {
+      #     runner.capacity = 1;
+      #     container.options = default_instance.settings.container.options + " --platform=linux/riscv64";
+      #     force_pull = false;
+      #   };
+      # };
     };
   };
   ## END services_forgejo.nix
