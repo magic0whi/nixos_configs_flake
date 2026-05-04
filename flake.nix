@@ -15,7 +15,7 @@
     };
     lanzaboote = { # Pinned as of 2026-04-07 06:58
       url = "github:nix-community/lanzaboote/v1.0.0";
-      inputs = {nixpkgs.follows = "nixpkgs"; rust-overlay.url = "github:oxalica/rust-overlay/stable";};
+      inputs = {nixpkgs.follows = "nixpkgs";};
     };
     # Pinned as of 2026-04-07 06:53
     impermanence = {
