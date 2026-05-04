@@ -10,7 +10,7 @@
         "alt+right=unbind"
       ];
       font-family = "Iosevka Nerd Font Mono";
-      font-size = 13;
+      font-size = 14;
       scrollback-limit = 20000;
     } // lib.optionalAttrs pkgs.stdenv.isDarwin { # Only supported on macOS
       macos-option-as-alt = "left";
