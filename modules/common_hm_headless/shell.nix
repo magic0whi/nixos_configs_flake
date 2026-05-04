@@ -56,6 +56,7 @@
     targz = "tar -I 'nix run nixpkgs#pigz --' -cvf";
     targzls = "tar -I 'nix run nixpkgs#pigz --' -tvf";
   };
+  # catppuccin.fzf.enable = false; # catppuccin fzf is prone to fail on macOS
   programs = {
     zsh = {
       enable = true;
