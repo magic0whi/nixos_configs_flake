@@ -13,10 +13,17 @@ in {
   imports = mylib.scan_path ./.;
   ## START nix.nix
   xdg.configFile."nix/public.key".source = "${myvars.secrets_dir}/nix-public.key";
-  age.secrets."nix-secret.key" = {
-    file = "${myvars.secrets_dir}/nix-secret.key.age";
-    mode = "0400";
-    path = "${config.xdg.configHome}/nix/secret.key";
+  age.secrets = {
+    "nix-secret.key" = {
+      file = "${myvars.secrets_dir}/nix-secret.key.age";
+      mode = "0400";
+      path = "${config.xdg.configHome}/nix/secret.key";
+    };
+    "aws_credentials" = {
+      file = "${myvars.secrets_dir}/aws_credentials.age";
+      mode = "0400";
+      path = "${config.home.homeDirectory}/.aws/credentials";
+    };
   };
   ## END nix.nix
   home.packages = with pkgs; [

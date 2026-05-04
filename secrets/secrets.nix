@@ -66,4 +66,5 @@ in {
   "forgejo_runner_token.env.age".publicKeys = trusted_machines;
 
   "nix-secret.key.age".publicKeys = trusted_machines;
+  "aws_credentials.age".publicKeys = trusted_machines;
 }
