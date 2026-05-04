@@ -251,6 +251,13 @@ _: {
           {bind = {_args = ["Ctrl o"]; SwitchToMode = "Normal";};}
           {bind = {_args = ["Ctrl s"]; SwitchToMode = "Scroll";};}
           {bind = {_args = ["d"]; Detach = {};};}
+          {bind = {
+            _args = ["w"];
+            _children = [
+              {LaunchOrFocusPlugin = {_args = ["session-manager"]; floating = true; move_to_focused_tab = true;};}
+              {SwitchToMode = "Normal";}
+            ];
+          };}
         ];
         # tmux._children = [
         #   {bind = {_args = ["["]; SwitchToMode = "Scroll";};}
