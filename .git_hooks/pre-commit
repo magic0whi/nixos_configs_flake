@@ -16,7 +16,7 @@ fi
 # - |          : OR
 # - =[ \t]{2,} : Matches 2 or more spaces or tabs immediately after an '='
 # (Ignoring sops encrypted secrets files since base64/PGP blocks may contain valid indented '=' characters)
-BAD_EQUALS=$(git diff --cached -U0 -- ':(exclude)secrets/secrets.yaml' | rg "^\+[^+].*([ \t]{2,}=|=[ \t]{2,})")
+BAD_EQUALS=$(git diff --cached -U0 -- ':(exclude)secrets/*.sops.yaml' | rg "^\+[^+].*([ \t]{2,}=|=[ \t]{2,})")
 if [ -n "$BAD_EQUALS" ]; then
   echo "❌ Redundant spaces around '=' found in your staged changes:"
   # Print the offending lines in red for visibility
