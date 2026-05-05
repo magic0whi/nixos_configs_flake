@@ -1,6 +1,6 @@
 {lib, config, ...}: {
   options.services.sing-box = {
-    # Use kebab case for outside interface
+    # Use camel case for outside interface
     configFile = lib.mkOption {
       type = lib.types.path;
       description = "Path to the sing-box config file";

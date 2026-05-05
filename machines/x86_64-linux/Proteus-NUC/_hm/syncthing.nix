@@ -6,7 +6,6 @@
   };
   services.syncthing = {
     # nix run nixpkgs#syncthing -- generate --config myconfig/"
-    # key = config.age.secrets."syncthing_proteus-nuc.priv.pem".path;
     key = config.sops.secrets."Proteus-NUC_syncthing.priv.pem".path;
     cert = "${myvars.secrets_dir}/Proteus-NUC_syncthing.cert.pem";
     settings = let

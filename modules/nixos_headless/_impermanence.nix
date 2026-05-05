@@ -33,7 +33,6 @@
 
       ];
       # ++ lib.optional config.boot.lanzaboote.enable config.boot.lanzaboote.pkiBundle; # If lanzaboote is enabled. Disable since we got its parent `/var/lib` persistent already
-      # ++ lib.optional (config.age.secrets != {}) "/etc/agenix/"; # My secrets repo
 
       files = ["/etc/machine-id"];
 

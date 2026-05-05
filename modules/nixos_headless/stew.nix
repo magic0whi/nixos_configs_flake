@@ -10,9 +10,6 @@
   ## START nix.nix
   nix.gc.dates = "weekly";
   nix.settings.auto-optimise-store = true; # Optimise the store after each build
-  # nix.extraOptions = ''
-    # !include ${config.age.secrets.nix-access-tokens.path}
-  # '';
   ## END nix.nix
   ## START ssh.nix
   services.openssh.settings.PasswordAuthentication = false; # Disable password login
