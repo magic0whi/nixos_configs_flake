@@ -1,4 +1,5 @@
 {myvars, config, lib, pkgs, ...}: {
+  sops.secrets = {paperless_dbpass = {}; paperless_admin_password = {}; paperless_authelia_secret = {};};
   sops.templates."paperless.env" = {
     content = let
       socialaccount_providers = {openid_connect.APPS = [{

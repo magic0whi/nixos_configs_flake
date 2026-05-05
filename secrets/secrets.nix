@@ -50,8 +50,6 @@ in {
   "atuin.env.age".publicKeys = trusted_machines;
   "immich.env.age".publicKeys = trusted_machines;
   "immich_oauth_secret.txt.age".publicKeys = trusted_machines;
-  "paperless.env.age".publicKeys = trusted_machines;
-  "mpd_auth.conf.age".publicKeys = trusted_machines;
 
   "authelia_jwt_secret.txt.age".publicKeys = trusted_machines;
   "authelia_session_secret.txt.age".publicKeys = trusted_machines;
