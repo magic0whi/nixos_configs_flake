@@ -1,10 +1,12 @@
 {config, myvars, lib, ...}: let
   server_pub_crt = "${myvars.secrets_dir}/proteus_server.pub.pem";
 in {
-  networking.firewall = { allowedTCPPorts = [80 443]; allowedUDPPorts = [443];};
-  age.secrets."traefik_server.priv.pem" = {
-    file = "${myvars.secrets_dir}/proteus_server.priv.pem.age";
-    mode = "0400"; owner = config.systemd.services.traefik.serviceConfig.User;
+  networking.firewall = {allowedTCPPorts = [80 443]; allowedUDPPorts = [443];};
+  sops.secrets."traefik_server.priv.pem" = {
+    sopsFile = "${myvars.secrets_dir}/proteus_server.priv.pem.sops";
+    format = "binary";
+    owner = config.systemd.services.traefik.serviceConfig.User;
+    restartUnits = ["traefik.service"];
   };
   services.traefik = {
     enable = true;
@@ -22,7 +24,7 @@ in {
     };
     dynamicConfigOptions = {
       tls.stores.default.defaultCertificate = {
-        certFile = server_pub_crt; keyFile = config.age.secrets."traefik_server.priv.pem".path;
+        certFile = server_pub_crt; keyFile = config.sops.secrets."traefik_server.priv.pem".path;
       };
       http = {
         middlewares.authelia-auth.forwardAuth = {

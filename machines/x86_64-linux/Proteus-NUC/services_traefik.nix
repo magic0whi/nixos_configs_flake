@@ -22,10 +22,11 @@ in {
       # 853 # unbound DNS-over-QUIC, bind don't support it
     ];
   };
-  age.secrets."traefik_server.priv.pem" = {
-    file = "${myvars.secrets_dir}/proteus_server.priv.pem.age";
-    mode = "0400";
+  sops.secrets."traefik_server.priv.pem" = {
+    sopsFile = "${myvars.secrets_dir}/proteus_server.priv.pem.sops";
+    format = "binary";
     owner = config.systemd.services.traefik.serviceConfig.User;
+    restartUnits = ["traefik.service"];
   };
   services.traefik = {
     enable = true;
@@ -64,10 +65,10 @@ in {
       # Server Name Indication (SNI) data during the TLS handshake. Without this,
       # Traefik serves an untrusted dummy certificate.
       tls.stores.default.defaultCertificate = {
-        certFile = server_pub_crt; keyFile = config.age.secrets."traefik_server.priv.pem".path;
+        certFile = server_pub_crt; keyFile = config.sops.secrets."traefik_server.priv.pem".path;
       };
       # For other domains
-      # tls.certificates = [{certFile = server_pub_crt; keyFile = config.age.secrets."traefik_server.priv.pem".path;}];
+      # tls.certificates = [{certFile = server_pub_crt; keyFile = config.sops.secrets."traefik_server.priv.pem".path;}];
       http = {
         # For sunshine-webui
         serversTransports.ignorecert.insecureSkipVerify = true;
