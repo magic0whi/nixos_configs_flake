@@ -1,14 +1,14 @@
 {config, myvars, ...}: let
   path_prefix = "/srv";
 in {
-  age.secrets = let high_security = {mode = "0400"; owner = config.systemd.services.aria2.serviceConfig.User;}; in {
-    "aria2rpc.priv" = {file = "${myvars.secrets_dir}/aria2rpc.priv.age";} // high_security;
-    # "aria2rpc_proteus_server.priv.pem" = {file = "${myvars.secrets_dir}/proteus_server.priv.pem.age";} // high_security;
+  sops.secrets."aria2rpc.key" = {
+    sopsFile = "${myvars.secrets_dir}/aria2rpc.key.sops"; format = "binary"; restartUnits = ["aria2.service"];
   };
   users.users.${myvars.username}.extraGroups = ["aria2"];
+
   services.aria2 = {
     enable = true;
-    rpcSecretFile = config.age.secrets."aria2rpc.priv".path;
+    rpcSecretFile = config.sops.secrets."aria2rpc.key".path;
     settings = {
       dir = "${path_prefix}/aria2";
       disk-cache = "2048M";
@@ -93,8 +93,6 @@ in {
       rpc-listen-port = 6800;
       rpc-max-request-size = "256M";
       # rpc-secure = true;
-      # rpc-certificate = "${myvars.secrets_dir}/proteus_server.pub.pem";
-      # rpc-private-key = config.age.secrets."aria2rpc_proteus_server.priv.pem".path;
       #event-poll=select
       #async-dns=true
       #async-dns-server=119.29.29.29,223.5.5.5,8.8.8.8,1.1.1.1

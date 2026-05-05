@@ -12,7 +12,6 @@ keys:
   - &Proteus-NixOS-3 age10u3w4a973l83fv8t7ndx9nzyuj993m6vrjxvf6xw9lvxm9rkwgdst862j7
   - &Proteus-NixOS-4 age1n0n20r3cal54arpwhq5g2n7ds5gc4ju9vl065a09nnp0qfsq4uvqu6j0wz
   - &Proteus-NixOS-5 age1t4vxw6s8sw64uk7g927gvwrj48uaakgaj54w0ke5hs87t20e8eys30nfvm
-  # - &Proteus-NixOS-6 age1zjcz8jhus9u3tqdzwvvz7vzmh57yzsk6n7npq4zm7dtqy5rc4vlqmqmjct
 # TIP: To rotate a encrypted file with new recipients
 # updatekeys secrets/syncthing_proteus-nuc.priv.pem.age
 # TIP:Use recovery key if lost access to secret keys
@@ -54,6 +53,10 @@ creation_rules:
 ## END GCP Compute Engines
 ## BEGIN Proteus-NUC
   - path_regex: secrets/paperless\.sops\.yaml$
+    key_groups:
+      - pgp: [*openpgp]
+        age: [*Proteus-NUC]
+  - path_regex: secrets/aria2rpc\.key.sops$
     key_groups:
       - pgp: [*openpgp]
         age: [*Proteus-NUC]
