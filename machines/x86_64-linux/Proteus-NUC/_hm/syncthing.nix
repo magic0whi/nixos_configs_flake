@@ -1,6 +1,6 @@
 {myvars, config, lib, osConfig, ...}: {
   sops.secrets."Proteus-NUC_syncthing.priv.pem" = {
-    sopsFile = "${myvars.secrets_dir}/Proteus-NUC_syncthing.priv.pem.age";
+    sopsFile = "${myvars.secrets_dir}/Proteus-NUC_syncthing.priv.pem.sops";
     format = "binary"; # Required when loading raw files instead of yaml/json structures
     mode = "0400";
   };

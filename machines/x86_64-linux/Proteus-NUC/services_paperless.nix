@@ -1,5 +1,11 @@
 {myvars, config, lib, pkgs, ...}: {
-  sops.secrets = {paperless_dbpass = {}; paperless_admin_password = {}; paperless_authelia_secret = {};};
+  sops.secrets = let
+    sopsFile = "${myvars.secrets_dir}/paperless.sops.yaml";
+  in {
+    paperless_dbpass = {inherit sopsFile;};
+    paperless_admin_password = {inherit sopsFile;};
+    paperless_authelia_secret = {inherit sopsFile;};
+  };
   sops.templates."paperless.env" = {
     content = let
       socialaccount_providers = {openid_connect.APPS = [{

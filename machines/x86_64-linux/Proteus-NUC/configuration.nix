@@ -17,7 +17,7 @@
   ];
   ## START sing-box.nix
   sops.secrets."sb_client_linux.json" = {
-    sopsFile = "${myvars.secrets_dir}/sb_client_linux.json.age"; format = "binary";
+    sopsFile = "${myvars.secrets_dir}/sb_client_linux.json.sops"; format = "binary";
   };
   services.sing-box.enable = true;
   services.sing-box.configFile = config.sops.secrets."sb_client_linux.json".path;
