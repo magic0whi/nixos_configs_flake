@@ -17,12 +17,11 @@
     bpftrace # powerful tracing tool, ref: https://github.com/bpftrace/bpftrace
   ];
   ## START sing-box.nix
-  age.secrets."sb_client_linux.json" = {
-    file = "${myvars.secrets_dir}/sb_client_linux.json.age";
-    mode = "0000"; owner = "root";
+  sops.secrets."sb_client_linux.json" = {
+    sopsFile = "${myvars.secrets_dir}/sb_client_linux.json.age"; format = "binary";
   };
   services.sing-box.enable = true;
-  services.sing-box.config_file = config.age.secrets."sb_client_linux.json".path;
+  services.sing-box.configFile = config.sops.secrets."sb_client_linux.json".path;
   ## END sing-box.nix
   ## START sriov.nix
   boot.extraModulePackages = with pkgs; [i915-sriov xe-sriov];

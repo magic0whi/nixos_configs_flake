@@ -1,6 +1,7 @@
 {lib, config, ...}: {
   options.services.sing-box = {
-    config_file = lib.mkOption {
+    # Use kebab case for outside interface
+    configFile = lib.mkOption {
       type = lib.types.path;
       description = "Path to the sing-box config file";
     };
@@ -13,7 +14,7 @@
         StateDirectoryMode = "0700";
         RuntimeDirectory = "sing-box";
         RuntimeDirectoryMode = "0700";
-        LoadCredential = [("config.json:" + config.services.sing-box.config_file)];
+        LoadCredential = [("config.json:" + config.services.sing-box.configFile)];
         ExecStart = [
           "" # Empty value remove previous value
           (let configArgs = "-c $\{CREDENTIALS_DIRECTORY}/config.json";

@@ -17,6 +17,14 @@ creation_rules:
         age:
         - *recovery_key
         - *Proteus-NUC
+  - path_regex: secrets/sb_client_linux\.json\.age$
+    key_groups:
+      - pgp:
+        - *openpgp
+        age:
+        - *recovery_key
+        - *Proteus-NUC
+        # NOTE: for user secrets host ssh key cannot be accessed by a regular user
   # Encrypt in-place since sops matches inputs files for `path_regex`
   # sops encrypt -i secrets/syncthing_proteus-nuc.priv.pem.age
   # To edit, run
