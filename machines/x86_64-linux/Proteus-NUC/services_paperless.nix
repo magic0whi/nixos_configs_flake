@@ -19,7 +19,7 @@
       PAPERLESS_SOCIALACCOUNT_PROVIDERS=${builtins.toJSON socialaccount_providers}
     '';
     restartUnits = [
-      "paperless-scheduler.service" "paperless-task-queue" "paperless-consumer.service" "paperless-web.service"
+      "paperless-scheduler.service" "paperless-task-queue.service" "paperless-consumer.service" "paperless-web.service"
     ];
   };
   services.paperless = { # As of 2026-05-01, paperless.nix still hardcoded group to be same with uesr

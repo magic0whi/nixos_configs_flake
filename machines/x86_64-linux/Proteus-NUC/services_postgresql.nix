@@ -6,9 +6,11 @@
   # nixpkgs-postgresql,
   ...
 }: {
-  age.secrets."postgresql_server.priv.pem" = {
-    file = "${myvars.secrets_dir}/proteus_server.priv.pem.age";
-    mode = "0400"; owner = config.systemd.services.postgresql.serviceConfig.User;
+  sops.secrets."postgresql_server.priv.pem" = {
+    sopsFile = "${myvars.secrets_dir}/proteus_server.priv.pem.sops";
+    format = "binary";
+    owner = config.systemd.services.postgresql.serviceConfig.User;
+    restartUnits = ["postgresql.service" "postgresql-setup.service"];
   };
   # TODO: Learn SQL
   services.postgresql = {
@@ -22,7 +24,7 @@
     settings = {
       ssl = true;
       ssl_cert_file = "${myvars.secrets_dir}/proteus_server.pub.pem";
-      ssl_key_file = config.age.secrets."postgresql_server.priv.pem".path;
+      ssl_key_file = config.sops.secrets."postgresql_server.priv.pem".path;
     };
     ensureDatabases = [
       "mydatabase" # TODO: For learning

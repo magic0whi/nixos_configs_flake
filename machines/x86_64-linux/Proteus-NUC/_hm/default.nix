@@ -13,18 +13,6 @@ in {
   imports = mylib.scan_path ./.;
   ## START nix.nix
   xdg.configFile."nix/public.key".source = "${myvars.secrets_dir}/nix_public.key";
-  # age.secrets = {
-  #   "nix_secret.key" = {
-  #     file = "${myvars.secrets_dir}/nix_secret.key.age";
-  #     mode = "0400";
-  #     path = "${config.xdg.configHome}/nix/secret.key";
-  #   };
-  #   "aws_credentials" = {
-  #     file = "${myvars.secrets_dir}/aws_credentials.age";
-  #     mode = "0400";
-  #     path = "${config.home.homeDirectory}/.aws/credentials";
-  #   };
-  # };
   sops.secrets = {
     "nix_secret.key" = {
       sopsFile = "${myvars.secrets_dir}/nix_secret.key.sops";

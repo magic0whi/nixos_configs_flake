@@ -21,7 +21,6 @@ let
   Proteus-NixOS-3 = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAILL3jAjZkkKHTUNqVf2ItJk2oObNDBiq8bylSF6f2Osi root@Proteus-NixOS-3";
   Proteus-NixOS-4 = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGvVGDKkAWK2gSnNB+dS8ie2WN5yzeH3/FQAiIXRZ1i8 root@Proteus-NixOS-4";
   Proteus-NixOS-5 = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIBwHWbs4PsCW9Ji6Z4GepwjrXxhrD1DWGPdtNk9LdXwZ root@Proteus-NixOS-5";
-  # Proteus-NixOS-6 = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOUXCE7Ghu4cLl0xBCg+q69QqGuhyIu17KDgrCpz0Gvb root@Proteus-NixOS-6";
   trusted_machines = [recovery_key opengpg Proteus-MBP14M4P Proteus-NUC];
   google_vps = [
     Proteus-NixOS-0
@@ -31,16 +30,9 @@ let
     Proteus-NixOS-4
     Proteus-NixOS-5
   ];
-  # huawei_vps = [Proteus-NixOS-6];
 in {
   # To see & edit encrypted file, run `agenix -e sb_client.json.age -i <(get-ssh-key 30973F79B17F9ED3\!)`
-  "sb_client_darwin.json.age".publicKeys = trusted_machines;
-  "sb_client_linux.json.age".publicKeys = trusted_machines ++ [Proteus-Desktop];
 
-  "sb_Proteus-NixOS-1.json.age".publicKeys = trusted_machines ++ google_vps;
-  # "sb_Proteus-NixOS-6.json.age".publicKeys = trusted_machines ++ huawei_vps;
-
-  "syncthing_Proteus-MBP14M4P.priv.pem.age".publicKeys = trusted_machines;
   "syncthing_proteus-desktop.priv.pem.age".publicKeys = trusted_machines ++ [Proteus-Desktop];
 
   "proteus_server.priv.pem.age".publicKeys = trusted_machines ++ [Proteus-Desktop] ++ google_vps;

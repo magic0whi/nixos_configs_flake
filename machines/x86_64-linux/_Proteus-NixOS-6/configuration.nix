@@ -13,12 +13,15 @@
   networking.nameservers = ["223.5.5.5" "8.8.8.8"];
   services.traffic-quota.enable = true;
   ## START sing-box.nix
-  age.secrets."sb_Proteus-NixOS-6.json" = {
-    file = "${myvars.secrets_dir}/sb_Proteus-NixOS-6.json.age"; mode = "0000"; owner = "root";
+  ## START sing-box.nix
+  sops.secrets."sb_Proteus-NixOS-6.json" = {
+    sopsFile = "${myvars.secrets_dir}/sb_Proteus-NixOS-6.json.sops";
+    format = "binary";
+    restartUnits = ["sing-box.service"];
   };
-  networking.firewall = {allowedTCPPorts = [443];}; # Reality
+  networking.firewall.allowedTCPPorts = [443]; # Reality
   services.sing-box.enable = true;
-  services.sing-box.config_file = config.age.secrets."sb_Proteus-NixOS-6.json".path;
+  services.sing-box.configFile = config.sops.secrets."sb_Proteus-NixOS-6.json".path;
   ## END sing-box.nix
   boot.binfmt.emulatedSystems = ["riscv64-linux"]; # Cross compilation
 }

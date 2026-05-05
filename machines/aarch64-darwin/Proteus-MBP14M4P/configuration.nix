@@ -1,12 +1,12 @@
 {myvars, config, ...}: {
   time.timeZone = "Asia/Hong_Kong";
-  age.secrets."sb_client_darwin.json" = {
-    file = "${myvars.secrets_dir}/sb_client_darwin.json.age";
-    mode = "0000";
-    owner = "root";
+  sops.secrets."sb_client_darwin.json" = {
+    sopsFile = "${myvars.secrets_dir}/sb_client_darwin.json.sops"; format = "binary";
+    # NOTE: As of 2026-05-05, sops-nix don't support restartUnits on macOS
+    # restartUnits = ["sing-box.service"];
   };
   services.sing-box.enable = true;
-  services.sing-box.config_file = config.age.secrets."sb_client_darwin.json".path;
+  services.sing-box.config_file = config.sops.secrets."sb_client_darwin.json".path;
   launchd.daemons.tailscaled.serviceConfig = {
     StandardErrorPath = "/Library/Logs/com.tailscale.ipn.stderr.log";
     StandardOutPath = "/Library/Logs/com.tailscale.ipn.stdout.log";

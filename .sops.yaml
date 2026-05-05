@@ -8,6 +8,11 @@ keys:
   - &Proteus-Desktop age1yv5rv2s3pgc0pxy03c560lz746s9r2qp3exzqq5m3equ5yjtsexscja2r9
   - &Proteus-NixOS-0 age1tmn54vwdelxz8axt0pkl35z6anumvu4fjm2lw5xnzt8xdudl95jqgm5992
   - &Proteus-NixOS-1 age1ez48xcmyfrl9y6ueuvhfc9drutj0r228cfs43t9uvphuyv4v6ygsy7gp4l
+  - &Proteus-NixOS-2 age100tjlvhw66afqa2qkzywsywgg9hrwn2h3yuucxuvqprmnp0739vqtxlfl3
+  - &Proteus-NixOS-3 age10u3w4a973l83fv8t7ndx9nzyuj993m6vrjxvf6xw9lvxm9rkwgdst862j7
+  - &Proteus-NixOS-4 age1n0n20r3cal54arpwhq5g2n7ds5gc4ju9vl065a09nnp0qfsq4uvqu6j0wz
+  - &Proteus-NixOS-5 age1t4vxw6s8sw64uk7g927gvwrj48uaakgaj54w0ke5hs87t20e8eys30nfvm
+  # - &Proteus-NixOS-6 age1zjcz8jhus9u3tqdzwvvz7vzmh57yzsk6n7npq4zm7dtqy5rc4vlqmqmjct
 # TIP: To rotate a encrypted file with new recipients
 # updatekeys secrets/syncthing_proteus-nuc.priv.pem.age
 # TIP:Use recovery key if lost access to secret keys
@@ -17,12 +22,36 @@ creation_rules:
   - path_regex: secrets/common\.sops\.yaml$
     key_groups:
       - pgp: [*openpgp]
-        age: [*Proteus-NUC, *Proteus-MBP14M4P, *Proteus-Desktop]
+        age:
+          - *Proteus-NUC
+          - *Proteus-MBP14M4P
+          - *Proteus-Desktop
+          - *Proteus-NixOS-0
+          - *Proteus-NixOS-1
+          - *Proteus-NixOS-2
+          - *Proteus-NixOS-3
+          - *Proteus-NixOS-4
+          - *Proteus-NixOS-5
   - path_regex: secrets/sb_client_linux\.json\.sops$
+    key_groups:
+      - pgp: [*openpgp]
+        age: [*Proteus-NUC, *Proteus-Desktop]
+  - path_regex: secrets/sb_client_darwin\.json\.sops$
+    key_groups:
+      - pgp: [*openpgp]
+        age: [*Proteus-MBP14M4P]
+  - path_regex: secrets/proteus_server\.priv\.pem\.sops$
     key_groups:
       - pgp: [*openpgp]
         age: [*Proteus-NUC, *Proteus-MBP14M4P, *Proteus-Desktop]
 ## END Common
+## BEGIN GCP Compute Engines
+  - path_regex: secrets/sb_Proteus-NixOS-1\.json\.sops$
+    key_groups:
+      - pgp: [*openpgp]
+        age:
+          [*Proteus-NixOS-0, *Proteus-NixOS-1, *Proteus-NixOS-2, *Proteus-NixOS-3, *Proteus-NixOS-4, *Proteus-NixOS-5]
+## END GCP Compute Engines
 ## BEGIN Proteus-NUC
   - path_regex: secrets/paperless\.sops\.yaml$
     key_groups:
@@ -41,12 +70,22 @@ creation_rules:
         age: [*Proteus-NUC]
 ## END Trusted Machines (HM)
 ## BEGIN Proteus-NUC (HM)
-  # Encrypt in-place since sops matches inputs files for `path_regex`
+  # TIP: Encrypt in-place since sops matches inputs files for `path_regex`
   # sops encrypt -i secrets/syncthing_proteus-nuc.priv.pem.age
-  # To edit, run
+  # TIP: To edit, run
   # SOPS_AGE_KEY=$(nix run nixpkgs#ssh-to-age -- -private-key -i ~/Secrets/Backup/proteus@agenix-recovery.ssh.priv.key) sops -- edit secrets/syncthing_proteus-nuc.priv.pem.age
   - path_regex: secrets/Proteus-NUC_syncthing\.priv\.pem\.sops$
     key_groups:
       - pgp: [*openpgp]
         age: [*Proteus-NUC]
 ## END Proteus-NUC (HM)
+## BEGIN Proteus-MBP14M4P (HM)
+  # Encrypt in-place since sops matches inputs files for `path_regex`
+  # sops encrypt -i secrets/syncthing_proteus-nuc.priv.pem.age
+  # To edit, run
+  # SOPS_AGE_KEY=$(nix run nixpkgs#ssh-to-age -- -private-key -i ~/Secrets/Backup/proteus@agenix-recovery.ssh.priv.key) sops -- edit secrets/syncthing_proteus-nuc.priv.pem.age
+  - path_regex: secrets/Proteus-MBP14M4P_syncthing\.priv\.pem\.sops$
+    key_groups:
+      - pgp: [*openpgp]
+        age: [*Proteus-MBP14M4P]
+## END Proteus-MBP14M4P (HM)
