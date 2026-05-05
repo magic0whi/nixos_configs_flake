@@ -1,5 +1,4 @@
-{inputs}: let
-  inherit (inputs.nixpkgs) lib;
+{inputs}: let inherit (inputs.nixpkgs) lib;
 in {
   ## System agnostic functions
   # Use path relative to the root of the project
@@ -67,10 +66,10 @@ in {
       )
       ++ (if pkgs.stdenv.isDarwin then [
           agenix.darwinModules.age
-          # sops-nix.nixosModules.sops
+          sops-nix.darwinModules.sops
         ] else [
           agenix.nixosModules.age
-          # sops-nix.nixosModules.sops
+          sops-nix.nixosModules.sops
           lanzaboote.nixosModules.lanzaboote
           catppuccin.nixosModules.catppuccin
           disko.nixosModules.disko
@@ -96,8 +95,12 @@ in {
           home-manager.extraSpecialArgs = specialArgs;
           home-manager.useGlobalPkgs = true;
           home-manager.useUserPackages = true;
+          home-manager.sharedModules = [
+            catppuccin.homeModules.catppuccin
+            agenix.homeManagerModules.default
+            sops-nix.homeManagerModules.sops
+          ];
           home-manager.users."${myvars.username}".imports = hm_modules
-          ++ [catppuccin.homeModules.catppuccin]
           ++ [(machine_path + "/_hm")];
         }
       ]);

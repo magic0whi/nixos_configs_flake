@@ -1,14 +1,30 @@
-# This example uses YAML anchors which allows reuse of multiple keys 
-# without having to repeat yourself.
-# Also see https://github.com/Mic92/dotfiles/blob/d6114726d859df36ccaa32891c4963ae5717ef7f/nixos/.sops.yaml
-# for a more complex example.
+# To edit secret files, run `nix run nixpkgs#sops -- secrets/secrets.yaml`
 keys:
-  - &admin_alice 2504791468b153b8a3963cc97ba53d1919c5dfd4
-  - &admin_bob age12zlz6lvcdk6eqaewfylg35w0syh58sm7gh53q5vvn7hd7c6nngyseftjxl
+  # cat /etc/ssh/ssh_host_ed25519_key.pub | nix run nixpkgs#ssh-to-age
+  - &recovery_key age1s2cpsfhqnum6j3aq66uk8sc8c9q3jcfk7mrzj5dpmgdh6ka8a58qpa98a5
+  # gpg --list-public-keys --with-colons | grep fpr | awk -F: '{print $10}' | head -n1
+  - &openpgp 9C635181306E1D7FEA53858775DB252683B07650
+  - &Proteus-NUC age1mfs3eh0zwpxse06x5dwg78rp3wmpxe8ag3yvkwmkkgrx7gpea96qglanyz
+# TIP: To rotate a encrypted file with new recipients
+# updatekeys secrets/syncthing_proteus-nuc.priv.pem.age
+# TIP:Use recovery key if lost access to secret keys
+# SOPS_AGE_KEY=$(nix run nixpkgs#ssh-to-age -- -private-key -i ~/path/to/recovery.priv.key)
 creation_rules:
-  - path_regex: secrets/[^/]+\.(yaml|json|env|ini)$
+  - path_regex: secrets/secrets\.yaml$
     key_groups:
-    - pgp:
-      - *admin_alice
-      age:
-      - *admin_bob
+      - pgp:
+        - *openpgp
+        age:
+        - *recovery_key
+        - *Proteus-NUC
+  # Encrypt in-place since sops matches inputs files for `path_regex`
+  # sops encrypt -i secrets/syncthing_proteus-nuc.priv.pem.age
+  # To edit, run
+  # SOPS_AGE_KEY=$(nix run nixpkgs#ssh-to-age -- -private-key -i ~/Secrets/Backup/proteus@agenix-recovery.ssh.priv.key) sops -- edit secrets/syncthing_proteus-nuc.priv.pem.age
+  - path_regex: secrets/syncthing_proteus-nuc\.priv\.pem\.age$
+    key_groups:
+      - pgp:
+        - *openpgp
+        age:
+        - *recovery_key
+        # NOTE: for user secrets host ssh key cannot be accessed

@@ -3,6 +3,11 @@
     file = "${myvars.secrets_dir}/syncthing_proteus-nuc.priv.pem.age";
     mode = "0400";
   };
+  sops.secrets."syncthing_proteus-nuc.priv.pem" = {
+    sopsFile = "${myvars.secrets_dir}/syncthing_proteus-nuc.priv.pem.age";
+    format = "binary"; # Required when loading raw files instead of yaml/json structures
+    mode = "0400";
+  };
   services.syncthing = {
     # nix run nixpkgs#syncthing -- generate --config myconfig/"
     key = config.age.secrets."syncthing_proteus-nuc.priv.pem".path;
