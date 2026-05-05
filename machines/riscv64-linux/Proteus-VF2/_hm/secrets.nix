@@ -1,4 +1,1 @@
-{agenix, ...}: {
-  imports = [agenix.homeManagerModules.default];
-  age.identityPaths = ["TODO"];
-}
+_: {age.identityPaths = ["TODO"];}

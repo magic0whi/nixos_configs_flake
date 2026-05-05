@@ -27,4 +27,4 @@ creation_rules:
         - *openpgp
         age:
         - *recovery_key
-        # NOTE: for user secrets host ssh key cannot be accessed
+        # NOTE: for user secrets host ssh key cannot be accessed by a regular user

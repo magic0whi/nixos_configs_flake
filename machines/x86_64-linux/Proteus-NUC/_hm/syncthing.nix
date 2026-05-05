@@ -1,8 +1,4 @@
 {myvars, config, lib, osConfig, ...}: {
-  age.secrets."syncthing_proteus-nuc.priv.pem" = {
-    file = "${myvars.secrets_dir}/syncthing_proteus-nuc.priv.pem.age";
-    mode = "0400";
-  };
   sops.secrets."syncthing_proteus-nuc.priv.pem" = {
     sopsFile = "${myvars.secrets_dir}/syncthing_proteus-nuc.priv.pem.age";
     format = "binary"; # Required when loading raw files instead of yaml/json structures
@@ -10,7 +6,8 @@
   };
   services.syncthing = {
     # nix run nixpkgs#syncthing -- generate --config myconfig/"
-    key = config.age.secrets."syncthing_proteus-nuc.priv.pem".path;
+    # key = config.age.secrets."syncthing_proteus-nuc.priv.pem".path;
+    key = config.sops.secrets."syncthing_proteus-nuc.priv.pem".path;
     cert = "${myvars.secrets_dir}/syncthing_proteus-nuc.crt.pem";
     settings = let
       mobile_devices = {

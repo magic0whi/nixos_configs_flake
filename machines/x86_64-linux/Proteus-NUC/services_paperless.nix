@@ -1,29 +1,20 @@
 {myvars, config, lib, pkgs, ...}: {
-  # age.secrets."paperless.env" = {
-    # file = "${myvars.secrets_dir}/paperless.env.age"; mode = "0400"; owner = config.services.paperless.user;
-  # };
-  sops.secrets = let
+  sops.templates."paperless.env" = {
+    content = let
+      socialaccount_providers = {openid_connect.APPS = [{
+        client_id = "paperless"; name = "Authelia"; provider_id = "authelia";
+        secret = "${config.sops.placeholder.paperless_authelia_secret}";
+        settings.server_url = "https://auth.proteus.eu.org/.well-known/openid-configuration";
+      }];};
+    in ''
+      PAPERLESS_DBPASS=${config.sops.placeholder.paperless_dbpass}
+      PAPERLESS_ADMIN_PASSWORD=${config.sops.placeholder.paperless_admin_password}
+      PAPERLESS_SOCIALACCOUNT_PROVIDERS=${builtins.toJSON socialaccount_providers}
+    '';
     restartUnits = [
       "paperless-scheduler.service" "paperless-task-queue" "paperless-consumer.service" "paperless-web.service"
     ];
-  in {
-    paperless_dbpass = {inherit restartUnits;};
-    paperless_admin_password = {inherit restartUnits;};
-    paperless_authelia_secret = {inherit restartUnits;};
   };
-
-  sops.templates."paperless.env".content = let
-    providers = {openid_connect.APPS = [{
-      client_id = "paperless"; name = "Authelia"; provider_id = "authelia";
-      secret = "${config.sops.placeholder.paperless_authelia_secret}";
-      settings.server_url = "https://auth.proteus.eu.org/.well-known/openid-configuration";
-    }];};
-  in ''
-    PAPERLESS_DBPASS=${config.sops.placeholder.paperless_dbpass}
-    PAPERLESS_ADMIN_PASSWORD=${config.sops.placeholder.paperless_admin_password}
-    PAPERLESS_SOCIALACCOUNT_PROVIDERS=${builtins.toJSON providers}
-  '';
-
   services.paperless = { # As of 2026-05-01, paperless.nix still hardcoded group to be same with uesr
     domain = "paperless.${myvars.domain}";
     enable = true;
@@ -56,7 +47,6 @@
       PAPERLESS_DISABLE_REGULAR_LOGIN = true; # Disable Paperless' login
       PAPERLESS_REDIRECT_LOGIN_TO_SSO = true; # Auto-redirect to Authelia, bypassing the Paperless login screen
     };
-    # environmentFile = config.age.secrets."paperless.env".path;
     environmentFile = config.sops.templates."paperless.env".path;
     # dataDir = "/srv/paperless";
     exporter.enable = true;
