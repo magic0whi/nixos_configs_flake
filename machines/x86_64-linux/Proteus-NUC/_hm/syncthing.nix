@@ -1,14 +1,14 @@
 {myvars, config, lib, osConfig, ...}: {
-  sops.secrets."syncthing_proteus-nuc.priv.pem" = {
-    sopsFile = "${myvars.secrets_dir}/syncthing_proteus-nuc.priv.pem.age";
+  sops.secrets."Proteus-NUC_syncthing.priv.pem" = {
+    sopsFile = "${myvars.secrets_dir}/Proteus-NUC_syncthing.priv.pem.age";
     format = "binary"; # Required when loading raw files instead of yaml/json structures
     mode = "0400";
   };
   services.syncthing = {
     # nix run nixpkgs#syncthing -- generate --config myconfig/"
     # key = config.age.secrets."syncthing_proteus-nuc.priv.pem".path;
-    key = config.sops.secrets."syncthing_proteus-nuc.priv.pem".path;
-    cert = "${myvars.secrets_dir}/syncthing_proteus-nuc.crt.pem";
+    key = config.sops.secrets."Proteus-NUC_syncthing.priv.pem".path;
+    cert = "${myvars.secrets_dir}/Proteus-NUC_syncthing.cert.pem";
     settings = let
       mobile_devices = {
         "LGE-AN00".id = "T2V6DJB-243NJGD-5B63LUP-DSLNFBD-U72KGD2-AZVTIHL-HEUMBTI-HAVD7A2";

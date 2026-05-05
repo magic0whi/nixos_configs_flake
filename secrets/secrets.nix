@@ -41,7 +41,6 @@ in {
   # "sb_Proteus-NixOS-6.json.age".publicKeys = trusted_machines ++ huawei_vps;
 
   "syncthing_Proteus-MBP14M4P.priv.pem.age".publicKeys = trusted_machines;
-  "syncthing_proteus-nuc.priv.pem.age".publicKeys = trusted_machines;
   "syncthing_proteus-desktop.priv.pem.age".publicKeys = trusted_machines ++ [Proteus-Desktop];
 
   "proteus_server.priv.pem.age".publicKeys = trusted_machines ++ [Proteus-Desktop] ++ google_vps;

@@ -21,7 +21,7 @@ creation_rules:
   # sops encrypt -i secrets/syncthing_proteus-nuc.priv.pem.age
   # To edit, run
   # SOPS_AGE_KEY=$(nix run nixpkgs#ssh-to-age -- -private-key -i ~/Secrets/Backup/proteus@agenix-recovery.ssh.priv.key) sops -- edit secrets/syncthing_proteus-nuc.priv.pem.age
-  - path_regex: secrets/syncthing_proteus-nuc\.priv\.pem\.age$
+  - path_regex: secrets/Proteus-NUC_syncthing_\.priv\.pem\.age$
     key_groups:
       - pgp:
         - *openpgp
