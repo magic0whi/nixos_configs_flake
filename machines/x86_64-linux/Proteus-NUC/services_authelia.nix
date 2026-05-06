@@ -64,11 +64,12 @@
           # password = "password";
           timeout = "5s";
           base_dn = base_dn;
-          additional_users_dn = "ou=People";
+          # If have multiple OUs, do not specify additional_users_dn so it searches all OUs under `base_dn`
+          # additional_users_dn = "ou=People";
           users_filter = "(&({username_attribute}={input})(objectClass=person))";
           additional_groups_dn = "ou=Group";
           groups_filter = "(member={dn})";
-          user = "uid=${config.services.authelia.instances.main.user},ou=People,${base_dn}";
+          user = "uid=${config.services.authelia.instances.main.user},ou=ServiceAccounts,${base_dn}";
           attributes = {
             username = "uid";
             display_name = "cn";

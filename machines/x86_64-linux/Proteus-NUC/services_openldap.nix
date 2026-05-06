@@ -1,5 +1,8 @@
-{myvars, config, pkgs, ...}: {
-  services.openldap = {
+{myvars, config, pkgs, lib, ...}: {
+  services.openldap = let
+    base_dn = "dc=tailba6c3f,dc=ts,dc=net";
+    manager_dn = "cn=Manager,${base_dn}";
+  in {
     enable = true;
     # The `///` tells OpenLDAP to bind to the default port on all available
     # network interfaces (`0.0.0.0` and `::`)
@@ -16,6 +19,7 @@
         # olcTLSProtocolMin = "3.3"; # 3.4 for tls1.3
       };
       children = {
+        "cn=module".attrs = {objectClass = "olcModuleList"; olcModuleLoad = ["argon2"];};
         "cn=schema".includes = [
           "${pkgs.openldap}/etc/schema/core.ldif"
           "${pkgs.openldap}/etc/schema/cosine.ldif"
@@ -23,218 +27,226 @@
           "${pkgs.openldap}/etc/schema/inetorgperson.ldif"
           "${myvars.secrets_dir}/schema.olcSudo"
         ];
-        "olcDatabase={0}config" = {
-          attrs = {
-            objectClass = "olcDatabaseConfig";
-            olcDatabase = "{0}config";
-            olcAccess = ["{0}to * by * none break"];
-            olcRootDN = "cn=Manager,dc=tailba6c3f,dc=ts,dc=net";
-          };
+        "olcDatabase={0}config".attrs = {
+          objectClass = "olcDatabaseConfig";
+          olcDatabase = "{0}config";
+          olcAccess = ["{0}to * by * none break"];
+          olcRootDN = manager_dn;
         };
-        "olcDatabase={1}mdb" = {
-          attrs = {
-            objectClass = ["olcDatabaseConfig" "olcMdbConfig"];
-            olcDatabase = "{1}mdb";
-            olcAccess = [
-              ''{0}to attrs=userPassword,shadowLastChange,photo by self write by anonymous auth by dn.base="cn=Manager,dc=tailba6c3f,dc=ts,dc=net" write by * none''
-              ''{1}to * by self read by dn.base="cn=Manager,dc=tailba6c3f,dc=ts,dc=net" write by * read''
-            ];
-            olcSuffix = "dc=tailba6c3f,dc=ts,dc=net";
-            olcRootDN = "cn=Manager,dc=tailba6c3f,dc=ts,dc=net";
-            olcRootPW = "{SSHA}dLYbsD1XU8q1Av/0zLE8CCFJX6z/6cA3";
-            olcDbDirectory = "/var/lib/openldap/openldap-data";
-            olcDbIndex = [
-              "objectClass eq"
-              "uid pres,eq"
-              "cn,sn,mail pres,sub,eq"
-              "dc eq"
-            ];
-          };
+        "olcDatabase={1}mdb".attrs = {
+          objectClass = ["olcDatabaseConfig" "olcMdbConfig"];
+          olcDatabase = "{1}mdb";
+          olcSuffix = base_dn;
+          olcRootDN = manager_dn;
+          # `slappasswd -o module-load=argon2 -h '{ARGON2}'`
+          # or `slappasswd -o module-load=pw-pbkdf2.la -h '{PBKDF2-SHA512}'``
+          # To verify:
+          # `systemd-ask-password -n | nix run nixpkgs#libargon2 -- "$(echo 'jIm9hSEdZYbgTAjqXx85IQ' | base64 -d)" -id -v 13 -m 16 -t 2 -p 1`
+          olcRootPW = "{ARGON2}$argon2id$v=19$m=65536,t=2,p=1$jIm9hSEdZYbgTAjqXx85IQ$ugObSc6CHpUPirGXr5v1DFFm29ux7HH1AGtOFN//XaQ";
+          olcDbDirectory = "/var/lib/openldap/openldap-data";
+          olcDbIndex = ["objectClass eq" "uid pres,eq" "cn,sn,mail pres,sub,eq" "dc eq"];
+          olcAccess = [
+            (builtins.concatStringsSep " " [
+              "{0}to attrs=userPassword,shadowLastChange,photo" # Rule {0}: Sensitive Attributes
+              "by self write" #  Users are allowed to update their own userPassword, shadowLastChange, photo
+              # Unauthenticated (anonymous) users can use these attributes solely for the purpose of logging in
+              # (authentication). They cannot read the actual password hashes.
+              "by anonymous auth"
+              # The system administrator (defined by the ${manager_dn} variable) has full permission to modify these
+              # attributes.
+              "by dn.base=\"${manager_dn}\" write"
+              "by * none" # Everyone else is explicitly denied access
+            ])
+            (builtins.concatStringsSep " " [
+              "{1}to *" # Rule {1}: Catch-all Rule
+              # Through already covered by `by users read` below, keep it
+              # for explicitly defines user self-access
+              "by self read"
+              "by dn.base=\"${manager_dn}\" write"
+              # Any authenticated user can read all general directory entries and attributes
+              "by users read"
+              "by anonymous auth"
+            ])
+          ];
         };
       };
     };
-    declarativeContents = {
-      "dc=tailba6c3f,dc=ts,dc=net" = ''
-        dn: dc=tailba6c3f,dc=ts,dc=net
-        objectClass: dcObject
-        objectClass: organization
-        dc: tailba6c3f
-        o: Proteus' Organization
+    declarativeContents."${base_dn}" = ''
+      dn: ${base_dn}
+      objectClass: dcObject
+      objectClass: organization
+      dc: ${lib.strings.removePrefix "dc=" (builtins.head (lib.strings.splitString "," "dc=tailba6c3f,dc=ts,dc=net"))}
+      o: Proteus Homelab
 
-        dn: cn=Manager,dc=tailba6c3f,dc=ts,dc=net
-        objectClass: top
-        objectClass: organizationalRole
-        cn: Manager
-        description: LDAP administrator
-        roleOccupant: dc=tailba6c3f,dc=ts,dc=net
+      dn: ${manager_dn}
+      objectClass: top
+      objectClass: organizationalRole
+      cn: Manager
+      description: LDAP administrator
+      roleOccupant: ${base_dn}
 
-        dn: ou=People,dc=tailba6c3f,dc=ts,dc=net
-        objectClass: top
-        objectClass: organizationalUnit
-        ou: People
+      dn: ou=People,${base_dn}
+      objectClass: top
+      objectClass: organizationalUnit
+      ou: People
 
-        dn: ou=Group,dc=tailba6c3f,dc=ts,dc=net
-        objectClass: top
-        objectClass: organizationalUnit
-        ou: Group
+      dn: ou=Group,${base_dn}
+      objectClass: top
+      objectClass: organizationalUnit
+      ou: Group
 
-        dn: ou=Sudoers,dc=tailba6c3f,dc=ts,dc=net
-        objectClass: top
-        objectClass: organizationalUnit
-        ou: Sudoers
+      dn: ou=Sudoers,${base_dn}
+      objectClass: top
+      objectClass: organizationalUnit
+      ou: Sudoers
 
-        dn: cn=defaults,ou=Sudoers,dc=tailba6c3f,dc=ts,dc=net
-        objectClass: top
-        objectClass: sudoRole
-        cn: defaults
-        description: Default sudoOption's go here
-        sudoOption: env_keep+=SSH_AUTH_SOCK
-        sudoOption: passwd_timeout=0
+      dn: ou=ServiceAccounts,${base_dn}
+      objectClass: top
+      objectClass: organizationalUnit
+      ou: ServiceAccounts
 
-        # The Sudoer rules order matter
-        dn: cn=allowMainUserNoPass,ou=Sudoers,dc=tailba6c3f,dc=ts,dc=net
-        objectClass: top
-        objectClass: sudoRole
-        cn: allowMainUserNoPass
-        sudoUser: ${myvars.username}
-        sudoHost: ALL
-        sudoRunAsUser: ALL
-        sudoOption: !authenticate
-        sudoCommand: /usr/bin/psd-overlay-helper
-        # sudoCommand: /usr/bin/arch-nspawn
-        # sudoCommand: /usr/bin/pacman
+      dn: cn=defaults,ou=Sudoers,${base_dn}
+      objectClass: top
+      objectClass: sudoRole
+      cn: defaults
+      description: Default sudo options
+      sudoOption: env_keep+=SSH_AUTH_SOCK
+      sudoOption: passwd_timeout=0
 
-        dn: cn=allowMainUserNoPassSetenv,ou=Sudoers,dc=tailba6c3f,dc=ts,dc=net
-        objectClass: top
-        objectClass: sudoRole
-        cn: allowMainUserNoPassSetenv
-        sudoUser: ${myvars.username}
-        sudoHost: ALL
-        sudoRunAsUser: ALL
-        sudoOption: !authenticate
-        sudoOption: setenv
-        sudoCommand: /usr/bin/makechrootpkg
+      # The Sudoer rules order matter
+      dn: cn=main_user_no_pass_comms,ou=Sudoers,${base_dn}
+      objectClass: top
+      objectClass: sudoRole
+      cn: main_user_no_pass_comms
+      sudoUser: ${myvars.username}
+      sudoHost: ALL
+      sudoRunAsUser: ALL
+      sudoOption: !authenticate
+      sudoCommand: /usr/bin/psd-overlay-helper
+      # sudoCommand: /usr/bin/arch-nspawn
+      # sudoCommand: /usr/bin/pacman
 
-        dn: cn=allowMainUser,ou=Sudoers,dc=tailba6c3f,dc=ts,dc=net
-        objectClass: top
-        objectClass: sudoRole
-        cn: allowMainUser
-        sudoUser: ${myvars.username}
-        sudoHost: ALL
-        sudoRunAsUser: ALL
-        sudoCommand: ALL
+      dn: cn=main_user_no_pass_comms_setenv,ou=Sudoers,${base_dn}
+      objectClass: top
+      objectClass: sudoRole
+      cn: main_user_no_pass_comms_setenv
+      sudoUser: ${myvars.username}
+      sudoHost: ALL
+      sudoRunAsUser: ALL
+      sudoOption: !authenticate
+      sudoOption: setenv
+      sudoCommand: /usr/bin/makechrootpkg
 
-        dn: uid=${myvars.username},ou=People,dc=tailba6c3f,dc=ts,dc=net
-        objectClass: top
-        objectClass: person
-        objectClass: organizationalPerson
-        objectClass: inetOrgPerson
-        objectClass: posixAccount
-        objectClass: shadowAccount
-        uid: ${myvars.username}
-        cn: ${myvars.userfullname}
-        sn: Qian
-        givenName: Proteus
-        title: Qiansan
-        mobile: +44 1145114191
-        mail: ${myvars.useremail}
-        postalAddress: Toukyouto$Setagayaku$Kitazawa3Choume23Ban14Gou
-        userPassword: {SSHA}LbpR3GOQuhToaqzVejQOTJuOFEjlUHgK
-        labeledURI: https://magic0whi.github.io/
-        loginShell: /bin/zsh
-        uidNumber: 1000
-        gidNumber: 1000
-        homeDirectory: ${config.users.users.${myvars.username}.home}
-        description: This is me
+      dn: cn=allow_main_user,ou=Sudoers,${base_dn}
+      objectClass: top
+      objectClass: sudoRole
+      cn: allow_main_user
+      sudoUser: ${myvars.username}
+      sudoHost: ALL
+      sudoRunAsUser: ALL
+      sudoCommand: ALL
 
-        dn: uid=atuin,ou=People,dc=tailba6c3f,dc=ts,dc=net
-        objectClass: top
-        objectClass: person
-        objectClass: organizationalPerson
-        objectClass: inetOrgPerson
-        objectClass: posixAccount
-        objectClass: shadowAccount
-        uid: atuin
-        sn: Atuin
-        cn: Atuinsh Atuin
-        userPassword: {SSHA}Tf4S6QVwUiSbgXAHlzPKepNpv/lgAB+Y
-        loginShell: /run/current-system/sw/bin/nologin
-        uidNumber: 1001
-        gidNumber: 1001
-        homeDirectory: /var/empty
-        description: Magical shell history
+      dn: uid=${myvars.username},ou=People,${base_dn}
+      objectClass: top
+      objectClass: person
+      objectClass: organizationalPerson
+      objectClass: inetOrgPerson
+      objectClass: posixAccount
+      objectClass: shadowAccount
+      uid: ${myvars.username}
+      cn: ${myvars.userfullname}
+      sn: Qian
+      givenName: Proteus
+      title: Qiansan
+      mobile: +44 1145114191
+      mail: ${myvars.useremail}
+      postalAddress: Toukyouto$Setagayaku$Kitazawa3Choume23Ban14Gou
+      labeledURI: https://magic0whi.github.io/
+      loginShell: /bin/zsh
+      uidNumber: 1000
+      gidNumber: 1000
+      homeDirectory: ${config.users.users.${myvars.username}.home}
+      description: Primary personal account
+      userPassword: {ARGON2}$argon2id$v=19$m=65536,t=2,p=1$arVKdAqitf39aAVGaLS5Qw$AtzBSJDhT9vsiLg6ZhZDuHxH5euYqlVmGSE+EWjlxqs
 
-        dn: uid=${config.services.immich.user},ou=People,dc=tailba6c3f,dc=ts,dc=net
-        objectClass: top
-        objectClass: person
-        objectClass: organizationalPerson
-        objectClass: inetOrgPerson
-        objectClass: posixAccount
-        objectClass: shadowAccount
-        uid: ${config.services.immich.user}
-        o: immich-app
-        sn: Immich
-        cn: Immich App
-        userPassword: {SSHA}3zaMR2HtFO2t9FEI6BIiLEgddW6HGSol
-        loginShell: /run/current-system/sw/bin/nologin
-        uidNumber: 1002
-        gidNumber: 1002
-        homeDirectory: ${config.services.immich.mediaLocation}
-        description: High performance self-hosted photo and video management solution.
+      dn: uid=atuin,ou=ServiceAccounts,${base_dn}
+      objectClass: top
+      objectClass: person
+      objectClass: organizationalPerson
+      objectClass: inetOrgPerson
+      # objectClass: posixAccount
+      uid: atuin
+      o: Proteus Homelab
+      cn: Atuin Database Auth Service
+      sn: Service
+      # loginShell: ${pkgs.shadow}/bin/nologin
+      # homeDirectory: /var/empty
+      description: Dedicated LDAP service account for Atuin
+      userPassword: {ARGON2}$argon2id$v=19$m=65536,t=2,p=1$2/qpzCZL/QW5fczhx60Bwg$64zn/anj0LiNqsupuKnr5UA7B+Ejm3H+JL29NgSqwVs
 
-        dn: uid=${config.services.paperless.user},ou=People,dc=tailba6c3f,dc=ts,dc=net
-        objectClass: top
-        objectClass: person
-        objectClass: organizationalPerson
-        objectClass: inetOrgPerson
-        objectClass: posixAccount
-        objectClass: shadowAccount
-        uid: ${config.services.paperless.user}
-        o: paperless-ngx
-        sn: Paperless
-        cn: Paperless-ngx
-        userPassword: {SSHA}GjfwDvkxDonJWgXheFpWstrT3dZk+9OS
-        loginShell: /run/current-system/sw/bin/nologin
-        uidNumber: 1003
-        gidNumber: 1003
-        homeDirectory: ${config.services.paperless.dataDir}
-        description: A community-supported supercharged document management system: scan, index and archive all your documents
+      dn: uid=${config.systemd.services.postgresql.serviceConfig.User},ou=ServiceAccounts,${base_dn}
+      objectClass: top
+      objectClass: person
+      objectClass: organizationalPerson
+      objectClass: inetOrgPerson
+      uid: ${config.systemd.services.postgresql.serviceConfig.User}
+      o: Proteus Homelab
+      cn: PostgreSQL Service
+      sn: Service
+      description: Dedicated LDAP service account for PostgreSQL
+      userPassword: {ARGON2}$argon2id$v=19$m=65536,t=2,p=1$gAW72T0XdGEPASN6Lw93pw$IoCTZ5kgwFaGAAt92SBp36hglEn/oU3BvY4et8xRY68
 
-        # Authelia postgresql user
-        dn: uid=${config.services.authelia.instances.main.user},ou=People,dc=tailba6c3f,dc=ts,dc=net
-        objectClass: top
-        objectClass: person
-        objectClass: organizationalPerson
-        objectClass: inetOrgPerson
-        objectClass: posixAccount
-        objectClass: shadowAccount
-        uid: ${config.services.authelia.instances.main.user}
-        o: authelia
-        sn: Authelia
-        cn: Authelia
-        userPassword: {SSHA}I15RtwzY9KQf3Pc/czOndnJxPuJ+sb9W
-        loginShell: /run/current-system/sw/bin/nologin
-        uidNumber: 1004
-        gidNumber: 1004
-        homeDirectory: /var/empty
-        description: A community-supported supercharged document management system: scan, index and archive all your documents
+      dn: uid=${config.services.immich.user},ou=ServiceAccounts,${base_dn}
+      objectClass: top
+      objectClass: person
+      objectClass: organizationalPerson
+      objectClass: inetOrgPerson
+      uid: ${config.services.immich.user}
+      o: Proteus Homelab
+      cn: Immich Service Database Auth Service
+      sn: Service
+      description: Dedicated LDAP service account for Immich
+      userPassword: {ARGON2}$argon2id$v=19$m=65536,t=2,p=1$OEpAKFVxRbsfk8djqOY2yg$scRgt8huwIp6bmRTbKxHdf5YzDqbc+sv5O6FdnF59+s
 
-        dn: cn=${myvars.username},ou=Group,dc=tailba6c3f,dc=ts,dc=net
-        objectClass: top
-        objectClass: posixGroup
-        objectClass: groupOfMembers
-        cn: ${myvars.username}
-        gidNumber: 1000
-        member: uid=${myvars.username},ou=People,dc=tailba6c3f,dc=ts,dc=net
+      dn: uid=${config.services.paperless.user},ou=ServiceAccounts,${base_dn}
+      objectClass: top
+      objectClass: person
+      objectClass: organizationalPerson
+      objectClass: inetOrgPerson
+      uid: ${config.services.paperless.user}
+      o: Proteus Homelab
+      sn: Service
+      cn: Paperless Database Auth Service
+      description: A community-supported supercharged document management system: scan, index and archive all your documents
+      userPassword: {ARGON2}$argon2id$v=19$m=65536,t=2,p=1$ZCKwwHl/8qfXSbgipXXHww$XJWgXYKm8jy4WxhITOkBDLWZi0GhfCLYwpSrgtkhMus
 
-        dn: cn=storage,ou=Group,dc=tailba6c3f,dc=ts,dc=net
-        objectClass: top
-        objectClass: posixGroup
-        objectClass: groupOfMembers
-        cn: storage
-        gidNumber: 1001
-        member: uid=${myvars.username},ou=People,dc=tailba6c3f,dc=ts,dc=net
-      '';
-    };
+      dn: uid=${config.services.authelia.instances.main.user},ou=ServiceAccounts,${base_dn}
+      objectClass: top
+      objectClass: person
+      objectClass: organizationalPerson
+      objectClass: inetOrgPerson
+      uid: ${config.services.authelia.instances.main.user}
+      o: Proteus Homelab
+      sn: Service
+      cn: Authelia Service & Authelia Database Auth Service
+      description: A community-supported supercharged document management system: scan, index and archive all your documents
+      userPassword: {ARGON2}$argon2id$v=19$m=65536,t=2,p=1$FO5I3Wn6CsduQpv15iZBXQ$B3LtuuB/+5kcJ8gl6ikcN2XgBUK+qdzLNA1Yp93QonM
+
+      dn: cn=${myvars.username},ou=Group,${base_dn}
+      objectClass: top
+      objectClass: posixGroup
+      objectClass: groupOfMembers
+      cn: ${myvars.username}
+      gidNumber: 1000
+      member: uid=${myvars.username},ou=People,${base_dn}
+
+      dn: cn=storage,ou=Group,${base_dn}
+      objectClass: top
+      objectClass: posixGroup
+      objectClass: groupOfMembers
+      cn: storage
+      gidNumber: 1001
+      member: uid=${myvars.username},ou=People,${base_dn}
+    '';
   };
 }
