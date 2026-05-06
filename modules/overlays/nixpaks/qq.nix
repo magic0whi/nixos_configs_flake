@@ -4,7 +4,6 @@
 #   - https://docs.flatpak.org/en/latest/sandbox-permissions.html
 # - QQ's flatpak manifest: https://github.com/flathub/com.qq.QQ/blob/master/com.qq.QQ.yaml
 {
-  lib,
   pkgs,
   mkNixPak,
   ...
@@ -14,7 +13,7 @@ mkNixPak {
     app = {
       package = pkgs.qq.override {
         # fix fcitx5 input method
-        commandLineArgs = lib.concatStringsSep " " ["--enable-wayland-ime"];
+        commandLineArgs = builtins.concatStringsSep " " ["--enable-wayland-ime"];
       };
       binPath = "bin/qq";
     };

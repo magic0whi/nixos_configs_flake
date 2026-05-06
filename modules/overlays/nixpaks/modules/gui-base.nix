@@ -81,7 +81,7 @@ in {
 
           shared-mime-info
         ]));
-        XCURSOR_PATH = lib.mkForce (lib.concatStringsSep ":" [
+        XCURSOR_PATH = lib.mkForce (builtins.concatStringsSep ":" [
           "${cursor_theme}/share/icons"
           "${cursor_theme}/share/pixmaps"
         ]);
