@@ -86,9 +86,16 @@
         ];
         default_policy = "deny";
       };
+      # Define the expression to evaluate the custom attribute
+      # Evaluates admin privilege for Nextcloud. Change the group name if needed.
+      # Ref: https://www.authelia.com/configuration/definitions/user-attributes/
+      definitions.user_attributes.is_nextcloud_admin.expression = ''"storage" in groups'';
       identity_providers = {
         oidc = {
           cors = {endpoints = ["authorization" "token" "revocation" "introspection" "userinfo"];};
+          # Map the custom claim policy, ref: https://www.authelia.com/integration/openid-connect/openid-connect-1.0-claims/
+          claims_policies.nextcloud_userinfo.custom_claims.is_nextcloud_admin = {};
+          scopes.nextcloud_userinfo.claims = ["is_nextcloud_admin"]; # Bind the claim to the `nextcloud_userinfo` scope
           # https://www.authelia.com/configuration/identity-providers/openid-connect/clients/
           clients = [
             {
@@ -145,6 +152,16 @@
               ];
               scopes = ["openid" "email" "profile"];
               token_endpoint_auth_method = "client_secret_post";
+            }
+            { # Ref: https://www.authelia.com/integration/openid-connect/clients/nextcloud/
+              client_id = "nextcloud";
+              client_name = "Nextcloud";
+              client_secret = "$pbkdf2-sha512$310000$Nf0RYQUukNM3r/FVDi/YDA$RCvY0zSeZFvJgr4F4bubUdBfWbMiL2rQe7oKjoj0995XQNaDrzl4ZfVBDoyBjVipQIVgIvTCcSRN2Ak6Vv7jfQ";
+              require_pkce = true;
+              pkce_challenge_method = "S256";
+              claims_policy = "nextcloud_userinfo";
+              redirect_uris = ["https://nextcloud.${myvars.domain}/apps/oidc_login/oidc"];
+              scopes = ["openid" "email" "profile" "groups" "nextcloud_userinfo"];
             }
           ];
         };

@@ -2,7 +2,6 @@
   myvars,
   config,
   lib,
-  pkgs,
   # mylib,
   ...
 }: {
@@ -87,66 +86,6 @@
     };
   };
   ## END syncthing.nix
-  ## START webdav.nix
-  systemd.services.webdav-server-rs.serviceConfig.ExecStart = let
-    custom-webdav = let
-      webdav-server-src = pkgs.fetchFromGitHub {
-        owner = "ArcticLampyrid"; repo = "webdav-server-rs";
-        rev = "b3c426c2941034d75e267be9f55e2bd418b2caae";
-        hash = "sha256-D59pxz/8VEd1RdRxKK3Z1C+rJbXT79Zmt0a11XLlJic=";
-      };
-      webdav-handler-src = pkgs.fetchFromGitHub {
-        owner = "miquels"; repo = "webdav-handler-rs";
-        rev = "58ad11459905bc22f868a1df231cbbc9101f8917";
-        hash = "sha256-AZ+f7llx6i1Df81DAVC59DXoIJGlN9sxDRnI2kW94PU=";
-      };
-      combined-src = pkgs.runCommand "webdav-server-combined-src" {} ''
-        mkdir -p $out/webdav-server-rs $out/webdav-handler-rs
-        cp -r ${webdav-server-src}/* $out/webdav-server-rs/
-        cp -r ${webdav-handler-src}/* $out/webdav-handler-rs/
-      '';
-    in pkgs.webdav-server-rs.overrideAttrs (old: {
-      version = "unstable-2024-01-08";
-      src = combined-src;
-      sourceRoot = "webdav-server-combined-src/webdav-server-rs";
-      cargoDeps = pkgs.rustPlatform.fetchCargoVendor {
-        src = combined-src;
-        sourceRoot = "webdav-server-combined-src/webdav-server-rs";
-        hash = "sha256-HP4VbH111QgSWObF3QnSfmWVzx5GW6YTTpiFzU8bIvM=";
-      };
-    });
-    cfg = config.services.webdav-server-rs;
-  in lib.mkForce "${custom-webdav}/bin/webdav-server ${lib.optionalString cfg.debug "--debug"} -c ${cfg.configFile}";
-
-  security.pam.services.webdav = {}; # This creates entries under /etc/pam.d
-
-  services.webdav-server-rs = {
-    enable = true;
-    group = "storage";
-    debug = true;
-    # https://github.com/miquels/webdav-server-rs/blob/547602e78783935b4ddd038fb795366c9c476bcc/webdav-server.toml
-    settings = {
-      server.listen = ["127.0.0.1:4918" "[::1]:4918"];
-      accounts = {
-        # auth-type = "htpasswd.default";
-        auth-type = "pam";
-        acct-type = "unix";
-      };
-      # htpasswd.default.htpasswd = toString (pkgs.writeText "webdav.htpasswd" "${myvars.username}:$6$bk8n5IqElcXC8PM2$U8ej4dXiJ2LpejhIEv/xv3kL0j5Fq6o4hm6Y.ygxnl4P33nrtYz/MdvmhAz12gdWFvPGbE30V0qsff1lQcVpb1");
-      pam.service = "webdav";
-      location = [{
-        route = ["/*path"]; # `path` is a keyword
-        directory = "${myvars.storage_path}/share";
-        handler = "filesystem";
-        methods = ["webdav-rw"];
-        autoindex = true;
-        auth = "true";
-        hide-symlinks = true;
-        setuid = true;
-      }];
-    };
-  };
-  ## END webdav.nix
   ## BEGIN minio.nix
   nixpkgs.config.permittedInsecurePackages = ["minio-2025-10-15T17-29-55Z"];
   age.secrets."minio.env" = {

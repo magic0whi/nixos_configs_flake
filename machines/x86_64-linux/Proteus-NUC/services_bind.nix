@@ -2,7 +2,7 @@
   tailnet = "tailba6c3f.ts.net";
   tailnet_prefix_length = 48;
   soa_parms = {
-    serial = "2026042101"; # Serial (YYYYMMDDNN)
+    serial = "2026050601"; # Serial (YYYYMMDDNN)
     refresh = "3600"; # Refresh (1 hour)
     retry = "1800"; # Retry (30 minutes)
     expire = "604800"; # Expire (1 week)
@@ -136,12 +136,12 @@
     plane      IN CNAME proteus-nuc
 
     monero            IN CNAME proteus-desktop
-    webdav            IN CNAME proteus-desktop
     traefik-desktop   IN CNAME proteus-desktop
     sb-desktop        IN CNAME proteus-desktop
     syncthing-desktop IN CNAME proteus-desktop
     minio             IN CNAME proteus-desktop
     s3                IN CNAME proteus-desktop
+    nextcloud         IN CNAME proteus-desktop
   '');
   # =========================================
   # IPv4 Reverse Zones
@@ -186,12 +186,6 @@ in {
     install -m 0644 ${desktop_reverse_zone_v4} ${config.services.bind.directory}/${desktop_reverse_zone_v4_name}.zone
     install -m 0644 ${reverse_zone_v6} ${config.services.bind.directory}/${reverse_zone_v6_name}.zone
   '';
-  # Authoritative-only server for "proteus.eu.org"
-  # age.secrets."bind_server.priv.pem" = {
-  #   file = "${myvars.secrets_dir}/proteus_server.priv.pem.age";
-  #   mode = "0400";
-  #   owner = config.systemd.services.bind.serviceConfig.User;
-  # };
   services.resolved.settings.Resolve = {
     DNSSEC= "allow-downgrade";
     Domains = [

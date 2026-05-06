@@ -45,13 +45,13 @@ in {
             rule = "Host(`syncthing-desktop.${myvars.domain}`)";
             entryPoints = ["websecure"]; middlewares = ["authelia-auth"]; service = "syncthing-dashboard"; tls = {};
           };
-          webdav = {
-            rule = "Host(`webdav.${myvars.domain}`)"; entryPoints = ["websecure"]; service = "webdav"; tls = {};
-          };
           minio-dashboard = {
             rule = "Host(`minio.${myvars.domain}`)"; entryPoints = ["websecure"]; service = "minio-dashboard"; tls = {};
           };
           s3 = {rule = "Host(`s3.${myvars.domain}`)"; entryPoints = ["websecure"]; service = "s3"; tls = {};};
+          nextcloud = {
+            rule = "Host(`nextcloud.${myvars.domain}`)"; entryPoints = ["websecure"]; service = "nextcloud"; tls = {};
+          };
         };
         services = {
           sb-dashboard.loadBalancer.servers = [{url = "http://127.0.0.1:9091";}];
@@ -59,12 +59,6 @@ in {
             passHostHeader = false;
             servers = [{url = "http://${config.home-manager.users.${myvars.username}.services.syncthing.guiAddress}";}];
             healthCheck.path = "/rest/noauth/health";
-          };
-          webdav.loadBalancer = {
-            servers = let listens = config.services.webdav-server-rs.settings.server.listen; in [
-              {url = "http://${builtins.head listens}";}{url = "http://${lib.lists.last listens}";}
-            ];
-            healthCheck = {path = "/"; status = 401;}; # Treat 401 Unauthorized as health
           };
           minio-dashboard.loadBalancer = {
             servers = [{url = "http://${config.services.minio.consoleAddress}";}];
@@ -78,6 +72,7 @@ in {
             servers = [{url = "http://${config.services.minio.listenAddress}";}];
             healthCheck.path = "/minio/health/ready";
           };
+          nextcloud.loadBalancer = {servers = [{ url = "http://127.0.0.1:8080"; }]; healthCheck.path = "/status.php";};
         };
       };
     };

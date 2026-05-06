@@ -6,6 +6,7 @@
   # nixpkgs-postgresql,
   ...
 }: {
+  networking.firewall.allowedTCPPorts = [config.services.postgresql.settings.port];
   sops.secrets = {
     "postgresql_server.priv.pem" = {
       sopsFile = "${myvars.secrets_dir}/proteus_server.priv.pem.sops";
@@ -56,12 +57,14 @@
       "atuin"
       config.services.paperless.user
       config.services.authelia.instances.main.user
+      "nextcloud"
     ];
     ensureUsers = [
       {name = "proteus"; ensureClauses = {login = true; /*superuser = true;*/ createdb = true;};}
       {name = "atuin"; ensureDBOwnership = true;}
       {name = config.services.paperless.user; ensureDBOwnership = true;}
       {name = config.services.authelia.instances.main.user; ensureDBOwnership =true;}
+      {name = "nextcloud"; ensureDBOwnership = true;}
     ];
     # DO NOT USE as we use sops templateed `services.postgresql.settings.hba_file`
     # authentication = ''

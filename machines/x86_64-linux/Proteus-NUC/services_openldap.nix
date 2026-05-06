@@ -232,6 +232,18 @@
       description: A community-supported supercharged document management system: scan, index and archive all your documents
       userPassword: {ARGON2}$argon2id$v=19$m=65536,t=2,p=1$FO5I3Wn6CsduQpv15iZBXQ$B3LtuuB/+5kcJ8gl6ikcN2XgBUK+qdzLNA1Yp93QonM
 
+      dn: uid=nextcloud,ou=ServiceAccounts,${base_dn}
+      objectClass: top
+      objectClass: person
+      objectClass: organizationalPerson
+      objectClass: inetOrgPerson
+      uid: nextcloud
+      o: Proteus Homelab
+      sn: Service
+      cn: Nextcloud Database Auth Service
+      description: Sharing solution for files, calendars, contacts and more
+      userPassword: {ARGON2}$argon2id$v=19$m=65536,t=2,p=1$KW1J9YdPNePdvjKAr07C3Q$QvyeZxYPF4BBNJGU4/lJuY2ecV1zBQ5RSjz0gxDzKAg
+
       dn: cn=${myvars.username},ou=Group,${base_dn}
       objectClass: top
       objectClass: posixGroup
