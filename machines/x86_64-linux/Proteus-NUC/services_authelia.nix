@@ -1,32 +1,16 @@
 {myvars, config, ...}: {
-  age.secrets = {
-    "authelia_jwt_secret.txt" = {
-      file = "${myvars.secrets_dir}/authelia_jwt_secret.txt.age";
-      mode = "0400"; owner = config.services.authelia.instances.main.user;
-    };
-    "authelia_session_secret.txt" = {
-      file = "${myvars.secrets_dir}/authelia_session_secret.txt.age";
-      mode = "0400"; owner = config.services.authelia.instances.main.user;
-    };
-    "authelia_storage_encryption_key.txt" = {
-      file = "${myvars.secrets_dir}/authelia_storage_encryption_key.txt.age";
-      mode = "0400"; owner = config.services.authelia.instances.main.user;
-    };
-    "authelia_ldap_password.txt" = {
-      file = "${myvars.secrets_dir}/authelia_ldap_password.txt.age";
-      mode = "0400"; owner = config.services.authelia.instances.main.user;
-    };
-    "authelia_db_password.txt" = {
-      file = "${myvars.secrets_dir}/authelia_db_password.txt.age";
-      mode = "0400"; owner = config.services.authelia.instances.main.user;
-    };
-    "authelia_oidc_hmac.txt" = {
-      file = "${myvars.secrets_dir}/authelia_oidc_hmac.txt.age";
-      mode = "0400"; owner = config.services.authelia.instances.main.user;
-    };
+  sops.secrets = let
+    sopsFile = "${myvars.secrets_dir}/Proteus-NUC.sops.yaml";
+    restartUnits = map (name: "authelia-${name}.service") (builtins.attrNames config.services.authelia.instances);
+    owner = config.services.authelia.instances.main.user;
+  in {
+    authelia_jwt_secret = {inherit sopsFile owner restartUnits;};
+    authelia_session_secret = {inherit sopsFile owner restartUnits;};
+    authelia_storage_encryption_key = {inherit sopsFile owner restartUnits;};
+    authelia_ldap_password = {inherit sopsFile owner restartUnits;};
+    authelia_oidc_hmac = {inherit sopsFile owner restartUnits;};
     "authelia_oidc_rsa.pem" = {
-      file = "${myvars.secrets_dir}/authelia_oidc_rsa.pem.age";
-      mode = "0400"; owner = config.services.authelia.instances.main.user;
+      inherit owner restartUnits; sopsFile = "${myvars.secrets_dir}/authelia_oidc_rsa.pem.sops"; format = "binary";
     };
   };
   services.authelia.instances.main = {
@@ -34,19 +18,19 @@
     secrets = {
       # To generate those secrets, run
       # nix run nixpkgs#authelia -- crypto rand --length 64 session_secret.txt storage_encryption_key.txt jwt_secret.txt
-      jwtSecretFile = config.age.secrets."authelia_jwt_secret.txt".path;
-      sessionSecretFile = config.age.secrets."authelia_session_secret.txt".path;
-      storageEncryptionKeyFile = config.age.secrets."authelia_storage_encryption_key.txt".path;
-      oidcIssuerPrivateKeyFile = config.age.secrets."authelia_oidc_rsa.pem".path;
-      oidcHmacSecretFile = config.age.secrets."authelia_oidc_hmac.txt".path;
+      jwtSecretFile = config.sops.secrets."authelia_jwt_secret".path;
+      sessionSecretFile = config.sops.secrets."authelia_session_secret".path;
+      storageEncryptionKeyFile = config.sops.secrets."authelia_storage_encryption_key".path;
+      oidcHmacSecretFile = config.sops.secrets."authelia_oidc_hmac".path;
+      oidcIssuerPrivateKeyFile = config.sops.secrets."authelia_oidc_rsa.pem".path;
     };
     # LDAP Password Injection
     # Using the _FILE suffix tells Authelia to read the contents of the secret path
     environmentVariables = {
       # Render to `settings.authentication_backend.ldap.password`
-      AUTHELIA_AUTHENTICATION_BACKEND_LDAP_PASSWORD_FILE = config.age.secrets."authelia_ldap_password.txt".path;
+      AUTHELIA_AUTHENTICATION_BACKEND_LDAP_PASSWORD_FILE = config.sops.secrets."authelia_ldap_password".path;
       # Render to `settings.storage.postgres.password`
-      AUTHELIA_STORAGE_POSTGRES_PASSWORD_FILE = config.age.secrets."authelia_db_password.txt".path;
+      AUTHELIA_STORAGE_POSTGRES_PASSWORD_FILE = config.sops.secrets."authelia_ldap_password".path;
     };
     # https://github.com/authelia/authelia/blob/8a7b642dd78f29c76d126b6f53806472b2a360bd/config.template.yml
     settings = {
@@ -73,18 +57,18 @@
       # TODO use real email
       notifier.filesystem.filename = "/var/lib/authelia-main/emails.txt";
       authentication_backend = {
-        ldap = {
+        ldap = let base_dn = "dc=tailba6c3f,dc=ts,dc=net"; in {
           implementation = "custom";
           address = "ldaps://openldap.${myvars.domain}:636";
           # Password is injected via environment variable
           # password = "password";
           timeout = "5s";
-          base_dn = "dc=tailba6c3f,dc=ts,dc=net";
+          base_dn = base_dn;
           additional_users_dn = "ou=People";
           users_filter = "(&({username_attribute}={input})(objectClass=person))";
           additional_groups_dn = "ou=Group";
           groups_filter = "(member={dn})";
-          user = "cn=Manager,dc=tailba6c3f,dc=ts,dc=net";
+          user = "uid=${config.services.authelia.instances.main.user},ou=People,${base_dn}";
           attributes = {
             username = "uid";
             display_name = "cn";
@@ -111,7 +95,7 @@
               client_name = "Papra";
               # nix run nixpkgs#authelia -- crypto rand --length 64 --charset alphanumeric
               # nix run nixpkgs#authelia -- crypto hash generate pbkdf2 --variant sha512 --password "$(systemd-ask-password)"
-              # To test the PBKDF2 digest, run
+              # To verify the PBKDF2 digest, run
               # nix run nixpkgs#authelia -- crypto hash validate --password "$(systemd-ask-password)" '$pbkdf2-sha512$310000$...'
               client_secret = "$pbkdf2-sha512$310000$3KSvvBJnoLyJDoKDBIBcZQ$dMQmccJ6Y4hrj.tv.dD3KFzLcsPCsMNRZFTpHUiInVcSX0eBR5T6jemXfcUaob9PsbgHBwRNCjtXiBNl6lOc7g";
               redirect_uris = ["https://papra.${myvars.domain}/api/auth/oauth2/callback/authelia"];
@@ -123,6 +107,7 @@
               client_name = "Forgejo";
               client_secret = "$pbkdf2-sha512$310000$hHi.uSu97kUzfh.X9ijhXA$.IL0RMznXtdwXGTYq9eKV.83nIXI0glK7v.IaFYu5xVpweng.zo5L5PpuC6aQgY6R9ROgSFQrHbve3LK50j/yg";
               redirect_uris = ["https://git.${myvars.domain}/user/oauth2/Authelia/callback"];
+              require_pkce = true;
               pkce_challenge_method = "S256"; # effectively enables the require_pkce
             }
             { # https://www.reddit.com/r/selfhosted/comments/1llq665/minio_oidc_login_removed_in_latest_release/

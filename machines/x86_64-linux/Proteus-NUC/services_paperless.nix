@@ -1,7 +1,5 @@
 {myvars, config, lib, pkgs, ...}: {
-  sops.secrets = let
-    sopsFile = "${myvars.secrets_dir}/paperless.sops.yaml";
-  in {
+  sops.secrets = let sopsFile = "${myvars.secrets_dir}/Proteus-NUC.sops.yaml"; in {
     paperless_dbpass = {inherit sopsFile;};
     paperless_admin_password = {inherit sopsFile;};
     paperless_authelia_secret = {inherit sopsFile;};
@@ -11,7 +9,7 @@
       socialaccount_providers = {openid_connect.APPS = [{
         client_id = "paperless"; name = "Authelia"; provider_id = "authelia";
         secret = "${config.sops.placeholder.paperless_authelia_secret}";
-        settings.server_url = "https://auth.proteus.eu.org/.well-known/openid-configuration";
+        settings.server_url = "https://auth.${myvars.domain}/.well-known/openid-configuration";
       }];};
     in ''
       PAPERLESS_DBPASS=${config.sops.placeholder.paperless_dbpass}

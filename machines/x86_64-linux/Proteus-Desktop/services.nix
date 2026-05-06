@@ -25,17 +25,19 @@
   };
   ## END services_monero.nix
   ## START syncthing.nix
-  age.secrets."syncthing_proteus-desktop.priv.pem" = {
-    file = "${myvars.secrets_dir}/syncthing_proteus-desktop.priv.pem.age";
-    mode = "0400"; owner = config.services.syncthing.user;
+  sops.secrets."Proteus-Desktop_syncthing.priv.pem" = {
+    sopsFile = "${myvars.secrets_dir}/Proteus-Desktop_syncthing.priv.pem.sops";
+    format = "binary";
+    restartUnits = ["syncthing.service"];
   };
   # If without `users.groups.storage` and rely on LDAP group
   # systemd.services.syncthing.serviceConfig.SupplementaryGroups = ["storage"];
+  systemd.services.syncthing.unitConfig.RequiresMountsFor = [myvars.storage_path];
   services.syncthing = {
     enable = true;
     group = "storage"; # Don't work for a LDAP group
-    key = config.age.secrets."syncthing_proteus-desktop.priv.pem".path;
-    cert = "${myvars.secrets_dir}/syncthing_proteus-desktop.crt.pem";
+    key = config.sops.secrets."Proteus-Desktop_syncthing.priv.pem".path;
+    cert = "${myvars.secrets_dir}/Proteus-Desktop_syncthing.pub.pem";
     settings = let
       mobile_devices = {
         "LGE-AN00".id = "T2V6DJB-243NJGD-5B63LUP-DSLNFBD-U72KGD2-AZVTIHL-HEUMBTI-HAVD7A2";
@@ -151,7 +153,7 @@
     file = "${myvars.secrets_dir}/minio.env.age";
     mode = "0400"; owner = config.systemd.services.minio.serviceConfig.User;
   };
-  systemd.services.minio.unitConfig.RequiresMountsFor = ["/mnt/storage/data"];
+  systemd.services.minio.unitConfig.RequiresMountsFor = [myvars.storage_path];
   services.minio = {
     enable = true;
     listenAddress = "127.0.0.1:9000";

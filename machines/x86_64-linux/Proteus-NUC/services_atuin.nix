@@ -1,11 +1,10 @@
-{config, myvars, lib, ...}: {
-  age.secrets."atuin.env" = {file = "${myvars.secrets_dir}/atuin.env.age"; mode = "0400"; owner = "root";};
-  systemd.services = lib.mkIf config.services.atuin.enable {
-    atuin.serviceConfig.EnvironmentFile = config.age.secrets."atuin.env".path;
+{config, myvars, ...}: {
+  sops.secrets.atuin_db_password = {
+    sopsFile = "${myvars.secrets_dir}/Proteus-NUC.sops.yaml"; restartUnits = ["atuin.service"];
   };
-  services.atuin = {
-    enable = true;
-    database.uri = "postgres://atuin@postgresql.${myvars.domain}/atuin?sslmode=require";
-    openRegistration = true;
+  sops.templates."atuin.env" = {
+    content = "ATUIN_DB_URI='postgres://atuin:${config.sops.placeholder.atuin_db_password}@postgresql.${myvars.domain}/atuin?sslmode=require'";
+    restartUnits = ["atuin.service"];
   };
+  services.atuin = {enable = true; environmentFile = config.sops.templates."atuin.env".path; openRegistration = true;};
 }

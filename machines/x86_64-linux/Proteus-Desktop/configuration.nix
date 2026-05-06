@@ -2,11 +2,13 @@
   iface_wlan = myvars.networking.hosts_addr.${config.networking.hostName}.iface_wlan;
 in {
   ## START sing-box.nix
-  age.secrets."sb_client_linux.json" = {
-    file = "${myvars.secrets_dir}/sb_client_linux.json.age"; mode = "0000"; owner = "root";
+  sops.secrets."sb_client_linux.json" = {
+    sopsFile = "${myvars.secrets_dir}/sb_client_linux.json.sops";
+    format = "binary";
+    restartUnits = ["sing-box.service"];
   };
   services.sing-box.enable = true;
-  services.sing-box.config_file = config.age.secrets."sb_client_linux.json".path;
+  services.sing-box.configFile = config.sops.secrets."sb_client_linux.json".path;
   ## END sing-box.nix
   ## START systemd_tmpfiles.nix
   systemd.tmpfiles.settings = {

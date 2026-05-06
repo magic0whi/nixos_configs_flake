@@ -52,15 +52,25 @@ creation_rules:
           [*Proteus-NixOS-0, *Proteus-NixOS-1, *Proteus-NixOS-2, *Proteus-NixOS-3, *Proteus-NixOS-4, *Proteus-NixOS-5]
 ## END GCP Compute Engines
 ## BEGIN Proteus-NUC
-  - path_regex: secrets/paperless\.sops\.yaml$
+  - path_regex: secrets/Proteus-NUC\.sops\.yaml$
     key_groups:
       - pgp: [*openpgp]
         age: [*Proteus-NUC]
-  - path_regex: secrets/aria2rpc\.key.sops$
+  - path_regex: secrets/authelia_oidc_rsa\.pem.sops$
     key_groups:
       - pgp: [*openpgp]
         age: [*Proteus-NUC]
 ## END Proteus-NixOS
+## BEGIN Proteus-Desktop
+  - path_regex: secrets/Proteus-Desktop\.sops\.yaml$
+    key_groups:
+      - pgp: [*openpgp]
+        age: [*Proteus-Desktop]
+  - path_regex: secrets/Proteus-Desktop_syncthing\.priv\.pem\.sops$
+    key_groups:
+      - pgp: [*openpgp]
+        age: [*Proteus-Desktop]
+## END Proteus-Desktop
 ## BEGIN Trusted Machines (HM)
   # NOTE: for user secrets host ssh key cannot be accessed by a regular user
   - path_regex: secrets/nix_secret\.key\.sops$

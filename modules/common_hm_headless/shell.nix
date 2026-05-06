@@ -1,4 +1,4 @@
-{config, pkgs, lib, ...}: {
+{config, pkgs, lib, myvars, ...}: {
   home.packages = with pkgs; [
     tlrc # tldr written in Rust
     fd # search for files by name, faster than find
@@ -160,7 +160,7 @@
     # Additionally, it provides optional and fully encrypted
     # synchronisation of your history between machines, via an Atuin server.
     atuin.enable = true;
-    atuin.settings.sync_address = "https://atuin.proteus.eu.org";
+    atuin.settings.sync_address = "https://atuin.${myvars.domain}";
     starship = {
       enable = true;
       settings = {

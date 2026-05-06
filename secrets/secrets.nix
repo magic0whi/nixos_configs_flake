@@ -33,23 +33,11 @@ let
 in {
   # To see & edit encrypted file, run `agenix -e sb_client.json.age -i <(get-ssh-key 30973F79B17F9ED3\!)`
 
-  "syncthing_proteus-desktop.priv.pem.age".publicKeys = trusted_machines ++ [Proteus-Desktop];
-
   "proteus_server.priv.pem.age".publicKeys = trusted_machines ++ [Proteus-Desktop] ++ google_vps;
-  "aria2rpc.priv.age".publicKeys = trusted_machines;
   "proteus_ap.key.age".publicKeys = trusted_machines ++ [Proteus-Desktop];
   "minio.env.age".publicKeys = trusted_machines ++ [Proteus-Desktop] ++ google_vps;
-  "atuin.env.age".publicKeys = trusted_machines;
   "immich.env.age".publicKeys = trusted_machines;
   "immich_oauth_secret.txt.age".publicKeys = trusted_machines;
-
-  "authelia_jwt_secret.txt.age".publicKeys = trusted_machines;
-  "authelia_session_secret.txt.age".publicKeys = trusted_machines;
-  "authelia_storage_encryption_key.txt.age".publicKeys = trusted_machines;
-  "authelia_ldap_password.txt.age".publicKeys = trusted_machines;
-  "authelia_db_password.txt.age".publicKeys = trusted_machines;
-  "authelia_oidc_hmac.txt.age".publicKeys = trusted_machines;
-  "authelia_oidc_rsa.pem.age".publicKeys = trusted_machines;
 
   "forgejo_authelia_secret.age".publicKeys = trusted_machines;
   "forgejo_runner_token.env.age".publicKeys = trusted_machines;
