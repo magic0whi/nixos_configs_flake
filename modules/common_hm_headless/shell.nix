@@ -33,10 +33,12 @@
     # For `git filter-branch --help | bat -l man`, use
     # `MANWIDTH=999 git filter-branch --help | bat -lman` instead to prevent
     # git from baking ugly line breaks
-    man = "MANPAGER=\"less -R --use-color -Dd+r -Du+b\"" # Set boldface -> red color, underline -> blue color
-      + " MANROFFOPT=\"-P-c\"" # Enables groff's "continuous" (non-paginated) output mode
-      + " MANWIDTH=$(($(tput cols) - 7))" # Adjustment manwidth when less' line number enabled
-      + " command man";
+    man = builtins.concatStringsSep " " [
+      "MANPAGER=\"less -R --use-color -Dd+r -Du+b\"" # Set boldface -> red color, underline -> blue color
+      "MANROFFOPT=\"-P-c\"" # Enables groff's "continuous" (non-paginated) output mode
+      "MANWIDTH=$(($(tput cols) - 7))" # Adjustment manwidth when less' line number enabled
+      "command man"
+    ];
     llag = "eza -aagl";
     tmux = "tmux -2"; # `-2` force assume the terminal supports 256 colors
     # Run `TERM=xterm-ghostty command ssh` if the remote machine has the

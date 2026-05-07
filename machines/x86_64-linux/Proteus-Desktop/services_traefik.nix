@@ -50,10 +50,17 @@ in {
           };
           s3 = {rule = "Host(`s3.${myvars.domain}`)"; entryPoints = ["websecure"]; service = "s3"; tls = {};};
           s3-garage = {
-            rule = "Host(`s3-garage.${myvars.domain}`)"; entryPoints = ["websecure"]; service = "s3-garage"; tls = {};
+            rule = builtins.concatStringsSep " " [
+              "Host(`s3-garage.${myvars.domain}`)"
+              ''|| HostRegexp(`^[^.]+\.s3-garage\.${lib.strings.escapeRegex myvars.domain}$`)''
+            ];
+            entryPoints = ["websecure"]; service = "s3-garage"; tls = {};
           };
           s3-garage-web = {
-            rule = "Host(`s3-garage-web.${myvars.domain}`)";
+            rule = builtins.concatStringsSep " " [
+              "Host(`s3-garage-web.${myvars.domain}`)"
+              ''|| HostRegexp(`^[^.]+\.s3-garage-web\.${lib.strings.escapeRegex myvars.domain}$`)''
+            ];
             entryPoints = ["websecure"]; service = "s3-garage-web"; tls = {};
           };
           s3-garage-webui = {

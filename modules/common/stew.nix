@@ -37,7 +37,10 @@
     builders-use-substitutes = true;
     sandbox = true;
     # The substituter will be appended to the default substituters when fetching packages.
-    extra-substituters = ["https://s3.${myvars.domain}/nix-cache/"];
+    extra-substituters = [
+      "https://s3-garage-web.${myvars.domain}/nix-cache/"
+      # "https://s3.${myvars.domain}/nix-cache/"
+    ];
     extra-trusted-public-keys = ["s3.${myvars.domain}-1:IxrRwk4uC5ittHeG9menkuajABnrX9cboEWwZz/m4+E="];
   };
   ## END nix.nix

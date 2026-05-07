@@ -61,7 +61,7 @@ _: {
       };
       mode = "";
       postCreateHook = "zpool set bootfs=zroot/root zroot;"
-      + "zpool set cachefile=/etc/zfs/zpool.cache zroot"; # Create zpool.cache
+        + "zpool set cachefile=/etc/zfs/zpool.cache zroot"; # Create zpool.cache
       datasets = {
         root = { # ROOT dataset (ephemeral, rolled back to blank on boot)
           type = "zfs_fs";

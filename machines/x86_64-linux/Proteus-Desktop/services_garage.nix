@@ -7,6 +7,7 @@
 # Create the access key: `garage -h <full-node-id>@127.0.0.1:3901 key create nixbuilder`
 # Allow the key to access the bucket:
 # `garage -h <full-node-id>@127.0.0.1:3901 bucket allow --read --write nix-cache --owner --key nixbuilder`
+# Allow bucket-as-website bucket-as-website: garage -h <full-node-id>@127.0.0.1:3901 bucket website --allow nix-cache
 {myvars, config, pkgs, lib, ...}: {
   sops = let
     restartUnits = ["garage.service"];
@@ -29,10 +30,7 @@
       restartUnits = ["garage-webui.service"]; content = "API_ADMIN_KEY=${config.sops.placeholder.garage_admin_token}";
     };
   };
-  systemd.tmpfiles.settings."10-garage-create-dir" = {"${myvars.storage_path}/garage/data".d = {group = "storage"; mode = "2775";};};
-  # fileSystems."${config.services.garage.settings.data_dir}" = {
-    # device = "${myvars.storage_path}/garage/data"; options = ["bind"]; fsType = "none"; depends = [myvars.storage_path];
-  # };
+  # systemd.tmpfiles.settings."10-garage-create-dir" = {"${myvars.storage_path}/garage/data".d = {group = "storage"; mode = "2775";};};
   systemd.services.garage = {
     unitConfig.RequiresMountsFor = [myvars.storage_path];
     serviceConfig = {EnvironmentFile = config.sops.templates."garage.env".path; SupplementaryGroups = ["storage"];};
@@ -45,10 +43,10 @@
       data_dir = "${myvars.storage_path}/garage/data";
       rpc_bind_addr = "127.0.0.1:3901";
       rpc_public_addr = "127.0.0.1:3901";
-      s3_api = { # s3_api (3900) is for admin access
+      s3_api = { # s3_api (3900) is for common access
         api_bind_addr = "127.0.0.1:3900"; root_domain = ".s3-garage.${myvars.domain}"; s3_region = "cn-east1-a";
       };
-      # s3_web (3902) is for public access
+      # s3_web (3902) is for bucket-as-website
       s3_web = {bind_addr = "127.0.0.1:3902"; root_domain = ".s3-garage-web.${myvars.domain}";};
       # admin (3903) is for webui access
       admin = {api_bind_addr = "127.0.0.1:3903";};
