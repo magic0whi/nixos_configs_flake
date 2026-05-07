@@ -1,14 +1,14 @@
 {config, myvars, ...}: let
   path_prefix = "/srv";
 in {
-  sops.secrets."aria2_rpc_secret" = {
+  sops.secrets.aria2_rpc_secret = {
     sopsFile = "${myvars.secrets_dir}/Proteus-NUC.sops.yaml"; restartUnits = ["aria2.service"];
   };
   users.users.${myvars.username}.extraGroups = ["aria2"];
 
   services.aria2 = {
     enable = true;
-    rpcSecretFile = config.sops.secrets."aria2_rpc_secret".path;
+    rpcSecretFile = config.sops.secrets.aria2_rpc_secret.path;
     settings = {
       dir = "${path_prefix}/aria2";
       disk-cache = "2048M";
