@@ -11,7 +11,8 @@ in {
   };
   # Add RequiresMountsFor to wait for storage mounted
   systemd.services = let clean_units = map (s: lib.strings.removeSuffix ".service" s) restartUnits;
-  in lib.attrsets.genAttrs clean_units (name: {unitConfig.RequiresMountsFor = [myvars.storage_path];});
+  in lib.mkMerge [(lib.attrsets.genAttrs clean_units (name: {unitConfig.RequiresMountsFor = [myvars.storage_path];}))];
+
   services.nextcloud = {
     enable = true;
     # package = pkgs.nextcloud33;
