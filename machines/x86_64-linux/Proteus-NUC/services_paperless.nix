@@ -1,24 +1,29 @@
 {myvars, config, lib, pkgs, ...}: {
-  sops.secrets = let sopsFile = "${myvars.secrets_dir}/Proteus-NUC.sops.yaml"; in {
-    paperless_dbpass = {inherit sopsFile;};
-    paperless_admin_password = {inherit sopsFile;};
-    paperless_authelia_secret = {inherit sopsFile;};
-  };
-  sops.templates."paperless.env" = {
-    content = let
-      socialaccount_providers = {openid_connect.APPS = [{
-        client_id = "paperless"; name = "Authelia"; provider_id = "authelia";
-        secret = "${config.sops.placeholder.paperless_authelia_secret}";
-        settings.server_url = "https://auth.${myvars.domain}/.well-known/openid-configuration";
-      }];};
-    in ''
-      PAPERLESS_DBPASS=${config.sops.placeholder.paperless_dbpass}
-      PAPERLESS_ADMIN_PASSWORD=${config.sops.placeholder.paperless_admin_password}
-      PAPERLESS_SOCIALACCOUNT_PROVIDERS=${builtins.toJSON socialaccount_providers}
-    '';
+  sops = let
+    sopsFile = "${myvars.secrets_dir}/Proteus-NUC.sops.yaml";
     restartUnits = [
       "paperless-scheduler.service" "paperless-task-queue.service" "paperless-consumer.service" "paperless-web.service"
     ];
+  in {
+    secrets = {
+      paperless_dbpass = {inherit sopsFile restartUnits;};
+      paperless_admin_password = {inherit sopsFile restartUnits;};
+      paperless_authelia_secret = {inherit sopsFile restartUnits;};
+    };
+    templates."paperless.env" = {
+      inherit restartUnits;
+      content = let
+        socialaccount_providers.openid_connect.APPS = [{
+          client_id = "paperless"; name = "Authelia"; provider_id = "authelia";
+          secret = "${config.sops.placeholder.paperless_authelia_secret}";
+          settings.server_url = "https://auth.${myvars.domain}/.well-known/openid-configuration";
+        }];
+      in ''
+        PAPERLESS_DBPASS=${config.sops.placeholder.paperless_dbpass}
+        PAPERLESS_ADMIN_PASSWORD=${config.sops.placeholder.paperless_admin_password}
+        PAPERLESS_SOCIALACCOUNT_PROVIDERS=${builtins.toJSON socialaccount_providers}
+      '';
+    };
   };
   services.paperless = { # As of 2026-05-01, paperless.nix still hardcoded group to be same with uesr
     domain = "paperless.${myvars.domain}";
