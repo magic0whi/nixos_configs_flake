@@ -151,7 +151,11 @@ in {
           };
         plane = {rule = "Host(`plane.${myvars.domain}`)"; entryPoints = ["websecure"]; service = "plane"; tls = {};};
         };
-        services = {
+        services = let
+          attrset_find_first_name = key: set: builtins.elemAt
+            (lib.attrsets.attrNames set)
+            (lib.lists.findFirstIndex (i: lib.strings.hasInfix key i) null (lib.attrsets.attrNames set));
+          in{
           authelia-backend.loadBalancer = {
             servers = [{url = "http://127.0.0.1:${authelia_port}";}]; healthCheck.path = "/api/health";
           };
@@ -199,13 +203,8 @@ in {
           papra.loadBalancer.servers = [{url = "http://127.0.0.1:1221";}];
           notebook.loadBalancer.servers = [{
             url = let
-              attrset_find_first_name = key: set: builtins.elemAt
-                (lib.attrsets.attrNames set)
-                (lib.lists.findFirstIndex (i: lib.strings.hasInfix key i) null (lib.attrsets.attrNames set));
-              port = lib.lists.last (
-                lib.strings.splitString
-                  ":"
-                  (attrset_find_first_name "notebook.${myvars.domain}" config.services.caddy.virtualHosts)
+              port = lib.lists.last (lib.strings.splitString
+                ":" (attrset_find_first_name "notebook.${myvars.domain}" config.services.caddy.virtualHosts)
               );
             in "http://127.0.0.1:${port}";
           }];

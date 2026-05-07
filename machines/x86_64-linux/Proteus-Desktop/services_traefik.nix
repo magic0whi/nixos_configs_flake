@@ -49,6 +49,17 @@ in {
             rule = "Host(`minio.${myvars.domain}`)"; entryPoints = ["websecure"]; service = "minio-dashboard"; tls = {};
           };
           s3 = {rule = "Host(`s3.${myvars.domain}`)"; entryPoints = ["websecure"]; service = "s3"; tls = {};};
+          s3-garage = {
+            rule = "Host(`s3-garage.${myvars.domain}`)"; entryPoints = ["websecure"]; service = "s3-garage"; tls = {};
+          };
+          s3-garage-web = {
+            rule = "Host(`s3-garage-web.${myvars.domain}`)";
+            entryPoints = ["websecure"]; service = "s3-garage-web"; tls = {};
+          };
+          s3-garage-webui = {
+            rule = "Host(`s3-garage-webui.${myvars.domain}`)";
+            entryPoints = ["websecure"]; service = "s3-garage-webui"; tls = {};
+          };
           nextcloud = {
             rule = "Host(`nextcloud.${myvars.domain}`)"; entryPoints = ["websecure"]; service = "nextcloud"; tls = {};
           };
@@ -72,6 +83,20 @@ in {
             servers = [{url = "http://${config.services.minio.listenAddress}";}];
             healthCheck.path = "/minio/health/ready";
           };
+          # Default :3900
+          s3-garage.loadBalancer.servers = [{url = "http://${config.services.garage.settings.s3_api.api_bind_addr}";}];
+          s3-garage-web.loadBalancer.servers = [
+            {url = "http://${config.services.garage.settings.s3_web.bind_addr}";} # Default :3902
+          ];
+          s3-garage-webui.loadBalancer.servers = [{
+            url = let
+              list_find_first_name = key: list: builtins.elemAt
+                list (lib.lists.findFirstIndex (i: lib.strings.hasPrefix key i) null list);
+              port = lib.lists.last (lib.strings.splitString
+                "=" (list_find_first_name "PORT=" config.systemd.services.garage-webui.serviceConfig.Environment)
+              );
+            in "http://127.0.0.1:${port}"; # Default 3909
+          }];
           nextcloud.loadBalancer = {servers = [{ url = "http://127.0.0.1:8080"; }]; healthCheck.path = "/status.php";};
         };
       };

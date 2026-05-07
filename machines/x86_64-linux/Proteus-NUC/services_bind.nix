@@ -2,7 +2,7 @@
   tailnet = "tailba6c3f.ts.net";
   tailnet_prefix_length = 48;
   soa_parms = {
-    serial = "2026050601"; # Serial (YYYYMMDDNN)
+    serial = "2026050703"; # Serial (YYYYMMDDNN)
     refresh = "3600"; # Refresh (1 hour)
     retry = "1800"; # Retry (30 minutes)
     expire = "604800"; # Expire (1 week)
@@ -141,6 +141,9 @@
     syncthing-desktop IN CNAME proteus-desktop
     minio             IN CNAME proteus-desktop
     s3                IN CNAME proteus-desktop
+    s3-garage         IN CNAME proteus-desktop
+    s3-garage-web     IN CNAME proteus-desktop
+    s3-garage-webui   IN CNAME proteus-desktop
     nextcloud         IN CNAME proteus-desktop
   '');
   # =========================================
