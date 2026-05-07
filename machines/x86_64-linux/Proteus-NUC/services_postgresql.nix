@@ -7,14 +7,14 @@
   ...
 }: {
   networking.firewall.allowedTCPPorts = [config.services.postgresql.settings.port];
-  sops.secrets = {
+  sops.secrets = let restartUnits = ["postgresql.service" "postgresql-setup.service"]; in {
     "postgresql_server.priv.pem" = {
+      inherit restartUnits;
       sopsFile = "${myvars.secrets_dir}/proteus_server.priv.pem.sops";
       format = "binary";
       owner = config.systemd.services.postgresql.serviceConfig.User;
-      restartUnits = ["postgresql.service" "postgresql-setup.service"];
     };
-    postgres_ldap_bind_pw.sopsFile = "${myvars.secrets_dir}/Proteus-NUC.sops.yaml";
+    postgres_ldap_bind_pw = {inherit restartUnits; sopsFile = "${myvars.secrets_dir}/Proteus-NUC.sops.yaml";};
   };
   # Ref: https://github.com/NixOS/nixpkgs/blob/549bd84d6279f9852cae6225e372cc67fb91a4c1/nixos/modules/services/databases/postgresql.nix#L684
   sops.templates."pg_hba_auth.conf" = let base_dn = "dc=tailba6c3f,dc=ts,dc=net"; in {
