@@ -1,12 +1,29 @@
-{myvars, pkgs, config, lib, ...}: {
-  # Decrypt the runner token using your existing age setup
-  # Create a file secrets/forgejo_runner_token.env.age containing:
-  # TOKEN=your_generated_token,
-  # see below:
-  # `services.authelia.instances.main.settings.identity_providers.oidc.clients`
-  age.secrets."forgejo_authelia_secret" = {
-    file = "${myvars.secrets_dir}/forgejo_authelia_secret.age"; mode = "0400"; owner = "forgejo";
-  };
+{myvars, pkgs, config, lib, ...}: let
+  restart_runner_units = map
+      (name: "gitea-runner-${name}.service") (builtins.attrNames config.services.gitea-actions-runner.instances);
+  clean_runner_units = map (s: lib.strings.removeSuffix ".service" s) restart_runner_units;
+in {
+  sops = let sopsFile = "${myvars.secrets_dir}/Proteus-NUC.sops.yaml";
+  in lib.mkMerge [
+    {
+      secrets."forgejo_authelia_secret" = {
+        inherit sopsFile; restartUnits = ["forgejo.service"]; owner = config.services.forgejo.user;
+      };
+    }
+    {
+      # Generate the runner token for the global runner
+      # `sudo -u forgejo nix run nixpkgs#forgejo -- forgejo-cli --config /var/lib/forgejo/custom/conf/app.ini actions generate-runner-token`
+      # Note this is different with `nixpgs#forgejo-cli`.
+      # The token will not change until regenerate it. To regenerate the token, go through WebUI -> Site administration
+      # -> Actions -> Runners, click the edit and check the "Regenerate token" box, them save
+      secrets."forgejo_runner_token" = {inherit sopsFile; restartUnits = restart_runner_units;};
+      templates."forgejo_runner_token.env" = {
+        restartUnits = restart_runner_units; content = "TOKEN=${config.sops.placeholder.forgejo_runner_token}";
+        # The module uses DynamicUser
+        # owner = config.systemd.services."gitea-runner-${builtins.head (builtins.attrNames config.services.gitea-actions-runner.instances)}".serviceConfig.User;
+      };
+    }
+  ];
   services.forgejo = {
     enable = true;
     database.type = "postgres"; # Module will automatically provision PostgreSQL
@@ -18,8 +35,7 @@
         HTTP_ADDR = "127.0.0.1";
         # PROTOCOL = "http+unix"; # http through unix
       };
-        # Only allow auth methods added through CLI
-      openid.ENABLE_OPENID_SIGNIN = false;
+      openid.ENABLE_OPENID_SIGNIN = false; # Only allow OAuth
       oauth2_client = {
         ENABLE_AUTO_REGISTRATION = true;
         ACCOUNT_LINKING = "auto";
@@ -31,55 +47,67 @@
       actions = {ENABLED = true; DEFAULT_ACTIONS_URL = "github";};
     };
   };
-  systemd.services.forgejo.preStart = ''
-    mkdir -p ${config.services.forgejo.stateDir}/custom/public/assets/img/auth/
-    cp -f ${pkgs.authelia.src}/docs/static/images/branding/logo.png ${config.services.forgejo.stateDir}/custom/public/assets/img/auth/authelia.png
-  '';
+  systemd.services = lib.mkMerge [
+    {forgejo = {
+      preStart = ''
+        set -eufo pipefail
 
-  systemd.services.forgejo.postStart = let
-    forgejo_exe = lib.getExe config.services.forgejo.package;
-  in ''
-    # Wait for Forgejo to be fully ready to accept CLI commands
-    while [ "$(${lib.getExe pkgs.curl} -sSf https://git.${myvars.domain}/api/healthz | ${lib.getExe pkgs.jq} -r '.status')" != "pass" ]; do
-      sleep 1
-    done
+        mkdir -p ${config.services.forgejo.stateDir}/custom/public/assets/img/auth/
+        cp -f ${pkgs.authelia.src}/docs/static/images/branding/logo.png ${config.services.forgejo.stateDir}/custom/public/assets/img/auth/authelia.png
+      '';
+      postStart = ''
+        set -eufo pipefail
 
-    # Read the secret from your age file
-    OIDC_SECRET=$(cat ${config.age.secrets."forgejo_authelia_secret".path})
+        # Wait for Forgejo to be fully ready to accept CLI commands
+        while [ "$(${lib.getExe pkgs.curl} -sSf https://git.${myvars.domain}/api/healthz | ${lib.getExe pkgs.jq} -r '.status')" != "pass" ]; do
+          sleep 1
+        done
 
-    # The environment variables (FORGEJO_WORK_DIR, etc.) are already injected by systemd.
-    FORGEJO_CLI="${forgejo_exe} --config ${config.services.forgejo.stateDir}/custom/conf/app.ini admin auth"
+        # Read the secret from your age file
+        OIDC_SECRET=$(cat ${config.sops.secrets."forgejo_authelia_secret".path})
 
-    # Check if the Authelia auth source already exists
-    if ! $FORGEJO_CLI list | grep -q "Authelia"; then
-      echo "Adding Authelia OIDC provider..."
-      $FORGEJO_CLI add-oauth \
-        --name Authelia \
-        --provider openidConnect \
-        --key "forgejo" \
-        --secret "$OIDC_SECRET" \
-        --auto-discover-url "https://auth.${myvars.domain}/.well-known/openid-configuration" \
-        --icon-url "/assets/img/auth/authelia.png"
-    else
-      echo "Updating existing Authelia OIDC provider..."
-      AUTHELIA_ID=$($FORGEJO_CLI list | ${lib.getExe pkgs.gawk} '/Authelia/ {print $1;}')
-      $FORGEJO_CLI update-oauth \
-        --name Authelia \
-        --id $AUTHELIA_ID \
-        --provider openidConnect \
-        --key "forgejo" \
-        --secret "$OIDC_SECRET" \
-        --auto-discover-url "https://auth.${myvars.domain}/.well-known/openid-configuration" \
-        --icon-url "/assets/img/auth/authelia.png"
-    fi
-  '';
-  # Generate the Runner Token:
-  # `sudo -u forgejo ${pkgs.forgejo} forgejo-cli --config ${config.services.forgejo.stateDir}/custom/conf/app.ini forgejo-cli actions generate-runner-token`
-  age.secrets."forgejo_runner_token.env" = {
-    file = "${myvars.secrets_dir}/forgejo_runner_token.env.age";
-    mode = "0400";
-    owner = config.systemd.services."gitea-runner-${builtins.head (builtins.attrNames config.services.gitea-actions-runner.instances)}".serviceConfig.User;
-  };
+        # The environment variables (FORGEJO_WORK_DIR, etc.) are already injected by systemd.
+        FORGEJO_CLI="${lib.getExe config.services.forgejo.package} --config ${config.services.forgejo.stateDir}/custom/conf/app.ini admin auth"
+
+        # Check if the Authelia auth source already exists
+        if ! $FORGEJO_CLI list | grep -q "Authelia"; then
+          echo "Adding Authelia OIDC provider..."
+          $FORGEJO_CLI add-oauth \
+            --name Authelia \
+            --provider openidConnect \
+            --key "forgejo" \
+            --secret "$OIDC_SECRET" \
+            --auto-discover-url "https://auth.${myvars.domain}/.well-known/openid-configuration" \
+            --icon-url "/assets/img/auth/authelia.png"
+        else
+          echo "Updating existing Authelia OIDC provider..."
+          AUTHELIA_ID=$($FORGEJO_CLI list | ${lib.getExe pkgs.gawk} '/Authelia/ {print $1;}')
+          $FORGEJO_CLI update-oauth \
+            --name Authelia \
+            --id $AUTHELIA_ID \
+            --provider openidConnect \
+            --key "forgejo" \
+            --secret "$OIDC_SECRET" \
+            --auto-discover-url "https://auth.${myvars.domain}/.well-known/openid-configuration" \
+            --icon-url "/assets/img/auth/authelia.png"
+        fi
+      '';
+    };}
+    (lib.attrsets.genAttrs
+      clean_runner_units (name: {serviceConfig.ExecStartPre = lib.mkAfter [(pkgs.writeShellScript "wait-for-forgejo" ''
+        set -eufo pipefail
+
+        echo "Waiting for Forgejo to be online..."
+        # Retry until Forgejo reports status=pass
+        while [ "$(${lib.getExe pkgs.curl} -sSf https://git.${myvars.domain}/api/healthz | ${lib.getExe pkgs.jq} -r '.status')" != "pass" ]; do
+          sleep 1
+        done
+
+        echo "Forgejo is online, proceeding with runner startup."
+        '')];})
+    )
+  ];
+
   # Local Action Runner connecting to your Forgejo instance
   # Docker is required to execute Docker-based action labels
   virtualisation.docker.enable = true;
@@ -88,10 +116,10 @@
       enable = true;
       name = "${config.networking.hostName}-runner";
       url = "https://git.${myvars.domain}";
-      tokenFile = config.age.secrets."forgejo_runner_token.env".path;
+      tokenFile = config.sops.templates."forgejo_runner_token.env".path;
       labels = [
         "debian-latest:docker://node:20-bookworm"
-        # fake the ubuntu name, because node provides no ubuntu builds
+        # Fake the ubuntu name, because node provides no ubuntu builds
         "ubuntu-latest:docker://node:20-bookworm"
         # "ubuntu-24.04-arm:docker://node:20-bookworm"
       ];
