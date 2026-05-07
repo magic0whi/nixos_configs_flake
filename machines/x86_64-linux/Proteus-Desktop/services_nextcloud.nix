@@ -1,7 +1,7 @@
 {config, myvars, pkgs, lib, ...}: let
   restartUnits = [
-    "nextcloud-setup.service" "nextcloud-cron" "nextcloud-update-plugins.service" "nextcloud-update-db.service"
-    "phpfpm-nextcloud"
+    "nextcloud-setup.service" "nextcloud-cron.service" "nextcloud-update-plugins.service" "nextcloud-update-db.service"
+    "phpfpm-nextcloud.service"
   ];
 in {
   sops.secrets = let sopsFile = "${myvars.secrets_dir}/Proteus-Desktop.sops.yaml"; in {
