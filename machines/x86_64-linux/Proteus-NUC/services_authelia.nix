@@ -1,7 +1,8 @@
-{myvars, config, ...}: {
+{myvars, config, lib, ...}: let
+  restartUnits = map (name: "authelia-${name}.service") (builtins.attrNames config.services.authelia.instances);
+in {
   sops.secrets = let
     sopsFile = "${myvars.secrets_dir}/Proteus-NUC.sops.yaml";
-    restartUnits = map (name: "authelia-${name}.service") (builtins.attrNames config.services.authelia.instances);
     owner = config.services.authelia.instances.main.user;
   in {
     authelia_jwt_secret = {inherit sopsFile owner restartUnits;};
@@ -13,6 +14,12 @@
       inherit owner restartUnits; sopsFile = "${myvars.secrets_dir}/authelia_oidc_rsa.pem.sops"; format = "binary";
     };
   };
+  systemd.services = let clean_units = map (s: lib.strings.removeSuffix ".service" s) restartUnits;
+  in lib.mkMerge [(lib.attrsets.genAttrs
+    clean_units (name: {serviceConfig.SupplementaryGroups = [config.services.redis.servers.authelia.group];})
+  )];
+
+  services.redis.servers.authelia.enable = true;
   services.authelia.instances.main = {
     enable = true;
     secrets = {
@@ -47,6 +54,7 @@
         expiration = "1 hour";
         remember_me = "1 month";
       }];
+      session.redis.host = config.services.redis.servers.authelia.unixSocket;
       storage.postgres = {
         address = "tcp://postgresql.${myvars.domain}:${builtins.toString config.services.postgresql.settings.port}";
         database = config.services.authelia.instances.main.user;
