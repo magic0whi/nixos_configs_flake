@@ -1,4 +1,4 @@
-{myvars, pkgs, config, lib}: {
+{myvars, pkgs, config, lib, ...}: {
   # Decrypt the runner token using your existing age setup
   # Create a file secrets/forgejo_runner_token.env.age containing:
   # TOKEN=your_generated_token,
