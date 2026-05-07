@@ -1,9 +1,6 @@
 {mylib, pkgs, myvars, config, ...}: {
   imports = mylib.scan_path ./.;
-  home.packages = with pkgs; [
-    xmrig # Heating
-    chezmoi
-  ];
+  home.packages = with pkgs; [chezmoi];
   programs = {
     aerospace.settings.workspace-to-monitor-force-assignment = {
       "7" = ["C340SCA"];
@@ -24,7 +21,7 @@
       format = "binary";
       path = "${config.xdg.configHome}/nix/secret.key";
     };
-    aws_secret_access_key.sopsFile = "${myvars.secrets_dir}/aws_credentials.sops.yaml";
+    aws_secret_access_key.sopsFile = "${myvars.secrets_dir}/common_hm.sops.yaml";
   };
   sops.templates."aws_credentials" = {
     content = ''

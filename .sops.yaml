@@ -35,10 +35,6 @@ creation_rules:
     key_groups:
       - pgp: [*openpgp]
         age: [*Proteus-NUC, *Proteus-Desktop]
-  - path_regex: secrets/sb_client_darwin\.json\.sops$
-    key_groups:
-      - pgp: [*openpgp]
-        age: [*Proteus-MBP14M4P]
   - path_regex: secrets/proteus_server\.priv\.pem\.sops$
     key_groups:
       - pgp: [*openpgp]
@@ -53,34 +49,26 @@ creation_rules:
 ## END GCP Compute Engines
 ## BEGIN Proteus-NUC
   - path_regex: secrets/Proteus-NUC\.sops\.yaml$
-    key_groups:
-      - pgp: [*openpgp]
-        age: [*Proteus-NUC]
+    key_groups: [pgp: [*openpgp], age: [*Proteus-NUC]]
   - path_regex: secrets/authelia_oidc_rsa\.pem.sops$
-    key_groups:
-      - pgp: [*openpgp]
-        age: [*Proteus-NUC]
+    key_groups: [pgp: [*openpgp],age: [*Proteus-NUC]]
 ## END Proteus-NixOS
+## BEGIN Proteus-MBP14M4P
+  - path_regex: secrets/sb_client_darwin\.json\.sops$
+    key_groups: [pgp: [*openpgp], age: [*Proteus-MBP14M4P]]
+## END Proteus-MBP14M4P
 ## BEGIN Proteus-Desktop
   - path_regex: secrets/Proteus-Desktop\.sops\.yaml$
-    key_groups:
-      - pgp: [*openpgp]
-        age: [*Proteus-Desktop]
+    key_groups: [pgp: [*openpgp], age: [*Proteus-Desktop]]
   - path_regex: secrets/Proteus-Desktop_syncthing\.priv\.pem\.sops$
-    key_groups:
-      - pgp: [*openpgp]
-        age: [*Proteus-Desktop]
+    key_groups: [pgp: [*openpgp], age: [*Proteus-Desktop]]
 ## END Proteus-Desktop
 ## BEGIN Trusted Machines (HM)
   # NOTE: for user secrets host ssh key cannot be accessed by a regular user
   - path_regex: secrets/nix_secret\.key\.sops$
-    key_groups:
-      - pgp: [*openpgp]
-        age: [*Proteus-NUC, *Proteus-MBP14M4P]
-  - path_regex: secrets/aws_credentials\.sops\.yaml$
-    key_groups:
-      - pgp: [*openpgp]
-        age: [*Proteus-NUC]
+    key_groups: [pgp: [*openpgp]]
+  - path_regex: secrets/common_hm\.sops\.yaml$
+    key_groups: [pgp: [*openpgp]]
 ## END Trusted Machines (HM)
 ## BEGIN Proteus-NUC (HM)
   # TIP: Encrypt in-place since sops matches inputs files for `path_regex`
@@ -88,9 +76,7 @@ creation_rules:
   # TIP: To edit, run
   # SOPS_AGE_KEY=$(nix run nixpkgs#ssh-to-age -- -private-key -i ~/Secrets/Backup/proteus@agenix-recovery.ssh.priv.key) sops -- edit secrets/syncthing_proteus-nuc.priv.pem.age
   - path_regex: secrets/Proteus-NUC_syncthing\.priv\.pem\.sops$
-    key_groups:
-      - pgp: [*openpgp]
-        age: [*Proteus-NUC]
+    key_groups: [pgp: [*openpgp]]
 ## END Proteus-NUC (HM)
 ## BEGIN Proteus-MBP14M4P (HM)
   # Encrypt in-place since sops matches inputs files for `path_regex`
@@ -98,7 +84,5 @@ creation_rules:
   # To edit, run
   # SOPS_AGE_KEY=$(nix run nixpkgs#ssh-to-age -- -private-key -i ~/Secrets/Backup/proteus@agenix-recovery.ssh.priv.key) sops -- edit secrets/syncthing_proteus-nuc.priv.pem.age
   - path_regex: secrets/Proteus-MBP14M4P_syncthing\.priv\.pem\.sops$
-    key_groups:
-      - pgp: [*openpgp]
-        age: [*Proteus-MBP14M4P]
+    key_groups: [pgp: [*openpgp]]
 ## END Proteus-MBP14M4P (HM)

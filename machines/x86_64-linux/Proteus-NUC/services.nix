@@ -129,15 +129,17 @@
           done
         '';
         Restart = "on-failure";
-  };};};
+      };
+    };
+  };
   services.sunshine = {
     enable = true;
     capSysAdmin = true;
     settings = {
-      adapter_name = if config.home-manager.users.${myvars.username}.wayland.windowManager.hyprland.nvidia then
-        "/dev/dri/${myvars.dgpu_sym_name}"
-      else
-        "/dev/dri/${myvars.igpu_sym_name}";
+      adapter_name = if config.home-manager.users.${myvars.username}.wayland.windowManager.hyprland.nvidia
+      then "/dev/dri/${myvars.dgpu_sym_name}"
+      else "/dev/dri/${myvars.igpu_sym_name}";
+
       origin_web_ui_allowed = "pc";
     };
   };
