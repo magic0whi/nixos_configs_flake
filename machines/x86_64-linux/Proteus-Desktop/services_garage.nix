@@ -30,10 +30,10 @@
       restartUnits = ["garage-webui.service"]; content = "API_ADMIN_KEY=${config.sops.placeholder.garage_admin_token}";
     };
   };
-  systemd.tmpfiles.settings."10-garage-create-dir" = {
-    # "${myvars.storage_path}/garage/data".d = {group = "storage"; mode = "2775";};
-    "${myvars.storage_path}/garage/snapshots".d = {group = "storage"; mode = "2775";};
-  };
+  # systemd.tmpfiles.settings."10-garage-create-dir" = {
+  #   "${myvars.storage_path}/garage/data".d = {group = "storage"; mode = "2775";};
+  #   "${myvars.storage_path}/garage/snapshots".d = {group = "storage"; mode = "2775";};
+  # };
   systemd.services.garage = {
     unitConfig.RequiresMountsFor = [myvars.storage_path];
     serviceConfig = {
