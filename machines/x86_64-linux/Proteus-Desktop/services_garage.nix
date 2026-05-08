@@ -30,16 +30,29 @@
       restartUnits = ["garage-webui.service"]; content = "API_ADMIN_KEY=${config.sops.placeholder.garage_admin_token}";
     };
   };
-  # systemd.tmpfiles.settings."10-garage-create-dir" = {"${myvars.storage_path}/garage/data".d = {group = "storage"; mode = "2775";};};
+  systemd.tmpfiles.settings."10-garage-create-dir" = {
+    # "${myvars.storage_path}/garage/data".d = {group = "storage"; mode = "2775";};
+    "${myvars.storage_path}/garage/snapshots".d = {group = "storage"; mode = "2775";};
+  };
   systemd.services.garage = {
     unitConfig.RequiresMountsFor = [myvars.storage_path];
-    serviceConfig = {EnvironmentFile = config.sops.templates."garage.env".path; SupplementaryGroups = ["storage"];};
+    serviceConfig = {
+      EnvironmentFile = config.sops.templates."garage.env".path;
+      SupplementaryGroups = ["storage"];
+      # `DynamicUser=true` implies `ProtectSystem=strict`
+      # `metadata_dir` is added defaultly, ref:
+      # https://github.com/NixOS/nixpkgs/blob/15f4ee454b1dce334612fa6843b3e05cf546efab/nixos/modules/services/web-servers/garage.nix#L127-L149
+      ReadWritePaths = ["${myvars.storage_path}/garage/snapshots"];
+    };
   };
   services.garage = {
     enable = true;
     package = pkgs.garage_2;
     settings = { # https://garagehq.deuxfleurs.fr/documentation/reference-manual/configuration/
       # metadata_dir = "${myvars.storage_path}/garage/meta"; # Garage recommends placing metadata on SSD
+      metadata_snapshots_dir = "${myvars.storage_path}/garage/snapshots";
+      metadata_auto_snapshot_interval = "6h";
+      disable_scrub = true; # ZFS will take this job
       data_dir = "${myvars.storage_path}/garage/data";
       rpc_bind_addr = "127.0.0.1:3901";
       rpc_public_addr = "127.0.0.1:3901";
@@ -50,6 +63,7 @@
       # admin (3903) is for webui access
       admin = {api_bind_addr = "127.0.0.1:3903";};
       replication_factor = 1;
+      compression_level = 0; # A value of 0 will let zstd choose a default value (currently 3)
     };
   };
   systemd.services.garage-webui = {
