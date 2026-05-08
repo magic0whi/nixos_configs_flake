@@ -45,27 +45,21 @@ in {
             rule = "Host(`syncthing-desktop.${myvars.domain}`)";
             entryPoints = ["websecure"]; middlewares = ["authelia-auth"]; service = "syncthing-dashboard"; tls = {};
           };
-          minio-dashboard = {
-            rule = "Host(`minio.${myvars.domain}`)"; entryPoints = ["websecure"]; service = "minio-dashboard"; tls = {};
+          s3 = {
+            rule =
+              ''Host(`s3.${myvars.domain}`) || HostRegexp(`^[^.]+\.s3\.${lib.strings.escapeRegex myvars.domain}$`)'';
+            entryPoints = ["websecure"]; service = "s3"; tls = {};
           };
-          s3 = {rule = "Host(`s3.${myvars.domain}`)"; entryPoints = ["websecure"]; service = "s3"; tls = {};};
-          s3-garage = {
+          s3-pub = {
             rule = builtins.concatStringsSep " " [
-              "Host(`s3-garage.${myvars.domain}`)"
-              ''|| HostRegexp(`^[^.]+\.s3-garage\.${lib.strings.escapeRegex myvars.domain}$`)''
+              "Host(`s3-pub.${myvars.domain}`)"
+              ''|| HostRegexp(`^[^.]+\.s3-pub\.${lib.strings.escapeRegex myvars.domain}$`)''
             ];
-            entryPoints = ["websecure"]; service = "s3-garage"; tls = {};
+            entryPoints = ["websecure"]; service = "s3-pub"; tls = {};
           };
-          s3-garage-web = {
-            rule = builtins.concatStringsSep " " [
-              "Host(`s3-garage-web.${myvars.domain}`)"
-              ''|| HostRegexp(`^[^.]+\.s3-garage-web\.${lib.strings.escapeRegex myvars.domain}$`)''
-            ];
-            entryPoints = ["websecure"]; service = "s3-garage-web"; tls = {};
-          };
-          s3-garage-webui = {
-            rule = "Host(`s3-garage-webui.${myvars.domain}`)";
-            entryPoints = ["websecure"]; service = "s3-garage-webui"; tls = {};
+          garage-webui = {
+            rule = "Host(`garage.${myvars.domain}`)";
+            entryPoints = ["websecure"]; middlewares = ["authelia-auth"]; service = "garage-webui"; tls = {};
           };
           nextcloud = {
             rule = "Host(`nextcloud.${myvars.domain}`)"; entryPoints = ["websecure"]; service = "nextcloud"; tls = {};
@@ -78,24 +72,19 @@ in {
             servers = [{url = "http://${config.home-manager.users.${myvars.username}.services.syncthing.guiAddress}";}];
             healthCheck.path = "/rest/noauth/health";
           };
-          minio-dashboard.loadBalancer = {
-            servers = [{url = "http://${config.services.minio.consoleAddress}";}];
-            healthCheck = {
-              # Probe the S3 API port, not the dashboard's port
-              port = lib.lists.last (lib.strings.splitString ":" config.services.minio.listenAddress);
-              path = "/minio/health/ready";
+          s3.loadBalancer = let cfg = config.services.garage.settings; in {
+            servers = [{url = "http://${cfg.s3_api.api_bind_addr}";}]; # Default :3900
+            healthCheck = { # Probe the admin port
+              port = lib.lists.last (lib.strings.splitString ":" cfg.admin.api_bind_addr); path = "/health";
             };
           };
-          s3.loadBalancer = {
-            servers = [{url = "http://${config.services.minio.listenAddress}";}];
-            healthCheck.path = "/minio/health/ready";
+          s3-pub.loadBalancer= let cfg = config.services.garage.settings; in {
+            servers = [{url = "http://${cfg.s3_web.bind_addr}";}]; # Default :3902
+            healthCheck = { # Probe the admin port
+              port = lib.lists.last (lib.strings.splitString ":" cfg.admin.api_bind_addr); path = "/health";
+            };
           };
-          # Default :3900
-          s3-garage.loadBalancer.servers = [{url = "http://${config.services.garage.settings.s3_api.api_bind_addr}";}];
-          s3-garage-web.loadBalancer.servers = [
-            {url = "http://${config.services.garage.settings.s3_web.bind_addr}";} # Default :3902
-          ];
-          s3-garage-webui.loadBalancer.servers = [{
+          garage-webui.loadBalancer.servers = [{
             url = let
               list_find_first_name = key: list: builtins.elemAt
                 list (lib.lists.findFirstIndex (i: lib.strings.hasPrefix key i) null list);

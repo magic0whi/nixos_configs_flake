@@ -126,13 +126,6 @@ in {
               require_pkce = true;
               pkce_challenge_method = "S256"; # effectively enables the require_pkce
             }
-            { # https://www.reddit.com/r/selfhosted/comments/1llq665/minio_oidc_login_removed_in_latest_release/
-              # TODO: Migrate to Garage
-              client_id = "minio";
-              client_name = "MinIO";
-              client_secret = "$pbkdf2-sha512$310000$QdCiXrZt/Z67VAHrkiX5.Q$L3yWQD5Zp9l7WWdLx5dNB6Rqigz8BjH0iTD4NPp48K89wundrn9JaeQT6UG/IwhsEm30uKE39q9VrOi4mU64TA";
-              redirect_uris = ["https://minio.${myvars.domain}/oauth_callback"];
-            }
             {
               client_id = "plane";
               client_name = "Plane";

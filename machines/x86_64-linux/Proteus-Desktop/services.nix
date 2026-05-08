@@ -86,20 +86,4 @@
     };
   };
   ## END syncthing.nix
-  ## BEGIN minio.nix
-  nixpkgs.config.permittedInsecurePackages = ["minio-2025-10-15T17-29-55Z"];
-  age.secrets."minio.env" = {
-    file = "${myvars.secrets_dir}/minio.env.age";
-    mode = "0400"; owner = config.systemd.services.minio.serviceConfig.User;
-  };
-  systemd.services.minio.unitConfig.RequiresMountsFor = [myvars.storage_path];
-  services.minio = {
-    enable = true;
-    listenAddress = "127.0.0.1:9000";
-    consoleAddress = "127.0.0.1:9001";
-    region = "cn-east1-a";
-    dataDir = ["${myvars.storage_path}/minio"];
-    rootCredentialsFile = config.age.secrets."minio.env".path;
-  };
-  ## END minio.nix
 }

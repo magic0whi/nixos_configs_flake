@@ -38,19 +38,17 @@
   services.garage = {
     enable = true;
     package = pkgs.garage_2;
-    settings = {
+    settings = { # https://garagehq.deuxfleurs.fr/documentation/reference-manual/configuration/
       # metadata_dir = "${myvars.storage_path}/garage/meta"; # Garage recommends placing metadata on SSD
       data_dir = "${myvars.storage_path}/garage/data";
       rpc_bind_addr = "127.0.0.1:3901";
       rpc_public_addr = "127.0.0.1:3901";
-      s3_api = { # s3_api (3900) is for common access
-        api_bind_addr = "127.0.0.1:3900"; root_domain = ".s3-garage.${myvars.domain}"; s3_region = "cn-east1-a";
-      };
+      # s3_api (3900) is for common access
+      s3_api = {api_bind_addr = "127.0.0.1:3900"; root_domain = ".s3.${myvars.domain}"; s3_region = "cn-east1-a";};
       # s3_web (3902) is for bucket-as-website
-      s3_web = {bind_addr = "127.0.0.1:3902"; root_domain = ".s3-garage-web.${myvars.domain}";};
+      s3_web = {bind_addr = "127.0.0.1:3902"; root_domain = ".s3-pub.${myvars.domain}";};
       # admin (3903) is for webui access
       admin = {api_bind_addr = "127.0.0.1:3903";};
-
       replication_factor = 1;
     };
   };
