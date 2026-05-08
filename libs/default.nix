@@ -75,15 +75,11 @@ in {
         ++ (lib.optional (!generate_iso) impermanence.nixosModules.impermanence)
       )
       ++ [{
-        imports = let
-          all_machine_files = mylib.scan_path machine_path;
-        in if generate_iso then
-          builtins.filter
-            (p: !lib.strings.hasSuffix "impermanence.nix" p)
-            all_machine_files
-        else
-          all_machine_files
-        ;
+        imports = let all_machine_files = mylib.scan_path machine_path; in
+          if generate_iso
+          then builtins.filter (p: !lib.strings.hasSuffix "impermanence.nix" p) all_machine_files
+          else all_machine_files;
+
         networking.hostName = name;
       }]
       ++ (lib.optionals ((lib.lists.length hm_modules) > 0) [
@@ -92,11 +88,7 @@ in {
           home-manager.extraSpecialArgs = specialArgs;
           home-manager.useGlobalPkgs = true;
           home-manager.useUserPackages = true;
-          home-manager.sharedModules = [
-            catppuccin.homeModules.catppuccin
-            agenix.homeManagerModules.default
-            sops-nix.homeManagerModules.sops
-          ];
+          home-manager.sharedModules = [catppuccin.homeModules.catppuccin sops-nix.homeManagerModules.sops];
           home-manager.users."${myvars.username}".imports = hm_modules
           ++ [(machine_path + "/_hm")];
         }
