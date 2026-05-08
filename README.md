@@ -38,7 +38,7 @@ Personal NixOS and nix-darwin system configurations managed as a Flake, featurin
 - **LUKS Encryption**: Full-disk encryption with systemd in initrd.
 - **Multi-OS / Multi-Arch Support**: Modular configurations spanning x86_64 NixOS, riscv64 NixOS, and aarch64 macOS.
 - **Persistent State Management**: Selective persistence with proper directory creation.
-- **Secret Management**: Encrypted secrets via agenix stored directly in the repository.
+- **Secret Management**: Encrypted secrets via sops-nix stored directly in the repository.
 
 ## Hosts
 
@@ -137,7 +137,7 @@ The repository is organized to separate machine-specific hardware configurations
 │   ├── darwin*/               # nix-darwin specific modules
 │   ├── nixos_*/               # NixOS specific modules (system and home-manager)
 │   └── overlays/              # Custom packages (e.g., wechat, qq)
-├── secrets/                   # Agenix encrypted secrets and keys
+├── secrets/                   # sops-nix encrypted secrets and keys
 └── vars/                      # Global variables and networking definitions
 ```
 

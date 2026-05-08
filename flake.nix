@@ -26,20 +26,6 @@
       url = "github:nixpak/nixpak/4f8cbe437ba7e047ed4582b35b8140124b9562b5";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    agenix = { # Pinned as of 2026-04-07 06:54
-      url = "github:ryantm/agenix/b027ee29d959fda4b60b57566d64c98a202e0feb";
-      # url = "github:ryantm/agenix/fcdea223397448d35d9b31f798479227e80183f6";
-      # replaced with a type-safe reimplementation to get a better error message and less bugs.
-      # url = "github:ryan4yin/ragenix";
-      inputs = {
-        nixpkgs.follows = "nixpkgs";
-        home-manager.follows = "home-manager";
-        systems.follows = "deploy-rs/utils/systems";
-      };
-    };
-    pgp2ssh = { # Pinned as of 2026-04-07 06:54
-      url = "github:pinpox/pgp2ssh/792e3a3f107e6b4da7b96ded5d46b69efc45d8c1"; inputs.nixpkgs.follows = "nixpkgs";
-    };
     sops-nix = { # Pinned as of 2026-04-14 10:53
       url = "github:Mic92/sops-nix/d4971dd58c6627bfee52a1ad4237637c0a2fb0cd"; inputs.nixpkgs.follows = "nixpkgs";
     };

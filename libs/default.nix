@@ -45,7 +45,6 @@ in {
         home-manager
         impermanence
         lanzaboote
-        agenix
         sops-nix
         catppuccin
         disko
@@ -65,10 +64,8 @@ in {
         nixpkgs_modules
       )
       ++ (if pkgs.stdenv.isDarwin then [
-          agenix.darwinModules.age
           sops-nix.darwinModules.sops
         ] else [
-          agenix.nixosModules.age
           sops-nix.nixosModules.sops
           lanzaboote.nixosModules.lanzaboote
           catppuccin.nixosModules.catppuccin

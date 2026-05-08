@@ -1,35 +1,5 @@
 {
   "nodes": {
-    "agenix": {
-      "inputs": {
-        "darwin": "darwin",
-        "home-manager": [
-          "home-manager"
-        ],
-        "nixpkgs": [
-          "nixpkgs"
-        ],
-        "systems": [
-          "deploy-rs",
-          "utils",
-          "systems"
-        ]
-      },
-      "locked": {
-        "lastModified": 1770165109,
-        "narHash": "sha256-9VnK6Oqai65puVJ4WYtCTvlJeXxMzAp/69HhQuTdl/I=",
-        "owner": "ryantm",
-        "repo": "agenix",
-        "rev": "b027ee29d959fda4b60b57566d64c98a202e0feb",
-        "type": "github"
-      },
-      "original": {
-        "owner": "ryantm",
-        "repo": "agenix",
-        "rev": "b027ee29d959fda4b60b57566d64c98a202e0feb",
-        "type": "github"
-      }
-    },
     "catppuccin": {
       "inputs": {
         "nixpkgs": [
@@ -63,28 +33,6 @@
       "original": {
         "owner": "ipetkov",
         "repo": "crane",
-        "type": "github"
-      }
-    },
-    "darwin": {
-      "inputs": {
-        "nixpkgs": [
-          "agenix",
-          "nixpkgs"
-        ]
-      },
-      "locked": {
-        "lastModified": 1744478979,
-        "narHash": "sha256-dyN+teG9G82G+m+PX/aSAagkC+vUv0SgUw3XkPhQodQ=",
-        "owner": "lnl7",
-        "repo": "nix-darwin",
-        "rev": "43975d782b418ebf4969e9ccba82466728c2851b",
-        "type": "github"
-      },
-      "original": {
-        "owner": "lnl7",
-        "ref": "master",
-        "repo": "nix-darwin",
         "type": "github"
       }
     },
@@ -386,27 +334,6 @@
         "type": "github"
       }
     },
-    "pgp2ssh": {
-      "inputs": {
-        "nixpkgs": [
-          "nixpkgs"
-        ]
-      },
-      "locked": {
-        "lastModified": 1747041850,
-        "narHash": "sha256-V6ODUkLbPKjk99VWeVFDAfpmoR/yBqeoXmerR9KtIBw=",
-        "owner": "pinpox",
-        "repo": "pgp2ssh",
-        "rev": "792e3a3f107e6b4da7b96ded5d46b69efc45d8c1",
-        "type": "github"
-      },
-      "original": {
-        "owner": "pinpox",
-        "repo": "pgp2ssh",
-        "rev": "792e3a3f107e6b4da7b96ded5d46b69efc45d8c1",
-        "type": "github"
-      }
-    },
     "pre-commit": {
       "inputs": {
         "flake-compat": "flake-compat",
@@ -432,7 +359,6 @@
     },
     "root": {
       "inputs": {
-        "agenix": "agenix",
         "catppuccin": "catppuccin",
         "deploy-rs": "deploy-rs",
         "disko": "disko",
@@ -444,7 +370,6 @@
         "nixos-hardware": "nixos-hardware",
         "nixpak": "nixpak",
         "nixpkgs": "nixpkgs",
-        "pgp2ssh": "pgp2ssh",
         "sops-nix": "sops-nix"
       }
     },

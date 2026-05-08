@@ -1,4 +1,4 @@
-{pkgs, deploy-rs, pgp2ssh, ...}: {
+{pkgs, deploy-rs, ...}: {
   # programs.yt-dlp.enable = if pkgs.stdenv.hostPlatform.isRiscV64 then false else true;
   home.packages = with pkgs; [
     keepassxc # Offline password manager, provides both CLI and GUI
@@ -54,10 +54,8 @@
 
     # android-tools
   ]
-  ++ (if stdenv.hostPlatform.isRiscV64 then
-    [pkgs.pkgs.deploy-rs]
-  else [
-    deploy-rs.packages.${pkgs.stdenv.hostPlatform.system}.deploy-rs
-    pgp2ssh.packages.${pkgs.stdenv.hostPlatform.system}.pgp2ssh
-  ]);
+  ++ (if stdenv.hostPlatform.isRiscV64
+    then [pkgs.pkgs.deploy-rs]
+    else [deploy-rs.packages.${pkgs.stdenv.hostPlatform.system}.deploy-rs]
+  );
 }
