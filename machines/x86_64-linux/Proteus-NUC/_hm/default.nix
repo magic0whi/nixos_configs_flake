@@ -39,7 +39,7 @@ in {
     act # Run your Github Actions locally
   ];
   wayland.windowManager.hyprland = {
-    # nvidia = true; # Prime Sync
+    nvidia = true; # Prime Sync
     settings = {
       # Configure your Display resolution, offset, scale and Monitors here, use
       # `hyprctl monitors` to get the info.
@@ -113,7 +113,9 @@ in {
     lock_cmd = "lock_cmd = pidof hyprlock || (brightnessctl -sd usb-3-11-3-1::kbd_backlight set 0; hyprlock && loginctl unlock-session)";
     unlock_cmd = "brightnessctl -rd usb-3-11-3-1::kbd_backlight";
   };
-  programs.mpv.profiles.common.vulkan-device = "Intel(R) UHD Graphics (TGL GT1)";
+  programs.mpv.profiles.common.vulkan-device = if config.wayland.windowManager.hyprland.nvidia
+  then "NVIDIA GeForce RTX 3070 Laptop GPU"
+  else "Intel(R) UHD Graphics (TGL GT1)";
   # programs.ssh = {
   #   enable = true;
   #   enableDefaultConfig = false;
