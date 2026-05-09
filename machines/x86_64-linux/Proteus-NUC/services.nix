@@ -107,8 +107,7 @@
   # Ref: https://github.com/orgs/LizardByte/discussions/439#discussioncomment-15813284
   security.wrappers = lib.mkIf config.services.sunshine.enable {conntrack = {
     source = "${pkgs.conntrack-tools}/bin/conntrack";
-    # conntrack needs `cap_net_admin` to run as a normal user
-    capabilities = "cap_net_admin+ep";
+    capabilities = "cap_net_admin+ep"; # conntrack needs `cap_net_admin` to run as a normal user
     owner = "root"; group = "root";
   };};
   # Adapt for Hyprland
@@ -118,18 +117,18 @@
     sunshine-wake-monitor = {
       description = "Monitor Sunshine TCP connections and wake monitors";
       after = ["hyprland-session.target"];
-      wantedBy = ["graphical-session.target"];
-      serviceConfig = {
-        ExecStart = pkgs.writeShellScript "sunshine_wake_monitor" ''
-          ${config.security.wrapperDir}/conntrack -E -e new -p tcp --dport ${builtins.toString (config.services.sunshine.settings.port - 5)} | \
-          while read line; do
-            echo "New Sunshine connection detected, waking up the monitors"
-            ${lib.getExe' pkgs.hyprland "hyprctl"} --instance 0 'dispatch dpms on'
-            sleep 5
-          done
-        '';
-        Restart = "on-failure";
-      };
+      wantedBy = ["hyprland-session.target"];
+      serviceConfig.Restart = "on-failure";
+      script = ''
+        ${config.security.wrapperDir}/conntrack -E -e new -p tcp --dport ${
+          builtins.toString (config.services.sunshine.settings.port - 5)
+        } | \
+        while read line; do
+          echo "New Sunshine connection detected, waking up the monitors"
+          ${lib.getExe' pkgs.hyprland "hyprctl"} --instance 0 'dispatch dpms on'
+          sleep 5
+        done
+      '';
     };
   };
   services.sunshine = {

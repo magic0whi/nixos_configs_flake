@@ -24,14 +24,16 @@
   # };
   ## END gpg.nix
   ## START associations.nix
-  home.activation.set_mpv_associations = lib.hm.dag.entryAfter ["writeBoundary"] ''
+  home.activation.set_mpv_associations = let
+    duti_exe = lib.getExe' pkgs.duti "duti";
+  in lib.hm.dag.entryAfter ["writeBoundary"] ''
     # Set UTIs
-    ${lib.getExe' pkgs.duti "duti"} -s io.mpv public.movie viewer
+    ${duti_exe} -s io.mpv public.movie viewer
     # Set file extensions
-    ${lib.getExe' pkgs.duti "duti"} -s io.mpv .mkv viewer
-    ${lib.getExe' pkgs.duti "duti"} -s io.mpv .mp4 viewer
-    ${lib.getExe' pkgs.duti "duti"} -s com.google.Chrome .webm viewer
-    ${lib.getExe' pkgs.duti "duti"} -s com.apple.Preview .heic viewer
+    ${duti_exe} -s io.mpv .mkv viewer
+    ${duti_exe} -s io.mpv .mp4 viewer
+    ${duti_exe} -s com.google.Chrome .webm viewer
+    ${duti_exe} -s com.apple.Preview .heic viewer
   '';
   ## END associations.nix
 }

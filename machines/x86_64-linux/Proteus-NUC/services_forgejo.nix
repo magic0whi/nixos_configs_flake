@@ -1,6 +1,6 @@
 {myvars, pkgs, config, lib, ...}: let
   restart_runner_units = map
-      (name: "gitea-runner-${name}.service") (builtins.attrNames config.services.gitea-actions-runner.instances);
+    (name: "gitea-runner-${name}.service") (builtins.attrNames config.services.gitea-actions-runner.instances);
   clean_runner_units = map (s: lib.strings.removeSuffix ".service" s) restart_runner_units;
 in {
   sops = let sopsFile = "${myvars.secrets_dir}/Proteus-NUC.sops.yaml";
@@ -67,7 +67,8 @@ in {
         OIDC_SECRET=$(cat ${config.sops.secrets."forgejo_authelia_secret".path})
 
         # The environment variables (FORGEJO_WORK_DIR, etc.) are already injected by systemd.
-        FORGEJO_CLI="${lib.getExe config.services.forgejo.package} --config ${config.services.forgejo.stateDir}/custom/conf/app.ini admin auth"
+        # `forgejo` is injected in `systemd.services.forgejo.path`
+        FORGEJO_CLI="forgejo --config ${config.services.forgejo.stateDir}/custom/conf/app.ini admin auth"
 
         # Check if the Authelia auth source already exists
         if ! $FORGEJO_CLI list | grep -q "Authelia"; then

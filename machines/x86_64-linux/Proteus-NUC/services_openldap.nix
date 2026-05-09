@@ -20,11 +20,11 @@
       };
       children = {
         "cn=module".attrs = {objectClass = "olcModuleList"; olcModuleLoad = ["argon2"];};
-        "cn=schema".includes = [
-          "${pkgs.openldap}/etc/schema/core.ldif"
-          "${pkgs.openldap}/etc/schema/cosine.ldif"
+        "cn=schema".includes = with pkgs; [
+          "${openldap}/etc/schema/core.ldif"
+          "${openldap}/etc/schema/cosine.ldif"
           "${myvars.secrets_dir}/rfc2307bis.ldif"
-          "${pkgs.openldap}/etc/schema/inetorgperson.ldif"
+          "${openldap}/etc/schema/inetorgperson.ldif"
           "${myvars.secrets_dir}/schema.olcSudo"
         ];
         "olcDatabase={0}config".attrs = {

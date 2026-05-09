@@ -156,7 +156,7 @@
   # poweroff
     description = "Enable virtual console blanking and DPMS";
     after = ["display-manager.service"];
-    environment = {TERM = "linux";};
+    environment.TERM = "linux";
     serviceConfig = {
       Type = "oneshot";
       StandardOutput = "tty";

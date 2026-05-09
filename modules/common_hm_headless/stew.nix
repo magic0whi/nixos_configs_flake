@@ -70,7 +70,7 @@
     extraPackages = with pkgs; [ripdrag trash-cli ueberzugpp];
     keymap = {
       mgr.prepend_keymap = [
-        {run = "plugin drag"; on = ["<C-d>"]; desc = "Drag Files";}
+        {run = "plugin drag"; on = ["<C-s>"]; desc = "Drag Files";}
         {run = "plugin recycle-bin"; on = ["R" "b"]; desc = "Open Trash";}
       ];
     };

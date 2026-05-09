@@ -3,8 +3,6 @@
   script = pkgs.writeShellScript "check-traffic-quota" ''
     set -eufo pipefail
 
-    export PATH=${pkgs.jq}/bin:${pkgs.vnstat}/bin:${pkgs.coreutils}/bin:$PATH
-
     CURRENT_YEAR=$(date +%Y)
     CURRENT_MONTH=$(date +%-m)
 
@@ -26,7 +24,7 @@
 
     if [ "$TOTAL_BYTES" -ge "$LIMIT" ]; then
       echo "Traffic quota exceeded: $TOTAL_BYTES bytes >= $LIMIT bytes. Shutting down."
-      ${lib.getExe' pkgs.systemd "systemctl"} poweroff
+      systemctl poweroff
     else
       echo "Current traffic: $TOTAL_BYTES bytes. Limit: $LIMIT bytes."
     fi
@@ -46,6 +44,7 @@ in {
       description = "Check vnstat traffic quota and shutdown if exceeded";
       after = ["vnstat.service"];
       serviceConfig = {Type = "oneshot"; ExecStart = script;};
+      path = with pkgs; [jq vnstat vnstat systemd];
     };
     systemd.timers.traffic-quota = {
       description = "Timer for traffic quota checker";
