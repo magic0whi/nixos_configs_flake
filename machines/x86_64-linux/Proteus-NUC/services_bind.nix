@@ -2,7 +2,7 @@
   tailnet = "tailba6c3f.ts.net";
   tailnet_prefix_length = 48;
   soa_parms = {
-    serial = "2026050801"; # Serial (YYYYMMDDNN)
+    serial = "2026050901"; # Serial (YYYYMMDDNN)
     refresh = "3600"; # Refresh (1 hour)
     retry = "1800"; # Retry (30 minutes)
     expire = "604800"; # Expire (1 week)
@@ -119,7 +119,7 @@
     immich     IN CNAME proteus-nuc
     ;sftpgo     IN CNAME proteus-nuc
     atuin      IN CNAME proteus-nuc
-    openldap   IN CNAME proteus-nuc
+    ldap       IN CNAME proteus-nuc
     aria2      IN CNAME proteus-nuc
     postgresql IN CNAME proteus-nuc
     paperless  IN CNAME proteus-nuc

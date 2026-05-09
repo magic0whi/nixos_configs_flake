@@ -66,6 +66,6 @@ upload-vm() {
   else
     nix build $target
   fi
-  local remote="proteus@proteusdesktop.tailba6c3f.ts.net:/mnt/overlay/Services/vms/kubevirt-$name.qcow2"
+  local remote="proteus@proteus-desktop:/mnt/storage/data/vms/kubevirt-$name.qcow2"
   rsync -acvzL --progress result "$remote"
 }

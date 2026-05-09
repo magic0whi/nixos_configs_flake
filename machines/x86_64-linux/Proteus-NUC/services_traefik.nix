@@ -1,6 +1,5 @@
 {config, myvars, lib, ...}: let
   server_pub_crt = "${myvars.secrets_dir}/proteus_server.pub.pem";
-  tailnet = "tailba6c3f.ts.net";
   openldap_port = lib.removeSuffix "/" (lib.lists.last (lib.strings.splitString
     ":" (builtins.head config.services.openldap.urlList))
   );
@@ -116,7 +115,12 @@ in {
           };
           doh = {
             # Intercept standard DoH queries at the apex domain
-            rule = "(Host(`${myvars.domain}`) || Host(`ns1.${myvars.domain}`) || Host(`proteus-nuc.${tailnet}`)) && Path(`/dns-query`)";
+            rule = builtins.concatStringsSep "" [
+              "("
+                "Host(`${myvars.domain}`) || Host(`ns1.${myvars.domain}`) || Host(`proteus-nuc.${myvars.tailnet}`))"
+                " && Path(`/dns-query`"
+              ")"
+            ];
             entryPoints = ["websecure"];
             tls = {}; # Traefik decrypts the HTTPS traffic
             service = "doh";
@@ -228,7 +232,11 @@ in {
             tls = {};
           };
           dot = {
-            rule = "HostSNI(`${myvars.domain}`) || HostSNI(`ns1.${myvars.domain}`) || HostSNI(`proteus-nuc.${tailnet}`)";
+            rule = builtins.concatStringsSep " " [
+              "HostSNI(`${myvars.domain}`)"
+              "|| HostSNI(`ns1.${myvars.domain}`)"
+              "|| HostSNI(`proteus-nuc.${myvars.tailnet}`)"
+            ];
             entryPoints = ["dot"];
             service = "dot";
             tls = {};

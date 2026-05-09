@@ -1,6 +1,6 @@
 {myvars, config, pkgs, lib, ...}: {
   services.openldap = let
-    base_dn = "dc=tailba6c3f,dc=ts,dc=net";
+    base_dn = "dc=" + builtins.replaceStrings ["."] [",dc="] myvars.domain;
     manager_dn = "cn=Manager,${base_dn}";
   in {
     enable = true;
@@ -75,7 +75,7 @@
       dn: ${base_dn}
       objectClass: dcObject
       objectClass: organization
-      dc: ${lib.strings.removePrefix "dc=" (builtins.head (lib.strings.splitString "," "dc=tailba6c3f,dc=ts,dc=net"))}
+      dc: ${lib.strings.removePrefix "dc=" (builtins.head (lib.strings.splitString "," base_dn))}
       o: Proteus Homelab
 
       dn: ${manager_dn}

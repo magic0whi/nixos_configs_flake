@@ -65,9 +65,9 @@ in {
       # TODO use real email
       notifier.filesystem.filename = "/var/lib/authelia-main/emails.txt";
       authentication_backend = {
-        ldap = let base_dn = "dc=tailba6c3f,dc=ts,dc=net"; in {
+        ldap = let base_dn = "dc=" + builtins.replaceStrings ["."] [",dc="] myvars.domain; in {
           implementation = "custom";
-          address = "ldaps://openldap.${myvars.domain}:636";
+          address = "ldaps://ldap.${myvars.domain}:636";
           # Password is injected via environment variable
           # password = "password";
           timeout = "5s";
@@ -79,11 +79,7 @@ in {
           groups_filter = "(member={dn})";
           user = "uid=${config.services.authelia.instances.main.user},ou=ServiceAccounts,${base_dn}";
           attributes = {
-            username = "uid";
-            display_name = "cn";
-            mail = "mail";
-            group_name = "cn";
-            nickname = "givenName";
+            username = "uid"; display_name = "cn"; mail = "mail"; group_name = "cn"; nickname = "givenName";
           };
         };
       };

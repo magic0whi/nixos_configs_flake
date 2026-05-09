@@ -17,7 +17,7 @@
     postgres_ldap_bind_pw = {inherit restartUnits; sopsFile = "${myvars.secrets_dir}/Proteus-NUC.sops.yaml";};
   };
   # Ref: https://github.com/NixOS/nixpkgs/blob/549bd84d6279f9852cae6225e372cc67fb91a4c1/nixos/modules/services/databases/postgresql.nix#L684
-  sops.templates."pg_hba_auth.conf" = let base_dn = "dc=tailba6c3f,dc=ts,dc=net"; in {
+  sops.templates."pg_hba_auth.conf" = let base_dn = "dc=" + builtins.replaceStrings ["."] [",dc="] myvars.domain; in {
     content = ''
       # Generated file; do not edit!
 
@@ -25,8 +25,8 @@
       local all all trust
       # The ?sub part tells the server to perform a "subtree" search. It will traverse down into both `ou=People` and
       # `ou=ServiceAccounts` to find the matching uid
-      host all all 100.64.0.0/10 ldap ldapurl="ldaps://openldap.${myvars.domain}/${base_dn}?uid?sub" ldapbinddn="uid=${config.systemd.services.postgresql.serviceConfig.User},ou=ServiceAccounts,${base_dn}" ldapbindpasswd="${config.sops.placeholder.postgres_ldap_bind_pw}"
-      host all all fd7a:115c:a1e0::/48 ldap ldapurl="ldaps://openldap.${myvars.domain}/${base_dn}?uid?sub" ldapbinddn="uid=${config.systemd.services.postgresql.serviceConfig.User},ou=ServiceAccounts,${base_dn}" ldapbindpasswd="${config.sops.placeholder.postgres_ldap_bind_pw}"
+      host all all 100.64.0.0/10 ldap ldapurl="ldaps://ldap.${myvars.domain}/${base_dn}?uid?sub" ldapbinddn="uid=${config.systemd.services.postgresql.serviceConfig.User},ou=ServiceAccounts,${base_dn}" ldapbindpasswd="${config.sops.placeholder.postgres_ldap_bind_pw}"
+      host all all fd7a:115c:a1e0::/48 ldap ldapurl="ldaps://ldap.${myvars.domain}/${base_dn}?uid?sub" ldapbinddn="uid=${config.systemd.services.postgresql.serviceConfig.User},ou=ServiceAccounts,${base_dn}" ldapbindpasswd="${config.sops.placeholder.postgres_ldap_bind_pw}"
 
       # default value of services.postgresql.authentication
       local all postgres         peer map=postgres
@@ -66,15 +66,7 @@
       {name = config.services.authelia.instances.main.user; ensureDBOwnership =true;}
       {name = "nextcloud"; ensureDBOwnership = true;}
     ];
-    # DO NOT USE as we use sops templateed `services.postgresql.settings.hba_file`
-    # authentication = ''
-    #   # type database DBuser auth-method [auth-options]
-    #   local all all trust
-    #   # The ?sub part tells the server to perform a "subtree" search. It will traverse down into both `ou=People` and
-    #   # `ou=ServiceAccounts` to find the matching uid
-    #   host all all 100.64.0.0/10 ldap ldapurl="ldaps://openldap.${myvars.domain}/dc=tailba6c3f,dc=ts,dc=net?uid?sub"
-    #   host all all fd7a:115c:a1e0::/48 ldap ldapurl="ldaps://openldap.${myvars.domain}/dc=tailba6c3f,dc=ts,dc=net?uid?sub"
-    # '';
+    # DO NOT USE `services.postgresql.authentication` as we use sops templateed `services.postgresql.settings.hba_file`
   };
   services.postgresqlBackup = {
     enable = true;

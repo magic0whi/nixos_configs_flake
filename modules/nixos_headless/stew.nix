@@ -193,29 +193,25 @@
   services.sssd = {
     enable = true;
     settings = {
-    sssd = {
-      # debug_level = 7;
-      services = "ifp, nss, pam, sudo";
-      domains = "LDAP";
-    };
-    # "pam".pam_verbosity = 3;
-    "domain/LDAP" = {
-      override_shell = "/run/current-system/sw/bin/${config.users.defaultUserShell.meta.mainProgram}";
-      cache_credentials = true;
-      entry_cache_timeout = 600;
-      enumerate = true;
+      sssd = {/*debug_level = 7;*/ services = "ifp, nss, pam, sudo"; domains = "LDAP";};
+      # "pam".pam_verbosity = 3;
+      "domain/LDAP" = let base_dn = "dc=" + builtins.replaceStrings ["."] [",dc="] myvars.domain; in {
+        override_shell = "/run/current-system/sw/bin/${config.users.defaultUserShell.meta.mainProgram}";
+        cache_credentials = true;
+        entry_cache_timeout = 600;
+        enumerate = true;
 
-      id_provider = "ldap";
-      auth_provider = "ldap";
-      chpass_provider = "ldap";
+        id_provider = "ldap";
+        auth_provider = "ldap";
+        chpass_provider = "ldap";
 
-      ldap_uri = "ldaps://openldap.${myvars.domain}:636";
-      ldap_search_base = "dc=tailba6c3f,dc=ts,dc=net";
-      ldap_sudo_search_base = "ou=Sudoers,dc=tailba6c3f,dc=ts,dc=net";
-      ldap_tls_reqcert = "demand";
-      ldap_network_timeout = 2;
-      ldap_schema = "rfc2307bis";
-    };
+        ldap_uri = "ldaps://ldap.${myvars.domain}:636";
+        ldap_search_base = base_dn;
+        ldap_sudo_search_base = "ou=Sudoers,${base_dn}";
+        ldap_tls_reqcert = "demand";
+        ldap_network_timeout = 2;
+        ldap_schema = "rfc2307bis";
+      };
     };
   };
   ## END security.nix
