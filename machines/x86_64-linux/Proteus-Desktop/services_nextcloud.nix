@@ -11,7 +11,20 @@ in {
   };
   # Add RequiresMountsFor to wait for storage mounted
   systemd.services = let clean_units = map (s: lib.strings.removeSuffix ".service" s) restartUnits;
-  in lib.mkMerge [(lib.attrsets.genAttrs clean_units (name: {unitConfig.RequiresMountsFor = [myvars.storage_path];}))];
+  in lib.mkMerge [
+    (lib.attrsets.genAttrs clean_units (name: {unitConfig.RequiresMountsFor = [myvars.storage_path];}))
+    {nextcloud-custom-config = { # https://wiki.nixos.org/wiki/Nextcloud#Dynamic_configuration
+      after = ["nextcloud-setup.service"];
+      wantedBy = ["multi-user.target"];
+      path = [config.services.nextcloud.occ];
+      script = ''
+        nextcloud-occ app:disable app_api # I don't plan to run external AI apps
+        # Logreader only supports "file" log_type and complains it, I'd rather prefer journald
+        nextcloud-occ app:disable logreader
+        nextcloud-occ app:disable twofactor_totp # Since we use Authelia OIDC
+      '';
+    };}
+  ];
 
   services.nextcloud = {
     enable = true;
@@ -33,8 +46,13 @@ in {
 
     secrets.oidc_login_client_secret = config.sops.secrets.nextcloud_oidc_client_secret.path;
     settings = {
+      serverid = "0";
       trusted_proxies = ["127.0.0.1" "::1"];
       overwriteprotocol = "https";
+
+      maintenance_window_start = 18;
+
+      default_phone_region = "GB";
 
       allow_user_to_change_display_name = false;
       lost_password_link = "disabled";
@@ -68,6 +86,7 @@ in {
       oidc_login_update_avatar = false;
       oidc_login_code_challenge_method = "S256"; # Enable PKCE flow for enhanced security
     };
+    phpOptions."opcache.interned_strings_buffer" = "23";
 
     extraApps = {inherit (pkgs.nextcloud33Packages.apps) oidc_login;};
   };

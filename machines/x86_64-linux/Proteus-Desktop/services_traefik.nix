@@ -32,6 +32,12 @@ in {
           trustForwardHeader = true;
           authResponseHeaders = ["Remote-User" "Remote-Groups" "Remote-Email" "Remote-Name"];
         };
+        middlewares.nextcloud-hsts.headers = { # Strict-Transport-Security
+          stsSeconds = 15552000;
+          stsIncludeSubdomains = true;
+          stsPreload = true; # Adds preload flag to STS header
+          forceSTSHeader = true; # Adds STS header for HTTP connections
+        };
         routers = {
           traefik-dashboard = {
             rule = "Host(`traefik-desktop.${myvars.domain}`)";
@@ -62,7 +68,8 @@ in {
             entryPoints = ["websecure"]; middlewares = ["authelia-auth"]; service = "garage-webui"; tls = {};
           };
           nextcloud = {
-            rule = "Host(`nextcloud.${myvars.domain}`)"; entryPoints = ["websecure"]; service = "nextcloud"; tls = {};
+            rule = "Host(`nextcloud.${myvars.domain}`)";
+            entryPoints = ["websecure"]; middlewares = ["nextcloud-hsts"]; service = "nextcloud"; tls = {};
           };
         };
         services = {
