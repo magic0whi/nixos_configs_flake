@@ -38,6 +38,10 @@
       # IM
       ".config/QQ"
       ".xwechat"
+
+      # Cloud providers
+      ".config/gcloud"
+      ".terraform.d"
     ];
     files = [];
   };

@@ -30,6 +30,7 @@ in {
     path = "${config.home.homeDirectory}/.aws/credentials";
   };
   ## END nix.nix
+  ## BEGIN packages.nix
   home.packages = with pkgs; [
     (nvtopPackages.intel.override {nvidia = true;})
     minicom # embedded development
@@ -37,7 +38,19 @@ in {
     libreoffice
     qpdf
     act # Run your Github Actions locally
+    google-cloud-sdk # gcloud
+    terraform
+    terraformer
+    terraform-ls # LSP
   ];
+  ## END packages.nix
+  ## START cloud-providers.nix
+  home.file = let
+    arch = "linux_amd64"; provider = pkgs.terraform-providers.hashicorp_google; version = provider.version;
+  in {".terraform.d/plugins/${arch}/terraform-provider-google_v${version}".source =
+    "${provider}/libexec/terraform-providers/registry.terraform.io/hashicorp/google/${version}/${arch}/terraform-provider-google_${version}";
+  };
+  ## END cloud-providers.nix
   wayland.windowManager.hyprland = {
     nvidia = true; # Prime Sync
     settings = {
