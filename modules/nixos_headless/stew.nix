@@ -190,8 +190,16 @@
   security.sudo.package = pkgs.sudo.override {withSssd = true;};
   security.sudo.extraConfig = ''Defaults passwd_timeout=0''; # Disable timeout for sudo prompt
   system.nssDatabases.sudoers = ["sss"]; # Use LDAP to distribute configuration of sudo as well
+  sops = let restartUnits = ["sssd.service"]; sopsFile = "${myvars.secrets_dir}/common.sops.yaml"; in {
+    secrets."sssd_ldap_default_authtok" = {inherit sopsFile restartUnits;};
+    templates."sssd.env" = {
+      # https://github.com/NixOS/nixpkgs/blob/15f4ee454b1dce334612fa6843b3e05cf546efab/nixos/modules/services/misc/sssd.nix#L111-L113
+      inherit restartUnits; content = "SSSD_LDAP_DEFAULT_AUTHTOK='${config.sops.placeholder.sssd_ldap_default_authtok}'";
+    };
+  };
   services.sssd = {
     enable = true;
+    environmentFile = config.sops.templates."sssd.env".path;
     settings = {
       sssd = {/*debug_level = 7;*/ services = "ifp, nss, pam, sudo"; domains = "LDAP";};
       # "pam".pam_verbosity = 3;
@@ -206,6 +214,8 @@
         chpass_provider = "ldap";
 
         ldap_uri = "ldaps://ldap.${myvars.domain}:636";
+        ldap_default_bind_dn = "uid=sssd,ou=ServiceAccounts,${base_dn}";
+        ldap_default_authtok = "$SSSD_LDAP_DEFAULT_AUTHTOK";
         ldap_search_base = base_dn;
         ldap_sudo_search_base = "ou=Sudoers,${base_dn}";
         ldap_tls_reqcert = "demand";
