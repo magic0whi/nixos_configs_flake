@@ -181,7 +181,7 @@
       sn: Service
       # loginShell: ${pkgs.shadow}/bin/nologin
       # homeDirectory: /var/empty
-      description: Dedicated LDAP service account for Atuin
+      description: Dedicated LDAP account for authenticating database user
       userPassword: {ARGON2}$argon2id$v=19$m=65536,t=2,p=1$2/qpzCZL/QW5fczhx60Bwg$64zn/anj0LiNqsupuKnr5UA7B+Ejm3H+JL29NgSqwVs
 
       dn: uid=${config.systemd.services.postgresql.serviceConfig.User},ou=ServiceAccounts,${base_dn}
@@ -191,9 +191,9 @@
       objectClass: inetOrgPerson
       uid: ${config.systemd.services.postgresql.serviceConfig.User}
       o: Proteus Homelab
-      cn: PostgreSQL Service
+      cn: PostgreSQL Database Auth Service
       sn: Service
-      description: Dedicated LDAP service account for PostgreSQL
+      description: Dedicated LDAP account for authenticating database user
       userPassword: {ARGON2}$argon2id$v=19$m=65536,t=2,p=1$gAW72T0XdGEPASN6Lw93pw$IoCTZ5kgwFaGAAt92SBp36hglEn/oU3BvY4et8xRY68
 
       dn: uid=${config.services.immich.user},ou=ServiceAccounts,${base_dn}
@@ -203,9 +203,9 @@
       objectClass: inetOrgPerson
       uid: ${config.services.immich.user}
       o: Proteus Homelab
-      cn: Immich Service Database Auth Service
+      cn: Immich Database Auth Service
       sn: Service
-      description: Dedicated LDAP service account for Immich
+      description: Dedicated LDAP account for authenticating database user
       userPassword: {ARGON2}$argon2id$v=19$m=65536,t=2,p=1$OEpAKFVxRbsfk8djqOY2yg$scRgt8huwIp6bmRTbKxHdf5YzDqbc+sv5O6FdnF59+s
 
       dn: uid=${config.services.paperless.user},ou=ServiceAccounts,${base_dn}
@@ -217,7 +217,7 @@
       o: Proteus Homelab
       sn: Service
       cn: Paperless Database Auth Service
-      description: A community-supported supercharged document management system: scan, index and archive all your documents
+      description: Dedicated LDAP account for authenticating database user
       userPassword: {ARGON2}$argon2id$v=19$m=65536,t=2,p=1$ZCKwwHl/8qfXSbgipXXHww$XJWgXYKm8jy4WxhITOkBDLWZi0GhfCLYwpSrgtkhMus
 
       dn: uid=${config.services.authelia.instances.main.user},ou=ServiceAccounts,${base_dn}
@@ -229,7 +229,7 @@
       o: Proteus Homelab
       sn: Service
       cn: Authelia Service & Authelia Database Auth Service
-      description: A community-supported supercharged document management system: scan, index and archive all your documents
+      description: Dedicated LDAP account for Authelia directory queries & authenticating database user
       userPassword: {ARGON2}$argon2id$v=19$m=65536,t=2,p=1$FO5I3Wn6CsduQpv15iZBXQ$B3LtuuB/+5kcJ8gl6ikcN2XgBUK+qdzLNA1Yp93QonM
 
       dn: uid=nextcloud,ou=ServiceAccounts,${base_dn}
@@ -241,7 +241,7 @@
       o: Proteus Homelab
       sn: Service
       cn: Nextcloud Database Auth Service
-      description: Sharing solution for files, calendars, contacts and more
+      description: Dedicated LDAP account for authenticating database user
       userPassword: {ARGON2}$argon2id$v=19$m=65536,t=2,p=1$KW1J9YdPNePdvjKAr07C3Q$QvyeZxYPF4BBNJGU4/lJuY2ecV1zBQ5RSjz0gxDzKAg
 
       dn: cn=${myvars.username},ou=Group,${base_dn}
@@ -258,6 +258,7 @@
       objectClass: groupOfMembers
       cn: storage
       gidNumber: 1001
+      description: Group to share directory across multiple users
       member: uid=${myvars.username},ou=People,${base_dn}
     '';
   };
