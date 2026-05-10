@@ -1,4 +1,4 @@
-{myvars, config, ...}: {
+_: {
   time.timeZone = "America/Los_Angeles";
   boot.kernelParams = [
     "console=ttyS0,115200"
@@ -17,15 +17,10 @@
   # };
   # networking.useDHCP = false;
   services.traffic-quota.enable = true;
-  ## START sing-box.nix
-  sops.secrets."sb_Proteus-NixOS-1.json" = {
-    sopsFile = "${myvars.secrets_dir}/sb_Proteus-NixOS-1.json.sops";
-    format = "binary";
-    restartUnits = ["sing-box.service"];
-  };
-  networking.firewall.allowedTCPPorts = [443]; # Reality
-  services.sing-box.enable = true;
-  services.sing-box.configFile = config.sops.secrets."sb_Proteus-NixOS-1.json".path;
-  ## END sing-box.nix
   boot.binfmt.emulatedSystems = ["riscv64-linux"]; # Cross compilation
+  ## Easytier
+  networking.firewall = {
+    allowedTCPPorts = [11010 11011 11012 11013];
+    allowedUDPPorts = [11010 11011 11012];
+  };
 }

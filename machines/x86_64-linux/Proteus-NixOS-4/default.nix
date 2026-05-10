@@ -7,7 +7,7 @@
     "modules/nixos_headless/stew.nix"
     "modules/nixos_headless/packages.nix"
     "modules/nixos_headless/sing-box.nix"
-    "modules/nixos_headless/traffic_quota.nix"
+    "modules/nixos_headless/traffic-quota.nix"
   ];
   hm_modules = map mylib.relative_to_root [
     "modules/common_hm_headless/git.nix"
