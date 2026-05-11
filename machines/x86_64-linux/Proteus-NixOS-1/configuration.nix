@@ -7,6 +7,7 @@
     "intel_iommu=off"
   ];
   services.traffic-quota.enable = true;
+  boot.binfmt.emulatedSystems = ["riscv64-linux"]; # Cross compilation
   ## START sing-box.nix
   sops.secrets."sb_Proteus-NixOS-1.json" = {
     sopsFile = "${myvars.secrets_dir}/sb_Proteus-NixOS-1.json.sops";
@@ -17,5 +18,4 @@
   services.sing-box.enable = true;
   services.sing-box.configFile = config.sops.secrets."sb_Proteus-NixOS-1.json".path;
   ## END sing-box.nix
-  boot.binfmt.emulatedSystems = ["riscv64-linux"]; # Cross compilation
 }

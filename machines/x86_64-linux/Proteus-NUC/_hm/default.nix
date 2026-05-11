@@ -24,6 +24,7 @@ in {
     terraform
     terraformer
     terraform-ls # LSP
+    witr
   ];
   ## END packages.nix
   ## START cloud-providers.nix

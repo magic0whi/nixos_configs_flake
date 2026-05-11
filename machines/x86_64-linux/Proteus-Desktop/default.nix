@@ -8,6 +8,7 @@
     "modules/nixos_headless/packages.nix"
     "modules/nixos_headless/sing-box.nix"
     "modules/nixos_gui/kmscon.nix"
+    "modules/nixos_headless/easytier.nix"
   ];
   hm_modules = map mylib.relative_to_root [
     "modules/common_hm_headless/git.nix"

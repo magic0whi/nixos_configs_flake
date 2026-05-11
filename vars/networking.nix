@@ -5,23 +5,46 @@
     # ============================================
     # Homelab's Physical Machines (KubeVirt Nodes)
     # ============================================
-    Proteus-MBP14M4P = {ipv4 = "100.95.17.39"; ipv6 = "fd7a:115c:a1e0::783a:1127";};
-    Proteus-NUC = {ipv4 = "100.64.161.20"; ipv6 = "fd7a:115c:a1e0::cd3a:a114";};
+    Proteus-MBP14M4P = {
+      ipv4 = "100.95.17.39"; ipv6 = "fd7a:115c:a1e0::783a:1127";
+      et_ipv4 = "10.0.0.4"; et_ipv6 = "fdfe:dcba:9877::4";
+    };
+    Proteus-NUC = {
+      ipv4 = "100.64.161.20"; ipv6 = "fd7a:115c:a1e0::cd3a:a114";
+      et_ipv4 = "10.0.0.2"; et_ipv6 = "fdfe:dcba:9877::2";
+    };
     Proteus-Desktop = {
-      ipv4 = "100.89.227.22";
-      ipv6 = "fd7a:115c:a1e0::1a01:e318";
-      iface = "enp4s0";
-      iface_wlan = "wlp0s20u9";
+      ipv4 = "100.89.227.22"; ipv6 = "fd7a:115c:a1e0::1a01:e318";
+      et_ipv4 = "10.0.0.3"; et_ipv6 = "fdfe:dcba:9877::3";
+      iface = "enp4s0"; iface_wlan = "wlp0s20u9";
     };
     # ============================================
     # Other VMs and Physical Machines
     # ============================================
-    Proteus-NixOS-0 = {ipv4 = "100.74.72.29"; ipv6= "fd7a:115c:a1e0::563a:481d";};
-    Proteus-NixOS-1 = {ipv4 = "100.121.95.98"; ipv6= "fd7a:115c:a1e0::df3a:5f62";};
-    Proteus-NixOS-2 = {ipv4 = "100.78.150.50"; ipv6= "fd7a:115c:a1e0::823a:9632";};
-    Proteus-NixOS-3 = {ipv4 = "100.113.250.94"; ipv6= "fd7a:115c:a1e0::703a:fa5e";};
-    Proteus-NixOS-4 = {ipv4 = "100.118.72.118"; ipv6= "fd7a:115c:a1e0::e33a:4876";};
-    Proteus-NixOS-5 = {ipv4 = "100.90.238.8"; ipv6= "fd7a:115c:a1e0::c53a:ee08";};
+    Proteus-NixOS-0 = {
+      ipv4 = "100.74.72.29"; ipv6= "fd7a:115c:a1e0::563a:481d";
+      et_ipv4 = "10.0.0.1"; et_ipv6 = "fdfe:dcba:9877::1";
+    };
+    Proteus-NixOS-1 = {
+      ipv4 = "100.121.95.98"; ipv6= "fd7a:115c:a1e0::df3a:5f62";
+      et_ipv4 = "10.0.0.5"; et_ipv6= "fdfe:dcba:9877::5";
+    };
+    Proteus-NixOS-2 = {
+      ipv4 = "100.78.150.50"; ipv6 = "fd7a:115c:a1e0::823a:9632";
+      et_ipv4 = "10.0.0.6"; et_ipv6= "fdfe:dcba:9877::6";
+    };
+    Proteus-NixOS-3 = {
+      ipv4 = "100.113.250.94"; ipv6 = "fd7a:115c:a1e0::703a:fa5e";
+      et_ipv4 = "10.0.0.7"; et_ipv6= "fdfe:dcba:9877::7";
+    };
+    Proteus-NixOS-4 = {
+      ipv4 = "100.118.72.118"; ipv6 = "fd7a:115c:a1e0::e33a:4876";
+      et_ipv4 = "10.0.0.8"; et_ipv6= "fdfe:dcba:9877::8";
+    };
+    Proteus-NixOS-5 = {
+      ipv4 = "100.90.238.8"; ipv6 = "fd7a:115c:a1e0::c53a:ee08";
+      et_ipv4 = "10.0.0.9"; et_ipv6= "fdfe:dcba:9877::9";
+    };
     # Proteus-NixOS-6.ipv4 = "100.126.174.68";
     nozomi = {
       # LicheePi 4A's wireless interface - RISC-V

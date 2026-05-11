@@ -15,15 +15,6 @@
   environment.systemPackages = with pkgs; [
     bpftrace # powerful tracing tool, ref: https://github.com/bpftrace/bpftrace
   ];
-  ## START sing-box.nix
-  sops.secrets."sb_client_linux.json" = {
-    sopsFile = "${myvars.secrets_dir}/sb_client_linux.json.sops";
-    format = "binary";
-    restartUnits = ["sing-box.service"];
-  };
-  services.sing-box.enable = true;
-  services.sing-box.configFile = config.sops.secrets."sb_client_linux.json".path;
-  ## END sing-box.nix
   ## START sriov.nix
   boot.extraModulePackages = with pkgs; [i915-sriov xe-sriov];
   boot.kernelParams = [
