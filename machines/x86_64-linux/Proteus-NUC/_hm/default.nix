@@ -11,25 +11,6 @@
   third_monitor = "DP-3,highres,auto-left,1.67,bitdepth,10,cm,adobe";
 in {
   imports = mylib.scan_path ./.;
-  ## START nix.nix
-  xdg.configFile."nix/public.key".source = "${myvars.secrets_dir}/nix_public.key";
-  sops.secrets = {
-    "nix_secret.key" = {
-      sopsFile = "${myvars.secrets_dir}/nix_secret.key.sops";
-      format = "binary";
-      path = "${config.xdg.configHome}/nix/secret.key";
-    };
-    aws_secret_access_key.sopsFile = "${myvars.secrets_dir}/common_hm.sops.yaml";
-  };
-  sops.templates."aws_credentials" = {
-    content = ''
-      [nixbuilder]
-      aws_access_key_id=nixbuilder
-      aws_secret_access_key=${config.sops.placeholder.aws_secret_access_key}
-    '';
-    path = "${config.home.homeDirectory}/.aws/credentials";
-  };
-  ## END nix.nix
   ## BEGIN packages.nix
   home.packages = with pkgs; [
     (nvtopPackages.intel.override {nvidia = true;})
@@ -38,6 +19,7 @@ in {
     libreoffice
     qpdf
     act # Run your Github Actions locally
+    gemini-cli
     google-cloud-sdk # gcloud
     terraform
     terraformer
@@ -45,8 +27,37 @@ in {
   ];
   ## END packages.nix
   ## START cloud-providers.nix
+  sops.secrets = {
+    "project-0.secret.json" = {
+      sopsFile = "${myvars.secrets_dir}/gcloud_project-0.secret.json.sops";
+      format = "binary";
+      path = "${config.xdg.configHome}/gcloud/project-0.secret.json";
+    };
+    "project-1.secret.json" = {
+      sopsFile = "${myvars.secrets_dir}/gcloud_project-1.secret.json.sops";
+      format = "binary";
+      path = "${config.xdg.configHome}/gcloud/project-1.secret.json";
+    };
+  };
   home.file = let
-    arch = "linux_amd64"; provider = pkgs.terraform-providers.hashicorp_google; version = provider.version;
+    arch = "linux_amd64";
+    version = "7.31.0";
+    provider = pkgs.terraform-providers.hashicorp_google.overrideAttrs (_: {
+      inherit version;
+      src = pkgs.fetchFromGitHub {
+        owner = "hashicorp";
+        repo = "terraform-provider-google";
+        rev = "v${version}";
+        hash = "sha256-6cvRvVQmKRi4kyNAo/UAGN00bO+uCJYvf661xYW/QCQ=";
+      };
+      vendorHash = "sha256-UoS4iIVHhCQ+Zk+SJmsMHJgJBKLMbfMVmtm4MDmzT68=";
+      postInstall = ''
+        dir=$out/libexec/terraform-providers/registry.terraform.io/hashicorp/google/${version}/''${GOOS}_''${GOARCH}
+        mkdir -p "$dir"
+        mv $out/bin/* "$dir/terraform-provider-google_${version}"
+        rmdir $out/bin
+      '';
+    });
   in {".terraform.d/plugins/${arch}/terraform-provider-google_v${version}".source =
     "${provider}/libexec/terraform-providers/registry.terraform.io/hashicorp/google/${version}/${arch}/terraform-provider-google_${version}";
   };
