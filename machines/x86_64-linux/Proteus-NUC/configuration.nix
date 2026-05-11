@@ -1,6 +1,6 @@
-{pkgs, config, myvars, lib, ...}: {
+{pkgs, config, lib, ...}: {
   time.timeZone = "Europe/London";
-  ## START iwd.nix
+  ## BEGIN iwd.nix
   networking.wireless.iwd.enable = true;
   networking.wireless.iwd.settings.General.Country = "GB";
   systemd.services.iwd.serviceConfig.ExecStart = [
@@ -15,7 +15,7 @@
   environment.systemPackages = with pkgs; [
     bpftrace # powerful tracing tool, ref: https://github.com/bpftrace/bpftrace
   ];
-  ## START sriov.nix
+  ## BEGIN sriov.nix
   boot.extraModulePackages = with pkgs; [i915-sriov xe-sriov];
   boot.kernelParams = [
     "intel_iommu=on"

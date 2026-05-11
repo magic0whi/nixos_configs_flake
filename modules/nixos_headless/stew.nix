@@ -1,5 +1,5 @@
 {lib, config, myvars, pkgs, ...}: {
-  ## START bootloader.nix
+  ## BEGIN bootloader.nix
   boot.loader.efi.canTouchEfiVariables = lib.mkDefault true; # Allow installation process to modify EFI boot variables
   boot.loader.systemd-boot = {
     enable = lib.mkDefault true;
@@ -7,11 +7,11 @@
     consoleMode = "max";
   };
   ## END bootloader.nix
-  ## START nix.nix
+  ## BEGIN nix.nix
   nix.gc.dates = "weekly";
   nix.settings.auto-optimise-store = true; # Optimise the store after each build
   ## END nix.nix
-  ## START ssh.nix
+  ## BEGIN ssh.nix
   services.openssh.settings.PasswordAuthentication = false; # Disable password login
   programs.ssh.extraConfig = ''
     Host *
@@ -23,7 +23,7 @@
   # NOTE: You cannot use ssh-agent and GnuPG agent with SSH support at the same time
   # ssh.startAgent = true;
   ## END ssh.nix
-  ## START i18n.nix
+  ## BEGIN i18n.nix
   # Select internationalisation properties.
   i18n.defaultLocale = "en_US.UTF-8";
   # i18n.extraLocaleSettings = {
@@ -38,14 +38,14 @@
     # LC_TIME = "en_US.UTF-8";
   # };
   ## END i18n.nix
-  ## START dbus.nix
+  ## BEGIN dbus.nix
   services.dbus.implementation = "broker";
   ## END dbus.nix
-  ## START sysctl.nix
+  ## BEGIN sysctl.nix
   boot.kernel.sysctl."net.ipv4.tcp_congestion_control" = "bbr";
   boot.kernel.sysctl."net.core.default_qdisc" = "cake";
   ## END sysctl.nix
-  ## START network.nix
+  ## BEGIN network.nix
   networking.useNetworkd = true;
   networking.nftables.enable = true;
   networking.firewall = {
@@ -76,7 +76,7 @@
   };
   services.vnstat.enable = true;
   ## END network.nix
-  ## START journald.nix
+  ## BEGIN journald.nix
   services.journald = {
      # The time window (1 minute) used to calculate the message limit.
     rateLimitInterval = "1min";
@@ -97,7 +97,7 @@
     '';
   };
   ## END journald.nix
-  ## START shell.nix
+  ## BEGIN shell.nix
   programs.zsh = {
     autosuggestions = {
       enable = true;
@@ -107,7 +107,7 @@
     syntaxHighlighting.enable = true;
   };
   ## END shell.nix
-  ## START users.nix
+  ## BEGIN users.nix
   users = {
     defaultUserShell = pkgs.zsh;
     mutableUsers = false; # Don't allow mutate users outside the config
@@ -149,7 +149,7 @@
     };
   };
   ## END users.nix
-  ## START zram.nix
+  ## BEGIN zram.nix
   zramSwap.enable = true;
   ## END zram.nix
   systemd.services.console-blanking = { # Let monitor become blank after 2mins, and 3mins inactive to
@@ -165,7 +165,7 @@
     };
     wantedBy = ["multi-user.target"];
   };
-  ## START fonts.nix
+  ## BEGIN fonts.nix
   fonts = { # All fonts are linked to /nix/var/nix/profiles/system/sw/share/X11/fonts
     fontDir.enable = true;
     packages = with pkgs; [noto-fonts noto-fonts-color-emoji];
@@ -184,7 +184,7 @@
     };
   };
   ## END fonts.nix
-  ## START security.nix
+  ## BEGIN security.nix
   # Without polkit, sing-box can't interact with systemd-resolved
   security.polkit.enable = true;
   security.sudo.package = pkgs.sudo.override {withSssd = true;};

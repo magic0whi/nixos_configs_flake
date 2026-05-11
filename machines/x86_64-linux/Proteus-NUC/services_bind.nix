@@ -1,8 +1,7 @@
 {myvars, lib, pkgs, config, ...}: let
-  tailnet = "tailba6c3f.ts.net";
   tailnet_prefix_length = 48;
   soa_parms = {
-    serial = "2026050901"; # Serial (YYYYMMDDNN)
+    serial = "2026051102"; # Serial (YYYYMMDDNN)
     refresh = "3600"; # Refresh (1 hour)
     retry = "1800"; # Retry (30 minutes)
     expire = "604800"; # Expire (1 week)
@@ -155,14 +154,14 @@
     "${nuc_reverse_zone_v4_name}.zone"
     ((zone_head nuc_reverse_zone_v4_name)+ ''
     ; PTR Record for last octet pointing to Tailscale domain
-    ${lib.lists.last (lib.strings.splitString "." nuc_ipv4)} IN PTR proteus-nuc.${tailnet}.
+    ${lib.lists.last (lib.strings.splitString "." nuc_ipv4)} IN PTR proteus-nuc.${myvars.tailnet}.
   '');
   desktop_reverse_zone_v4_name = gen_reverse_prefix_v4 desktop_ipv4;
   desktop_reverse_zone_v4 = pkgs.writeText
     "${desktop_reverse_zone_v4_name}.zone"
     ((zone_head desktop_reverse_zone_v4_name) + ''
     ; PTR Record for last octet pointing to Tailscale domain
-    ${lib.lists.last (lib.strings.splitString "." desktop_ipv4)} IN PTR proteus-desktop.${tailnet}.
+    ${lib.lists.last (lib.strings.splitString "." desktop_ipv4)} IN PTR proteus-desktop.${myvars.tailnet}.
   '');
   # =========================================
   # IPv6 Reverse Zone
@@ -178,8 +177,8 @@
     "${reverse_zone_v6_name}.zone"
     ((zone_head reverse_zone_v6_name) + ''
     ; PTR Record for the host portion pointing to Tailscale domain
-    ${nuc_ipv6_ptr_host} IN PTR proteus-nuc.${tailnet}.
-    ${desktop_ipv6_ptr_host} IN PTR proteus-desktop.${tailnet}.
+    ${nuc_ipv6_ptr_host} IN PTR proteus-nuc.${myvars.tailnet}.
+    ${desktop_ipv6_ptr_host} IN PTR proteus-desktop.${myvars.tailnet}.
   '');
 in {
   networking.firewall = {allowedTCPPorts = [53]; allowedUDPPorts = [53];};
