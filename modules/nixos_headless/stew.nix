@@ -67,6 +67,11 @@
   # Ref: https://github.com/NixOS/nixpkgs/blob/nixos-24.11/nixos/modules/services/networking/tailscale.nix
 
   # Auto detect the firewall type (nftables)
+  # TODO Easytier Test
+  networking.firewall = {
+    allowedTCPPortRanges = [{ from = 11010; to = 11013;}];
+    allowedUDPPortRanges = [{ from = 11010; to = 11012;}];
+  };
   systemd.services.tailscaled.environment.TS_DEBUG_FIREWALL_MODE = "auto";
   services.tailscale = {
     openFirewall = true; # allow the Tailscale UDP port through the firewall

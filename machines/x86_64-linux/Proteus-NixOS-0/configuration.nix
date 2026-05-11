@@ -18,9 +18,4 @@ _: {
   # networking.useDHCP = false;
   services.traffic-quota.enable = true;
   boot.binfmt.emulatedSystems = ["riscv64-linux"]; # Cross compilation
-  ## Easytier
-  networking.firewall = {
-    allowedTCPPorts = [11010 11011 11012 11013];
-    allowedUDPPorts = [11010 11011 11012];
-  };
 }
