@@ -148,7 +148,7 @@ in {
         ",XF86AudioStop,exec,mpc stop" # Or `playerctl --all-players stop`
       ];
       bindl = [
-        "$mainMod,Z,exec,loginctl lock-session; sleep 0.6; hyprctl dispatch dpms off"
+        "$mainMod,Z,exec,loginctl lock-session"
         "$mainMod CTRL SHIFT,Q,exec,loginctl terminate-user $USER" # Logout & Exit Hyprland
         "$mainMod CTRL SHIFT,W,exec,systemctl suspend" # Suspend
         "$mainMod CTRL SHIFT,E,exec,systemctl hibernate" # Hibernate
