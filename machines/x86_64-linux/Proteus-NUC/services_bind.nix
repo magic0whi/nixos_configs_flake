@@ -28,78 +28,66 @@
   # IPv4 Reverse Logic
   # =========================================
   gen_reverse_prefix_v4 = ipv4: let
-    # 1. Split the IP into a list of octets
-    # e.g. "100.64.161.20" -> ["100" "64" "161" "20"]
+    # 1. Split the IP into a list of octets, e.g. "100.64.161.20" -> ["100" "64" "161" "20"]
     octets = lib.strings.splitString "." ipv4;
+
     # 2. Extract the first 3 octets, reverse them, and join with dots
-    # e.g. ["100" "64" "161" "20"] -> ["100" "64" "161"] -> ["161" "64" "100"]
-    # -> "161.64.100"
-    reverse_prefix = builtins.concatStringsSep "." (
-      lib.reverseList (lib.take 3 octets)
-    );
-  # 3. Construct the full dynamic zone name
-  # e.g. "161.64.100.in-addr.arpa"
+    # e.g. ["100" "64" "161" "20"] -> ["100" "64" "161"] -> ["161" "64" "100"] -> "161.64.100"
+    reverse_prefix = builtins.concatStringsSep "." (lib.lists.reverseList (lib.lists.take 3 octets));
+
+  # 3. Construct the full dynamic zone name, e.g. "161.64.100.in-addr.arpa"
   in "${reverse_prefix}.in-addr.arpa";
 
   # ==========================================
   # IPv6 Reverse Logic (Zero-Compression Expansion)
   # ==========================================
   gen_reversed_chars_v6 = ipv6: let
-    # 1. Split by "::" to handle zero-compression
-    # e.g. "fd7a:115c:a1e0::cd3a:a114" -> ["fd7a:115c:a1e0" "cd3a:a114"]
+    # 1. Split by "::" to handle zero-compression, e.g. "fd7a:115c:a1e0::cd3a:a114" -> ["fd7a:115c:a1e0" "cd3a:a114"]
     split_double_colon = lib.strings.splitString "::" ipv6;
+
     # 2. Split the IP into a list, and pad add segments to 4 characters
     # e.g. Left part: ["fd7a" "115c" "a1e0"], right part: ["cd3a" "a114"]
-    # Helper: Pad a string to 4 characters with leading zeros
-    pad_hex = s: let len = builtins.stringLength s;
-    in if len == 0 then "0000"
-    else if len == 1 then "000" + s
-    else if len == 2 then "00" + s
-    else if len == 3 then "0" + s
-    else s;
-    left_padded = map pad_hex (
-      lib.strings.splitString ":" (builtins.head split_double_colon)
-    );
-    right_padded = map pad_hex (
-      lib.strings.splitString ":" (lib.lists.last split_double_colon)
-    );
-    # 3. Calculate and generate missing zero segments (IPv6 has 8 total segments)
-    # e.g. missing count is `8 - (3 + 5) = 3`, so the missing_segments is:
-    #  ["0000" "0000" "0000"]
-    missing_segments = let
-      missing_count = 8 - (
-        builtins.length left_padded + builtins.length right_padded
-      );
-    in builtins.genList (_: "0000") missing_count;
-    # 4. Construct the full 32-character string
-    # e.g.: ["fd7a" "115c" "a1e0", "0000" "0000" "0000" "cd3a" "a114"] ->
-    # "fd7a115ca1e0000000000000cd3aa114"
-    full_ipv6_str = builtins.concatStringsSep "" (
-      left_padded ++ missing_segments ++ right_padded
-    );
-  # 5. Reverse it character by character
-  # e.g. "fd7a115ca1e0000000000000cd3aa114"
-  # -> ["f" "d" "7" "a" "1" "1" "5" "c" "a" "1" "e" "0" "0" "0" "0" "0" "0" "0" "0" "0" "0" "0" "0" "0" "c" "d" "3" "a" "a" "1" "1" "4"]
-  # -> ["4" "1" "1" "a" "a" "3" "d" "c" "0" "0" "0" "0" "0" "0" "0" "0" "0" "0" "0" "0" "0" "e" "1" "a" "c" "5" "1" "1" "a" "7" "d" "f"]
-  in lib.reverseList (lib.stringToCharacters full_ipv6_str);
+    pad_hex = s: let len = builtins.stringLength s; in # Helper: Pad a string to 4 characters with leading zeros
+      if len == 0 then "0000"
+      else if len == 1 then "000${s}"
+      else if len == 2 then "00${s}"
+      else if len == 3 then "0${s}"
+      else s;
+    left_padded = map pad_hex (lib.strings.splitString ":" (builtins.head split_double_colon));
+    right_padded = map pad_hex (lib.strings.splitString ":" (lib.lists.last split_double_colon));
 
-  # Tailscale uses a /48 prefix. So the PTR length is `128 - 48 = 80` bits (20 hex chars).
-  # And the Zone Prefix is 48 bits (12 hex chars),
-  # e.g. ["4" "1" "1" "a" "a" "3" "d" "c" "0" "0" "0" "0" "0" "0" "0" "0" "0" "0" "0" "0" "0" "e" "1" "a" "c" "5" "1" "1" "a" "7" "d" "f"]
+    # 3. Calculate and generate missing zero segments (IPv6 has 8 total segments)
+    # e.g. Missing count is `8 - (3 + 2) = 3`, so the missing_segments is: ["0000" "0000" "0000"]
+    missing_segments = let missing_count = 8 - (builtins.length left_padded + builtins.length right_padded); in
+      builtins.genList (_: "0000") missing_count;
+
+    # 4. Construct the full 32-character string
+    # e.g.: ["fd7a" "115c" "a1e0", "0000" "0000" "0000" "cd3a" "a114"] -> "fd7a115ca1e0000000000000cd3aa114"
+    full_ipv6_str = builtins.concatStringsSep "" (left_padded ++ missing_segments ++ right_padded);
+
+    # 5. Reverse it character by character
+    # e.g. "fd7a115ca1e0000000000000cd3aa114"
+    # -> ["f" "d" "7" "a" "1" "1" "5" "c" "a" "1" "e" "0" "0" "0" "0" "0" "0" "0" "0" "0" "0" "0" "0" "0" "c" "d" "3" "a" "a" "1" "1" "4"]
+    # -> ["4" "1" "1" "a" "a" "3" "d" "c" "0" "0" "0" "0" "0" "0" "0" "0" "0" "0" "0" "0" "0" "e" "1" "a" "c" "5" "1" "1" "a" "7" "d" "f"]
+  in lib.lists.reverseList (lib.strings.stringToCharacters full_ipv6_str);
+
+  # Tailscale uses a /48 prefix. So the PTR length is `128 - 48 = 80` bits (20 hex chars), and the Zone Prefix is 48
+  # bits (12 hex chars). e.g.
+  # ["4" "1" "1" "a" "a" "3" "d" "c" "0" "0" "0" "0" "0" "0" "0" "0" "0" "0" "0" "0" "0" "e" "1" "a" "c" "5" "1" "1" "a" "7" "d" "f"]
   # -> ["4" "1" "1" "a" "a" "3" "d" "c" "0" "0" "0" "0" "0" "0" "0" "0" "0" "0" "0" "0"]
   # -> "4.1.1.a.a.3.d.c.0.0.0.0.0.0.0.0.0.0.0.0"
   gen_v6_ptr_host = {reversed_chars, prefix_len}:
-    builtins.concatStringsSep "." (lib.take ((128 - prefix_len) / 4) reversed_chars);
-  # e.g. ["4" "1" "1" "a" "a" "3" "d" "c" "0" "0" "0" "0" "0" "0" "0" "0" "0" "0" "0" "0" "0" "e" "1" "a" "c" "5" "1" "1" "a" "7" "d" "f"]
-  # -> ["0" "e" "1" "a" "c" "5" "1" "1" "a" "7" "d" "f"]
-  # -> "4.1.1.a.a.3.d.c.0.0.0.0.0.0.0.0.0.0.0.0"
-  # -> "0.e.1.a.c.5.1.1.a.7.d.f"
+    builtins.concatStringsSep "." (lib.lists.take ((128 - prefix_len) / 4) reversed_chars);
+  # e.g.
+  # ["4" "1" "1" "a" "a" "3" "d" "c" "0" "0" "0" "0" "0" "0" "0" "0" "0" "0" "0" "0" "0" "e" "1" "a" "c" "5" "1" "1" "a" "7" "d" "f"]
+  # -> ["0" "e" "1" "a" "c" "5" "1" "1" "a" "7" "d" "f"] -> "0.e.1.a.c.5.1.1.a.7.d.f"
   gen_v6_zone_prefix = {reversed_chars, prefix_len}:
-    builtins.concatStringsSep "." (lib.drop ((128 - prefix_len) / 4) reversed_chars);
+    builtins.concatStringsSep "." (lib.lists.drop ((128 - prefix_len) / 4) reversed_chars);
 
   # =========================================
   # Forward Zone (proteus.eu.org)
   # =========================================
+  # Don't forget update the SOA Serial
   proteus_zone = pkgs.writeText "${myvars.domain}.zone" ((zone_head myvars.domain) + ''
     @ IN A    ${nuc_ipv4}
     @ IN AAAA ${nuc_ipv6}
@@ -113,7 +101,6 @@
                     IN AAAA ${nuc_ipv6}
     proteus-desktop IN A    ${desktop_ipv4}
                     IN AAAA ${desktop_ipv6}
-    ; Don't forget update the SOA Serial
     ; Subdomain Services
     immich     IN CNAME proteus-nuc
     ;sftpgo     IN CNAME proteus-nuc
@@ -150,36 +137,42 @@
   # =========================================
   # In tailnet, the IPv4 reverse zone name are likely to vary
   nuc_reverse_zone_v4_name = gen_reverse_prefix_v4 nuc_ipv4;
-  nuc_reverse_zone_v4 = pkgs.writeText
-    "${nuc_reverse_zone_v4_name}.zone"
-    ((zone_head nuc_reverse_zone_v4_name)+ ''
-    ; PTR Record for last octet pointing to Tailscale domain
-    ${lib.lists.last (lib.strings.splitString "." nuc_ipv4)} IN PTR proteus-nuc.${myvars.tailnet}.
-  '');
+  nuc_reverse_zone_v4 = let
+    content = ''
+      ${zone_head nuc_reverse_zone_v4_name}
+
+      ; PTR Record for last octet pointing to Tailscale domain
+      ${lib.lists.last (lib.strings.splitString "." nuc_ipv4)} IN PTR proteus-nuc.${myvars.tailnet}.
+    '';
+  # in builtins.trace content (pkgs.writeText "${nuc_reverse_zone_v4_name}.zone" content);
+  in pkgs.writeText "${nuc_reverse_zone_v4_name}.zone" content;
+
   desktop_reverse_zone_v4_name = gen_reverse_prefix_v4 desktop_ipv4;
-  desktop_reverse_zone_v4 = pkgs.writeText
-    "${desktop_reverse_zone_v4_name}.zone"
-    ((zone_head desktop_reverse_zone_v4_name) + ''
-    ; PTR Record for last octet pointing to Tailscale domain
+  desktop_reverse_zone_v4 = pkgs.writeText "${desktop_reverse_zone_v4_name}.zone" ''
+    ${zone_head desktop_reverse_zone_v4_name}
+
     ${lib.lists.last (lib.strings.splitString "." desktop_ipv4)} IN PTR proteus-desktop.${myvars.tailnet}.
-  '');
+  '';
   # =========================================
   # IPv6 Reverse Zone
   # =========================================
-  reversed_chars = gen_reversed_chars_v6 nuc_ipv6;
-  nuc_ipv6_ptr_host = gen_v6_ptr_host {inherit reversed_chars; prefix_len = tailnet_prefix_length;};
-  desktop_ipv6_ptr_host = gen_v6_ptr_host {reversed_chars = gen_reversed_chars_v6 desktop_ipv6; prefix_len = tailnet_prefix_length;};
+  nuc_reversed_chars = gen_reversed_chars_v6 nuc_ipv6;
+
+  nuc_ipv6_ptr_host = gen_v6_ptr_host {reversed_chars = nuc_reversed_chars; prefix_len = tailnet_prefix_length;};
+  desktop_ipv6_ptr_host = gen_v6_ptr_host {
+    reversed_chars = gen_reversed_chars_v6 desktop_ipv6; prefix_len = tailnet_prefix_length;
+  };
   # e.g. "0.e.1.a.c.5.1.1.a.7.d.f.ip6.arpa"
-  reverse_zone_v6_name = "${gen_v6_zone_prefix {
-    inherit reversed_chars; prefix_len = tailnet_prefix_length;
-  }}.ip6.arpa";
-  reverse_zone_v6 = pkgs.writeText
-    "${reverse_zone_v6_name}.zone"
-    ((zone_head reverse_zone_v6_name) + ''
+  reverse_zone_v6_name = "${
+    gen_v6_zone_prefix {reversed_chars = nuc_reversed_chars; prefix_len = tailnet_prefix_length;}
+  }.ip6.arpa";
+  reverse_zone_v6 = pkgs.writeText "${reverse_zone_v6_name}.zone" ''
+    ${zone_head reverse_zone_v6_name}
+
     ; PTR Record for the host portion pointing to Tailscale domain
     ${nuc_ipv6_ptr_host} IN PTR proteus-nuc.${myvars.tailnet}.
     ${desktop_ipv6_ptr_host} IN PTR proteus-desktop.${myvars.tailnet}.
-  '');
+  '';
 in {
   networking.firewall = {allowedTCPPorts = [53]; allowedUDPPorts = [53];};
   systemd.services.bind.preStart = lib.mkAfter ''
@@ -223,15 +216,15 @@ in {
     # NixOS defaults to /run/named, which clears on reboot.
     directory = "/srv/bind";
     # Access-control of what networks are allowed for recursive queries
-    cacheNetworks = [
-      # "127.0.0.0/8" "::1/128"
-      # "100.64.0.0/10" "fd7a:115c:a1e0::/48"
-      # "192.168.0.0/16"
-    ];
+    # cacheNetworks = [
+    #   "127.0.0.0/8" "::1/128"
+    #   "100.64.0.0/10" "fd7a:115c:a1e0::/48"
+    #   "192.168.0.0/16"
+    # ];
     forwarders = [];
     # Bind standard port 53 strictly to the specific interface IPs
-    listenOn = [myvars.networking.hosts_addr.Proteus-NUC.ipv4];
-    listenOnIpv6 = [myvars.networking.hosts_addr.Proteus-NUC.ipv6];
+    listenOn = with myvars.networking.hosts_addr.Proteus-NUC; [ipv4 et_ipv4];
+    listenOnIpv6 = with myvars.networking.hosts_addr.Proteus-NUC; [ipv6 et_ipv4];
 
     # Inject the variables into the raw extraOptions string for DoT and DoH
     extraOptions = with myvars.networking.hosts_addr.Proteus-NUC; ''
