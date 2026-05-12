@@ -6,7 +6,7 @@
   boot.kernelModules = ["kvm-intel"];
   boot.extraModulePackages = [];
   boot.zfs.forceImportRoot = false; # Disable backwards compatibility options
-  boot.zfs.allowHibernation = true; # Make sure not use Swap on ZFS
+  boot.zfs.unsafeAllowHibernation = true; # Make sure not use Swap on ZFS
 
   # Disable zfs-mount, use NixOS systemd mount management
   # Ref: https://wiki.nixos.org/wiki/ZFS#ZFS_conflicting_with_systemd

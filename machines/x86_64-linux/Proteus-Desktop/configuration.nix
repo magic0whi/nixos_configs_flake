@@ -1,11 +1,10 @@
-{myvars, config, ...}: let
+{myvars, config, lib, ...}: let
   iface_wlan = myvars.networking.hosts_addr.${config.networking.hostName}.iface_wlan;
 in {
   ## START sing-box.nix
   sops.secrets."sb_client_linux.json" = {
     sopsFile = "${myvars.secrets_dir}/sb_client_linux.json.sops";
-    format = "binary";
-    restartUnits = ["sing-box.service"];
+    format = "binary"; restartUnits = ["sing-box.service"];
   };
   services.sing-box.enable = true;
   services.sing-box.configFile = config.sops.secrets."sb_client_linux.json".path;
@@ -26,8 +25,7 @@ in {
   boot.extraModulePackages = [config.boot.kernelPackages.rtl8812au];
   boot.kernelModules = ["8812au"];
   sops.secrets."proteus_ap_password" = {
-    sopsFile = "${myvars.secrets_dir}/Proteus-Desktop.sops.yaml";
-    # owner = myvars.username;
+    sopsFile = "${myvars.secrets_dir}/Proteus-Desktop.sops.yaml"; restartUnits = ["hostapd.service"];
   };
   services.hostapd = {
     enable = true;
@@ -38,23 +36,11 @@ in {
       countryCode = "US";
       # Band 1 Capabilities
       # NOTE on Band 2 some wifi4 capibilities is unavailable
-      wifi4.capabilities = [
-        "HT40+"
-        "SMPS-STATIC"
-        "SHORT-GI-20"
-        "SHORT-GI-40"
-        "RX-STBC1"
-        "MAX-AMSDU-7935"
-        "DSSS_CCK-40"
+      wifi4.capabilities = [ "HT40+" "SMPS-STATIC" "SHORT-GI-20" "SHORT-GI-40" "RX-STBC1" "MAX-AMSDU-7935" "DSSS_CCK-40"
       ];
       # wifi5.operatingChannelWidth = "80";
-      # wifi5.capabilities = [ # Band 2 Capabilities
-      #   "MAX-MPDU-11454"
-      #   "SHORT-GI-80"
-      #   "TX-STBC-2BY1"
-      #   "SU-BEAMFORMEE"
-      #   "HTC-VHT"
-      # ];
+      # They are in Band 2 Capabilities
+      # wifi5.capabilities = ["MAX-MPDU-11454" "SHORT-GI-80" "TX-STBC-2BY1" "SU-BEAMFORMEE" "HTC-VHT"];
       networks = {
         ${iface_wlan} = {
           ssid = "Proteus_AP";
@@ -69,22 +55,16 @@ in {
           authentication = {
             # "wpa2-sha1" is standard WPA2-PSK (AES/CCMP). "wpa2-sha256" causes
             # issues.
-            mode = "wpa2-sha1";
-            wpaPasswordFile = config.sops.secrets."proteus_ap_password".path;
-            # mode = "wpa3-sae";
-            # saePasswords = [{passwordFile = config.sops.secrets."proteus_ap_password".path;}];
+            mode = "wpa2-sha1"; wpaPasswordFile = config.sops.secrets."proteus_ap_password".path;
+            # mode = "wpa3-sae"; saePasswords = [{passwordFile = config.sops.secrets."proteus_ap_password.key".path;}];
           };
         };
       };
     };
   };
-  networking.interfaces.${iface_wlan}.ipv4.addresses = [{
-    address = "192.168.12.1";
-    prefixLength = 24;
-  }];
-  networking.nftables.tables.bypass_hostapd = {
-    family = "inet";
-    content = with (builtins.head config.networking.interfaces.${iface_wlan}.ipv4.addresses); ''
+  networking.interfaces.${iface_wlan}.ipv4.addresses = [{address = "192.168.12.1"; prefixLength = 24;}];
+  networking.nftables.tables = lib.mkIf config.services.sing-box.enable {hostapd_bypass = {
+    family = "inet"; content = with (builtins.head config.networking.interfaces.${iface_wlan}.ipv4.addresses); ''
       chain prerouting {
         type filter hook prerouting priority dstnat - 5; policy accept;
 
@@ -95,20 +75,20 @@ in {
         # ip saddr ${address}/${toString prefixLength} ct mark set 0x00002024
       }
     '';
-  };
-  networking.firewall.extraInputRules = with (builtins.head config.networking.interfaces.${iface_wlan}.ipv4.addresses); ''
-    ip saddr ${address}/${toString prefixLength} accept comment "Allow hostapd clients to reach auto_redirect ports"
-  '';
+  };};
+  networking.firewall.extraInputRules =
+    with (builtins.head config.networking.interfaces.${iface_wlan}.ipv4.addresses); ''
+      ip saddr ${address}/${toString prefixLength} accept comment "Allow hostapd clients to reach auto_redirect ports"
+    '';
   services.dnsmasq = {
     enable = true;
     settings = {
-      # We can keep systemd-resolved listening on 127.0.0.53:53 and use dnsmasq
-      # solely on the wlan interface by telling it to only bind there.
-      # This prevents conflicts with systemd-resolved!
+      # We can keep systemd-resolved listening on 127.0.0.53:53 and keep dnsmasq solely on the wlan interface by telling
+      # it to only bind there, this prevents conflicts with systemd-resolved
       interface = iface_wlan;
       bind-interfaces = true;
       dhcp-range = ["192.168.12.10,192.168.12.240,12h"];
-      # Tell DHCP clients to use 223.5.5.5 as their DNS server
+      # Tell DHCP clients to use 223.5.5.5 as their DNS server so sing-box can hijack
       dhcp-option = ["option:dns-server,223.5.5.5"];
     };
   };
@@ -116,8 +96,7 @@ in {
     enable = true;
     # The interface connected to the internet (e.g., eth0, wlan0 onboard)
     externalInterface = myvars.networking.hosts_addr.${config.networking.hostName}.iface;
-    # The interface acting as the hotspot
-    internalInterfaces = [iface_wlan];
+    internalInterfaces = [iface_wlan]; # The interface acting as the hotspot
   };
   ## END hostapd.nix
 }
