@@ -36,11 +36,7 @@ in {
         # PROTOCOL = "http+unix"; # http through unix
       };
       openid.ENABLE_OPENID_SIGNIN = false; # Only allow OAuth
-      oauth2_client = {
-        ENABLE_AUTO_REGISTRATION = true;
-        ACCOUNT_LINKING = "auto";
-        USERNAME = "userid";
-      };
+      oauth2_client = {ENABLE_AUTO_REGISTRATION = true; ACCOUNT_LINKING = "auto"; USERNAME = "userid";};
       # Delegating registration entirely to Authelia
       service.ALLOW_ONLY_EXTERNAL_REGISTRATION = true;
       # Add support for actions, based on act: https://github.com/nektos/act

@@ -7,8 +7,8 @@
   };
   services.sing-box.enable = true;
   services.sing-box.config_file = config.sops.secrets."sb_client_darwin.json".path;
-  launchd.daemons.tailscaled.serviceConfig = {
-    StandardErrorPath = "/Library/Logs/com.tailscale.ipn.stderr.log";
-    StandardOutPath = "/Library/Logs/com.tailscale.ipn.stdout.log";
-  };
+  # launchd.daemons.tailscaled.serviceConfig = {
+  #   StandardErrorPath = "/Library/Logs/com.tailscale.ipn.stderr.log";
+  #   StandardOutPath = "/Library/Logs/com.tailscale.ipn.stdout.log";
+  # };
 }

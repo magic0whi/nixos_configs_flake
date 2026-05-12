@@ -21,15 +21,10 @@
     dgpu_sym_name = "nvidia"; dgpu_pci_ids = "0000:01:00.0";
   };
   nixos_system = inputs.nixpkgs.lib.nixosSystem (mylib.gen_system_args {
-    inherit name mylib nixpkgs_modules hm_modules;
-    myvars = nuc_myvars;
-    machine_path = ./.;
+    inherit name mylib nixpkgs_modules hm_modules; myvars = nuc_myvars; machine_path = ./.;
   });
   nixos_iso = (inputs.nixpkgs.lib.nixosSystem (mylib.gen_system_args {
-    inherit name mylib nixpkgs_modules hm_modules;
-    myvars = nuc_myvars;
-    generate_iso = true;
-    machine_path = ./.;
+    inherit name mylib nixpkgs_modules hm_modules; generate_iso = true; myvars = nuc_myvars; machine_path = ./.;
   })).config.system.build.images.iso;
 in {
   _DEBUG = {inherit name nixpkgs_modules hm_modules myvars mylib;};

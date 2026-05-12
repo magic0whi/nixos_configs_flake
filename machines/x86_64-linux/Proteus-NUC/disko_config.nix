@@ -103,33 +103,19 @@ in {
       + "zpool set cachefile=/etc/zfs/zpool.cache ${zroot}"; # Create zpool.cache
       datasets = {
         root = { # ROOT dataset (ephemeral, rolled back to blank on boot)
-          type = "zfs_fs";
-          mountpoint = "/";
-          options."com.sun:auto-snapshot" = "false";
+          type = "zfs_fs"; mountpoint = "/"; options."com.sun:auto-snapshot" = "false";
           postCreateHook = "zfs list -t snapshot -H -o name | grep -E '^${zroot}/root@blank$' || zfs snapshot ${zroot}/root@blank";
         };
         home = {
-          type = "zfs_fs";
-          mountpoint = "/home";
-          # Used by `services.zfs.autoSnapshot.*` options.
-          options."com.sun:auto-snapshot" = "false";
+          # `com.sun:auto-snapshot` is used by options `services.zfs.autoSnapshot.*`
+          type = "zfs_fs"; mountpoint = "/home"; options."com.sun:auto-snapshot" = "false";
           # postCreateHook = "zfs list -t snapshot -H -o name | grep -E '^${zroot}/home@blank$' || zfs snapshot ${zroot}/home@blank";
         };
-        "home/root" = {
-          type = "zfs_fs";
-          mountpoint = "/root";
-        };
-        nix = {
-          type = "zfs_fs";
-          mountpoint = "/nix";
-          options."com.sun:auto-snapshot" = "false";
-          options.atime = "off";
-        };
+        "home/root" = {type = "zfs_fs"; mountpoint = "/root";};
+        nix = {type = "zfs_fs"; mountpoint = "/nix"; options."com.sun:auto-snapshot" = "false"; options.atime = "off";};
         persistent = {
-          type = "zfs_fs";
-          mountpoint = "/persistent";
+          type = "zfs_fs"; mountpoint = "/persistent"; options."com.sun:auto-snapshot" = "true";
           mountOptions = ["defaults" "x-gvfs-trash"];
-          options."com.sun:auto-snapshot" = "true";
         };
       };
     };

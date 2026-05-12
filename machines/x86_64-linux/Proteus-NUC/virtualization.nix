@@ -1,5 +1,29 @@
 {pkgs, lib, config, myvars, ...}: {
-  ## START docker.nix
+  # virtualisation.waydroid.enable = true; # Usage: https://wiki.nixos.org/wiki/Waydroid
+  # virtualisation.docker.storageDriver = "btrfs"; # conflict with feature: containerd-snapshotter
+  ## BEGIN binfmt.nix
+  boot.binfmt.emulatedSystems = ["riscv64-linux" "aarch64-linux"]; # Cross compilation
+  boot.binfmt.registrations."riscv64-linux" = { # For riscv64 container
+    interpreter = "${lib.getExe' pkgs.pkgsStatic.qemu-user "qemu-riscv64"}";
+    fixBinary = true;
+    wrapInterpreterInShell = false;
+  };
+  ## END binfmt.nix
+  ## BEGIN sriov.nix
+  boot.extraModulePackages = with pkgs; [i915-sriov xe-sriov];
+  boot.kernelParams = [
+    "intel_iommu=on"
+    # Gen11
+    "i915.enable_guc=3"
+    "i915.max_vfs=7"
+    "module_blacklist=xe"
+    # Gen12 and later
+    # "xe.max_vfs=7"
+    # "xe.force_probe=0x9a60" # cat /sys/devices/pci0000:00/0000:00:02.0/device
+    # "module_blacklist=i915"
+  ];
+  ## END sriov.nix
+  ## BEGIN docker.nix
   # =============================================================================
   # Docker + sing-box auto_redirect & FakeIP Conflict Resolution
   # =============================================================================
@@ -19,25 +43,22 @@
   #
   #   Critical exception: traffic destined for FakeIP (198.18.0.0/15) hits a `return` BEFORE the bypass mark, so TProxy
   #   can still catch and resolve those connections.
-  networking.nftables.tables = lib.mkIf config.services.sing-box.enable {vnet_bypass = {
-    family = "inet";
-    content = ''
-      chain prerouting {
-        type filter hook prerouting priority dstnat - 5; policy accept;
+  networking.nftables.tables = lib.mkIf config.services.sing-box.enable {vnet_bypass = {family = "inet"; content = ''
+    chain prerouting {
+      type filter hook prerouting priority dstnat - 5; policy accept;
 
-        # 1. Do NOT bypass FakeIP traffic. Let sing-box handle it.
-        ip daddr 198.18.0.0/15 return
+      # 1. Do NOT bypass FakeIP traffic. Let sing-box handle it.
+      ip daddr 198.18.0.0/15 return
 
-        # 2. Bypass everything else from Docker & Libvirt
-        ip saddr {
-          172.17.0.0/16, # Docker Default
-          172.18.0.0/16, # Docker Custom
-          172.20.0.0/14, # Extra Containers
-          192.168.122.0/24 # Libvirt
-        } ct mark set 0x00002024
-      }
-    '';
-  };};
+      # 2. Bypass everything else from Docker & Libvirt
+      ip saddr {
+        172.17.0.0/16, # Docker Default
+        172.18.0.0/16, # Docker Custom
+        172.20.0.0/14, # Extra Containers
+        192.168.122.0/24 # Libvirt
+      } ct mark set 0x00002024
+    }
+  '';};};
   # Fix 2: extraInputRules:
   #   With auto_redirect enabled, sing-box allocates a dynamic local TCP port
   #   and installs several nft rules. Because `redirect` rewrites the packet
@@ -60,14 +81,13 @@
     enable = true;
     daemon.settings = {
       firewall-backend = "nftables"; # Requires >= docker 29
-      # Enables pulling using containerd, which supports restarting from a
-      # partial pull, ref https://docs.docker.com/storage/containerd/
-      features = {containerd-snapshotter = true;};
+      # Enables pulling using containerd, which supports restarting from a partial pull.
+      # Ref https://docs.docker.com/storage/containerd/
+      features.containerd-snapshotter = true;
     };
   };
   ## END docker.nix
-  # virtualisation.waydroid.enable = true; Usage: https://wiki.nixos.org/wiki/Waydroid
-  ## START libvirtd.nix
+  ## BEGIN libvirtd.nix
   # Enable nested virtualization, required by security containers and nested vm.
   # This should be set per host in /hosts, not here.
   # - For AMD CPU, add "kvm-amd" to kernelModules.
@@ -77,22 +97,31 @@
   #   boot.kernelModules = ["kvm-intel"];
   #   boot.extraModprobeConfig = "options kvm_intel nested=1"; # for intel cpu
   boot.kernelModules = ["vfio-pci"];
-  # Bind all i915 VFs (00:02.1 to 00:02.7) to vfio-pci
   services.udev.extraRules = ''
-    ACTION=="add", SUBSYSTEM=="pci", KERNEL=="${builtins.head (lib.strings.splitString "." myvars.igpu_pci_ids)}.[1-7]", ATTR{vendor}=="0x8086", ATTR{device}=="0x9a60", DRIVER!="vfio-pci", RUN+="/bin/sh -c 'echo \$kernel > /sys/bus/pci/devices/\$kernel/driver/unbind; echo vfio-pci > /sys/bus/pci/devices/\$kernel/driver_override; modprobe vfio-pci; echo \$kernel > /sys/bus/pci/drivers/vfio-pci/bind'"
+    # Bind all i915 VFs (00:02.1 to 00:02.7) to vfio-pci
+    ${builtins.concatStringsSep ", " [
+      ''ACTION=="add", SUBSYSTEM=="pci"''
+      ''KERNEL=="${builtins.head (lib.strings.splitString "." myvars.igpu_pci_ids)}.[1-7]"''
+      ''ATTR{vendor}=="0x8086", ATTR{device}=="0x9a60"''
+      ''DRIVER!="vfio-pci"''
+      ''RUN+="/bin/sh -c '${builtins.concatStringsSep "; " [
+        ''echo \$kernel > /sys/bus/pci/devices/\$kernel/driver/unbind''
+        ''echo vfio-pci > /sys/bus/pci/devices/\$kernel/driver_override''
+        ''modprobe vfio-pci''
+        ''echo \$kernel > /sys/bus/pci/drivers/vfio-pci/bind''
+      ]}'"''
+    ]}
   '';
   virtualisation = {
     spiceUSBRedirection.enable = true;
     # lxd.enable = true;
-    libvirtd = let
-      domain_name = "win11";
-    in {
+    libvirtd = let domain_name = "win11"; in {
       enable = true;
       qemu.swtpm.enable = true;
       qemu.vhostUserPackages = [pkgs.virtiofsd];
       # hooks.qemu."99-hugepages.sh" = pkgs.writeShellScript "99-hugepages.sh" ''
       #   set -eufo pipefail
-      #   # ## START DEBUG
+      #   # ## BEGIN DEBUG
       #   # LOG=/var/log/libvirt/hooks-qemu.log
       #   # exec >>"$LOG" 2>&1
       #   # set -x

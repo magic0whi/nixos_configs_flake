@@ -19,10 +19,7 @@
             bypassWorkqueues = true;
             # fallbackToPassword = false;
           };
-          content = {
-            type = "zfs";
-            pool = "storage";
-          };
+          content = {type = "zfs"; pool = "storage";};
         };
       };
     };
@@ -54,11 +51,7 @@ in {
               label = "SWAP PARTITION";
               type = "0657FD6D-A4AB-43C4-84E5-0933C84B4F4F";
               size = "24G";
-              content = {
-                type = "swap";
-                discardPolicy = "both";
-                resumeDevice = true;
-              };
+              content = {type = "swap"; discardPolicy = "both"; resumeDevice = true;};
             };
             zfs_root = {
               label = "ZROOT PARTITION";
@@ -112,36 +105,21 @@ in {
             postCreateHook = "zfs list -t snapshot -H -o name | grep -E '^zroot/root@blank$' || zfs snapshot zroot/root@blank";
           };
           home = {
-            type = "zfs_fs";
-            mountpoint = "/home";
-            # Used by `services.zfs.autoSnapshot.*` options.
-            options."com.sun:auto-snapshot" = "true";
+            # `com.sun:auto-snapshot` is used by options `services.zfs.autoSnapshot.*`
+            type = "zfs_fs"; mountpoint = "/home"; options."com.sun:auto-snapshot" = "true";
           };
-          "home/root" = {
-            type = "zfs_fs";
-            mountpoint = "/root";
-          };
+          "home/root" = {type = "zfs_fs"; mountpoint = "/root";};
           nix = {
-            type = "zfs_fs";
-            mountpoint = "/nix";
-            options."com.sun:auto-snapshot" = "false";
-            options.atime = "off";
+            type = "zfs_fs"; mountpoint = "/nix"; options."com.sun:auto-snapshot" = "false"; options.atime = "off";
           };
-          persistent = {
-            type = "zfs_fs";
-            mountpoint = "/persistent";
-            options."com.sun:auto-snapshot" = "false";
-          };
+          persistent = {type = "zfs_fs"; mountpoint = "/persistent"; options."com.sun:auto-snapshot" = "false";};
         };
       };
       storage = { # STORAGE POOL (SATA RAIDZ2)
         inherit type options rootFsOptions;
         mode = "raidz2";
         datasets.data = {
-          type = "zfs_fs";
-          mountpoint = myvars.storage_path;
-          mountOptions = ["nofail"];
-          options.canmount = "on";
+          type = "zfs_fs"; mountpoint = myvars.storage_path; mountOptions = ["nofail"]; options.canmount = "on";
         };
       };
     };

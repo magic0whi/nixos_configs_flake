@@ -136,9 +136,8 @@
     capSysAdmin = true;
     settings = {
       adapter_name = if config.home-manager.users.${myvars.username}.wayland.windowManager.hyprland.nvidia
-      then "/dev/dri/${myvars.dgpu_sym_name}"
-      else "/dev/dri/${myvars.igpu_sym_name}";
-
+        then "/dev/dri/${myvars.dgpu_sym_name}"
+        else "/dev/dri/${myvars.igpu_sym_name}";
       origin_web_ui_allowed = "pc";
     };
   };
@@ -150,8 +149,7 @@
   # module. CI script will run as 'proteus', so we make the folder owned by
   # `myvars.username` but give the group (which default to 'caddy') read access.
   systemd.tmpfiles.settings."10-caddy-create-webroot" = let
-    root_path = builtins.head (builtins.match
-      ''.*root \* ([a-zA-Z0-9/_-]+).*''
+    root_path = builtins.head (builtins.match ''.*root \* ([a-zA-Z0-9/_-]+).*''
       # Get the first attrset under services.caddy.virtualHosts
       (builtins.head (builtins.attrValues config.services.caddy.virtualHosts)).extraConfig
     );

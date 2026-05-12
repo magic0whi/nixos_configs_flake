@@ -26,8 +26,7 @@
   ## START syncthing.nix
   sops.secrets."Proteus-Desktop_syncthing.priv.pem" = {
     sopsFile = "${myvars.secrets_dir}/Proteus-Desktop_syncthing.priv.pem.sops";
-    format = "binary";
-    restartUnits = ["syncthing.service"];
+    format = "binary"; restartUnits = ["syncthing.service"];
   };
   # If without `users.groups.storage` and rely on LDAP group
   # systemd.services.syncthing.serviceConfig.SupplementaryGroups = ["storage"];
@@ -44,23 +43,18 @@
         "Redmi Note 5".id = "V3BFX3M-H4RJSCS-DZ6XQIM-3T5JK2V-KPYKGPD-HUV5UMG-PQA52BH-MYOFIAR";
       };
     in {
-      devices = builtins.mapAttrs (n: v: {id = v.syncthing_id;}) (
-        lib.attrsets.filterAttrs # Filter out self
-          (n: v: v ? syncthing_id && n != config.networking.hostName)
-          myvars.networking.known_hosts)
-      // mobile_devices;
-
+      # Import all known hosts that has attr `syncthing_id` but filter out self
+      devices = mobile_devices // (builtins.mapAttrs (n: v: {id = v.syncthing_id;}) (lib.attrsets
+        .filterAttrs (n: v: v ? syncthing_id && n != config.networking.hostName) myvars.networking.known_hosts));
       folders = {
         "Documents" = {
           path = "${myvars.storage_path}/share/Documents";
-          # All devices
-          devices = builtins.attrNames config.services.syncthing.settings.devices;
+          devices = builtins.attrNames config.services.syncthing.settings.devices; # All devices
         };
         "Games" = {
           path = "${myvars.storage_path}/share/Games";
           devices = lib.lists.subtractLists
-            (builtins.attrNames mobile_devices)
-            (builtins.attrNames config.services.syncthing.settings.devices);
+            (builtins.attrNames mobile_devices) (builtins.attrNames config.services.syncthing.settings.devices);
         };
         "Music" = {
           path = "${myvars.storage_path}/share/Music";
@@ -73,14 +67,12 @@
         "Secrets" = {
           path = "${myvars.storage_path}/share/Secrets";
           devices = lib.lists.subtractLists
-            (builtins.attrNames mobile_devices)
-            (builtins.attrNames config.services.syncthing.settings.devices);
+            (builtins.attrNames mobile_devices) (builtins.attrNames config.services.syncthing.settings.devices);
         };
         "Works" = {
           path = "${myvars.storage_path}/share/Works";
           devices = lib.lists.subtractLists
-            (builtins.attrNames mobile_devices)
-            (builtins.attrNames config.services.syncthing.settings.devices);
+            (builtins.attrNames mobile_devices) (builtins.attrNames config.services.syncthing.settings.devices);
         };
       };
     };

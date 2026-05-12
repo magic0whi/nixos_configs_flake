@@ -13,13 +13,11 @@
       };
     in {
       # Import all known hosts that has attr `syncthing_id` but filter out self
-      devices = mobile_devices // (builtins.mapAttrs (n: v: {id = v.syncthing_id;}) (lib.attrsets.filterAttrs
-        (n: v: v ? syncthing_id && n != osConfig.networking.hostName) myvars.networking.known_hosts));
+      devices = mobile_devices // (builtins.mapAttrs (n: v: {id = v.syncthing_id;}) (lib.attrsets
+        .filterAttrs (n: v: v ? syncthing_id && n != osConfig.networking.hostName) myvars.networking.known_hosts));
       folders = {
-        "Documents" = {
-          path = config.xdg.userDirs.documents;
-          # All devices
-          devices = builtins.attrNames config.services.syncthing.settings.devices;
+        "Documents" = { # All devices
+          path = config.xdg.userDirs.documents; devices = builtins.attrNames config.services.syncthing.settings.devices;
         };
         "Games" = {
           path = "${config.home.homeDirectory}/Games";

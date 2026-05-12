@@ -1,12 +1,11 @@
 {lib, mylib, pkgs, config, myvars, ...}: let
   dpi_scale = lib.strings.substring 0 4 (lib.strings.floatToString 1.25);
   # Ref: https://wiki.hyprland.org/Configuring/Monitors/
-  # ls /sys/class/drm/card*
-  main_monitor = if config.wayland.windowManager.hyprland.nvidia then
-    # 10-bit will cause the internal monitor flickering when using PRIME Sync
-    "eDP-1,highres,auto,${dpi_scale},bitdepth,8,cm,adobe"
-  else
-    "eDP-1,highres,auto,${dpi_scale},bitdepth,10,cm,adobe";
+  # TIP: ls /sys/class/drm/card*
+  # 10-bit will cause the internal monitor flickering when using PRIME Sync
+  main_monitor = if config.wayland.windowManager.hyprland.nvidia
+    then "eDP-1,highres,auto,${dpi_scale},bitdepth,8,cm,adobe"
+    else "eDP-1,highres,auto,${dpi_scale},bitdepth,10,cm,adobe";
   secondary_monitor = "HDMI-A-1,highres,auto-left,2,bitdepth,10,cm,adobe";
   third_monitor = "DP-3,highres,auto-left,1.67,bitdepth,10,cm,adobe";
 in {
@@ -27,7 +26,7 @@ in {
     witr
   ];
   ## END packages.nix
-  ## START cloud-providers.nix
+  ## BEGIN cloud-providers.nix
   sops.secrets = {
     "project-0.secret.json" = {
       sopsFile = "${myvars.secrets_dir}/gcloud_project-0.secret.json.sops";
@@ -40,7 +39,7 @@ in {
       path = "${config.xdg.configHome}/gcloud/project-1.secret.json";
     };
   };
-  home.file = let
+  home.file = let # Add terraform-provider-google for terraformer
     arch = "linux_amd64";
     version = "7.31.0";
     provider = pkgs.terraform-providers.hashicorp_google.overrideAttrs (_: {
@@ -59,10 +58,12 @@ in {
         rmdir $out/bin
       '';
     });
-  in {".terraform.d/plugins/${arch}/terraform-provider-google_v${version}".source =
-    "${provider}/libexec/terraform-providers/registry.terraform.io/hashicorp/google/${version}/${arch}/terraform-provider-google_${version}";
+  in {
+    ".terraform.d/plugins/${arch}/terraform-provider-google_v${version}".source =
+      "${provider}/libexec/terraform-providers/registry.terraform.io/hashicorp/google/${version}/${arch}/terraform-provider-google_${version}";
   };
   ## END cloud-providers.nix
+  ## BEGIN hyprland.nix
   wayland.windowManager.hyprland = {
     nvidia = true; # Prime Sync
     settings = {
@@ -89,15 +90,14 @@ in {
         "10,monitor:${main_iface}"
       ];
       env = [
-        # Not recommand set globally, make firefox scale twice
-        # "GDK_DPI_SCALE,${dpi_scale}"
+        # "GDK_DPI_SCALE,${dpi_scale}" # Set globally is not recommend, makes firefox scale twice
         "STEAM_FORCE_DESKTOPUI_SCALING,${dpi_scale}"
       ] ++ lib.optional # PRIME Sync mode for Hyprland
         config.wayland.windowManager.hyprland.nvidia
         "AQ_DRM_DEVICES,/dev/dri/${myvars.dgpu_sym_name}:/dev/dri/${myvars.igpu_sym_name}";
 
       bind = [
-        # Leave to main monitor for sunshine streaming
+        # Add shortcut key for Leave Mode. Leave to main monitor for sunshine streaming
         (builtins.concatStringsSep "" [
           "$mainMod,Y,exec,"
           "hyprctl keyword monitor "
@@ -139,18 +139,18 @@ in {
     unlock_cmd = "brightnessctl -rd usb-3-11-3-1::kbd_backlight";
   };
   programs.mpv.profiles.common.vulkan-device = if config.wayland.windowManager.hyprland.nvidia
-  then "NVIDIA GeForce RTX 3070 Laptop GPU"
-  else "Intel(R) UHD Graphics (TGL GT1)";
+    then "NVIDIA GeForce RTX 3070 Laptop GPU"
+    else "Intel(R) UHD Graphics (TGL GT1)";
+  ## END hyprland.nix
   # programs.ssh = {
   #   enable = true;
   #   enableDefaultConfig = false;
   #   matchBlocks = {
   #     "*" = { # Default values
-  #       # A private key that is used during authentication will be added to
-  #       # ssh-agent if it is running
+  #       # A private key that is used during authentication will be added to ssh-agent if it is running
   #       addKeysToAgent = "yes";
-  #       # Allow to securely use local SSH agent to authenticate on the remote
-  #       # machine. It has the same effect as adding cli option `ssh -A user@host`
+  #       # Allow to securely use local SSH agent to authenticate on the remote machine. It has the same effect as adding
+  #       # CLI option `ssh -A user@host`
   #       forwardAgent = true;
   #     };
   #     "ssh.github.com hf.co" = lib.hm.dag.entryBefore ["*.tailba6c3f.ts.net"] {
@@ -160,7 +160,9 @@ in {
   #     };
   #     "192.168.*" = {
   #       identityFile = "/etc/agenix/ssh-key-romantic"; # romantic holds my homelab~
-  #       identitiesOnly = true; # Specifies that ssh should only use the identity file. Required to prevent sending default identity files first.
+  #       # Specifies that ssh should only use the identity file. Required to prevent sending default identity files
+  #       # first.
+  #       identitiesOnly = true;
   #     };
   #   };
   # };

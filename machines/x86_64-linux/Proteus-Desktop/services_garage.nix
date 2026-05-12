@@ -9,10 +9,7 @@
 # `garage -h <full-node-id>@127.0.0.1:3901 bucket allow --read --write nix-cache --owner --key nixbuilder`
 # Allow bucket-as-website bucket-as-website: garage -h <full-node-id>@127.0.0.1:3901 bucket website --allow nix-cache
 {myvars, config, pkgs, lib, ...}: {
-  sops = let
-    restartUnits = ["garage.service"];
-    sopsFile = "${myvars.secrets_dir}/Proteus-Desktop.sops.yaml";
-  in {
+  sops = let restartUnits = ["garage.service"]; sopsFile = "${myvars.secrets_dir}/Proteus-Desktop.sops.yaml"; in {
     secrets = {
       "garage_rpc_secret" = {inherit restartUnits sopsFile;};
       "garage_admin_token" = {inherit restartUnits sopsFile;};

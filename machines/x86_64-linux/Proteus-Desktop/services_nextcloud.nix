@@ -12,6 +12,7 @@ in {
   # Add RequiresMountsFor to wait for storage mounted
   systemd.services = let clean_units = map (s: lib.strings.removeSuffix ".service" s) restartUnits;
   in lib.mkMerge [
+    # Requires storage to be mounted
     (lib.attrsets.genAttrs clean_units (name: {unitConfig.RequiresMountsFor = [myvars.storage_path];}))
     {nextcloud-custom-config = { # https://wiki.nixos.org/wiki/Nextcloud#Dynamic_configuration
       after = ["nextcloud-setup.service"];
@@ -39,7 +40,6 @@ in {
       dbtype = "pgsql";
       dbhost = "postgresql.${myvars.domain}";
       dbpassFile = config.sops.secrets.nextcloud_db_password.path;
-
       adminpassFile = config.sops.secrets.nextcloud_admin_password.path;
     };
     maxUploadSize = "20G";

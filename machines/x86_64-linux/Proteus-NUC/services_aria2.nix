@@ -5,7 +5,6 @@ in {
     sopsFile = "${myvars.secrets_dir}/Proteus-NUC.sops.yaml"; restartUnits = ["aria2.service"];
   };
   users.users.${myvars.username}.extraGroups = ["aria2"];
-
   services.aria2 = {
     enable = true;
     rpcSecretFile = config.sops.secrets.aria2_rpc_secret.path;
@@ -72,8 +71,7 @@ in {
       bt-prioritize-piece = "head=32M,tail=32M";
       rpc-save-upload-metadata = true;
       follow-torrent = true;
-      # This will create a correspondent download task and pause while RPC is enabled.
-      pause-metadata = false;
+      pause-metadata = false; # This will create a correspondent download task and pause while RPC is enabled.
       bt-save-metadata = true;
       bt-load-saved-metadata = true;
       bt-remove-unselected-file = true;
@@ -88,8 +86,7 @@ in {
 
       enable-rpc = true;
       rpc-allow-origin-all = true;
-      # We use Traefik
-      # rpc-listen-all = true;
+      # rpc-listen-all = true; # We use Traefik so comment it
       rpc-listen-port = 6800;
       rpc-max-request-size = "256M";
       # rpc-secure = true;
@@ -97,14 +94,12 @@ in {
       #async-dns=true
       #async-dns-server=119.29.29.29,223.5.5.5,8.8.8.8,1.1.1.1
       #interface=
-      # If --interface is used, this option will be ignored.
-      #multiple-interface=optun,macvtap0,yggdrasil
+      # multiple-interface=optun,macvtap0,yggdrasil # If --interface is used, this option will be ignored.
 
       #log=
       log-level = "warn";
       console-log-level = "notice";
-      # Disable console log
-      quiet = false;
+      quiet = false; # Whether disable console log
       summary-interval = 0;
 
       ## BitTorrent trackers ##
