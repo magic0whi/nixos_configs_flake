@@ -1,6 +1,4 @@
-{config, myvars, lib, ...}: let
-  server_pub_crt = "${myvars.secrets_dir}/proteus_server.pub.pem";
-in {
+{config, myvars, lib, mylib, ...}: let server_pub_crt = "${myvars.secrets_dir}/proteus_server.pub.pem"; in {
   networking.firewall = {allowedTCPPorts = [80 443]; allowedUDPPorts = [443];};
   sops.secrets."traefik_server.priv.pem" = {
     sopsFile = "${myvars.secrets_dir}/proteus_server.priv.pem.sops";
@@ -81,25 +79,20 @@ in {
           };
           s3.loadBalancer = let cfg = config.services.garage.settings; in {
             servers = [{url = "http://${cfg.s3_api.api_bind_addr}";}]; # Default :3900
-            healthCheck = { # Probe the admin port
-              port = lib.lists.last (lib.strings.splitString ":" cfg.admin.api_bind_addr); path = "/health";
-            };
+            # Probe the admin port
+            healthCheck = {port = builtins.toString (mylib.get_uri_port cfg.admin.api_bind_addr); path = "/health";};
           };
           s3-pub.loadBalancer= let cfg = config.services.garage.settings; in {
             servers = [{url = "http://${cfg.s3_web.bind_addr}";}]; # Default :3902
-            healthCheck = { # Probe the admin port
-              port = lib.lists.last (lib.strings.splitString ":" cfg.admin.api_bind_addr); path = "/health";
-            };
+            # Probe the admin port
+            healthCheck = {port = builtins.toString (mylib.get_uri_port cfg.admin.api_bind_addr); path = "/health";};
           };
-          garage-webui.loadBalancer.servers = [{
-            url = let
-              list_find_first_name = key: list: builtins.elemAt
-                list (lib.lists.findFirstIndex (i: lib.strings.hasPrefix key i) null list);
-              port = lib.lists.last (lib.strings.splitString
-                "=" (list_find_first_name "PORT=" config.systemd.services.garage-webui.serviceConfig.Environment)
-              );
-            in "http://127.0.0.1:${port}"; # Default 3909
-          }];
+          garage-webui.loadBalancer.servers = [{url = let
+            list_find_first_prefix = key: list:
+              builtins.elemAt list (lib.lists.findFirstIndex (i: lib.strings.hasPrefix key i) null list);
+            port = lib.lists.last (lib.strings.splitString
+              "=" (list_find_first_prefix "PORT=" config.systemd.services.garage-webui.serviceConfig.Environment));
+          in "http://127.0.0.1:${port}";}]; # Default 3909
           nextcloud.loadBalancer = {servers = [{ url = "http://127.0.0.1:8080"; }]; healthCheck.path = "/status.php";};
         };
       };
