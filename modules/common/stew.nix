@@ -67,18 +67,14 @@
         myvars.networking.hosts_addr
       ))
     ];
-    # Define the host key for remote builders so that nix can verify all the
-    # remote builders.
+    # Define the host key for remote builders so that Nix can verify all the remote builders.
     # This config will be written to /etc/ssh/ssh_known_hosts
-    knownHosts = lib.attrsets.mapAttrs (name: val: {
+    knownHosts = lib.attrsets.mapAttrs (name: val: let host = myvars.networking.hosts_addr.${name} or {}; in {
       hostNames = [name] # Hostname and its IPv4 & IPv6
-      ++ (lib.optional (!builtins.isNull myvars.networking.hosts_addr.${name}.ipv4)
-        myvars.networking.hosts_addr.${name}.ipv4)
-      ++ (lib.optional (!builtins.isNull myvars.networking.hosts_addr.${name}.ipv6)
-        myvars.networking.hosts_addr.${name}.ipv6);
+        ++ (lib.optional (host ? ipv4) host.ipv4) ++ (lib.optional (host ? et_ipv4) host.et_ipv4)
+        ++ (lib.optional (host ? ipv6) host.ipv6) ++ (lib.optional (host ? et_ipv6) host.et_ipv6);
       publicKey = val.public_key;
-      })
-      myvars.networking.known_hosts;
+    }) myvars.networking.known_hosts;
   };
   ## END ssh.nix
   ## START users.nix
