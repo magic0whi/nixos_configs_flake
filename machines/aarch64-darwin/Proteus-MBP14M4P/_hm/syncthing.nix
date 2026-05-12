@@ -12,12 +12,9 @@
         "Redmi Note 5".id = "V3BFX3M-H4RJSCS-DZ6XQIM-3T5JK2V-KPYKGPD-HUV5UMG-PQA52BH-MYOFIAR";
       };
     in {
-      devices = builtins.mapAttrs (n: v: {id = v.syncthing_id;}) (
-        lib.attrsets.filterAttrs # Filter out self
-          (n: v: v ? syncthing_id && n != osConfig.networking.hostName)
-          myvars.networking.known_hosts)
-      // mobile_devices;
-
+      # Import all known hosts that has attr `syncthing_id` but filter out self
+      devices = mobile_devices // (builtins.mapAttrs (n: v: {id = v.syncthing_id;}) (lib.attrsets.filterAttrs
+        (n: v: v ? syncthing_id && n != osConfig.networking.hostName) myvars.networking.known_hosts));
       folders = {
         "Documents" = {
           path = config.xdg.userDirs.documents;
@@ -26,29 +23,24 @@
         };
         "Games" = {
           path = "${config.home.homeDirectory}/Games";
-          devices = lib.lists.subtractLists
-            (builtins.attrNames mobile_devices)
-            (builtins.attrNames config.services.syncthing.settings.devices);
+          devices = lib.lists.subtractLists # Exclude mobile devices
+            (builtins.attrNames mobile_devices) (builtins.attrNames config.services.syncthing.settings.devices);
         };
         "Music" = {
-          path = config.xdg.userDirs.music;
-          devices = builtins.attrNames config.services.syncthing.settings.devices;
+          path = config.xdg.userDirs.music; devices = builtins.attrNames config.services.syncthing.settings.devices;
         };
         "Pictures" = {
-          path = config.xdg.userDirs.pictures;
-          devices = builtins.attrNames config.services.syncthing.settings.devices;
+          path = config.xdg.userDirs.pictures; devices = builtins.attrNames config.services.syncthing.settings.devices;
         };
         "Secrets" = {
           path = "${config.home.homeDirectory}/Secrets";
           devices = lib.lists.subtractLists
-            (builtins.attrNames mobile_devices)
-            (builtins.attrNames config.services.syncthing.settings.devices);
+            (builtins.attrNames mobile_devices) (builtins.attrNames config.services.syncthing.settings.devices);
         };
         "Works" = {
           path = "${config.home.homeDirectory}/Works";
           devices = lib.lists.subtractLists
-            (builtins.attrNames mobile_devices)
-            (builtins.attrNames config.services.syncthing.settings.devices);
+            (builtins.attrNames mobile_devices) (builtins.attrNames config.services.syncthing.settings.devices);
         };
       };
     };

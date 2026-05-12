@@ -4,27 +4,22 @@ in {
   # Use path relative to the root of the project
   relative_to_root = lib.path.append ../.;
 
-  scan_path = p: map (fn: p + "/${fn}") (builtins.attrNames (
-    lib.filterAttrs (
-        e: t: !(lib.hasPrefix "_" e) # Exclude if `_` prefix
-        # Include directories and *.nix, exclude default.nix
-        && ((t == "directory") || ((lib.hasSuffix ".nix" e) && (e != "default.nix")))
-      )
-      (builtins.readDir p)
+  scan_path = p: map (fn: p + "/${fn}") (builtins.attrNames (lib.filterAttrs
+    # Exclude if `_` prefix, include directories and *.nix, exclude default.nix
+    (e: t: !(lib.hasPrefix "_" e) && ((t == "directory") || ((lib.hasSuffix ".nix" e) && (e != "default.nix"))))
+    (builtins.readDir p)
   ));
   ## System dependent functions
-  mk_for_system = _system: let
-    pkgs = inputs.nixpkgs.legacyPackages.${_system};
-  in {
+  mk_for_system = _system: let pkgs = inputs.nixpkgs.legacyPackages.${_system}; in {
     # Create a symlink of dir/file out of /nix/store (with prefix `custom_`)
     mk_out_of_store_symlink = path: let
       path_str = builtins.toString path;
       store_filename = path: let # Filter unsafe chars
-        safe_chars = ["+" "." "_" "?" "="] ++ lib.lowerChars ++ lib.upperChars
-        ++ lib.strings.stringToCharacters "0123456789";
+        safe_chars =
+          ["+" "." "_" "?" "="] ++ lib.lowerChars ++ lib.upperChars ++ lib.strings.stringToCharacters "0123456789";
         gen_empt_lst = len: builtins.genList (e: "") (builtins.length len);
-        unsafe_chars = lib.strings.stringToCharacters (builtins.replaceStrings
-          safe_chars (gen_empt_lst safe_chars) path);
+        unsafe_chars = # `builtins.replaceStrings` filters `safe_chars` out
+          lib.strings.stringToCharacters (builtins.replaceStrings safe_chars (gen_empt_lst safe_chars) path);
         safe_name = builtins.replaceStrings unsafe_chars (gen_empt_lst unsafe_chars) path;
       in "custom_" + safe_name;
       name = store_filename (baseNameOf path_str);
@@ -52,34 +47,26 @@ in {
       specialArgs = inputs // {inherit mylib myvars;};
     in {
       inherit system specialArgs;
-      modules = (if generate_iso then
-        builtins.filter (p: # Filter out the files with `impermanence.nix`
-          # suffix
-          # If it is not a path or string (i.e. an attribute set), return true
-          # immediately to keep it
-          !(builtins.isPath p || builtins.isString p)
-          || !lib.strings.hasSuffix "impermanence.nix" p)
-          nixpkgs_modules
-      else
-        nixpkgs_modules
-      )
-      ++ (if pkgs.stdenv.isDarwin then [
-          sops-nix.darwinModules.sops
-        ] else [
+      # Filter out the files with `impermanence.nix` suffix. If it's not a path or string (i.e. an attribute set),
+      # return true immediately to keep it
+      modules = (if generate_iso
+        then builtins.filter
+          (p: !(builtins.isPath p || builtins.isString p) || !lib.strings.hasSuffix "impermanence.nix" p)
+            nixpkgs_modules
+        else nixpkgs_modules
+      ) ++ (if pkgs.stdenv.isDarwin then [sops-nix.darwinModules.sops]
+        else [
           sops-nix.nixosModules.sops
           lanzaboote.nixosModules.lanzaboote
           catppuccin.nixosModules.catppuccin
           disko.nixosModules.disko
           i915-sriov-dkms.nixosModules.default
-        ]
-        ++ (lib.optional (!generate_iso) impermanence.nixosModules.impermanence)
+        ] ++ (lib.optional (!generate_iso) impermanence.nixosModules.impermanence)
       )
       ++ [{
         imports = let all_machine_files = mylib.scan_path machine_path; in
-          if generate_iso
-          then builtins.filter (p: !lib.strings.hasSuffix "impermanence.nix" p) all_machine_files
-          else all_machine_files;
-
+          if generate_iso then builtins.filter (p: !lib.strings.hasSuffix "impermanence.nix" p) all_machine_files
+            else all_machine_files;
         networking.hostName = name;
       }]
       ++ (lib.optionals ((lib.lists.length hm_modules) > 0) [
@@ -89,8 +76,7 @@ in {
           home-manager.useGlobalPkgs = true;
           home-manager.useUserPackages = true;
           home-manager.sharedModules = [catppuccin.homeModules.catppuccin sops-nix.homeManagerModules.sops];
-          home-manager.users."${myvars.username}".imports = hm_modules
-          ++ [(machine_path + "/_hm")];
+          home-manager.users."${myvars.username}".imports = hm_modules ++ [(machine_path + "/_hm")];
         }
       ]);
     };

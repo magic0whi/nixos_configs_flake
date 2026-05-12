@@ -3,31 +3,24 @@
   # Add my self-signed CA certificate to the system-wide trust store.
   security.pki.certificateFiles = ["${myvars.secrets_dir}/proteus_ca.pub.pem"];
   nixpkgs.config.allowUnfree = true; # Allow chrome, vscode to install
-  ## START nix.nix
+  ## BEGIN nix.nix
   nix.package = pkgs.nixVersions.latest; # Use latest nix, default is pkgs.nix
-  nix.gc = {
-    automatic = true;
-    options = "--delete-older-than 7d";
-  };
+  nix.gc = {automatic = true; options = "--delete-older-than 7d";};
   nix.channel.enable = false; # Remove nix-channel related tools & configs, use flakes instead
   # Manual optimise storage: nix-store --optimise
   # https://nixos.org/manual/nix/stable/command-ref/conf-file.html#conf-auto-optimise-store
   nix.optimise.automatic = true; # Add a timer to do optimise periodically
   nix.settings = {
-    # enable flakes globally
-    experimental-features = ["nix-command" "flakes"];
-
-    # Given the users in this list the right to specify additional substituters via:
+    experimental-features = ["nix-command" "flakes"]; # Enable flakes globally
+    trusted-users = [myvars.username];
+    # Specify additional substituters via:
     # 1. `nixConfig.substituers` in `flake.nix`
     # 2. command line args `--options substituers http://xxx`
-    trusted-users = [myvars.username];
     substituters = [ # substituers that will be considered before the official ones (https://cache.nixos.org)
       # cache mirror located in China
-      # status: https://mirrors.ustc.edu.cn/status/
-      # "https://mirrors.ustc.edu.cn/nix-channels/store"
-      # status: https://mirror.sjtu.edu.cn/
-      # "https://mirror.sjtu.edu.cn/nix-channels/store"
-      # others
+      # "https://mirrors.ustc.edu.cn/nix-channels/store" # status: https://mirrors.ustc.edu.cn/status/
+      "https://mirror.sjtu.edu.cn/nix-channels/store" # status: https://mirror.sjtu.edu.cn/
+      # Others
       "https://mirrors.sustech.edu.cn/nix-channels/store"
       "https://mirrors.tuna.tsinghua.edu.cn/nix-channels/store"
 
@@ -41,11 +34,11 @@
     extra-trusted-public-keys = ["s3.${myvars.domain}-1:IxrRwk4uC5ittHeG9menkuajABnrX9cboEWwZz/m4+E="];
   };
   ## END nix.nix
-  ## START i18n.nix
+  ## BEGIN i18n.nix
   # NOTE: On macOS, Please set [Set time zone automatically using your current location] to false in [System Settings]
   time.timeZone = lib.mkDefault "Asia/Hong_Kong";
   ## END i18n.nix
-  ## START ssh.nix
+  ## BEGIN ssh.nix
   services.openssh.enable = true;
   programs.ssh = {
     # Configs will be written to /etc/ssh/ssh_config
@@ -77,13 +70,12 @@
     }) myvars.networking.known_hosts;
   };
   ## END ssh.nix
-  ## START users.nix
+  ## BEGIN users.nix
   users.users.${myvars.username} = {
-    description = myvars.userfullname;
-    openssh.authorizedKeys.keys = myvars.ssh_authorized_keys;
+    description = myvars.userfullname; openssh.authorizedKeys.keys = myvars.ssh_authorized_keys;
   };
   ## END users.nix
-  ## START network.nix
+  ## BEGIN network.nix
   services.tailscale.enable = lib.mkDefault true; # Start-up: `tailscale up --accept-routes`
   # services.sing-box.package = pkgs.sing-box.overrideAttrs(final: _: {
   #   version = "1.13.0";
@@ -97,7 +89,7 @@
   #   vendorHash = "sha256-vVLaG0PV1OXA+YL67BnrHJiSkNVzJbZ8TeMKbO2rMu0=";
   # });
   ## END network.nix
-  ## START fonts.nix
+  ## BEGIN fonts.nix
   fonts.packages = with pkgs; [
     noto-fonts-cjk-sans noto-fonts-cjk-serif
     inter-nerdfont # NerdFont patch of the Inter font
@@ -107,7 +99,7 @@
     nerd-fonts.iosevka
   ];
   ## END fonts.nix
-  ## START packages.nix
+  ## BEGIN packages.nix
   environment.systemPackages = with pkgs; [
     ## Core tools
     git # Used by nix flakes

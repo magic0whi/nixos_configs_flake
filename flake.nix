@@ -14,8 +14,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     lanzaboote = { # Pinned as of 2026-04-07 06:58
-      url = "github:nix-community/lanzaboote/v1.0.0";
-      inputs = {nixpkgs.follows = "nixpkgs";};
+      url = "github:nix-community/lanzaboote/v1.0.0"; inputs.nixpkgs.follows = "nixpkgs";
     };
     # Pinned as of 2026-04-07 06:53
     impermanence = {
@@ -23,8 +22,7 @@
       inputs = {nixpkgs.follows = "nixpkgs"; home-manager.follows = "home-manager";};
     };
     nixpak = { # Pinned as of 2026-04-07 06:54
-      url = "github:nixpak/nixpak/4f8cbe437ba7e047ed4582b35b8140124b9562b5";
-      inputs.nixpkgs.follows = "nixpkgs";
+      url = "github:nixpak/nixpak/4f8cbe437ba7e047ed4582b35b8140124b9562b5"; inputs.nixpkgs.follows = "nixpkgs";
     };
     sops-nix = { # Pinned as of 2026-04-14 10:53
       url = "github:Mic92/sops-nix/d4971dd58c6627bfee52a1ad4237637c0a2fb0cd"; inputs.nixpkgs.follows = "nixpkgs";
