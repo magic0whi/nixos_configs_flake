@@ -75,8 +75,10 @@
     description = myvars.userfullname; openssh.authorizedKeys.keys = myvars.ssh_authorized_keys;
   };
   ## END users.nix
-  ## BEGIN network.nix
+  ## BEGIN tailscale.nix
   services.tailscale.enable = lib.mkDefault true; # Start-up: `tailscale up --accept-routes`
+  ## END tailscale.nix
+  ## BEGIN sing-box.nix
   # services.sing-box.package = pkgs.sing-box.overrideAttrs(final: _: {
   #   version = "1.13.0";
   #   src = pkgs.fetchFromGitHub {
@@ -88,7 +90,7 @@
   #   };
   #   vendorHash = "sha256-vVLaG0PV1OXA+YL67BnrHJiSkNVzJbZ8TeMKbO2rMu0=";
   # });
-  ## END network.nix
+  ## END sing-box.nix
   ## BEGIN fonts.nix
   fonts.packages = with pkgs; [
     noto-fonts-cjk-sans noto-fonts-cjk-serif

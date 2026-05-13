@@ -33,6 +33,7 @@
   systemd.services.syncthing.unitConfig.RequiresMountsFor = [myvars.storage_path];
   services.syncthing = {
     enable = true;
+    openDefaultPorts = true;
     group = "storage"; # Don't work for a LDAP group
     key = config.sops.secrets."Proteus-Desktop_syncthing.priv.pem".path;
     cert = "${myvars.secrets_dir}/Proteus-Desktop_syncthing.pub.pem";
