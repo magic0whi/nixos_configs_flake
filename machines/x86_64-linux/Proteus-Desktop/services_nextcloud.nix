@@ -89,22 +89,24 @@ in {
       # TIP: To get OIDC claims and attributes from Authelia:
       # sudo AUTHELIA_AUTHENTICATION_BACKEND_LDAP_PASSWORD="$(sudo cat /run/secrets/authelia_ldap_password)" \
       #   nix run --impure nixpkgs#authelia -- debug oidc claims proteus \
+      #     --policy nextcloud_userinfo \
       #     --scopes "openid,profile,email,groups,nextcloud_userinfo" \
       #     --client-id nextcloud \
+      #     -c $(systemctl cat authelia-main.service | grep -oP '(?<=--config )/nix/store/[^ ]+-config\.yml')
+      # Or use flake generated setting (`nom build ".#nixosConfigurations.Proteus-NUC.config.system.build.toplevel"`):
       #     -c $(nix eval --raw ".#nixosConfigurations.Proteus-NUC.config.systemd.services.authelia-main.serviceConfig.ExecStart" | grep -oP '(?<=--config )/nix/store/[^ ]+-config\.yml')
       oidc_login_attributes = {
         id = "preferred_username";
         name = "name";
         mail = "email";
         groups = "groups";
-        # Requires custom configuration inside Authelia:
-        home = "homeDirectory";
+        # home = "homeDirectory"; # Requires custom configuration inside Authelia
         is_admin = "is_nextcloud_admin";
       };
 
       oidc_login_default_group = "oidc"; # Default group to add users to
       # Use external storage instead of a symlink to the home directory. Requires the files_external app to be enabled
-      oidc_login_use_external_storage = false;
+      # oidc_login_use_external_storage = true;
       oidc_login_scope = "openid profile email groups nextcloud_userinfo";
       oidc_login_disable_registration = false;
       oidc_login_redir_fallback = false; # Fallback to direct login if login from OIDC fails

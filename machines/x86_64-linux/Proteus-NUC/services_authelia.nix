@@ -75,8 +75,10 @@ in {
           user = "uid=${config.services.authelia.instances.main.user},ou=ServiceAccounts,${base_dn}";
           attributes = {
             username = "uid"; display_name = "cn"; mail = "mail"; group_name = "cn"; nickname = "givenName";
+            # NOTE: Here the name attribute is used for internal references within Authelia, while the attrset name is
+            # the directory server attribute to search
             # Ref: https://www.authelia.com/configuration/first-factor/ldap/#extra
-            extra.homeDirectory ={name = "homeDirectory"; value_type = "string";};
+            # extra.homeDirectory ={name = "home_directory"; value_type = "string";};
           };
         };
       };
@@ -93,9 +95,16 @@ in {
       definitions.user_attributes.is_nextcloud_admin.expression = ''"storage" in groups'';
       identity_providers.oidc = {
         cors = {endpoints = ["authorization" "token" "revocation" "introspection" "userinfo"];};
-        # Map the custom claim policy, ref: https://www.authelia.com/integration/openid-connect/openid-connect-1.0-claims/
-        claims_policies.nextcloud_userinfo.custom_claims.is_nextcloud_admin = {};
-        scopes.nextcloud_userinfo.claims = ["is_nextcloud_admin"]; # Bind the claim to the `nextcloud_userinfo` scope
+        # Map the custom claim policy, ref:
+        # https://www.authelia.com/integration/openid-connect/openid-connect-1.0-claims/#custom-claims
+        claims_policies.nextcloud_userinfo.custom_claims = {
+          # Give the 'is_nextcloud_admin' claim policy access to the user attributes 'is_nextcloud_admin'
+          is_nextcloud_admin = {}; # Authelia do implicit mapping {attribute = "is_nextcloud_admin";};
+          # Give the 'homeDirectory' claim policy access to the ldap extra attributes 'home_directory'
+          # homeDirectory = {attribute = "home_directory";};
+        };
+        # Bind the claim to the `nextcloud_userinfo` scope
+        scopes.nextcloud_userinfo.claims = ["is_nextcloud_admin" /*"homeDirectory"*/];
         clients = [ # https://www.authelia.com/configuration/identity-providers/openid-connect/clients/
           {
             client_id = "papra";
