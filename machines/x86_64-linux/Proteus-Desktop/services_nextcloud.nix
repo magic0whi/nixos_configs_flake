@@ -9,10 +9,9 @@ in {
     nextcloud_admin_password = {inherit sopsFile restartUnits;};
     nextcloud_oidc_client_secret = {inherit sopsFile restartUnits;};
   };
-  # Add RequiresMountsFor to wait for storage mounted
   systemd.services = let clean_units = map (s: lib.strings.removeSuffix ".service" s) restartUnits;
   in lib.mkMerge [
-    # Requires storage to be mounted
+    # Add RequiresMountsFor to wait for storage mounted
     (lib.attrsets.genAttrs clean_units (name: {unitConfig.RequiresMountsFor = [myvars.storage_path];}))
     {nextcloud-custom-config = { # https://wiki.nixos.org/wiki/Nextcloud#Dynamic_configuration
       after = ["nextcloud-setup.service"];
@@ -23,26 +22,35 @@ in {
         # Logreader only supports "file" log_type and complains it, I'd rather prefer journald
         nextcloud-occ app:disable logreader
         nextcloud-occ app:disable twofactor_totp # Since we use Authelia OIDC
-        nextcloud-occ app:enable files_external # Enable External Storage to mount Syncthing shared folders
         nextcloud-occ app:disable federation # I don't share files with users on other Nextcloud instances
         nextcloud-occ app:disable circles # Teams
         nextcloud-occ app:disable user_status # Allows users to set a status message (e.g., "In a meeting", "Away")
         nextcloud-occ app:disable dashboard
+        nextcloud-occ app:disable photos # I use immich instead
 
-        # Ensure the external mount doesn't duplicate mountpoints
-        if ! nextcloud-occ files_external:list --output=json | jq -e '.[] | select(.mount_point == "/Documents")' > /dev/null; then
-          echo 'Creating Syncthing external mount...'
-          # TODO iterate
-          # Create the mount for the path where Syncthing data lives, specify user here will make this as user mount
-          MOUNT_ID=$(nextcloud-occ files_external:create \
-            'Documents' \
-            'local' \
-            'null::null' \
-            -c datadir=${myvars.storage_path}/Documents \
-            --output=json)
-          # Grant access to all users, or use --add-user=username for specific users or --add-group=groupname (e.g. your OIDC group)
-          nextcloud-occ files_external:applicable --add-user=proteus $MOUNT_ID
-        fi
+        nextcloud-occ app:enable files_external # Enable External Storage to mount Syncthing shared folders
+        # Define the list of Syncthing folders to mount
+        declare -A external_mounts=(
+          [Documents]="${myvars.storage_path}/share/Documents"
+          [KeePassXC]="${myvars.storage_path}/share/Secrets/KeePassXC"
+        )
+        for mount_point in "''${!external_mounts[@]}"; do
+          # Ensure the external mount doesn't duplicate mountpoints
+          if ! nextcloud-occ files_external:list --output=json | jq -e --arg mp "/$mount_point" '.[] | select(.mount_point == $mp)' > /dev/null; then
+            echo "Creating Syncthing external mount for $mount_point..."
+            MOUNT_ID=$(nextcloud-occ files_external:create \
+              "$mount_point" \
+              'local' \
+              'null::null' \
+              -c datadir="''${external_mounts[$mount_point]}" \
+              --output=json)
+            # Check filesystem changes: Always
+            # nextcloud-occ files_external:option -n "$MOUNT_ID" filesystem_check_changes 2
+            nextcloud-occ files_external:option -n "$MOUNT_ID" readonly 1
+            # Grant access to all users, or use --add-user=username for specific users or --add-group=groupname
+            nextcloud-occ files_external:applicable --add-user=proteus "$MOUNT_ID"
+          fi
+        done
       '';
     };}
   ];
