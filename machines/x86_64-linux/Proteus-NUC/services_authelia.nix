@@ -75,6 +75,8 @@ in {
           user = "uid=${config.services.authelia.instances.main.user},ou=ServiceAccounts,${base_dn}";
           attributes = {
             username = "uid"; display_name = "cn"; mail = "mail"; group_name = "cn"; nickname = "givenName";
+            # Ref: https://www.authelia.com/configuration/first-factor/ldap/#extra
+            extra.homeDirectory ={name = "homeDirectory"; value_type = "string";};
           };
         };
       };

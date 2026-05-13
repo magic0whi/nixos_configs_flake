@@ -23,6 +23,26 @@ in {
         # Logreader only supports "file" log_type and complains it, I'd rather prefer journald
         nextcloud-occ app:disable logreader
         nextcloud-occ app:disable twofactor_totp # Since we use Authelia OIDC
+        nextcloud-occ app:enable files_external # Enable External Storage to mount Syncthing shared folders
+        nextcloud-occ app:disable federation # I don't share files with users on other Nextcloud instances
+        nextcloud-occ app:disable circles # Teams
+        nextcloud-occ app:disable user_status # Allows users to set a status message (e.g., "In a meeting", "Away")
+        nextcloud-occ app:disable dashboard
+
+        # Ensure the external mount doesn't duplicate mountpoints
+        if ! nextcloud-occ files_external:list --output=json | jq -e '.[] | select(.mount_point == "/Documents")' > /dev/null; then
+          echo 'Creating Syncthing external mount...'
+          # TODO iterate
+          # Create the mount for the path where Syncthing data lives, specify user here will make this as user mount
+          MOUNT_ID=$(nextcloud-occ files_external:create \
+            'Documents' \
+            'local' \
+            'null::null' \
+            -c datadir=${myvars.storage_path}/Documents \
+            --output=json)
+          # Grant access to all users, or use --add-user=username for specific users or --add-group=groupname (e.g. your OIDC group)
+          nextcloud-occ files_external:applicable --add-user=proteus $MOUNT_ID
+        fi
       '';
     };}
   ];
@@ -66,16 +86,25 @@ in {
       oidc_login_hide_password_form = true;
       oidc_login_use_id_token = false; # Use ID Token instead of UserInfo
 
+      # TIP: To get OIDC claims and attributes from Authelia:
+      # sudo AUTHELIA_AUTHENTICATION_BACKEND_LDAP_PASSWORD="$(sudo cat /run/secrets/authelia_ldap_password)" \
+      #   nix run --impure nixpkgs#authelia -- debug oidc claims proteus \
+      #     --scopes "openid,profile,email,groups,nextcloud_userinfo" \
+      #     --client-id nextcloud \
+      #     -c $(nix eval --raw ".#nixosConfigurations.Proteus-NUC.config.systemd.services.authelia-main.serviceConfig.ExecStart" | grep -oP '(?<=--config )/nix/store/[^ ]+-config\.yml')
       oidc_login_attributes = {
         id = "preferred_username";
         name = "name";
         mail = "email";
         groups = "groups";
+        # Requires custom configuration inside Authelia:
+        home = "homeDirectory";
         is_admin = "is_nextcloud_admin";
       };
 
       oidc_login_default_group = "oidc"; # Default group to add users to
       # Use external storage instead of a symlink to the home directory. Requires the files_external app to be enabled
+      oidc_login_use_external_storage = false;
       oidc_login_scope = "openid profile email groups nextcloud_userinfo";
       oidc_login_disable_registration = false;
       oidc_login_redir_fallback = false; # Fallback to direct login if login from OIDC fails
