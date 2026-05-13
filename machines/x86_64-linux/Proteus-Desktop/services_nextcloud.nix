@@ -17,7 +17,7 @@ in {
     {nextcloud-custom-config = { # https://wiki.nixos.org/wiki/Nextcloud#Dynamic_configuration
       after = ["nextcloud-setup.service"];
       wantedBy = ["multi-user.target"];
-      path = [config.services.nextcloud.occ];
+      path = [config.services.nextcloud.occ pkgs.jq];
       script = ''
         nextcloud-occ app:disable app_api # I don't plan to run external AI apps
         # Logreader only supports "file" log_type and complains it, I'd rather prefer journald
