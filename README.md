@@ -39,16 +39,17 @@ Personal NixOS and nix-darwin system configurations managed as a Flake, featurin
 - **Multi-OS / Multi-Arch Support**: Modular configurations spanning x86_64 NixOS, riscv64 NixOS, and aarch64 macOS.
 - **Persistent State Management**: Selective persistence with proper directory creation.
 - **Secret Management**: Encrypted secrets via sops-nix stored directly in the repository.
+- **Mesh Networking**: Integrating Tailscale & Easytier across headless instances and desktops for seamless connectivity.
 
 ## Hosts
 
 | Hostname | Type | Architecture | Storage |
-|----------|------|--------------|---------|
+| --- | --- | --- | --- |
 | Proteus-Desktop | Workstation | x86_64-linux | ZFS on LUKS |
 | Proteus-NUC | Home Server | x86_64-linux | ZFS on LUKS |
-| Proteus-NixOS-* | VPS Instances | x86_64-linux | Btrfs |
-| Proteus-MBP14M4P| Laptop | aarch64-darwin| APFS |
-| Proteus-VF2 | SBC | riscv64-linux | Btrfs (TODO) |
+| Proteus-NixOS-{0..5} | VPS Instances | x86_64-linux | Btrfs |
+| Proteus-MBP14M4P | Laptop | aarch64-darwin | APFS |
+| Proteus-VF2 | SBC | riscv64-linux | ZFS with Impermanence |
 
 ## Installation
 
@@ -83,18 +84,21 @@ Personal NixOS and nix-darwin system configurations managed as a Flake, featurin
   sudo mv /mnt/var/l{ib,og} /mnt/persistent/var/
   ```
 
-Or use `nixos-anywhere` for unattended installation:
+Or use `nixos-anywhere` for unattended installation (example using `Proteus-NixOS-0`):
+
 ```bash
-nix run nixpkgs#nixos-anywhere -- -f .#Proteus-NixOS-6 \
---phases kexec root@100.126.174.68 \
+nix run nixpkgs#nixos-anywhere -- -f .#Proteus-NixOS-0 \
+--phases kexec root@100.74.72.29 \
 --kexec https://gh-proxy.org/https://github.com/nix-community/nixos-images/releases/download/nixos-25.05/nixos-kexec-installer-noninteractive-x86_64-linux.tar.gz
-nix run nixpkgs#nixos-anywhere -- -f .#Proteus-NixOS-6 --phases disko --disko-mode format root@100.126.174.68
-nix run nixpkgs#nixos-anywhere -- -f .#Proteus-NixOS-6 --phases disko --disko-mode mount root@100.126.174.68
-nix run nixpkgs#nixos-anywhere -- -f .#Proteus-NixOS-6 --phases install root@100.126.174.68
+nix run nixpkgs#nixos-anywhere -- -f .#Proteus-NixOS-0 --phases disko --disko-mode format root@100.74.72.29
+nix run nixpkgs#nixos-anywhere -- -f .#Proteus-NixOS-0 --phases disko --disko-mode mount root@100.74.72.29
+nix run nixpkgs#nixos-anywhere -- -f .#Proteus-NixOS-0 --phases install root@100.74.72.29
 # Check everything ok, then move critical files to `/mnt/persistent`, see above
 # Finally reboot
-nix run nixpkgs#nixos-anywhere -- -f .#Proteus-NixOS-6 --phases reboot root@100.126.174.68
+nix run nixpkgs#nixos-anywhere -- -f .#Proteus-NixOS-0 --phases reboot root@100.74.72.29
 ```
+
+*(Note: IP `100.74.72.29` corresponds to `Proteus-NixOS-0` configured in `vars/networking.nix`)*
 
 ## Usage
 
@@ -111,7 +115,7 @@ just <host nickname>
 deploy [-s] --targets \
   /home/proteus/nixos_configs_flake#Proteus-NUC \
   /home/proteus/nixos_configs_flake#Proteus-Desktop \
-  /home/proteus/nixos_configs_flake#Proteus-NixOS-{1..6} \
+  /home/proteus/nixos_configs_flake#Proteus-NixOS-{0..5} \
 -- --show-trace --verbose
 ```
 
