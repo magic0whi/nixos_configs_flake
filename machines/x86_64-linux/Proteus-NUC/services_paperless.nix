@@ -40,6 +40,7 @@
       PAPERLESS_OCR_LANGUAGE = "chi_sim+chi_tra+eng";
       # https://dateparser.readthedocs.io/en/latest/supported_locales.html
       PAPERLESS_DATE_PARSER_LANGUAGES = "en+zh+zh-Hant";
+      PAPERLESS_FILENAME_DATE_ORDER = "YMD"; # Check the document filename for date information
 
       PAPERLESS_ADMIN_USER = myvars.username;
       PAPERLESS_USE_X_FORWARD_HOST = true;
