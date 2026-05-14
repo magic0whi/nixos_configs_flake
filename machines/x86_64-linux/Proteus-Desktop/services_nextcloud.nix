@@ -31,7 +31,6 @@ in {
         nextcloud-occ app:enable files_external # Enable External Storage to mount Syncthing shared folders
         # Define the list of Syncthing folders to mount
         declare -A external_mounts=(
-          [Documents]="${myvars.storage_path}/share/Documents"
           [KeePassXC]="${myvars.storage_path}/share/Secrets/KeePassXC"
         )
         for mount_point in "''${!external_mounts[@]}"; do
