@@ -1,6 +1,6 @@
 {myvars, config, ...}: {
   sops = let
-    sopsFile = "${myvars.secrets_dir}/Proteus-NUC.sops.yaml";
+    sopsFile = "${myvars.secrets_dir}/${config.networking.hostName}.sops.yaml";
     restartUnits = ["immich-machine-learning.service" "immich-server.service"];
   in {
     secrets = {

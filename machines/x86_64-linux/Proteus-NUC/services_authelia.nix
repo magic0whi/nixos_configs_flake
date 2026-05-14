@@ -2,7 +2,7 @@
   restartUnits = map (name: "authelia-${name}.service") (builtins.attrNames config.services.authelia.instances);
 in {
   sops.secrets = let
-    sopsFile = "${myvars.secrets_dir}/Proteus-NUC.sops.yaml";
+    sopsFile = "${myvars.secrets_dir}/${config.networking.hostName}.sops.yaml";
     owner = config.services.authelia.instances.main.user;
   in {
     authelia_jwt_secret = {inherit sopsFile owner restartUnits;};

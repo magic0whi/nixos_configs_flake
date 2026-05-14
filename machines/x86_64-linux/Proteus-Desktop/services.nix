@@ -19,13 +19,13 @@
       rpc-bind-ipv6-address=fd7a:115c:a1e0::d901:e013
     '';
     prune = true;
-    rpc.address = myvars.networking.hosts_addr.Proteus-Desktop.ipv4;
+    rpc.address = myvars.networking.hosts_addr.${config.networking.hostName}.ipv4;
     rpc.restricted = true;
   };
   ## END services_monero.nix
   ## START syncthing.nix
-  sops.secrets."Proteus-Desktop_syncthing.priv.pem" = {
-    sopsFile = "${myvars.secrets_dir}/Proteus-Desktop_syncthing.priv.pem.sops";
+  sops.secrets."${config.networking.hostName}_syncthing.priv.pem" = {
+    sopsFile = "${myvars.secrets_dir}/${config.networking.hostName}_syncthing.priv.pem.sops";
     format = "binary"; restartUnits = ["syncthing.service"];
   };
   # If without `users.groups.storage` and rely on LDAP group
@@ -35,8 +35,8 @@
     enable = true;
     openDefaultPorts = true;
     group = "storage"; # Don't work for a LDAP group
-    key = config.sops.secrets."Proteus-Desktop_syncthing.priv.pem".path;
-    cert = "${myvars.secrets_dir}/Proteus-Desktop_syncthing.pub.pem";
+    key = config.sops.secrets."${config.networking.hostName}_syncthing.priv.pem".path;
+    cert = "${myvars.secrets_dir}/${config.networking.hostName}_syncthing.pub.pem";
     settings = let
       mobile_devices = {
         "LGE-AN00".id = "T2V6DJB-243NJGD-5B63LUP-DSLNFBD-U72KGD2-AZVTIHL-HEUMBTI-HAVD7A2";

@@ -1,10 +1,10 @@
 {myvars, config, lib, osConfig, ...}: {
-  sops.secrets."Proteus-MBP14M4P_syncthing.priv.pem" = {
-    sopsFile = "${myvars.secrets_dir}/Proteus-MBP14M4P_syncthing.priv.pem.sops"; format = "binary";
+  sops.secrets."${osConfig.networking.hostName}_syncthing.priv.pem" = {
+    sopsFile = "${myvars.secrets_dir}/${osConfig.networking.hostName}_syncthing.priv.pem.sops"; format = "binary";
   };
   services.syncthing = {
-    key = config.sops.secrets."Proteus-MBP14M4P_syncthing.priv.pem".path;
-    cert = "${myvars.secrets_dir}/Proteus-MBP14M4P_syncthing.pub.pem";
+    key = config.sops.secrets."${osConfig.networking.hostName}_syncthing.priv.pem".path;
+    cert = "${myvars.secrets_dir}/${osConfig.networking.hostName}_syncthing.pub.pem";
     settings = let
       mobile_devices = {
         "LGE-AN00".id = "T2V6DJB-243NJGD-5B63LUP-DSLNFBD-U72KGD2-AZVTIHL-HEUMBTI-HAVD7A2";

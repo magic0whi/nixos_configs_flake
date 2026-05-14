@@ -1,6 +1,6 @@
 {myvars, config, lib, osConfig, ...}: {
-  sops.secrets."Proteus-NUC_syncthing.priv.pem" = {
-    sopsFile = "${myvars.secrets_dir}/Proteus-NUC_syncthing.priv.pem.sops";
+  sops.secrets."${osConfig.networking.hostName}_syncthing.priv.pem" = {
+    sopsFile = "${myvars.secrets_dir}/${osConfig.networking.hostName}_syncthing.priv.pem.sops";
     format = "binary"; # Required when loading raw files instead of yaml/json structures
     # sops-nix dnn't have restartUnits for home manager
     # TODO: https://github.com/ryantm/agenix/issues/84
@@ -8,8 +8,8 @@
   };
   services.syncthing = {
     # nix run nixpkgs#syncthing -- generate --config myconfig/"
-    key = config.sops.secrets."Proteus-NUC_syncthing.priv.pem".path;
-    cert = "${myvars.secrets_dir}/Proteus-NUC_syncthing.pub.pem";
+    key = config.sops.secrets."${osConfig.networking.hostName}_syncthing.priv.pem".path;
+    cert = "${myvars.secrets_dir}/${osConfig.networking.hostName}_syncthing.pub.pem";
     settings = let
       mobile_devices = {
         "LGE-AN00".id = "T2V6DJB-243NJGD-5B63LUP-DSLNFBD-U72KGD2-AZVTIHL-HEUMBTI-HAVD7A2";

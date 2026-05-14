@@ -14,7 +14,7 @@
       format = "binary";
       owner = config.systemd.services.postgresql.serviceConfig.User;
     };
-    postgres_ldap_bind_pw = {inherit restartUnits; sopsFile = "${myvars.secrets_dir}/Proteus-NUC.sops.yaml";};
+    postgres_ldap_bind_pw = {inherit restartUnits; sopsFile = "${myvars.secrets_dir}/${config.networking.hostName}.sops.yaml";};
   };
   # Ref: https://github.com/NixOS/nixpkgs/blob/549bd84d6279f9852cae6225e372cc67fb91a4c1/nixos/modules/services/databases/postgresql.nix#L684
   sops.templates."pg_hba_auth.conf" = let base_dn = "dc=" + builtins.replaceStrings ["."] [",dc="] myvars.domain; in {

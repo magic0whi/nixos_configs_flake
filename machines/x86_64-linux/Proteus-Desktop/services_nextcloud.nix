@@ -4,7 +4,7 @@
     "phpfpm-nextcloud.service"
   ];
 in {
-  sops.secrets = let sopsFile = "${myvars.secrets_dir}/Proteus-Desktop.sops.yaml"; in {
+  sops.secrets = let sopsFile = "${myvars.secrets_dir}/${config.networking.hostName}.sops.yaml"; in {
     nextcloud_db_password = {inherit sopsFile restartUnits;};
     nextcloud_admin_password = {inherit sopsFile restartUnits;};
     nextcloud_oidc_client_secret = {inherit sopsFile restartUnits;};

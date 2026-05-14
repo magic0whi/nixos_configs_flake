@@ -1,6 +1,8 @@
 {config, myvars, ...}: {
   sops = let restartUnits = ["atuin.service"]; in {
-    secrets.atuin_db_password = {inherit restartUnits; sopsFile = "${myvars.secrets_dir}/Proteus-NUC.sops.yaml";};
+    secrets.atuin_db_password = {
+      inherit restartUnits; sopsFile = "${myvars.secrets_dir}/${config.networking.hostName}.sops.yaml";
+    };
     templates."atuin.env" = {
       inherit restartUnits;
       content = "ATUIN_DB_URI='postgres://atuin:${
