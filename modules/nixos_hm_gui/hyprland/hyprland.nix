@@ -75,7 +75,7 @@ in {
         "$mainMod SHIFT,F,togglefloating"
         "$mainMod,G,exec,hyprctl dispatch setfloating && hyprctl dispatch pin"
         "$mainMod,G,setfloating"
-        "$mainMod,T,togglesplit," # dwindle
+        "$mainMod,T,layoutmsg,togglesplit" # dwindle
         "$mainMod SHIFT,P,pseudo" # dwindle"
 
         # Special workspace (scratchpad)
