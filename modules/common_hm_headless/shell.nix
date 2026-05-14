@@ -19,6 +19,10 @@
     urldecode = "python3 -c 'import sys, urllib.parse as ul; print(ul.unquote_plus(sys.stdin.read()))'";
     urlencode = "python3 -c 'import sys, urllib.parse as ul; print(ul.quote_plus(sys.stdin.read()))'";
     # `programs.eza.enable*Integration` overrides these
+    ls = "eza";
+    ll = "eza -lg";
+    la = "eza -aa";
+    lla = "eza -laag";
     # ls = "ls --color=auto -v";
     # ll = "ls -l --color=auto -v";
     # la = "ls -la --color=auto -v";
@@ -39,7 +43,6 @@
       "MANWIDTH=$(($(tput cols) - 7))" # Adjustment manwidth when less' line number enabled
       "command man"
     ];
-    llag = "eza -aagl";
     tmux = "tmux -2"; # `-2` force assume the terminal supports 256 colors
     # Run `TERM=xterm-ghostty command ssh` if the remote machine has the
     # corresponding terminfo installed
@@ -140,6 +143,7 @@
     };
     eza = { # A modern replacement for ‘ls’, useful in bash/zsh prompt, but not in nushell
       enable = if pkgs.stdenv.hostPlatform.isRiscV64 then false else true;
+      enableZshIntegration = false;
       git = true;
       icons = "auto";
     };
