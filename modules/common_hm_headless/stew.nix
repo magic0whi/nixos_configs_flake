@@ -72,7 +72,7 @@
       mgr.prepend_keymap = [
         {on = ["<C-s>"]; run = "plugin drag"; desc = "Drag Files";}
         {on = ["R" "b"]; run = "plugin recycle-bin"; desc = "Open Trash";}
-        {on = ["g" "w"]; run = "cd ~/Work"; desc = "Go ~/Works";}
+        {on = ["g" "w"]; run = "cd ~/Works"; desc = "Go ~/Works";}
         {on = ["g" "a"]; run = "cd ~/Works/AI/ai_instructions"; desc = "~/Works/AI/ai_instructions";}
       ];
     };
