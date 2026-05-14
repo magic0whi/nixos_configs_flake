@@ -8,10 +8,17 @@
     };
     Proteus-NUC = {
       ipv4 = "100.64.161.20"; ipv6 = "fd7a:115c:a1e0::cd3a:a114"; et_ipv4 = "10.0.0.2"; et_ipv6 = "fdfe:dcba:9877::2";
+      domains.IN = [
+        "immich" /*"sftpgo"*/ "atuin" "ldap" "aria2" "postgresql" "paperless" "traefik" "auth" "ql" "sb" "syncthing"
+        "hass" "sunshine" "papra" "notebook" "git" "plane"
+      ];
     };
     Proteus-Desktop = {
       ipv4 = "100.89.227.22"; ipv6 = "fd7a:115c:a1e0::1a01:e318"; et_ipv4 = "10.0.0.3"; et_ipv6 = "fdfe:dcba:9877::3";
       iface = "enp4s0"; iface_wlan = "wlp0s20u9";
+      domains.IN = [
+        "monero" "traefik-desktop" "sb-desktop" "syncthing-desktop" "s3" "*.s3" "s3-pub" "*.s3-pub" "garage" "nextcloud"
+      ];
     };
     # ============================================
     # Other VMs and Physical Machines

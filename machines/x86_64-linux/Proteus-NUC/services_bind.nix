@@ -1,7 +1,7 @@
 {myvars, lib, pkgs, config, ...}: let
   tailnet_prefix_length = 48;
   soa_parms = {
-    serial = "2026051102"; # Serial (YYYYMMDDNN)
+    serial = "2026051403"; # Serial (YYYYMMDDNN)
     refresh = "3600"; # Refresh (1 hour)
     retry = "1800"; # Retry (30 minutes)
     expire = "604800"; # Expire (1 week)
@@ -88,49 +88,66 @@
   # Forward Zone (proteus.eu.org)
   # =========================================
   # Don't forget update the SOA Serial
+  # TODO: Implements
+  # 1. (COMPLETED) Automate records generate
+  # myvars.networking.hosts_addr.<hostname>.domain.<class> = ["immich" "sftpgo"];
+  # And will generate the following records in zone:
+  # <hostname> IN A    myvars.networking.hosts_addr.<hostname>.ipv4
+  # <hostname> IN AAAA myvars.networking.hosts_addr.<hostname>.ipv6
+  # immich IN CNAME <hostname>
+  # sftpgo IN CNAME <hostname>
+  #
+  # 2. Automate reverse zone generate
+  # For ipv4, give a octets_merge_depth variable to decide which level
+  # e.g., Merge 100.*.*.* to one zone for `octets_merge_depth = 1`; Merge 100.64.*.* to one zone for `octets_merge_depth = 2`
   proteus_zone = pkgs.writeText "${myvars.domain}.zone" ((zone_head myvars.domain) + ''
-    @ IN A    ${nuc_ipv4}
-    @ IN AAAA ${nuc_ipv6}
+    ; Manually specify
+    @ IN A    ${myvars.networking.hosts_addr.Proteus-NUC.ipv4}
+    @ IN AAAA ${myvars.networking.hosts_addr.Proteus-NUC.ipv6}
 
     ; Nameserver A/AAAA records (Glue records)
-    ns1 IN A    ${nuc_ipv4}
-    ns1 IN AAAA ${nuc_ipv6}
+    ; Manually specify since it cannot be CNAME
+    ns1 IN A    ${myvars.networking.hosts_addr.Proteus-NUC.ipv4}
+    ns1 IN AAAA ${myvars.networking.hosts_addr.Proteus-NUC.ipv6}
 
     ; Grouped Host Records
-    proteus-nuc     IN A    ${nuc_ipv4}
-                    IN AAAA ${nuc_ipv6}
-    proteus-desktop IN A    ${desktop_ipv4}
-                    IN AAAA ${desktop_ipv6}
-    ; Subdomain Services
-    immich     IN CNAME proteus-nuc
-    ;sftpgo     IN CNAME proteus-nuc
-    atuin      IN CNAME proteus-nuc
-    ldap       IN CNAME proteus-nuc
-    aria2      IN CNAME proteus-nuc
-    postgresql IN CNAME proteus-nuc
-    paperless  IN CNAME proteus-nuc
-    traefik    IN CNAME proteus-nuc
-    auth       IN CNAME proteus-nuc
-    ql         IN CNAME proteus-nuc
-    sb         IN CNAME proteus-nuc
-    syncthing  IN CNAME proteus-nuc
-    hass       IN CNAME proteus-nuc
-    sunshine   IN CNAME proteus-nuc
-    papra      IN CNAME proteus-nuc
-    notebook   IN CNAME proteus-nuc
-    git        IN CNAME proteus-nuc
-    plane      IN CNAME proteus-nuc
+    ${lib.attrsets.foldlAttrs (acc: n: v: "${acc}\n${n} IN A ${v.ipv4}") ""
+      (lib.attrsets.filterAttrs (_: v: v ? ipv4 ) myvars.networking.hosts_addr)}
+    ${lib.attrsets.foldlAttrs (acc: n: v: "${acc}\n${n} IN AAAA ${v.ipv6}") ""
+      (lib.attrsets.filterAttrs (_: v: v ? ipv6) myvars.networking.hosts_addr)}
 
-    monero            IN CNAME proteus-desktop
-    traefik-desktop   IN CNAME proteus-desktop
-    sb-desktop        IN CNAME proteus-desktop
-    syncthing-desktop IN CNAME proteus-desktop
-    s3                IN CNAME proteus-desktop
-    *.s3              IN CNAME proteus-desktop
-    s3-pub            IN CNAME proteus-desktop
-    *.s3-pub          IN CNAME proteus-desktop
-    garage            IN CNAME proteus-desktop
-    nextcloud         IN CNAME proteus-desktop
+    ; EasyTier Hostnames
+    ; For me `lib.attrsets.foldlAttrs` takes a bit longer to understand
+    ; lib.attrsets.foldlAttrs (acc: name: value: <new_acc>) acc attrset
+    ${let
+      et_hosts = lib.attrsets.filterAttrs (_: v: v ? et_ipv4 || v ? et_ipv6) myvars.networking.hosts_addr;
+      et_v4_hosts = lib.attrsets.foldlAttrs (acc: n: v: "${acc}\n${n}.et IN A ${v.et_ipv4}") "" et_hosts;
+      et_v6_hosts = lib.attrsets.foldlAttrs (acc: n: v: "${acc}\n${n}.et IN AAAA ${v.et_ipv6}") "" et_hosts;
+    in "${et_v4_hosts}\n${et_v6_hosts}"}
+
+    ; Subdomain Services
+    ; Step 1: map (i: "''${i} IN CNAME Proteus-Desktop") domain_hosts.Proteus-Desktop.domains.IN
+    ; [
+    ;   "monero IN CNAME Proteus-Desktop"
+    ;   "traefik-desktop IN CNAME Proteus-Desktop"
+    ;   ...
+    ; ]
+    ; Step 2: lib.attrsets.foldlAttrs
+    ;   (acc: class: names: acc ++ (map (name: "''${name} ''${class} CNAME Proteus-Desktop") names))
+    ;   [] domain_hosts.Proteus-Desktop.domains
+    ; [
+    ;   "monero IN CNAME Proteus-Desktop"
+    ;   "traefik-desktop IN CNAME Proteus-Desktop
+    ;   ...
+    ; ]
+    ; Step 3:
+    ${let
+      domain_hosts = lib.attrsets.filterAttrs (_: v: v ? domains) myvars.networking.hosts_addr;
+      records = lib.attrsets.foldlAttrs
+        (acc_1: hostname: v: acc_1 ++ (lib.attrsets.foldlAttrs
+          (acc_2: class: names: acc_2 ++ (map (name: "${name} ${class} CNAME ${hostname}") names)) [] v.domains))
+        [] domain_hosts;
+    in builtins.concatStringsSep "\n" records}
   '');
   # =========================================
   # IPv4 Reverse Zones
