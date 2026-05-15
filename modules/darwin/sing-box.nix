@@ -1,7 +1,9 @@
-{config, lib, pkgs, ...}: let
+# TODO: Create a PR to nix-darwin/nix-darwin
+{config, lib, pkgs, myvars, ...}: let
   cfg = config.services.sing-box;
   sing-box_dir = "/Library/Application Support/sing-box";
 in {
+  meta.maintainers = with lib.maintainers; [nickcao prince213 myvars.userfullname];
   options.services.sing-box = {
     enable = lib.mkEnableOption "sing-box universal proxy platform";
     package = lib.mkPackageOption pkgs "sing-box" {};
@@ -12,23 +14,25 @@ in {
   };
   config = lib.mkIf cfg.enable {
     environment.systemPackages = [cfg.package];
+
+    system.activationScripts.postActivation.text = ''
+      # Ensure the state directory is initialized
+      echo "Setting up Sing-box directory..."
+      if [ ! -d "${sing-box_dir}" ]; then install -dm700 "${sing-box_dir}"; fi
+    '';
     launchd.daemons.sing-box.serviceConfig = {
-      KeepAlive = {
-        Crashed = true;
-        SuccessfulExit = false;
-      };
       Label = lib.mkOverride 999 "io.nekohasekai.sing-box";
+      RunAtLoad = true;
+      KeepAlive = {Crashed = true; SuccessfulExit = false;};
+      WorkingDirectory = sing-box_dir;
+      StandardErrorPath = "/Library/Logs/io.nekohasekai.sing-box.stderr.log";
+      StandardOutPath = "/Library/Logs/io.nekohasekai.sing-box.stdout.log";
       ProgramArguments = [
         "/bin/sh"
         "-c"
         ("/bin/wait4path /nix/store"
-          + " && install -dm700 \"${sing-box_dir}\""
-          + " && exec ${lib.getExe cfg.package} -c ${cfg.config_file} -D \"${sing-box_dir}\" run"
-        )
+          + " && exec ${lib.getExe cfg.package} -c ${cfg.config_file} -D \"${sing-box_dir}\" run")
       ];
-      RunAtLoad = true;
-      StandardErrorPath = "/Library/Logs/io.nekohasekai.sing-box.stderr.log";
-      StandardOutPath = "/Library/Logs/io.nekohasekai.sing-box.stdout.log";
     };
   };
 }

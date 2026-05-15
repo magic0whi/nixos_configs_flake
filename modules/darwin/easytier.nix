@@ -1,24 +1,22 @@
-{config, lib, pkgs, ...}: with lib; let
+# TODO: Create a PR to nix-darwin/nix-darwin
+{config, lib, pkgs, myvars, ...}: with lib; let
   cfg = config.services.easytier;
-  settingsFormat = pkgs.formats.toml {};
+  settings_format = pkgs.formats.toml {};
 
-  genFinalSettings = inst:
-    attrsets.filterAttrsRecursive (_: v: v != {}) (
-      attrsets.filterAttrsRecursive (_: v: v != null) ({
-        inherit (inst.settings) instance_name hostname ipv4 dhcp listeners;
-        network_identity = {inherit (inst.settings) network_name network_secret;};
-        peer = map (p: {uri = p;}) inst.settings.peers;
-      } // inst.extraSettings)
-    );
+  gen_final_settings = inst: attrsets.filterAttrsRecursive (_: v: v != {})
+    (attrsets.filterAttrsRecursive (_: v: v != null) ({ # Filter settings that has null value
+      inherit (inst.settings) instance_name hostname ipv4 dhcp listeners;
+      network_identity = {inherit (inst.settings) network_name network_secret;};
+      peer = map (p: {uri = p;}) inst.settings.peers;
+    } // inst.extraSettings));
 
-  genConfigFile = name: inst:
-    if inst.configFile == null
-    then settingsFormat.generate "easytier-${name}.toml" (genFinalSettings inst)
+  config_file_det = name: inst: if inst.configFile == null
+    then settings_format.generate "easytier-${name}.toml" (gen_final_settings inst)
     else inst.configFile;
 
-  activeInsts = filterAttrs (_: inst: inst.enable) cfg.instances;
+  active_insts = filterAttrs (_: inst: inst.enable) cfg.instances;
 
-  settingsModule = name: {
+  settings_module = name: {
     options = {
       instance_name = mkOption {
         type = types.str;
@@ -38,10 +36,9 @@
       network_secret = mkOption {
         type = with types; nullOr str;
         default = null;
-        description = ''
-          EasyTier network credential used for verification and
-          encryption. It can also be set in environmentFile.
-        '';
+        description = "
+          EasyTier network credential used for verification and encryption. It can also be set in environmentFile.
+        ";
       };
       ipv4 = mkOption {
         type = with types; nullOr str;
@@ -56,17 +53,11 @@
       dhcp = mkOption {
         type = types.bool;
         default = false;
-        description = ''
-          Automatically determine the IPv4 address of this peer based on
-          existing peers on network.
-        '';
+        description = "Automatically determine the IPv4 address of this peer based on existing peers on network.";
       };
       listeners = mkOption {
         type = with types; listOf str;
-        default = [
-          "tcp://0.0.0.0:11010"
-          "udp://0.0.0.0:11010"
-        ];
+        default = ["tcp://0.0.0.0:11010" "udp://0.0.0.0:11010"];
         description = ''
           Listener addresses to accept connections from other peers.
           Valid format is: `<proto>://<addr>:<port>`, where the protocol
@@ -75,17 +66,13 @@
       };
       peers = mkOption {
         type = with types; listOf str;
-        default = [ ];
-        description = ''
-          Peers to connect initially. Valid format is: `<proto>://<addr>:<port>`.
-        '';
-        example = [
-          "tcp://example.com:11010"
-        ];
+        default = [];
+        description = "Peers to connect initially. Valid format is: `<proto>://<addr>:<port>`.";
+        example = ["tcp://example.com:11010"];
       };
     };
   };
-  instanceModule = {name, ...}: {options = {
+  instance_module = {name, ...}: {options = {
     enable = mkOption {
       type = types.bool;
       default = true;
@@ -108,16 +95,14 @@
       type = with types; nullOr path;
       default = null;
       description = ''
-        Path to easytier config file. Setting this option will
-        override `settings` and `extraSettings` of this instance.
+        Path to easytier config file. Setting this option will override `settings` and `extraSettings` of this instance.
       '';
     };
     environmentFiles = mkOption {
       type = with types; listOf path;
       default = [ ];
       description = ''
-        Environment files for this instance. All command-line args
-        have corresponding environment variables.
+        Environment files for this instance. All command-line args have corresponding environment variables.
       '';
       example = literalExpression ''
         [
@@ -127,25 +112,21 @@
       '';
     };
     settings = mkOption {
-      type = types.submodule (settingsModule name);
-      default = { };
-      description = ''
-        Settings to generate {file}`easytier-${name}.toml`
-      '';
+      type = types.submodule (settings_module name);
+      default = {};
+      description = "Settings to generate {file}`easytier-${name}.toml`";
     };
     extraSettings = mkOption {
-      type = settingsFormat.type;
-      default = { };
+      type = settings_format.type;
+      default = {};
       description = ''
         Extra settings to add to {file}`easytier-${name}.toml`.
       '';
     };
     extraArgs = mkOption {
       type = with types; listOf str;
-      default = [ ];
-      description = ''
-        Extra args append to the easytier command-line.
-      '';
+      default = [];
+      description = "Extra args append to the easytier command-line.";
     };
   };};
 in {
@@ -153,12 +134,11 @@ in {
     enable = mkEnableOption "EasyTier daemon";
     package = mkPackageOption pkgs "easytier" {};
     allowSystemForward = mkEnableOption ''
-      Allow the system to forward packets from easytier. Useful when
-      `proxy_forward_by_system` enabled.
+      Allow the system to forward packets from easytier. Useful when `proxy_forward_by_system` enabled.
     '';
     instances = mkOption {
       description = "EasyTier instances.";
-      type = types.attrsOf (types.submodule instanceModule);
+      type = types.attrsOf (types.submodule instance_module);
       default = {};
       example = {
         settings = {
@@ -174,40 +154,39 @@ in {
   config = mkIf cfg.enable {
     environment.systemPackages = [cfg.package];
 
-    launchd.daemons = mapAttrs' (name: inst: let
-      configFile = genConfigFile name inst;
-      args = [ "${cfg.package}/bin/easytier-core" ]
-        ++ optionals (inst.configServer != null) ["-w" inst.configServer]
-        ++ optionals (inst.configServer != null && inst.settings.hostname != null) ["--hostname" inst.settings.hostname]
-        ++ optionals (inst.configServer == null) ["-c" "${configFile}"]
-        ++ inst.extraArgs;
-    in nameValuePair "easytier-${name}" {
-        # Emulate Systemd's EnvironmentFile and StateDirectory setups inside the Launchd script
-        script = ''
-          ${concatMapStringsSep "\n" (f: "set -a; source ${escapeShellArg f}; set +a") inst.environmentFiles}
+    system.activationScripts.postActivation.text = ''
+      # Ensure the state directory is initialized
+      ${concatStringsSep "\n" (mapAttrsToList (name: _: ''
+        if [ ! -d "/Library/Application Support/easytier-${name}" ]; then
+          echo "Setting up EasyTier directory for ${name}..."
+          install -dm700 "/Library/Application Support/easytier-${name}"
+        fi
+      '') active_insts)}
+    '';
+    # Lacks restartTriggers
+    launchd.daemons = mapAttrs' (name: inst: nameValuePair "easytier-${name}" {
+      path = [cfg.package "/usr/bin:/bin:/usr/sbin:/sbin"];
+      # Emulate Systemd's EnvironmentFile and StateDirectory setups inside the Launchd script
+      script = ''
+        # `set -a` automatically export all variables
+        ${concatMapStringsSep "\n" (f: "set -a; source ${escapeShellArg f}; set +a") inst.environmentFiles}
 
-          # Ensure the state directory is initialized securely
-          mkdir -m 0700 -p "/var/lib/easytier/easytier-${name}"
-          cd "/var/lib/easytier/easytier-${name}"
-
-          exec ${escapeShellArgs args}
-        '';
-
-        path = with pkgs; [
-          cfg.package
-          bash
-        ];
-
-        serviceConfig = {
-          Label = "org.nixos.easytier-${name}";
-          KeepAlive = true;
-          RunAtLoad = true;
-          WorkingDirectory = "/var/lib/easytier/easytier-${name}";
-          StandardOutPath = "/var/log/easytier-${name}.out.log";
-          StandardErrorPath = "/var/log/easytier-${name}.err.log";
-        };
-      }
-    ) activeInsts;
+        exec ${escapeShellArgs (["easytier-core"]
+          ++ optionals (inst.configServer != null) ["-w" inst.configServer]
+          ++ optionals (inst.configServer != null && inst.settings.hostname != null)
+            ["--hostname" inst.settings.hostname]
+          ++ optionals (inst.configServer == null) ["-c" "${config_file_det name inst}"]
+          ++ inst.extraArgs)}
+      '';
+      serviceConfig = {
+        Label = "org.nixos.easytier-${name}";
+        RunAtLoad = true;
+        KeepAlive = {Crashed = true; SuccessfulExit = false;};
+        WorkingDirectory = "/Library/Application Support/easytier-${name}";
+        StandardOutPath = "/Library/Logs/org.nixos.easytier-${name}.stdout.log";
+        StandardErrorPath = "/Library/Logs/org.nixos.easytier-${name}.stderr.log";
+      };
+    }) active_insts;
 
     # Darwin-specific sysctl routing equivalents
     environment.etc."sysctl.conf".text = mkIf cfg.allowSystemForward ''
@@ -215,5 +194,5 @@ in {
       net.inet6.ip6.forwarding=1
     '';
   };
-  meta.maintainers = with maintainers; [ltrump];
+  meta.maintainers = with maintainers; [ltrump myvars.userfullname];
 }
