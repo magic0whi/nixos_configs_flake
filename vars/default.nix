@@ -31,4 +31,5 @@
   gpg2ssh_keygrip = ["94BDB192359497927D5AA4AC76D238BA1BFEFE57"];
   catppuccin_flavor = "mocha";
   catppuccin_accent = "pink";
+  storage_path = "/mnt/storage/data";
 }

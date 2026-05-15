@@ -18,7 +18,7 @@
     "modules/common_hm_headless/stew.nix"
     "modules/nixos_hm_headless/shell.nix"
   ];
-  desktop_myvars = myvars // {storage_path = "/mnt/storage/data";};
+  desktop_myvars = myvars;
   nixos_system = inputs.nixpkgs.lib.nixosSystem (mylib.gen_system_args {
     inherit name mylib nixpkgs_modules hm_modules;
     myvars = desktop_myvars;
