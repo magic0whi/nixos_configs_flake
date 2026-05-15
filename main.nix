@@ -1,4 +1,4 @@
-{self, nixpkgs, deploy-rs, git-hooks, treefmt-nix, ...}@inputs: let
+{self, nixpkgs, deploy-rs, treefmt-nix, ...}@inputs: let
   inherit (inputs.nixpkgs) lib;
   # Functions
   for_each_system = f: lib.genAttrs (builtins.attrNames (nixos_systems // darwin_systems))
@@ -44,7 +44,7 @@ in {
   # Currently deploy_checks broken on MacOS
   checks = let
     deploy_checks = builtins.mapAttrs (system: deployLib: deployLib.deployChecks self.deploy) deploy-rs.lib;
-    lib_checks = for_each_system (pkgs: let
+    my_checks = for_each_system (pkgs: let
       test_results = import ./libs/tests.nix {inherit pkgs inputs;};
     in {
       mylib_tests = if test_results == [] then
@@ -57,40 +57,10 @@ in {
           Library unit tests failed on ${pkgs.stdenv.hostPlatform.system}!
           ${builtins.toJSON test_results}
         '';
-      # pre-commit-check = git-hooks.lib.${pkgs.stdenv.hostPlatform.system}.run {
-      #   src = ./.;
-      #   hooks = {
-      #     # nixfmt-rfc-style is now the same as pkgs.nixfmt which should be used instead.
-      #     nixfmt = {enable = false; settings.width = 120;};
-      #     alejandra.enable = true;
-      #   };
-      # };
+
       format_check = treefmt_eval.${pkgs.stdenv.hostPlatform.system}.config.build.check self;
     });
-  in lib.recursiveUpdate deploy_checks lib_checks;
-  # Run pre-commit hooks with `nix fmt`
-  # formatter = for_each_system (pkgs: let
-  #   config = self.checks.${pkgs.stdenv.hostPlatform.system}.pre-commit-check.config;
-  #   inherit (config) package configFile;
-  #   script = "${pkgs.lib.getExe package} run --all-files --config ${configFile}";
-  # in
-  #   pkgs.writeShellScriptBin "pre-commit-run" script
-  # );
-
-  # Enter shell run pre-commit manually with `nix develop -c pre-commit run --all-files`
-  # devShells = for_each_system (pkgs: {default = let
-  #   inherit (self.checks.${pkgs.stdenv.hostPlatform.system}.pre-commit-check) shellHook enabledPackages;
-  # in
-  #   pkgs.mkShell {
-  #     buildInputs = enabledPackages;
-  #     shellHook = ''
-  #       ${shellHook}
-  #       # git-hooks.nix hardcoded it
-  #       # https://github.com/cachix/git-hooks.nix/blob/61ab0e80d9c7ab14c256b5b453d8b3fb0189ba0a/modules/pre-commit.nix#L514
-  #       git config --local --unset core.hooksPath || true
-  #     '';
-  #   };
-  # });
+  in lib.recursiveUpdate deploy_checks my_checks;
 
   formatter = for_each_system (pkgs: treefmt_eval.${pkgs.system}.config.build.wrapper);
 }
