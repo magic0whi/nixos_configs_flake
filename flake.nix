@@ -14,7 +14,8 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     lanzaboote = { # Pinned as of 2026-04-07 06:58
-      url = "github:nix-community/lanzaboote/v1.0.0"; inputs.nixpkgs.follows = "nixpkgs";
+      url = "github:nix-community/lanzaboote/v1.0.0";
+      inputs = {nixpkgs.follows = "nixpkgs"; pre-commit.follows = "git-hooks";};
     };
     # Pinned as of 2026-04-07 06:53
     impermanence = {
@@ -29,7 +30,7 @@
     };
     deploy-rs = { # Pinned as of 2026-04-07 06:56
       url = "github:serokell/deploy-rs/77c906c0ba56aabdbc72041bf9111b565cdd6171";
-      inputs = {nixpkgs.follows = "nixpkgs"; flake-compat.follows = "lanzaboote/pre-commit/flake-compat";};
+      inputs = {nixpkgs.follows = "nixpkgs"; flake-compat.follows = "git-hooks/flake-compat";};
     };
     nix-darwin = { # Pinned as of 2026-05-04 15:06
       url = "github:nix-darwin/nix-darwin/8c62fba0854ba15c8917aed18894dbccb48a3777"; inputs.nixpkgs.follows = "nixpkgs";
@@ -42,6 +43,10 @@
     nixos-hardware.url = "github:NixOS/nixos-hardware/c775c2772ba56e906cbeb4e0b2db19079ef11ff7";
     # Pinned as of 2026-05-04 18:35, tag: 2026.03.05
     i915-sriov-dkms = {url = "github:strongtz/i915-sriov-dkms/2026.05.03"; inputs.nixpkgs.follows = "nixpkgs";};
+    # Pinned as of 2026-05-15 20:30
+    git-hooks = {
+      url = "github:cachix/git-hooks.nix/61ab0e80d9c7ab14c256b5b453d8b3fb0189ba0a"; inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
   outputs = inputs: import ./main.nix inputs;
 }
