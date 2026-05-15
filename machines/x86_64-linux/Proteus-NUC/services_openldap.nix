@@ -114,28 +114,28 @@
       sudoOption: passwd_timeout=0
 
       # The Sudoer rules order matter
-      dn: cn=main_user_no_pass_comms,ou=Sudoers,${base_dn}
-      objectClass: top
-      objectClass: sudoRole
-      cn: main_user_no_pass_comms
-      sudoUser: ${myvars.username}
-      sudoHost: ALL
-      sudoRunAsUser: ALL
-      sudoOption: !authenticate
-      sudoCommand: /usr/bin/psd-overlay-helper
+      # dn: cn=main_user_no_pass_comms,ou=Sudoers,${base_dn}
+      # objectClass: top
+      # objectClass: sudoRole
+      # cn: main_user_no_pass_comms
+      # sudoUser: ${myvars.username}
+      # sudoHost: ALL
+      # sudoRunAsUser: ALL
+      # sudoOption: !authenticate
+      # sudoCommand: /usr/bin/psd-overlay-helper
       # sudoCommand: /usr/bin/arch-nspawn
       # sudoCommand: /usr/bin/pacman
 
-      dn: cn=main_user_no_pass_comms_setenv,ou=Sudoers,${base_dn}
-      objectClass: top
-      objectClass: sudoRole
-      cn: main_user_no_pass_comms_setenv
-      sudoUser: ${myvars.username}
-      sudoHost: ALL
-      sudoRunAsUser: ALL
-      sudoOption: !authenticate
-      sudoOption: setenv
-      sudoCommand: /usr/bin/makechrootpkg
+      # dn: cn=main_user_no_pass_comms_setenv,ou=Sudoers,${base_dn}
+      # objectClass: top
+      # objectClass: sudoRole
+      # cn: main_user_no_pass_comms_setenv
+      # sudoUser: ${myvars.username}
+      # sudoHost: ALL
+      # sudoRunAsUser: ALL
+      # sudoOption: !authenticate
+      # sudoOption: setenv
+      # sudoCommand: /usr/bin/makechrootpkg
 
       dn: cn=allow_main_user,ou=Sudoers,${base_dn}
       objectClass: top

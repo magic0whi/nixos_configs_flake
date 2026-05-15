@@ -1,5 +1,5 @@
 {myvars, config, ...}: {
-  time.timeZone = "Asia/Hong_Kong";
+  # time.timeZone = "Asia/Hong_Kong";
   sops.secrets."sb_client_darwin.json" = {
     sopsFile = "${myvars.secrets_dir}/sb_client_darwin.json.sops"; format = "binary";
     # NOTE: As of 2026-05-05, sops-nix don't support restartUnits on macOS

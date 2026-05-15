@@ -1,5 +1,5 @@
 {pkgs, config, ...}: {
-  time.timeZone = "Europe/London";
+  # time.timeZone = "Europe/London";
   hardware.graphics.extraPackages = with pkgs; [intel-media-driver intel-compute-runtime-legacy1];
   environment.systemPackages = with pkgs; [bpftrace]; # powerful tracing tool, ref: https://github.com/bpftrace/bpftrace
   ## BEGIN iwd.nix
