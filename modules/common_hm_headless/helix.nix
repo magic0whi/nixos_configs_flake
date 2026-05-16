@@ -1,4 +1,5 @@
 {
+  alejandra,
   myvars,
   pkgs,
   ...
@@ -7,7 +8,7 @@
     enable = true;
     defaultEditor = true;
     extraPackages = with pkgs;
-      [vscode-json-languageserver yaml-language-server]
+      [vscode-json-languageserver yaml-language-server alejandra.defaultPackage.${pkgs.stdenv.hostPlatform.system}] # Added alejandra here
       ++ lib.optionals (!stdenv.hostPlatform.isRiscV64) [nil marksman]; # TODO: Requires bootstrap GHC
     settings = {
       # theme = "gruvbox"; # Disable if use catpuccin
@@ -49,6 +50,11 @@
     };
     languages = {
       language = [
+        {
+          name = "nix";
+          auto-format = true;
+          formatter.command = "alejandra";
+        }
         {
           name = "cpp";
           auto-format = true;
