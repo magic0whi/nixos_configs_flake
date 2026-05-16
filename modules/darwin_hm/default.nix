@@ -10,16 +10,16 @@
     iproute2mac
     utm # Virtual machine manager for Apple platforms
   ];
-  ## START xdg.nix
+  ## BEGIN xdg.nix
   xdg.enable = true; # Enable management of XDG base directories on macOS
   ## END xdg.nix
-  ## START shell.nix
+  ## BEGIN shell.nix
   home.shellAliases = {
     Ci = "pbcopy";
     Co = "pbpaste";
   };
   ## END shell.nix
-  ## START gpg.nix
+  ## BEGIN gpg.nix
   # NOTE: Don't bootout the 'system/com.openssh.ssh-agent', as it seizes the '$SSH_AUTH_SOCK'
   home.sessionVariablesExtra = ''
     export SSH_AUTH_SOCK="$(${config.programs.gpg.package}/bin/gpgconf --list-dirs agent-ssh-socket)"
@@ -29,7 +29,7 @@
   #   StandardOutPath = "${config.home.homeDirectory}/Library/Logs/gnupg-agent.stdout.log";
   # };
   ## END gpg.nix
-  ## START associations.nix
+  ## BEGIN associations.nix
   home.activation.mpv_associations = let
     duti_exe = lib.getExe' pkgs.duti "duti";
   in

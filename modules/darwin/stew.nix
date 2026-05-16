@@ -29,7 +29,7 @@
     (acc: n: v: "${acc}\nexport ${n}=${v}") "" (homebrew_mirror_env // homebrew_auto_update_env);
 in {
   system.primaryUser = myvars.username;
-  ## START networking.nix
+  ## BEGIN networking.nix
   networking.knownNetworkServices = ["Wi-Fi"];
   # sing-box requires a non-local address to hijack DNS
   networking.dns = [
@@ -38,17 +38,17 @@ in {
     # "8.8.8.8"
   ];
   ## END networking.nix
-  ## START ssh.nix
+  ## BEGIN ssh.nix
   # Disable password authentication for SSH
   environment.etc."ssh/sshd_config.d/200-disable-password-auth.conf".text = ''
     PasswordAuthentication no
     KbdInteractiveAuthentication no
   '';
   ## END ssh.nix
-  ## START security.nix
+  ## BEGIN security.nix
   security.pam.services.sudo_local.touchIdAuth = true; # Add ability to used TouchID for sudo authentication
   ## END security.nix
-  ## START packages.nix
+  ## BEGIN packages.nix
   environment.systemPackages = with pkgs; [
     m-cli # Swiss Army Knife for macOS, https://github.com/rgcr/m-cli
     mas # Mac App Store command line interface
@@ -57,8 +57,8 @@ in {
     stats # Beautiful system status monitor in menu bar
     betterdisplay # Unlock display settings
   ];
-  ## START packages.nix
-  ## START shell.nix
+  ## BEGIN packages.nix
+  ## BEGIN shell.nix
   programs.zsh.enableSyntaxHighlighting = true;
   environment.shells = [pkgs.zsh];
   ## END shell.nix
@@ -147,7 +147,7 @@ in {
     ];
   };
   ## END brew.nix
-  ## START users.nix
+  ## BEGIN users.nix
   users.users.${myvars.username} = {
     home = "/Users/${myvars.username}"; # home-manager needs it
     # nix-darwin doesn't have `users.defaultUserShell`. If this don't work, try

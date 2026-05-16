@@ -1,5 +1,10 @@
 # Create a fhs environment by command `fhs`, so we can run non-NixOS packages in NixOS
-{config, lib, pkgs, ...}: {
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}: {
   environment.systemPackages = [
     (let
       base = pkgs.appimageTools.defaultFhsEnvArgs;

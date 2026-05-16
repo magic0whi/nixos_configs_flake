@@ -1,7 +1,11 @@
 # Adjust the color temperature (& brightness) of your screen according to your surroundings. This may relieve your eyes
 # fatigue if you are working in front of the screen at night. Ref: https://gitlab.com/chinstrap/gammastep
 # Works on X11 & Wayland
-{pkgs, lib, ...}: {
+{
+  pkgs,
+  lib,
+  ...
+}: {
   services.gammastep = {
     enable = true;
     tray = true;

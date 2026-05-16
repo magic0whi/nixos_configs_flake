@@ -68,7 +68,7 @@ in {
       ];
       session.redis.host = config.services.redis.servers.authelia.unixSocket;
       storage.postgres = {
-        address = "tcp://postgresql.${myvars.domain}:${builtins.toString config.services.postgresql.settings.port}";
+        address = "tcp://postgresql.${myvars.domain}:${toString config.services.postgresql.settings.port}";
         database = config.services.authelia.instances.main.user;
         schema = "public";
         username = config.services.authelia.instances.main.user;

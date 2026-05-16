@@ -5,7 +5,7 @@
   # mylib,
   ...
 }: {
-  ## START services_monero.nix
+  ## BEGIN services_monero.nix
   services.monero = {
     enable = true;
     dataDir = "${myvars.storage_path}/monero";
@@ -23,7 +23,7 @@
     rpc.restricted = true;
   };
   ## END services_monero.nix
-  ## START syncthing.nix
+  ## BEGIN syncthing.nix
   sops.secrets."${config.networking.hostName}_syncthing.priv.pem" = {
     sopsFile = "${myvars.secrets_dir}/${config.networking.hostName}_syncthing.priv.pem.sops";
     format = "binary";

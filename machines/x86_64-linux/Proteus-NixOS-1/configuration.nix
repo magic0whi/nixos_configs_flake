@@ -12,7 +12,7 @@
   ];
   services.traffic-quota.enable = true;
   boot.binfmt.emulatedSystems = ["riscv64-linux"]; # Cross compilation
-  ## START sing-box.nix
+  ## BEGIN sing-box.nix
   sops.secrets."sb_Proteus-NixOS-1.json" = {
     sopsFile = "${myvars.secrets_dir}/sb_Proteus-NixOS-1.json.sops";
     format = "binary";

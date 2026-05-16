@@ -1,5 +1,5 @@
 _: {
-  ## START peripherals.nix
+  ## BEGIN peripherals.nix
   services.udiskie.enable = true; # Auto mount usb drives
   ## END peripherals.nix
 }

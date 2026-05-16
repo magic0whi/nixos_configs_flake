@@ -53,7 +53,7 @@
       Persistent = true; # Run immediately if system was off at scheduled time
     };
     # Performance tuning
-    extraBackupArgs = ["--limit-upload ${builtins.toString (50 * 1024)}"];
+    extraBackupArgs = ["--limit-upload ${toString (50 * 1024)}"];
     # Limit upload speed to 50 MB/s, unit is KiB/s
     extraOptions = [
       "s3.region=cn-east1-a"

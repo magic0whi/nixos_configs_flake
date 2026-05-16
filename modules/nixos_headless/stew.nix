@@ -21,7 +21,7 @@
   services.openssh.settings.PasswordAuthentication = false; # Disable password login
   programs.ssh.extraConfig = ''
     Host *
-      IdentityAgent /run/user/${builtins.toString config.users.users.${myvars.username}.uid}/gnupg/S.gpg-agent.ssh
+      IdentityAgent /run/user/${toString config.users.users.${myvars.username}.uid}/gnupg/S.gpg-agent.ssh
   '';
   # The OpenSSH agent remembers private keys for you. So that you don’t have to type in passphrases every time you make
   # an SSH connection.

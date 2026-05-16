@@ -15,9 +15,9 @@
     prime = let
       # "0001:02:03.4" to "PCI:2@1:3:4", in which the order is "PCI:bus@domain:device:func"
       to_nixos_bus_id = pci_ids: let
-        hex_to_int = hex: builtins.toString (lib.trivial.fromHexString hex);
+        hex_to_int = hex: toString (lib.fromHexString hex);
 
-        colon_splited = lib.strings.splitString ":" pci_ids;
+        colon_splited = lib.splitString ":" pci_ids;
         domain = hex_to_int (builtins.head colon_splited);
         bus = hex_to_int (builtins.elemAt colon_splited 1);
 

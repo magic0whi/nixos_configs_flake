@@ -12,7 +12,11 @@
 # 4. And Other common shortcuts such as Copy, Paste, Cursor Move, etc.
 #
 # NOTE: Alacritty do not have support for Tabs, and any graphic protocol.
-{myvars, pkgs, ...}: {
+{
+  myvars,
+  pkgs,
+  ...
+}: {
   programs.alacritty = {
     enable = true;
     # https://alacritty.org/config-alacritty.html

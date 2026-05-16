@@ -74,8 +74,7 @@ in {
       # For other domains
       # tls.certificates = [{certFile = server_pub_crt; keyFile = config.sops.secrets."traefik_server.priv.pem".path;}];
       http = let
-        authelia_port =
-          builtins.toString (mylib.get_uri_port config.services.authelia.instances.main.settings.server.address);
+        authelia_port = toString (mylib.get_uri_port config.services.authelia.instances.main.settings.server.address);
       in {
         # For sunshine-webui
         serversTransports.ignorecert.insecureSkipVerify = true;
@@ -210,28 +209,28 @@ in {
             healthCheck.path = "/api/health";
           };
           atuin.loadBalancer = {
-            servers = [{url = "http://127.0.0.1:${builtins.toString config.services.atuin.port}";}];
+            servers = [{url = "http://127.0.0.1:${toString config.services.atuin.port}";}];
             healthCheck.path = "/healthz";
           };
           immich.loadBalancer = {
-            servers = [{url = "http://127.0.0.1:${builtins.toString config.services.immich.port}";}];
+            servers = [{url = "http://127.0.0.1:${toString config.services.immich.port}";}];
             healthCheck.path = "/api/server/ping";
           };
           paperless.loadBalancer.servers = [
-            {url = "http://127.0.0.1:${builtins.toString config.services.paperless.port}";}
+            {url = "http://127.0.0.1:${toString config.services.paperless.port}";}
           ];
           # sftpgo-webui.loadBalancer.servers = [
-          #   {url = "http://127.0.0.1:${builtins.toString (builtins.head config.services.sftpgo.settings.httpd.bindings).port}";}
-          #   {url = "http://[::1]:${builtins.toString (builtins.head config.services.sftpgo.settings.httpd.bindings).port}";}
+          #   {url = "http://127.0.0.1:${toString (builtins.head config.services.sftpgo.settings.httpd.bindings).port}";}
+          #   {url = "http://[::1]:${toString (builtins.head config.services.sftpgo.settings.httpd.bindings).port}";}
           # ];
           # sftpgo-webdav.loadBalancer.servers = [
-          #   {url = "http://127.0.0.1:${builtins.toString (builtins.head config.services.sftpgo.settings.webdavd.bindings).port}";}
-          #   {url = "http://[::1]:${builtins.toString (lib.lists.last config.services.sftpgo.settings.webdavd.bindings).port}";}
+          #   {url = "http://127.0.0.1:${toString (builtins.head config.services.sftpgo.settings.webdavd.bindings).port}";}
+          #   {url = "http://[::1]:${toString (lib.lists.last config.services.sftpgo.settings.webdavd.bindings).port}";}
           # ];
           # Even though it's WebSockets, we define it as http://
           aria2-rpc.loadBalancer.servers = [
             {
-              url = "http://127.0.0.1:${builtins.toString config.services.aria2.settings.rpc-listen-port}";
+              url = "http://127.0.0.1:${toString config.services.aria2.settings.rpc-listen-port}";
             }
           ];
           qinglong.loadBalancer.servers = [{url = "http://127.0.0.1:5700";}];
@@ -246,11 +245,11 @@ in {
             healthCheck.path = "/rest/noauth/health";
           };
           home-assistant.loadBalancer.servers = let
-            hass_port = builtins.toString config.services.home-assistant.config.http.server_port;
+            hass_port = toString config.services.home-assistant.config.http.server_port;
           in [{url = "http://127.0.0.1:${hass_port}";} {url = "http://[::1]:${hass_port}";}];
           sunshine-webui.loadBalancer = {
             serversTransport = "ignorecert";
-            servers = [{url = "https://127.0.0.1:${builtins.toString (config.services.sunshine.settings.port + 1)}";}];
+            servers = [{url = "https://127.0.0.1:${toString (config.services.sunshine.settings.port + 1)}";}];
           };
           papra.loadBalancer.servers = [{url = "http://127.0.0.1:1221";}];
           notebook.loadBalancer.servers = [
@@ -261,14 +260,14 @@ in {
                   (lib.attrsets.attrNames set)
                   (lib.lists.findFirstIndex (i: lib.strings.hasInfix key i) null (lib.attrsets.attrNames set));
                 port =
-                  builtins.toString (mylib.get_uri_port
+                  toString (mylib.get_uri_port
                     (attrset_find_first_infix "notebook.${myvars.domain}" config.services.caddy.virtualHosts));
               in "http://127.0.0.1:${port}";
             }
           ];
           forgejo.loadBalancer = {
             servers = [
-              {url = "http://127.0.0.1:${builtins.toString config.services.forgejo.settings.server.HTTP_PORT}";}
+              {url = "http://127.0.0.1:${toString config.services.forgejo.settings.server.HTTP_PORT}";}
             ];
             healthCheck.path = "/api/healthz";
           };
@@ -300,7 +299,7 @@ in {
           openldap-backend.loadBalancer = {
             proxyProtocol.version = 2; # Instruct Traefik to inject the PROXY protocol v2 header
             servers = let
-              openldap_port = builtins.toString (mylib.get_uri_port (builtins.head config.services.openldap.urlList));
+              openldap_port = toString (mylib.get_uri_port (builtins.head config.services.openldap.urlList));
             in [{address = "127.0.0.1:${openldap_port}";} {address = "[::1]:${openldap_port}";}];
           };
           # Forward raw DNS to BIND's local 53

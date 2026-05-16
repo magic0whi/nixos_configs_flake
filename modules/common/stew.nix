@@ -87,8 +87,8 @@
       in {
         hostNames =
           [name] # Hostname and its IPv4 & IPv6
-          ++ (lib.optional (host ? ipv4) host.ipv4) ++ (lib.optional (host ? et_ipv4) host.et_ipv4)
-          ++ (lib.optional (host ? ipv6) host.ipv6) ++ (lib.optional (host ? et_ipv6) host.et_ipv6);
+          ++ ((lib.optional (host ? ipv4) host.ipv4) ++ (lib.optional (host ? et_ipv4) host.et_ipv4))
+          ++ ((lib.optional (host ? ipv6) host.ipv6) ++ (lib.optional (host ? et_ipv6) host.et_ipv6));
         publicKey = val.public_key;
       })
       myvars.networking.known_hosts;

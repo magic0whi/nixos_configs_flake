@@ -46,10 +46,10 @@
 
     super-productivity
   ];
-  ## START browsers.nix
+  ## BEGIN browsers.nix
   programs.firefox.enable = true;
   ## END browsers.nix
-  ## START vscode.nix
+  ## BEGIN vscode.nix
   # programs.vscode = {
   #   enable = true;
   #   # Use gnome-keyring as password store

@@ -9,7 +9,7 @@
     # macOS's default shell - zsh
     enable = true;
     interactiveShellInit = ''
-      # START Zsh Shell Coloring
+      ## BEGIN Zsh Shell Coloring
       # Reset
       Color_Off=$'\e[m'       # Text Reset
 
@@ -82,7 +82,7 @@
       On_IPurple=$'\e[10;95m' # Purple
       On_ICyan=$'\e[0;106m'   # Cyan
       On_IWhite=$'\e[0;107m'  # White
-      # END Zsh Shell Coloring
+      ## END Zsh Shell Coloring
     '';
     # Fallback prompt if starship doesn't work
     promptInit = ''

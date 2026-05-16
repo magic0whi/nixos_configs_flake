@@ -25,7 +25,7 @@
       ] | add // 0
     ')
 
-    LIMIT=$((${builtins.toString cfg.limit} * 1024**3)) # The threshold in bytes
+    LIMIT=$((${toString cfg.limit} * 1024**3)) # The threshold in bytes
 
     if [ "$TOTAL_BYTES" -ge "$LIMIT" ]; then
       echo "Traffic quota exceeded: $TOTAL_BYTES bytes >= $LIMIT bytes. Shutting down."

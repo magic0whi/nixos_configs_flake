@@ -7,12 +7,12 @@
 }: {
   networking.firewall = let
     sunshine_port = config.services.sunshine.settings.port;
-    s_https = builtins.toString (sunshine_port - 5); # Default: 47984 HTTPS
-    s_http = builtins.toString sunshine_port; # Default: 47989 HTTP
-    s_video = builtins.toString (sunshine_port + 9); # Default: 47998 UDP
-    s_ctrl = builtins.toString (sunshine_port + 10); # Default: 47999 UDP
-    s_audio = builtins.toString (sunshine_port + 11); # Default: 48000 UDP
-    s_rtsp = builtins.toString (sunshine_port + 21); # Default: 48010 TCP
+    s_https = toString (sunshine_port - 5); # Default: 47984 HTTPS
+    s_http = toString sunshine_port; # Default: 47989 HTTP
+    s_video = toString (sunshine_port + 9); # Default: 47998 UDP
+    s_ctrl = toString (sunshine_port + 10); # Default: 47999 UDP
+    s_audio = toString (sunshine_port + 11); # Default: 48000 UDP
+    s_rtsp = toString (sunshine_port + 21); # Default: 48010 TCP
   in {
     allowedTCPPorts = [
       5201 # iperf3
@@ -134,7 +134,7 @@
         serviceConfig.Restart = "on-failure";
         script = ''
           ${config.security.wrapperDir}/conntrack -E -e new -p tcp --dport ${
-            builtins.toString (config.services.sunshine.settings.port - 5)
+            toString (config.services.sunshine.settings.port - 5)
           } | \
           while read line; do
             echo "New Sunshine connection detected, waking up the monitors"

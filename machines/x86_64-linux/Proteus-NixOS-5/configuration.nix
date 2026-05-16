@@ -11,7 +11,7 @@
     "intel_iommu=off"
   ];
   services.traffic-quota.enable = true;
-  ## START sing-box.nix
+  ## BEGIN sing-box.nix
   sops.secrets."sb_Proteus-NixOS-1.json" = {
     sopsFile = "${myvars.secrets_dir}/sb_Proteus-NixOS-1.json.sops";
     format = "binary";

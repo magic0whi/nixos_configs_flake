@@ -7,7 +7,7 @@
   iface_wlan = myvars.networking.hosts_addr.${config.networking.hostName}.iface_wlan;
 in {
   boot.binfmt.emulatedSystems = ["riscv64-linux"]; # Cross compilation
-  ## START sing-box.nix
+  ## BEGIN sing-box.nix
   sops.secrets."sb_client_linux.json" = {
     sopsFile = "${myvars.secrets_dir}/sb_client_linux.json.sops";
     format = "binary";
@@ -16,7 +16,7 @@ in {
   services.sing-box.enable = true;
   services.sing-box.configFile = config.sops.secrets."sb_client_linux.json".path;
   ## END sing-box.nix
-  ## START systemd_tmpfiles.nix
+  ## BEGIN systemd_tmpfiles.nix
   # systemd.tmpfiles.settings = {
   #   # Setgid so new files inherit group; give rw to group members
   #   "00-create-data-share"."${myvars.storage_path}/share".d = {group = "storage"; mode = "2775";};
@@ -27,7 +27,7 @@ in {
   #   "01-acl-data-share"."${myvars.storage_path}/share".a.argument = "g:storage:rwX";
   # };
   ## END systemd_tmpfiles.nix
-  ## START hostapd.nix
+  ## BEGIN hostapd.nix
   boot.extraModulePackages = [config.boot.kernelPackages.rtl8812au];
   boot.kernelModules = ["8812au"];
   sops.secrets."proteus_ap_password" = {

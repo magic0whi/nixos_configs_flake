@@ -59,7 +59,7 @@ in {
   mk_for_pkgs = pkgs: {
     # Create a symlink of dir/file out of /nix/store (with prefix `custom_`)
     mk_out_of_store_symlink = path: let
-      path_str = builtins.toString path;
+      path_str = toString path;
       # Filter unsafe chars
       store_filename = path: let
         safe_chars =

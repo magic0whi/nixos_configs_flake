@@ -9,7 +9,9 @@
     enable = true;
     systemd.enable = true;
     # systemd.enableInspect = true; # DEBUG: GTK Inspector
-    settings = let launch_prefix = "systemd-run --user --scope --"; in [
+    settings = let
+      launch_prefix = "systemd-run --user --scope --";
+    in [
       {
         modules-left = ["custom/launcher" "custom/powermenu" "hyprland/workspaces" "hyprland/submap"];
         modules-center = ["hyprland/window"];

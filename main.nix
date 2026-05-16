@@ -95,8 +95,8 @@ in {
 
   formatter = for_each_system (pkgs: treefmt_eval.${pkgs.stdenv.hostPlatform.system}.config.build.wrapper);
 
-  devShells = for_each_system (pkgs:
-    {
+  devShells = for_each_system (
+    pkgs: {
       default = pkgs.mkShell {
         buildInputs = [alejandra.defaultPackage.${pkgs.stdenv.hostPlatform.system}];
         name = "nixos-config";

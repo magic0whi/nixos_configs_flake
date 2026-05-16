@@ -78,7 +78,7 @@
           command = "ltex-ls";
           config.ltex = {
             language = "en-US";
-            dictionary = builtins.fromTOML (builtins.readFile "${myvars.secrets_dir}/ltex_dict.toml");
+            dictionary = fromTOML (builtins.readFile "${myvars.secrets_dir}/ltex_dict.toml");
           };
         };
         texlab.config.texlab = {

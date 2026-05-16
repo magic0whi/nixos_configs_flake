@@ -16,8 +16,8 @@
   ];
   networking.nameservers = ["223.5.5.5" "8.8.8.8"];
   services.traffic-quota.enable = true;
-  ## START sing-box.nix
-  ## START sing-box.nix
+  ## BEGIN sing-box.nix
+  ## BEGIN sing-box.nix
   sops.secrets."sb_Proteus-NixOS-6.json" = {
     sopsFile = "${myvars.secrets_dir}/sb_Proteus-NixOS-6.json.sops";
     format = "binary";
