@@ -57,17 +57,17 @@ in {
   # Add attribute sets into outputs for debugging
   _DEBUG = {inherit inputs args_fn nixos_systems darwin_systems;};
   # Merge all the machines into a single attribute set (Multi-arch)
-  nixosConfigurations = lib.attrsets.mergeAttrsList (map (i: i.nixos_configurations or {}) nixos_systems_values);
+  nixosConfigurations = lib.mergeAttrsList (map (i: i.nixos_configurations or {}) nixos_systems_values);
   # Packages: iso images
   packages =
     lib.genAttrs
     (builtins.attrNames nixos_systems)
     (system: nixos_systems.${system}.packages or {});
-  darwinConfigurations = lib.attrsets.mergeAttrsList (map (i: i.darwin_configurations or {}) darwin_systems_values);
+  darwinConfigurations = lib.mergeAttrsList (map (i: i.darwin_configurations or {}) darwin_systems_values);
   deploy = {
     interactiveSudo = true;
     fastConnection = true;
-    nodes = lib.attrsets.mergeAttrsList (map (i: i.deploy-rs_nodes or {}) nixos_systems_values);
+    nodes = lib.mergeAttrsList (map (i: i.deploy-rs_nodes or {}) nixos_systems_values);
   };
   # Currently deploy_checks broken on MacOS
   checks = let

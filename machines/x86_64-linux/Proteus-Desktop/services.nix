@@ -46,8 +46,11 @@
       };
     in {
       # Import all known hosts that has attr `syncthing_id` but filter out self
-      devices = mobile_devices // (builtins.mapAttrs (n: v: {id = v.syncthing_id;}) (lib.attrsets
-        .filterAttrs (n: v: v ? syncthing_id && n != config.networking.hostName) myvars.networking.known_hosts));
+      devices =
+        mobile_devices
+        // (builtins.mapAttrs (n: v: {id = v.syncthing_id;}) (
+          lib.filterAttrs (n: v: v ? syncthing_id && n != config.networking.hostName) myvars.networking.known_hosts
+        ));
       folders = {
         "Documents" = {
           path = "${myvars.storage_path}/share/Documents";
@@ -56,7 +59,7 @@
         "Games" = {
           path = "${myvars.storage_path}/share/Games";
           devices =
-            lib.lists.subtractLists
+            lib.subtractLists
             (builtins.attrNames mobile_devices) (builtins.attrNames config.services.syncthing.settings.devices);
         };
         "Music" = {
@@ -70,13 +73,13 @@
         "Secrets" = {
           path = "${myvars.storage_path}/share/Secrets";
           devices =
-            lib.lists.subtractLists
+            lib.subtractLists
             (builtins.attrNames mobile_devices) (builtins.attrNames config.services.syncthing.settings.devices);
         };
         "Works" = {
           path = "${myvars.storage_path}/share/Works";
           devices =
-            lib.lists.subtractLists
+            lib.subtractLists
             (builtins.attrNames mobile_devices) (builtins.attrNames config.services.syncthing.settings.devices);
         };
       };

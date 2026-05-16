@@ -24,8 +24,11 @@
       };
     in {
       # Import all known hosts that has attr `syncthing_id` but filter out self
-      devices = mobile_devices // (builtins.mapAttrs (n: v: {id = v.syncthing_id;}) (lib.attrsets
-        .filterAttrs (n: v: v ? syncthing_id && n != osConfig.networking.hostName) myvars.networking.known_hosts));
+      devices =
+        mobile_devices
+        // (builtins.mapAttrs (n: v: {id = v.syncthing_id;}) (
+          lib.filterAttrs (n: v: v ? syncthing_id && n != osConfig.networking.hostName) myvars.networking.known_hosts
+        ));
       folders = {
         "Documents" = {
           path = config.xdg.userDirs.documents;
@@ -35,7 +38,7 @@
         "Games" = {
           path = "${config.home.homeDirectory}/Games";
           devices =
-            lib.lists.subtractLists
+            lib.subtractLists
             (builtins.attrNames mobile_devices) (builtins.attrNames config.services.syncthing.settings.devices);
         };
         "Music" = {
@@ -49,13 +52,13 @@
         "Secrets" = {
           path = "${config.home.homeDirectory}/Secrets";
           devices =
-            lib.lists.subtractLists
+            lib.subtractLists
             (builtins.attrNames mobile_devices) (builtins.attrNames config.services.syncthing.settings.devices);
         };
         "Works" = {
           path = "${config.home.homeDirectory}/Works";
           devices =
-            lib.lists.subtractLists
+            lib.subtractLists
             (builtins.attrNames mobile_devices) (builtins.attrNames config.services.syncthing.settings.devices);
         };
       };

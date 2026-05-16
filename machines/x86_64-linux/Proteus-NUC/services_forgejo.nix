@@ -8,7 +8,7 @@
   restart_runner_units =
     map
     (name: "gitea-runner-${name}.service") (builtins.attrNames config.services.gitea-actions-runner.instances);
-  clean_runner_units = map (s: lib.strings.removeSuffix ".service" s) restart_runner_units;
+  clean_runner_units = map (s: lib.removeSuffix ".service" s) restart_runner_units;
 in {
   sops = let
     sopsFile = "${myvars.secrets_dir}/${config.networking.hostName}.sops.yaml";
@@ -115,7 +115,7 @@ in {
       };
     }
     (
-      lib.attrsets.genAttrs
+      lib.genAttrs
       clean_runner_units
       (name: {
         serviceConfig.ExecStartPre = lib.mkAfter [

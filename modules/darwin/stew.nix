@@ -25,7 +25,7 @@
     };
     homebrew_auto_update_env.HOMEBREW_AUTO_UPDATE_SECS = "86400";
   in
-    lib.attrsets.foldlAttrs
+    lib.foldlAttrs
     (acc: n: v: "${acc}\nexport ${n}=${v}") "" (homebrew_mirror_env // homebrew_auto_update_env);
 in {
   system.primaryUser = myvars.username;

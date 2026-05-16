@@ -12,7 +12,7 @@
 
   # Filter settings that has null value, then filter instances and it's settings that the value is an empty attrset
   gen_final_settings = inst:
-    lib.attrsets.filterAttrsRecursive (_: v: v != {}) (lib.attrsets.filterAttrsRecursive (_: v: v != null) ({
+    lib.filterAttrsRecursive (_: v: v != {}) (lib.filterAttrsRecursive (_: v: v != null) ({
         inherit (inst.settings) instance_name hostname ipv4 dhcp listeners;
         network_identity = {inherit (inst.settings) network_name network_secret;};
         peer = map (p: {uri = p;}) inst.settings.peers;

@@ -88,7 +88,7 @@
       dn: ${base_dn}
       objectClass: dcObject
       objectClass: organization
-      dc: ${lib.strings.removePrefix "dc=" (builtins.head (lib.strings.splitString "," base_dn))}
+      dc: ${lib.removePrefix "dc=" (builtins.head (lib.splitString "," base_dn))}
       o: Proteus Homelab
 
       dn: ${manager_dn}

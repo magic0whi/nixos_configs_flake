@@ -84,10 +84,7 @@ in {
             tls = {};
           };
           s3 = {
-            rule = builtins.concatStringsSep " " [
-              "Host(`s3.${myvars.domain}`)"
-              ''|| HostRegexp(`^[^.]+\.s3\.${lib.strings.escapeRegex myvars.domain}$`)''
-            ];
+            rule = ''Host(`s3.${myvars.domain}`) || HostRegexp(`^[^.]+\.s3\.${lib.escapeRegex myvars.domain}$`)'';
             entryPoints = ["websecure"];
             service = "s3";
             tls = {};
@@ -95,7 +92,7 @@ in {
           s3-pub = {
             rule = builtins.concatStringsSep " " [
               "Host(`s3-pub.${myvars.domain}`)"
-              ''|| HostRegexp(`^[^.]+\.s3-pub\.${lib.strings.escapeRegex myvars.domain}$`)''
+              ''|| HostRegexp(`^[^.]+\.s3-pub\.${lib.escapeRegex myvars.domain}$`)''
             ];
             entryPoints = ["websecure"];
             service = "s3-pub";
@@ -146,11 +143,11 @@ in {
           garage-webui.loadBalancer.servers = [
             {
               url = let
-                list_find_first_prefix = key: list:
-                  builtins.elemAt list (lib.lists.findFirstIndex (i: lib.strings.hasPrefix key i) null list);
+                find_first_prefix = key: list:
+                  builtins.elemAt list (lib.lists.findFirstIndex (i: lib.hasPrefix key i) null list);
                 port =
-                  lib.lists.last (lib.strings.splitString
-                    "=" (list_find_first_prefix "PORT=" config.systemd.services.garage-webui.serviceConfig.Environment));
+                  lib.last (lib.splitString
+                    "=" (find_first_prefix "PORT=" config.systemd.services.garage-webui.serviceConfig.Environment));
               in "http://127.0.0.1:${port}"; # Default :3909
             }
           ];

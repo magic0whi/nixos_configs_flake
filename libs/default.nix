@@ -14,10 +14,9 @@ in {
     ));
   get_uri_port = uri: let
     # 1. Strip scheme ("https://", "http://", etc.)
-    # Use `lib.lists.drop` instead of `builtins.head` for edge cases like
-    # "https://proxy.example.com:8081/https://github.com"
+    # Use `lib.drop` instead of `builtins.head` for edge cases like "https://proxy.example.com:8081/https://github.com"
     strip_scheme = let
-      _stripe_scheme = lib.lists.drop 1 (lib.strings.splitString "://" uri);
+      _stripe_scheme = lib.drop 1 (lib.splitString "://" uri);
     in
       # Handle edge case for bare host and port, e.g. "127.0.0.1:3903"
       if builtins.length _stripe_scheme > 0
@@ -25,26 +24,25 @@ in {
       else uri;
     # 2. Take only the authority+path portion before any "?" or "#".
     # For edge cases like ("https://example.com:8081?foo=bar", "https://example.com:8081?foo=bar")
-    authority_path =
-      builtins.head (lib.strings.splitString "?" (builtins.head (lib.strings.splitString "#" strip_scheme)));
+    authority_path = builtins.head (lib.splitString "?" (builtins.head (lib.splitString "#" strip_scheme)));
     # 3. Take only the authority (before the first "/")
-    authority = builtins.head (lib.strings.splitString "/" authority_path);
+    authority = builtins.head (lib.splitString "/" authority_path);
     # 4. Strip IPv6 bracket notation before splitting on ":". e.g. "[::1]:8080" -> ["[::1" ":8080"] -> ":8080"
-    authority_no_bracket = lib.lists.last (lib.strings.splitString "]" authority);
+    authority_no_bracket = lib.last (lib.splitString "]" authority);
     # 5. Strip domain.
     port = let
-      _port = lib.lists.drop 1 (lib.strings.splitString ":" authority_no_bracket);
+      _port = lib.drop 1 (lib.splitString ":" authority_no_bracket);
     in
       if builtins.length _port > 0
       then builtins.head _port
       else null; # Handle edge cases like "example.com" -> []
-    # port = lib.lists.last (lib.strings.splitString ":" authority_no_bracket);
+    # port = lib.last (lib.splitString ":" authority_no_bracket);
     # 6. Fallback process
-    scheme = builtins.head (lib.strings.splitString "://" uri);
-    # in if builtins.match "[0-9]+" port != null then lib.strings.toInt port
+    scheme = builtins.head (lib.splitString "://" uri);
+    # in if builtins.match "[0-9]+" port != null then lib.toInt port
   in
     if port != null
-    then lib.strings.toInt port
+    then lib.toInt port
     else if scheme == "https"
     then 443
     else if scheme == "http"
@@ -62,12 +60,10 @@ in {
       path_str = toString path;
       # Filter unsafe chars
       store_filename = path: let
-        safe_chars =
-          ["+" "." "_" "?" "="] ++ lib.lowerChars ++ lib.upperChars ++ lib.strings.stringToCharacters "0123456789";
+        safe_chars = ["+" "." "_" "?" "="] ++ lib.lowerChars ++ lib.upperChars ++ lib.stringToCharacters "0123456789";
         gen_empt_lst = len: builtins.genList (e: "") (builtins.length len);
-        unsafe_chars =
-          # `builtins.replaceStrings` filters `safe_chars` out
-          lib.strings.stringToCharacters (builtins.replaceStrings safe_chars (gen_empt_lst safe_chars) path);
+        # `builtins.replaceStrings` filters `safe_chars` out
+        unsafe_chars = lib.stringToCharacters (builtins.replaceStrings safe_chars (gen_empt_lst safe_chars) path);
         safe_name = builtins.replaceStrings unsafe_chars (gen_empt_lst unsafe_chars) path;
       in
         "custom_" + safe_name;
@@ -106,7 +102,7 @@ in {
           if generate_iso
           then
             builtins.filter
-            (p: !(builtins.isPath p || builtins.isString p) || !lib.strings.hasSuffix "impermanence.nix" p)
+            (p: !(builtins.isPath p || builtins.isString p) || !lib.hasSuffix "impermanence.nix" p)
             nixpkgs_modules
           else nixpkgs_modules
         ) # Must wrapped by brace, otherwiese ISO branch skips the later appended modules below
@@ -129,12 +125,12 @@ in {
               all_machine_files = mylib.scan_path machine_path;
             in
               if generate_iso
-              then builtins.filter (p: !lib.strings.hasSuffix "impermanence.nix" p) all_machine_files
+              then builtins.filter (p: !lib.hasSuffix "impermanence.nix" p) all_machine_files
               else all_machine_files;
             networking.hostName = name;
           }
         ]
-        ++ (lib.optionals ((lib.lists.length hm_modules) > 0) [
+        ++ (lib.optionals ((lib.length hm_modules) > 0) [
           home-manager.${
             if pkgs.stdenv.isDarwin
             then "darwinModules"

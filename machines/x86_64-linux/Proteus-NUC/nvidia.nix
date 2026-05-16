@@ -21,9 +21,9 @@
         domain = hex_to_int (builtins.head colon_splited);
         bus = hex_to_int (builtins.elemAt colon_splited 1);
 
-        dot_splited = lib.strings.splitString "." (lib.lists.last colon_splited);
+        dot_splited = lib.splitString "." (lib.last colon_splited);
         device = hex_to_int (builtins.head dot_splited);
-        func = hex_to_int (lib.lists.last dot_splited);
+        func = hex_to_int (lib.last dot_splited);
       in "PCI:${bus}@${domain}:${device}:${func}";
     in {
       # NOTE: It's unnecessary to use sync.enable for hybrid laptop since it only affect Xorg server related configs

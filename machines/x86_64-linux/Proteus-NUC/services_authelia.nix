@@ -22,7 +22,7 @@ in {
     };
   };
   systemd.services = let
-    clean_units = map (s: lib.strings.removeSuffix ".service" s) restartUnits;
+    clean_units = map (s: lib.removeSuffix ".service" s) restartUnits;
   in
     lib.mkMerge [
       (

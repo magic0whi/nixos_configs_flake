@@ -225,7 +225,7 @@ in {
           # ];
           # sftpgo-webdav.loadBalancer.servers = [
           #   {url = "http://127.0.0.1:${toString (builtins.head config.services.sftpgo.settings.webdavd.bindings).port}";}
-          #   {url = "http://[::1]:${toString (lib.lists.last config.services.sftpgo.settings.webdavd.bindings).port}";}
+          #   {url = "http://[::1]:${toString (lib.last config.services.sftpgo.settings.webdavd.bindings).port}";}
           # ];
           # Even though it's WebSockets, we define it as http://
           aria2-rpc.loadBalancer.servers = [
@@ -255,13 +255,13 @@ in {
           notebook.loadBalancer.servers = [
             {
               url = let
-                attrset_find_first_infix = key: set:
+                find_first_infix = key: set:
                   builtins.elemAt
-                  (lib.attrsets.attrNames set)
-                  (lib.lists.findFirstIndex (i: lib.strings.hasInfix key i) null (lib.attrsets.attrNames set));
+                  (lib.attrNames set)
+                  (lib.lists.findFirstIndex (i: lib.hasInfix key i) null (lib.attrNames set));
                 port =
                   toString (mylib.get_uri_port
-                    (attrset_find_first_infix "notebook.${myvars.domain}" config.services.caddy.virtualHosts));
+                    (find_first_infix "notebook.${myvars.domain}" config.services.caddy.virtualHosts));
               in "http://127.0.0.1:${port}";
             }
           ];

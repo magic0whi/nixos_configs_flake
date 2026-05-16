@@ -6,7 +6,7 @@
   pkgs,
   ...
 }: let
-  dpi_scale = lib.strings.substring 0 4 (lib.strings.floatToString 1.25);
+  dpi_scale = lib.substring 0 4 (lib.strings.floatToString 1.25);
   # Ref: https://wiki.hyprland.org/Configuring/Monitors/
   # TIP: ls /sys/class/drm/card*
   # 10-bit will cause the internal monitor flickering when using PRIME Sync
@@ -82,9 +82,9 @@ in {
       #   bitdepth,10: enable 10 bit support
       monitor = [main_monitor secondary_monitor third_monitor];
       workspace = let
-        main_iface = builtins.head (lib.strings.splitString "," main_monitor);
-        secondary_iface = builtins.head (lib.strings.splitString "," secondary_monitor);
-        third_iface = builtins.head (lib.strings.splitString "," third_monitor);
+        main_iface = builtins.head (lib.splitString "," main_monitor);
+        secondary_iface = builtins.head (lib.splitString "," secondary_monitor);
+        third_iface = builtins.head (lib.splitString "," third_monitor);
       in [
         "1,monitor:${third_iface}"
         "2,monitor:${third_iface}"
@@ -112,9 +112,9 @@ in {
         (builtins.concatStringsSep "" [
           "$mainMod,Y,exec,"
           "hyprctl keyword monitor "
-          "\"${builtins.head (lib.strings.splitString "," secondary_monitor)},disable\""
+          "\"${builtins.head (lib.splitString "," secondary_monitor)},disable\""
           "; hyprctl keyword monitor "
-          "\"${builtins.head (lib.strings.splitString "," third_monitor)},disable\""
+          "\"${builtins.head (lib.splitString "," third_monitor)},disable\""
           "; notify-send \"Hyprland\" \"Leave mode: on\""
         ])
         # Restore the three monitors
@@ -133,7 +133,7 @@ in {
           # it to `test`
           "test $(hyprctl monitors -j | jq '.[].name' | wc -w) -ne 1"
           " && hyprctl keyword monitor \"${
-            builtins.head (lib.strings.splitString "," main_monitor)
+            builtins.head (lib.splitString "," main_monitor)
           },disable\""
         ])
         # Restore internal monitor

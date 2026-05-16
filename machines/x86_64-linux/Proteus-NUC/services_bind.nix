@@ -35,11 +35,11 @@
   # =========================================
   gen_reverse_prefix_v4 = ipv4: let
     # 1. Split the IP into a list of octets, e.g. "100.64.161.20" -> ["100" "64" "161" "20"]
-    octets = lib.strings.splitString "." ipv4;
+    octets = lib.splitString "." ipv4;
 
     # 2. Extract the first 3 octets, reverse them, and join with dots
     # e.g. ["100" "64" "161" "20"] -> ["100" "64" "161"] -> ["161" "64" "100"] -> "161.64.100"
-    reverse_prefix = builtins.concatStringsSep "." (lib.lists.reverseList (lib.lists.take 3 octets));
+    reverse_prefix = builtins.concatStringsSep "." (lib.reverseList (lib.take 3 octets));
   in
     # 3. Construct the full dynamic zone name, e.g. "161.64.100.in-addr.arpa"
     "${reverse_prefix}.in-addr.arpa";
@@ -49,7 +49,7 @@
   # ==========================================
   gen_reversed_chars_v6 = ipv6: let
     # 1. Split by "::" to handle zero-compression, e.g. "fd7a:115c:a1e0::cd3a:a114" -> ["fd7a:115c:a1e0" "cd3a:a114"]
-    split_double_colon = lib.strings.splitString "::" ipv6;
+    split_double_colon = lib.splitString "::" ipv6;
 
     # 2. Split the IP into a list, and pad add segments to 4 characters
     # e.g. Left part: ["fd7a" "115c" "a1e0"], right part: ["cd3a" "a114"]
@@ -66,8 +66,8 @@
       else if len == 3
       then "0${s}"
       else s;
-    left_padded = map pad_hex (lib.strings.splitString ":" (builtins.head split_double_colon));
-    right_padded = map pad_hex (lib.strings.splitString ":" (lib.lists.last split_double_colon));
+    left_padded = map pad_hex (lib.splitString ":" (builtins.head split_double_colon));
+    right_padded = map pad_hex (lib.splitString ":" (lib.last split_double_colon));
 
     # 3. Calculate and generate missing zero segments (IPv6 has 8 total segments)
     # e.g. Missing count is `8 - (3 + 2) = 3`, so the missing_segments is: ["0000" "0000" "0000"]
@@ -83,7 +83,7 @@
     # e.g. "fd7a115ca1e0000000000000cd3aa114"
     # -> ["f" "d" "7" "a" "1" "1" "5" "c" "a" "1" "e" "0" "0" "0" "0" "0" "0" "0" "0" "0" "0" "0" "0" "0" "c" "d" "3" "a" "a" "1" "1" "4"]
     # -> ["4" "1" "1" "a" "a" "3" "d" "c" "0" "0" "0" "0" "0" "0" "0" "0" "0" "0" "0" "0" "0" "e" "1" "a" "c" "5" "1" "1" "a" "7" "d" "f"]
-    lib.lists.reverseList (lib.strings.stringToCharacters full_ipv6_str);
+    lib.reverseList (lib.stringToCharacters full_ipv6_str);
 
   # Tailscale uses a /48 prefix. So the PTR length is `128 - 48 = 80` bits (20 hex chars), and the Zone Prefix is 48
   # bits (12 hex chars). e.g.
@@ -93,14 +93,14 @@
   gen_v6_ptr_host = {
     reversed_chars,
     prefix_len,
-  }: (builtins.concatStringsSep "." (lib.lists.take ((128 - prefix_len) / 4) reversed_chars));
+  }: (builtins.concatStringsSep "." (lib.take ((128 - prefix_len) / 4) reversed_chars));
   # e.g.
   # ["4" "1" "1" "a" "a" "3" "d" "c" "0" "0" "0" "0" "0" "0" "0" "0" "0" "0" "0" "0" "0" "e" "1" "a" "c" "5" "1" "1" "a" "7" "d" "f"]
   # -> ["0" "e" "1" "a" "c" "5" "1" "1" "a" "7" "d" "f"] -> "0.e.1.a.c.5.1.1.a.7.d.f"
   gen_v6_zone_prefix = {
     reversed_chars,
     prefix_len,
-  }: (builtins.concatStringsSep "." (lib.lists.drop ((128 - prefix_len) / 4) reversed_chars));
+  }: (builtins.concatStringsSep "." (lib.drop ((128 - prefix_len) / 4) reversed_chars));
 
   # =========================================
   # Forward Zone (proteus.eu.org)
@@ -130,18 +130,18 @@
       ns1 IN AAAA ${myvars.networking.hosts_addr.Proteus-NUC.ipv6}
 
       ; Grouped Host Records
-      ${lib.attrsets.foldlAttrs (acc: n: v: "${acc}\n${n} IN A ${v.ipv4}") ""
-        (lib.attrsets.filterAttrs (_: v: v ? ipv4) myvars.networking.hosts_addr)}
-      ${lib.attrsets.foldlAttrs (acc: n: v: "${acc}\n${n} IN AAAA ${v.ipv6}") ""
-        (lib.attrsets.filterAttrs (_: v: v ? ipv6) myvars.networking.hosts_addr)}
+      ${lib.foldlAttrs (acc: n: v: "${acc}\n${n} IN A ${v.ipv4}") ""
+        (lib.filterAttrs (_: v: v ? ipv4) myvars.networking.hosts_addr)}
+      ${lib.foldlAttrs (acc: n: v: "${acc}\n${n} IN AAAA ${v.ipv6}") ""
+        (lib.filterAttrs (_: v: v ? ipv6) myvars.networking.hosts_addr)}
 
       ; EasyTier Hostnames
-      ; For me `lib.attrsets.foldlAttrs` takes a bit longer to understand
-      ; lib.attrsets.foldlAttrs (acc: name: value: <new_acc>) acc attrset
+      ; For me `lib.foldlAttrs` takes a bit longer to understand
+      ; lib.foldlAttrs (acc: name: value: <new_acc>) acc attrset
       ${let
-        et_hosts = lib.attrsets.filterAttrs (_: v: v ? et_ipv4 || v ? et_ipv6) myvars.networking.hosts_addr;
-        et_v4_hosts = lib.attrsets.foldlAttrs (acc: n: v: "${acc}\n${n}.et IN A ${v.et_ipv4}") "" et_hosts;
-        et_v6_hosts = lib.attrsets.foldlAttrs (acc: n: v: "${acc}\n${n}.et IN AAAA ${v.et_ipv6}") "" et_hosts;
+        et_hosts = lib.filterAttrs (_: v: v ? et_ipv4 || v ? et_ipv6) myvars.networking.hosts_addr;
+        et_v4_hosts = lib.foldlAttrs (acc: n: v: "${acc}\n${n}.et IN A ${v.et_ipv4}") "" et_hosts;
+        et_v6_hosts = lib.foldlAttrs (acc: n: v: "${acc}\n${n}.et IN AAAA ${v.et_ipv6}") "" et_hosts;
       in "${et_v4_hosts}\n${et_v6_hosts}"}
 
       ; Subdomain Services
@@ -151,7 +151,7 @@
       ;   "traefik-desktop IN CNAME Proteus-Desktop"
       ;   ...
       ; ]
-      ; Step 2: lib.attrsets.foldlAttrs
+      ; Step 2: lib.foldlAttrs
       ;   (acc: class: names: acc ++ (map (name: "''${name} ''${class} CNAME Proteus-Desktop") names))
       ;   [] domain_hosts.Proteus-Desktop.domains
       ; [
@@ -161,12 +161,12 @@
       ; ]
       ; Step 3:
       ${let
-        domain_hosts = lib.attrsets.filterAttrs (_: v: v ? domains) myvars.networking.hosts_addr;
+        domain_hosts = lib.filterAttrs (_: v: v ? domains) myvars.networking.hosts_addr;
         records =
-          lib.attrsets.foldlAttrs
+          lib.foldlAttrs
           (acc_1: hostname: v:
             acc_1
-            ++ (lib.attrsets.foldlAttrs
+            ++ (lib.foldlAttrs
               (acc_2: class: names: acc_2 ++ (map (name: "${name} ${class} CNAME ${hostname}") names)) []
               v.domains))
           []
@@ -183,7 +183,7 @@
       ${zone_head nuc_reverse_zone_v4_name}
 
       ; PTR Record for last octet pointing to Tailscale domain
-      ${lib.lists.last (lib.strings.splitString "." nuc_ipv4)} IN PTR proteus-nuc.${myvars.tailnet}.
+      ${lib.last (lib.splitString "." nuc_ipv4)} IN PTR proteus-nuc.${myvars.tailnet}.
     '';
     # in builtins.trace content (pkgs.writeText "${nuc_reverse_zone_v4_name}.zone" content);
   in (pkgs.writeText "${nuc_reverse_zone_v4_name}.zone" content);
@@ -192,7 +192,7 @@
   desktop_reverse_zone_v4 = pkgs.writeText "${desktop_reverse_zone_v4_name}.zone" ''
     ${zone_head desktop_reverse_zone_v4_name}
 
-    ${lib.lists.last (lib.strings.splitString "." desktop_ipv4)} IN PTR proteus-desktop.${myvars.tailnet}.
+    ${lib.last (lib.splitString "." desktop_ipv4)} IN PTR proteus-desktop.${myvars.tailnet}.
   '';
   # =========================================
   # IPv6 Reverse Zone

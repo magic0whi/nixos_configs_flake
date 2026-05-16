@@ -21,11 +21,11 @@ in {
     nextcloud_oidc_client_secret = {inherit sopsFile restartUnits;};
   };
   systemd.services = let
-    clean_units = map (s: lib.strings.removeSuffix ".service" s) restartUnits;
+    clean_units = map (s: lib.removeSuffix ".service" s) restartUnits;
   in
     lib.mkMerge [
       # Add RequiresMountsFor to wait for storage mounted
-      (lib.attrsets.genAttrs clean_units (name: {unitConfig.RequiresMountsFor = [myvars.storage_path];}))
+      (lib.genAttrs clean_units (name: {unitConfig.RequiresMountsFor = [myvars.storage_path];}))
       # https://wiki.nixos.org/wiki/Nextcloud#Dynamic_configuration
       {
         nextcloud-custom-config = {

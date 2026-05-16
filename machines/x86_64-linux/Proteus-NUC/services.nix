@@ -19,9 +19,9 @@
       22000 # Syncthing TCP transfers
       53317 # LocalSend (HTTP/TCP)
       # Open Sunshine TCP ports
-      (lib.strings.toInt s_https)
-      (lib.strings.toInt s_http)
-      (lib.strings.toInt s_rtsp)
+      (lib.toInt s_https)
+      (lib.toInt s_http)
+      (lib.toInt s_rtsp)
     ];
     allowedUDPPorts = [
       5201 # iperf3
@@ -29,9 +29,9 @@
       22000 # Syncthing QUIC transfers
       53317 # LocalSend (Multicast/UDP)
       # Open Sunshine UDP ports
-      (lib.strings.toInt s_video)
-      (lib.strings.toInt s_ctrl)
-      (lib.strings.toInt s_audio)
+      (lib.toInt s_video)
+      (lib.toInt s_ctrl)
+      (lib.toInt s_audio)
     ];
   };
   ## BEGIN services_tor.nix

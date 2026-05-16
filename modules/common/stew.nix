@@ -64,7 +64,7 @@
         ServerAliveCountMax 5
       '')
       (lib.mkAfter (
-        lib.attrsets.foldlAttrs (acc: host: val:
+        lib.foldlAttrs (acc: host: val:
           acc
           + ''
             Host ${host}
@@ -82,7 +82,7 @@
     # Define the host key for remote builders so that Nix can verify all the remote builders.
     # This config will be written to /etc/ssh/ssh_known_hosts
     knownHosts =
-      lib.attrsets.mapAttrs (name: val: let
+      lib.mapAttrs (name: val: let
         host = myvars.networking.hosts_addr.${name} or {};
       in {
         hostNames =

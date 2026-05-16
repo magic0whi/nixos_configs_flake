@@ -5,7 +5,7 @@
   ...
 }: let
   zfsCompatibleKernelPackages =
-    lib.attrsets.filterAttrs (
+    lib.filterAttrs (
       name: kernelPackages:
         (builtins.match "linux_[0-9]+_[0-9]+" name)
         != null
@@ -14,10 +14,9 @@
         && (!kernelPackages.rtl8812au.meta.broken)
     )
     pkgs.linuxKernel.packages;
-  latestKernelPackage = lib.lists.last (
-    lib.lists.sort
-    (a: b: (lib.strings.versionOlder a.kernel.version b.kernel.version))
-    (builtins.attrValues zfsCompatibleKernelPackages)
+  latestKernelPackage = lib.last (
+    lib.sort
+    (a: b: (lib.versionOlder a.kernel.version b.kernel.version)) (builtins.attrValues zfsCompatibleKernelPackages)
   );
 in {
   # Note this might jump back and forth as kernels are added or removed.
