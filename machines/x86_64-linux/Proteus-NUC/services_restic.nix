@@ -62,7 +62,7 @@
     # Paths to backup
     paths = [
       config.services.paperless.exporter.directory # Paperless
-      config.services.immich.mediaLocation # Immich
+      # config.services.immich.mediaLocation # Immich, TODO divide to a standalone backup, hooks to set immich in maintance mode
       config.services.postgresqlBackup.location # Postgresql
       config.services.forgejo.dump.backupDir # Forgejo
       # "/var/lib/tailscale"

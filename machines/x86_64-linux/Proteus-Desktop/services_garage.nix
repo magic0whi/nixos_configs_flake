@@ -38,8 +38,8 @@
     };
   };
   # systemd.tmpfiles.settings."10-garage-create-dir" = {
-  #   "${myvars.storage_path}/garage/data".d = {group = "storage"; mode = "2775";};
-  #   "${myvars.storage_path}/garage/snapshots".d = {group = "storage"; mode = "2775";};
+  #   "${config.services.garage.settings.data_dir}".d = {group = "storage"; mode = "2775";};
+  #   "${config.services.garage.settings.metadata_dir}".d = {group = "storage"; mode = "2775";};
   # };
   systemd.services.garage = {
     unitConfig.RequiresMountsFor = [myvars.storage_path];

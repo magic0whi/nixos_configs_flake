@@ -1,5 +1,6 @@
 {
   config,
+  lib,
   myvars,
   ...
 }: {
@@ -19,8 +20,10 @@
       content = "DB_PASSWORD=${config.sops.placeholder.immich_db_password}";
     };
   };
+  systemd.tmpfiles.settings.immich.${config.services.immich.mediaLocation}.e.mode = lib.mkForce "0750";
   services.immich = {
     enable = true;
+    group = "storage";
     host = "127.0.0.1";
     database.host = "postgresql.${myvars.domain}";
     secretsFile = config.sops.templates."immich.env".path;
