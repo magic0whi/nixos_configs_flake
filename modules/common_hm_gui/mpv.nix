@@ -75,7 +75,7 @@
     };
     profiles = {
       "HDR_or_21:9" = {
-        # NOTE: Conditions are Lua code
+        # NOTE: Conditions are executed in Lua code
         profile-cond = "p[\"video-params/primaries\"]==\"bt.2020\" or p[\"video-params/aspect\"]>=2.0";
         blend-subtitles = false;
         # Enables placing toptitles and subtitles in black borders when they are available. Default: no
@@ -102,13 +102,12 @@
         hwdec = "auto";
         ao = lib.mkDefault "pipewire";
       };
-      # 1080 * 1.414213 / 4 = 381.8
       Low = {
         # Currently mpv.nix doesn't support hm.dag,
         # see https://github.com/nix-community/home-manager/blob/master/modules/programs/mpv.nix
         "\#\nglsl-shaders-clr\n\#" = "Placeholder";
         profile-desc = "240p/360p, enable scalling twice to achieve 4x";
-        profile-cond = "p[\"video-params/w\"]<=678 and p[\"video-params/h\"]<=381";
+        profile-cond = "p[\"video-params/w\"]<=678 and p[\"video-params/h\"]<=381"; # 1080 * 1.414213 / 4 = 381.8
         profile = "common";
         glsl-shaders-append = [
           "${pkgs.mpv-shim-default-shaders}/share/mpv-shim-default-shaders/shaders/KrigBilateral.glsl"
@@ -116,10 +115,10 @@
           "${pkgs.mpv-shim-default-shaders}/share/mpv-shim-default-shaders/shaders/nnedi3-nns32-win8x6.hook"
         ];
       };
-      # 1080 / 16 * 9 = 607.5
       SD = {
         "\#\nglsl-shaders-clr\n\#" = "Placeholder";
         profile-desc = "480p/576p";
+        # 1080 / 16 * 9 = 607.5
         profile-cond =
           "(p[\"video-params/w\"]<1080 and p[\"video-params/h\"]<608)"
           + " and (p[\"video-params/w\"]>678 or p[\"video-params/h\"]>381)";

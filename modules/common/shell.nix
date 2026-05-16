@@ -5,8 +5,9 @@
   ...
 }: {
   programs.zsh = {
-    enable = true; # On darwin, this creates /etc/zshrc that loads the nix-darwin environment. Which is
-    # required if you want to use darwin's default shell - zsh
+    # On macOS, this creates /etc/zshrc that loads the nix-darwin environment. Which is required if you want to use
+    # macOS's default shell - zsh
+    enable = true;
     interactiveShellInit = ''
       # START Zsh Shell Coloring
       # Reset
@@ -83,10 +84,11 @@
       On_IWhite=$'\e[0;107m'  # White
       # END Zsh Shell Coloring
     '';
+    # Fallback prompt if starship doesn't work
     promptInit = ''
       autoload -U promptinit && promptinit; setopt PROMPT_SUBST
       PS1='[%{$BRed%}%n%{$Color_Off%}@%{$BBlue%}%m%{$Color_Off%} %{$BBlue%}%3~%{$Color_Off%} %{$BCyan%}%{$Color_Off%}]%{$BGreen%}%(#.#.$)%{$Color_Off%} '
-    ''; # Fallback prompt if starship doesn't work
+    '';
   };
   environment.variables = lib.mkIf config.home-manager.users.${myvars.username}.programs.helix.defaultEditor {EDITOR = "hx";};
 }

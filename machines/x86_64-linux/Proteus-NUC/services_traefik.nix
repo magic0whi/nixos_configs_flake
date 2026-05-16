@@ -143,7 +143,7 @@ in {
             # Intercept standard DoH queries at the apex domain
             rule = builtins.concatStringsSep "" [
               "("
-              "Host(`${myvars.domain}`)"
+              "Host(`${myvars.domain}`)" # TODO: Current server cert lacks SAN for apex domain
               " || Host(`ns1.${myvars.domain}`)"
               " || Host(`${config.networking.hostName}.${myvars.tailnet}`)"
               ")"

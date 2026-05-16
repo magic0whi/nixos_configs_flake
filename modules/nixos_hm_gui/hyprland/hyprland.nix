@@ -9,10 +9,7 @@ in {
   # NOTE: this executable is used by Greetd to start a wayland session when system boot up. With such a
   # vendor-no-locking script, we can switch to another wayland compositor without modifying greetd's config in NixOS
   # module
-  home.file.".wayland-session" = {
-    source = "${hypr_pkg}/bin/start-hyprland";
-    executable = true;
-  };
+  home.file.".wayland-session".source = "${hypr_pkg}/bin/start-hyprland";
   wayland.windowManager.hyprland = {
     enable = true;
     package = hypr_pkg;
@@ -45,7 +42,7 @@ in {
           "workspacesOut,1,1.94,almostLinear,fade"
         ];
       };
-      "$terminal" = "alacritty";
+      "$terminal" = lib.getExe config.xdg.terminal-exec.package;
       # "$menu" = "rofi -show combi"
       "$menu" = config.programs.anyrun.menu_script;
       # "$clip_manager" = "sh -c 'cliphist list | rofi -dmenu | cliphist decode | wl-copy'";
@@ -64,7 +61,7 @@ in {
           notify-send -h string:x-canonical-private-synchronous:sys-notify -u low -i $image "$color, copied to clipboard."
         fi
       '';
-      "$file_manager" = "xdg-terminal-exec yazi";
+      "$file_manager" = "$terminal yazi";
       "$wlogout" = config.programs.wlogout.wrapper_script;
       "$mainMod" = "SUPER";
       bind = [

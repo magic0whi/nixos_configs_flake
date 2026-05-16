@@ -58,11 +58,6 @@ in {
     betterdisplay # Unlock display settings
   ];
   ## START packages.nix
-  ## START terminal.nix
-  environment.variables.TERMINFO_DIRS =
-    (map (path: path + "/share/terminfo") config.environment.profiles)
-    ++ ["/usr/share/terminfo"];
-  ## END terminal.nix
   ## START shell.nix
   programs.zsh.enableSyntaxHighlighting = true;
   environment.shells = [pkgs.zsh];

@@ -25,12 +25,14 @@
     restartUnits = map (name: "easytier-${name}.service") (builtins.attrNames config.services.easytier.instances);
     sopsFile = "${myvars.secrets_dir}/common.sops.yaml";
   in {
-    secrets."easytier_network_secret" =
-      {inherit sopsFile;}
-      // lib.attrsets.optionalAttrs (!pkgs.stdenv.isDarwin) {inherit restartUnits;};
-    secrets."easytier_peer_0" =
-      {inherit sopsFile;}
-      // lib.attrsets.optionalAttrs (!pkgs.stdenv.isDarwin) {inherit restartUnits;};
+    secrets = {
+      "easytier_network_secret" =
+        {inherit sopsFile;}
+        // lib.attrsets.optionalAttrs (!pkgs.stdenv.isDarwin) {inherit restartUnits;};
+      "easytier_peer_0" =
+        {inherit sopsFile;}
+        // lib.attrsets.optionalAttrs (!pkgs.stdenv.isDarwin) {inherit restartUnits;};
+    };
     templates."easytier.env" =
       {
         content = ''

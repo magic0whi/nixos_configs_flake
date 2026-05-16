@@ -165,13 +165,14 @@ in {
     environment.systemPackages = [cfg.package];
 
     system.activationScripts.postActivation.text = ''
-      # Ensure the state directory is initialized
-      ${concatStringsSep "\n" (mapAttrsToList (name: _: ''
-        if [ ! -d "/Library/Application Support/easytier-${name}" ]; then
-          echo "Setting up EasyTier directory for ${name}..."
-          install -dm700 "/Library/Application Support/easytier-${name}"
-        fi
-      '') active_insts)}
+      # Ensure the Easytier state directory is initialized
+      ${lib.concatLines (lib.mapAttrsToList (name: _: ''
+          if [ ! -d "/Library/Application Support/easytier-${name}" ]; then
+            echo "Setting up EasyTier directory for ${name}..."
+            install -dm700 "/Library/Application Support/easytier-${name}"
+          fi
+        '')
+        active_insts)}
     '';
     # nix-darwin lacks `launchd.daemon.<name>.restartTriggers`
     launchd.daemons = lib.mapAttrs' (name: inst:

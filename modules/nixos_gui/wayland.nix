@@ -26,7 +26,7 @@
           cat <<EOF > $out/steam.desktop
           [Desktop Entry]
           Name=Steam (Gamescope)
-          Exec=${config.programs.gamescope.package}/bin/gamescope -W 1920 -H 1080 -f -e --xwayland-count 2 --hdr-enabled --hdr-itm-enabled -- steam -pipewire-dmabuf -gamepadui -steamdeck -steamos3
+          Exec=${lib.getExe config.programs.gamescope.package} -W 1920 -H 1080 -f -e --xwayland-count 2 --hdr-enabled --hdr-itm-enabled -- steam -pipewire-dmabuf -gamepadui -steamdeck -steamos3
           Type=Application
           EOF
         '';

@@ -49,8 +49,8 @@
       # k6 # load testing tool
       # protobuf # protocol buffer compiler
 
-      # TODO
-      # Solve Coding Extercises - Learn By Doing
+      # TODO: Try it
+      # Solve Coding Exercises - Learn By Doing
       # exercism
 
       # need to run `conda-install` before using it

@@ -9,7 +9,7 @@
     enable = true;
     systemd.enable = true;
     # systemd.enableInspect = true; # DEBUG: GTK Inspector
-    settings = [
+    settings = let launch_prefix = "systemd-run --user --scope --"; in [
       {
         modules-left = ["custom/launcher" "custom/powermenu" "hyprland/workspaces" "hyprland/submap"];
         modules-center = ["hyprland/window"];
@@ -33,14 +33,14 @@
         "custom/launcher" = {
           format = "&#xf313;"; # nf-linux-nixos
           tooltip = false;
-          on-click = "systemd-run --user --scope ${config.programs.anyrun.menu_script}";
+          on-click = "${launch_prefix} ${config.programs.anyrun.menu_script}";
           # on-click-middle = ""; # TODO: Impl random wallpaper
           # on-click-right = ""; # TODO: Impl next wallpaper
         };
         "custom/powermenu" = {
           format = "&#xf011;"; # nf-fa-power_off
           tooltip = false;
-          "on-click" = "systemd-run --user --scope ${config.programs.wlogout.wrapper_script}";
+          on-click = "${launch_prefix} ${config.programs.wlogout.wrapper_script}";
         };
         "hyprland/workspaces" = {
           format = "{name}{windows}";
@@ -201,7 +201,7 @@
             "&#xf0925;" # wifi_strength_3
             "&#xf0928;" # wifi_strength_4
           ];
-          on-click-right = "alacritty -e pkexec iwctl";
+          on-click-right = "${lib.getExe config.xdg.terminal-exec.package} sudo iwctl";
         };
         pulseaudio = {
           # scroll-step = 1, # %, can be a float

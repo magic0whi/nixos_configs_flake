@@ -63,11 +63,18 @@
         ServerAliveInterval 30
         ServerAliveCountMax 5
       '')
-      (lib.mkAfter (lib.attrsets.foldlAttrs (acc: host: val: acc + ''
-        Host ${host}
-          Hostname ${if (builtins.isNull myvars.networking.hosts_addr.${host}.ipv4) then host else val.ipv4}
-          Port 22
-        '')
+      (lib.mkAfter (
+        lib.attrsets.foldlAttrs (acc: host: val:
+          acc
+          + ''
+            Host ${host}
+              Hostname ${
+              if (val ? ipv4)
+              then val.ipv4
+              else host
+            }
+              Port 22
+          '')
         ""
         myvars.networking.hosts_addr
       ))

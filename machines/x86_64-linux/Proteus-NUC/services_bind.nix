@@ -171,7 +171,7 @@
               v.domains))
           []
           domain_hosts;
-      in (builtins.concatStringsSep "\n" records)}
+      in (lib.concatLines records)}
     '');
   # =========================================
   # IPv4 Reverse Zones

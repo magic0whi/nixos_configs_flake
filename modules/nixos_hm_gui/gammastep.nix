@@ -34,14 +34,11 @@
       };
     };
   };
-  xdg.configFile."gammastep/hooks/mako.sh" = {
-    text = ''
-      #!/usr/bin/env sh
-      case $1 in
-        period-changed)
-          exec notify-send "Gammastep" "Period changed to $3"
-      esac
-    '';
-    executable = true;
-  };
+  xdg.configFile."gammastep/hooks/mako.sh".source = pkgs.writeShellScript "gammastep-hooks-mako" ''
+    set -eufo pipefail
+    case $1 in
+      period-changed)
+        exec ${lib.getExe pkgs.libnotify} "Gammastep" "Period changed to $3"
+    esac
+  '';
 }
