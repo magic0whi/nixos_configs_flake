@@ -1,4 +1,9 @@
-{pkgs, lib, config, ...}: {
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}: {
   options.programs.anyrun = {
     menu_script = lib.mkOption {
       type = lib.types.path;
@@ -12,7 +17,7 @@
     clip_script = lib.mkOption {
       type = lib.types.path;
       description = "Path to the Anyrun clip_manager wrapper script";
-      default = pkgs.writeShellScript "clip_manager" ''
+      default = pkgs.writeShellScript "clip-manager" ''
         set -eufo pipefail
         anyrun close || true
         cliphist list | anyrun --plugins ${config.programs.anyrun.package}/lib/libstdin.so --show-results-immediately true | cliphist decode | wl-copy
@@ -35,7 +40,9 @@
     programs.anyrun = {
       enable = true;
       config = {
-        plugins = let pkg = config.programs.anyrun.package; in [
+        plugins = let
+          pkg = config.programs.anyrun.package;
+        in [
           "${pkg}/lib/libapplications.so" # Launch applications
           # "${pkg}/lib/libdictionary.so" # Look up word definitions using the Free Dictionary API
           # "${pkg}/lib/libnix_run.so" # search & run graphical apps from nixpkgs via `nix run`, without installing it

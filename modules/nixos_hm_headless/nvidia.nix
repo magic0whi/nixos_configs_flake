@@ -1,4 +1,8 @@
-{config, lib, ...}: let
+{
+  config,
+  lib,
+  ...
+}: let
   cfg = config.wayland.windowManager.hyprland;
 in {
   options.wayland.windowManager.hyprland = {

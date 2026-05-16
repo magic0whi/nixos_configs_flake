@@ -1,9 +1,17 @@
-{lib, mylib, pkgs, config, myvars, ...}: let
+{
+  config,
+  lib,
+  mylib,
+  myvars,
+  pkgs,
+  ...
+}: let
   dpi_scale = lib.strings.substring 0 4 (lib.strings.floatToString 1.25);
   # Ref: https://wiki.hyprland.org/Configuring/Monitors/
   # TIP: ls /sys/class/drm/card*
   # 10-bit will cause the internal monitor flickering when using PRIME Sync
-  main_monitor = if config.wayland.windowManager.hyprland.nvidia
+  main_monitor =
+    if config.wayland.windowManager.hyprland.nvidia
     then "eDP-1,highres,auto,${dpi_scale},bitdepth,8,cm,adobe"
     else "eDP-1,highres,auto,${dpi_scale},bitdepth,10,cm,adobe";
   secondary_monitor = "HDMI-A-1,highres,auto-left,2,bitdepth,10,cm,adobe";
@@ -39,7 +47,8 @@ in {
       path = "${config.xdg.configHome}/gcloud/project-1.secret.json";
     };
   };
-  home.file = let # Add terraform-provider-google for terraformer
+  # Add plugin terraform-provider-google for `terraformer`
+  home.file = let
     arch = "linux_amd64";
     version = "7.31.0";
     provider = pkgs.terraform-providers.hashicorp_google.overrideAttrs (_: {
@@ -59,8 +68,7 @@ in {
       '';
     });
   in {
-    ".terraform.d/plugins/${arch}/terraform-provider-google_v${version}".source =
-      "${provider}/libexec/terraform-providers/registry.terraform.io/hashicorp/google/${version}/${arch}/terraform-provider-google_${version}";
+    ".terraform.d/plugins/${arch}/terraform-provider-google_v${version}".source = "${provider}/libexec/terraform-providers/registry.terraform.io/hashicorp/google/${version}/${arch}/terraform-provider-google_${version}";
   };
   ## END cloud-providers.nix
   ## BEGIN hyprland.nix
@@ -89,10 +97,13 @@ in {
         "9,monitor:${main_iface}"
         "10,monitor:${main_iface}"
       ];
-      env = [
-        # "GDK_DPI_SCALE,${dpi_scale}" # Set globally is not recommend, makes firefox scale twice
-        "STEAM_FORCE_DESKTOPUI_SCALING,${dpi_scale}"
-      ] ++ lib.optional # PRIME Sync mode for Hyprland
+      env =
+        [
+          # "GDK_DPI_SCALE,${dpi_scale}" # Set globally is not recommend, makes firefox scale twice
+          "STEAM_FORCE_DESKTOPUI_SCALING,${dpi_scale}"
+        ]
+        # PRIME Sync mode for Hyprland
+        ++ lib.optional
         config.wayland.windowManager.hyprland.nvidia
         "AQ_DRM_DEVICES,/dev/dri/${myvars.dgpu_sym_name}:/dev/dri/${myvars.igpu_sym_name}";
 
@@ -126,9 +137,7 @@ in {
           },disable\""
         ])
         # Restore internal monitor
-        ",switch:off:Lid Switch,exec,hyprctl keyword monitor \"${
-          main_monitor
-        }\""
+        ",switch:off:Lid Switch,exec,hyprctl keyword monitor \"${main_monitor}\""
       ];
       # Cause black screen if the bandwidth doesn't enough
       # render = {cm_auto_hdr = 0; cm_fs_passthrough = 0;};
@@ -138,7 +147,8 @@ in {
     lock_cmd = "lock_cmd = pidof hyprlock || (brightnessctl -sd usb-3-11-3-1::kbd_backlight set 0; hyprlock && loginctl unlock-session)";
     unlock_cmd = "brightnessctl -rd usb-3-11-3-1::kbd_backlight";
   };
-  programs.mpv.profiles.common.vulkan-device = if config.wayland.windowManager.hyprland.nvidia
+  programs.mpv.profiles.common.vulkan-device =
+    if config.wayland.windowManager.hyprland.nvidia
     then "NVIDIA GeForce RTX 3070 Laptop GPU"
     else "Intel(R) UHD Graphics (TGL GT1)";
   ## END hyprland.nix

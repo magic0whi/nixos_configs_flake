@@ -8,8 +8,17 @@
 # 7. Allow the key to access the bucket:
 #   `garage -h <full-node-id>@127.0.0.1:3901 bucket allow --read --write nix-cache --owner --key nixbuilder`
 # 8. Allow bucket-as-website bucket-as-website: garage -h <full-node-id>@127.0.0.1:3901 bucket website --allow nix-cache
-{myvars, config, pkgs, lib, ...}: {
-  sops = let restartUnits = ["garage.service"]; sopsFile = "${myvars.secrets_dir}/${config.networking.hostName}.sops.yaml"; in {
+{
+  config,
+  lib,
+  myvars,
+  pkgs,
+  ...
+}: {
+  sops = let
+    restartUnits = ["garage.service"];
+    sopsFile = "${myvars.secrets_dir}/${config.networking.hostName}.sops.yaml";
+  in {
     secrets = {
       "garage_rpc_secret" = {inherit restartUnits sopsFile;};
       "garage_admin_token" = {inherit restartUnits sopsFile;};
@@ -24,7 +33,8 @@
       '';
     };
     templates."garage-webui.env" = {
-      restartUnits = ["garage-webui.service"]; content = "API_ADMIN_KEY=${config.sops.placeholder.garage_admin_token}";
+      restartUnits = ["garage-webui.service"];
+      content = "API_ADMIN_KEY=${config.sops.placeholder.garage_admin_token}";
     };
   };
   # systemd.tmpfiles.settings."10-garage-create-dir" = {
@@ -45,7 +55,8 @@
   services.garage = {
     enable = true;
     package = pkgs.garage_2;
-    settings = { # https://garagehq.deuxfleurs.fr/documentation/reference-manual/configuration/
+    # https://garagehq.deuxfleurs.fr/documentation/reference-manual/configuration/
+    settings = {
       # metadata_dir = "${myvars.storage_path}/garage/meta"; # Garage recommends placing metadata on SSD
       metadata_snapshots_dir = "${myvars.storage_path}/garage/snapshots";
       metadata_auto_snapshot_interval = "6h";
@@ -54,9 +65,16 @@
       rpc_bind_addr = "127.0.0.1:3901";
       rpc_public_addr = "127.0.0.1:3901";
       # s3_api (3900) is for common access
-      s3_api = {api_bind_addr = "127.0.0.1:3900"; root_domain = ".s3.${myvars.domain}"; s3_region = "cn-east1-a";};
+      s3_api = {
+        api_bind_addr = "127.0.0.1:3900";
+        root_domain = ".s3.${myvars.domain}";
+        s3_region = "cn-east1-a";
+      };
       # s3_web (3902) is for bucket-as-website
-      s3_web = {bind_addr = "127.0.0.1:3902"; root_domain = ".s3-pub.${myvars.domain}";};
+      s3_web = {
+        bind_addr = "127.0.0.1:3902";
+        root_domain = ".s3-pub.${myvars.domain}";
+      };
       # admin (3903) is for webui access
       admin = {api_bind_addr = "127.0.0.1:3903";};
       replication_factor = 1;
@@ -73,7 +91,8 @@
       Restart = "on-failure";
       EnvironmentFile = config.sops.templates."garage-webui.env".path;
       Environment = [
-        "PORT=3909" "CONFIG_PATH=${(pkgs.formats.toml {}).generate "config.toml" config.services.garage.settings}"
+        "PORT=3909"
+        "CONFIG_PATH=${(pkgs.formats.toml {}).generate "config.toml" config.services.garage.settings}"
       ];
     };
   };

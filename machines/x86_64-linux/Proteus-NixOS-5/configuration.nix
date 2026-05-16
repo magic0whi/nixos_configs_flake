@@ -1,4 +1,8 @@
-{myvars, config, ...}: {
+{
+  config,
+  myvars,
+  ...
+}: {
   time.timeZone = "Asia/Hong_Kong";
   boot.kernelParams = [
     "console=ttyS0,115200"

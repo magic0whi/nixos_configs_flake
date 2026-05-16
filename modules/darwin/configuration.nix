@@ -5,10 +5,13 @@
 #     [System Preferences] -> [Keyboard] -> [Input Sources] -> [Edit] -> [Use 中/英 key to switch ] -> [Disable]
 {config, ...}: {
   system = {
-    defaults = { ## NOTE: https://github.com/nix-darwin/nix-darwin/issues/1207#issuecomment-2510402916
-      CustomUserPreferences = { # Customize settings that not supported by nix-darwin directly
+    defaults = {
+      ## NOTE: https://github.com/nix-darwin/nix-darwin/issues/1207#issuecomment-2510402916
+      # Customize settings that not supported by nix-darwin directly
+      CustomUserPreferences = {
         # Incomplete list of macOS `defaults` commands: https://github.com/yannbertrand/macos-defaults
-        "com.apple.desktopservices" = { # Avoid creating .DS_Store files on network or USB volumes
+        "com.apple.desktopservices" = {
+          # Avoid creating .DS_Store files on network or USB volumes
           DSDontWriteNetworkStores = true;
           DSDontWriteUSBStores = true;
         };
@@ -58,7 +61,8 @@
       enableKeyMapping = true;
       remapCapsLockToEscape = true; # Remap caps lock to escape, useful for vim users
       userKeyMapping = [
-        { # Remap escape to caps lock
+        # Remap escape to caps lock
+        {
           HIDKeyboardModifierMappingSrc = 30064771113;
           HIDKeyboardModifierMappingDst = 30064771129;
         }

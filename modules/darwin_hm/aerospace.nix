@@ -1,75 +1,78 @@
 {config, ...}: {
+  # Highlight focused windows with colored borders
   services.jankyborders = {
     enable = true;
-    settings = { # Highlight focused windows with colored borders
+    settings = {
       active_color = "0xffe1e3e4";
       inactive_color = "0xff494d64";
       width = 5.0;
     };
   };
   xdg.configFile."aerospace/ghostty-actions.js".text = ''
-  #!/usr/bin/env osascript -l JavaScript
-  ObjC.import('Foundation')
-  const argv = $.NSProcessInfo.processInfo.arguments.js
-  const system_events = Application('System Events');
-  const app_path = '${config.programs.ghostty.package}/Applications/Ghostty.app';
+    #!/usr/bin/env osascript -l JavaScript
+    ObjC.import('Foundation')
+    const argv = $.NSProcessInfo.processInfo.arguments.js
+    const system_events = Application('System Events');
+    const app_path = '${config.programs.ghostty.package}/Applications/Ghostty.app';
 
-  function quick_term() {
-    const ghostty = system_events.processes.byName('Ghostty');
-    const menu_bar_view_quick_term = ghostty.menuBars[0].menuBarItems['View'].menus[0].menuItems['Quick Terminal'];
-    menu_bar_view_quick_term.click();
-  }
-  function new_window() {
-    const ghostty = system_events.processes.byName('Ghostty');
-    const menu_bar_file_new_window = ghostty.menuBars[0].menuBarItems['File'].menus[0].menuItems['New Window'];
-    menu_bar_file_new_window.click();
-  }
-  function run(argv) {
-    var ghostty = null;
-    switch (Application(app_path).running()) {
-      case false: ghostty = Application(app_path); delay(0.2); break;
-      case true: ghostty = Application(app_path);
+    function quick_term() {
+      const ghostty = system_events.processes.byName('Ghostty');
+      const menu_bar_view_quick_term = ghostty.menuBars[0].menuBarItems['View'].menus[0].menuItems['Quick Terminal'];
+      menu_bar_view_quick_term.click();
     }
-    argv.forEach((arg, idx) => {
-      switch(arg) {
-        case "1": ghostty.activate(); break; // Focus Ghostty
-        case "2": quick_term(); break; // Quich Terminal
-        case "3": new_window();
+    function new_window() {
+      const ghostty = system_events.processes.byName('Ghostty');
+      const menu_bar_file_new_window = ghostty.menuBars[0].menuBarItems['File'].menus[0].menuItems['New Window'];
+      menu_bar_file_new_window.click();
+    }
+    function run(argv) {
+      var ghostty = null;
+      switch (Application(app_path).running()) {
+        case false: ghostty = Application(app_path); delay(0.2); break;
+        case true: ghostty = Application(app_path);
       }
-    });
-  }
+      argv.forEach((arg, idx) => {
+        switch(arg) {
+          case "1": ghostty.activate(); break; // Focus Ghostty
+          case "2": quick_term(); break; // Quich Terminal
+          case "3": new_window();
+        }
+      });
+    }
   '';
   xdg.configFile."aerospace/finder-actions.js".text = ''
-  #!/usr/bin/env osascript -l JavaScript
-  ObjC.import('Foundation')
-  const argv = $.NSProcessInfo.processInfo.arguments.js
-  const system_events = Application('System Events');
-  const app_path = 'Finder';
+    #!/usr/bin/env osascript -l JavaScript
+    ObjC.import('Foundation')
+    const argv = $.NSProcessInfo.processInfo.arguments.js
+    const system_events = Application('System Events');
+    const app_path = 'Finder';
 
-  function new_window() {
-    const finder_proc = system_events.processes.byName('Finder');
-    const menu_bar_file_new_finder_window = finder_proc.menuBars[0].menuBarItems['File'].menus[0].menuItems['New Finder Window'];
-    menu_bar_file_new_finder_window.click();
-  }
-  function run(argv) {
-    var finder = null;
-    switch (Application(app_path).running()) {
-      case false: finder = Application(app_path); delay(0.2); break;
-      case true: finder = Application(app_path);
+    function new_window() {
+      const finder_proc = system_events.processes.byName('Finder');
+      const menu_bar_file_new_finder_window = finder_proc.menuBars[0].menuBarItems['File'].menus[0].menuItems['New Finder Window'];
+      menu_bar_file_new_finder_window.click();
     }
-    argv.forEach((arg, idx) => {
-      switch(arg) {
-        case "1": finder.activate(); break; // Focus/Launch Finder
-        case "2": new_window();
+    function run(argv) {
+      var finder = null;
+      switch (Application(app_path).running()) {
+        case false: finder = Application(app_path); delay(0.2); break;
+        case true: finder = Application(app_path);
       }
-    });
-  }
+      argv.forEach((arg, idx) => {
+        switch(arg) {
+          case "1": finder.activate(); break; // Focus/Launch Finder
+          case "2": new_window();
+        }
+      });
+    }
   '';
   programs.aerospace = {
     enable = true;
     launchd.enable = true;
-    settings = { # See https://nikitabobko.github.io/AeroSpace/guide#configuring-aerospace
-      automatically-unhide-macos-hidden-apps = true; # Turn off macOS "Hide application" (cmd-h) feature
+    # Ref https://nikitabobko.github.io/AeroSpace/guide#configuring-aerospace
+    settings = {
+      automatically-unhide-macos-hidden-apps = true; # Turn off macOS "Hide application" (<cmd-h>) feature
+      exec.inherit-env-vars = true;
       gaps = {
         inner.horizontal = 3;
         inner.vertical = 3;
@@ -89,7 +92,7 @@
 
         alt-w = "close";
 
-        # See: https://nikitabobko.github.io/AeroSpace/commands#layout
+        # Ref: https://nikitabobko.github.io/AeroSpace/commands#layout
         alt-slash = "layout tiles horizontal vertical";
         alt-quote = "layout accordion horizontal vertical";
 
@@ -101,7 +104,6 @@
         alt-tab = "workspace-back-and-forth";
         alt-n = "workspace --wrap-around next";
         alt-p = "workspace --wrap-around prev";
-
 
         # Move windows, see: https://nikitabobko.github.io/AeroSpace/commands#move
         alt-shift-h = "move left";
@@ -138,9 +140,11 @@
         alt-shift-9 = "move-node-to-workspace 9";
         alt-shift-0 = "move-node-to-workspace 0";
 
-        alt-shift-semicolon = "mode service"; # See: https://nikitabobko.github.io/AeroSpace/commands#mode
+        alt-shift-semicolon = "mode service"; # Ref: https://nikitabobko.github.io/AeroSpace/commands#mode
       };
-      mode.service.binding = { # See: https://nikitabobko.github.io/AeroSpace/guide#binding-modes
+      # Ref: https://nikitabobko.github.io/AeroSpace/guide#binding-modes
+      # "service" binding mode
+      mode.service.binding = {
         esc = ["reload-config" "mode main"];
         f = ["layout floating tiling" "mode main"]; # Toggle between floating and tiling layout
         r = ["flatten-workspace-tree" "mode main"]; # reset layout
@@ -155,7 +159,8 @@
         up = "volume up";
         shift-down = ["volume set 0" "mode main"];
       };
-      mode.resize.binding = { # 'resize' binding mode
+      # "resize" binding mode
+      mode.resize.binding = {
         h = "resize width -50";
         j = "resize height +50";
         k = "resize height -50";
@@ -163,7 +168,6 @@
         enter = "mode main";
         esc = "mode main";
       };
-      exec.inherit-env-vars = true;
       workspace-to-monitor-force-assignment = {
         "1" = ["Built-in Retina Display"];
         "2" = ["Built-in Retina Display"];
@@ -171,8 +175,14 @@
         "4" = ["Built-in Retina Display"];
       };
       on-window-detected = [
-        {"if".app-id = "io.mpv"; run = ["layout floating"];}
-        {"if".app-id = "com.valvesoftware.steam"; run = ["layout tiling"];}
+        {
+          "if".app-id = "io.mpv";
+          run = ["layout floating"];
+        }
+        {
+          "if".app-id = "com.valvesoftware.steam";
+          run = ["layout tiling"];
+        }
       ];
     };
   };

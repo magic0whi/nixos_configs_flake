@@ -1,4 +1,8 @@
-{myvars, config, ...}: {
+{
+  config,
+  myvars,
+  ...
+}: {
   time.timeZone = "Asia/Shanghai";
   boot.loader.efi.canTouchEfiVariables = false;
   boot.loader.systemd-boot.enable = false;

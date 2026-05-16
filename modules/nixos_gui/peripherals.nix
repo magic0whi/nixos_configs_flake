@@ -1,6 +1,7 @@
 {pkgs, ...}: {
   # Audio(PipeWire)
   environment.systemPackages = [pkgs.pulseaudio]; # Provides `pactl`, which is required by some apps (e.g. sonic-pi)
+
   # PipeWire is a new low-level multimedia framework. It aims to offer capture and playback for both audio and video
   # with minimal latency. It support for PulseAudio-, JACK-, ALSA- and GStreamer-based applications. PipeWire has a
   # great bluetooth support, it can be a good alternative to PulseAudio. Ref: https://nixos.wiki/wiki/PipeWire
@@ -23,10 +24,11 @@
     udev.packages = with pkgs; [
       gnome-settings-daemon
       platformio # udev rules for platformio
-      openocd # required by paltformio, ref: https://github.com/NixOS/nixpkgs/issues/224895
+      openocd # Required by paltformio, ref: https://github.com/NixOS/nixpkgs/issues/224895
       openfpgaloader
     ];
-    keyd = { # A key remapping daemon for linux, ref: https://github.com/rvaiya/keyd
+    # A key remapping daemon for Linux, ref: https://github.com/rvaiya/keyd
+    keyd = {
       enable = true;
       keyboards.default.settings = {
         main = {

@@ -1,4 +1,10 @@
-{myvars, config, lib, osConfig, ...}: {
+{
+  config,
+  lib,
+  myvars,
+  osConfig,
+  ...
+}: {
   sops.secrets."${osConfig.networking.hostName}_syncthing.priv.pem" = {
     sopsFile = "${myvars.secrets_dir}/${osConfig.networking.hostName}_syncthing.priv.pem.sops";
     format = "binary"; # Required when loading raw files instead of yaml/json structures
@@ -21,28 +27,35 @@
       devices = mobile_devices // (builtins.mapAttrs (n: v: {id = v.syncthing_id;}) (lib.attrsets
         .filterAttrs (n: v: v ? syncthing_id && n != osConfig.networking.hostName) myvars.networking.known_hosts));
       folders = {
-        "Documents" = { # All devices
-          path = config.xdg.userDirs.documents; devices = builtins.attrNames config.services.syncthing.settings.devices;
+        "Documents" = {
+          path = config.xdg.userDirs.documents;
+          # All devices
+          devices = builtins.attrNames config.services.syncthing.settings.devices;
         };
         "Games" = {
           path = "${config.home.homeDirectory}/Games";
-          devices = lib.lists.subtractLists
+          devices =
+            lib.lists.subtractLists
             (builtins.attrNames mobile_devices) (builtins.attrNames config.services.syncthing.settings.devices);
         };
         "Music" = {
-          path = config.xdg.userDirs.music; devices = builtins.attrNames config.services.syncthing.settings.devices;
+          path = config.xdg.userDirs.music;
+          devices = builtins.attrNames config.services.syncthing.settings.devices;
         };
         "Pictures" = {
-          path = config.xdg.userDirs.pictures; devices = builtins.attrNames config.services.syncthing.settings.devices;
+          path = config.xdg.userDirs.pictures;
+          devices = builtins.attrNames config.services.syncthing.settings.devices;
         };
         "Secrets" = {
           path = "${config.home.homeDirectory}/Secrets";
-          devices = lib.lists.subtractLists
+          devices =
+            lib.lists.subtractLists
             (builtins.attrNames mobile_devices) (builtins.attrNames config.services.syncthing.settings.devices);
         };
         "Works" = {
           path = "${config.home.homeDirectory}/Works";
-          devices = lib.lists.subtractLists
+          devices =
+            lib.lists.subtractLists
             (builtins.attrNames mobile_devices) (builtins.attrNames config.services.syncthing.settings.devices);
         };
       };

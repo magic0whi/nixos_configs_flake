@@ -1,9 +1,16 @@
-{pkgs, lib, config, myvars, ...}: {
+{
+  config,
+  lib,
+  myvars,
+  pkgs,
+  ...
+}: {
   # virtualisation.waydroid.enable = true; # Usage: https://wiki.nixos.org/wiki/Waydroid
   # virtualisation.docker.storageDriver = "btrfs"; # conflict with feature: containerd-snapshotter
   ## BEGIN binfmt.nix
   boot.binfmt.emulatedSystems = ["riscv64-linux" "aarch64-linux"]; # Cross compilation
-  boot.binfmt.registrations."riscv64-linux" = { # For riscv64 container
+  # For riscv64 docker container
+  boot.binfmt.registrations."riscv64-linux" = {
     interpreter = "${lib.getExe' pkgs.pkgsStatic.qemu-user "qemu-riscv64"}";
     fixBinary = true;
     wrapInterpreterInShell = false;
@@ -43,22 +50,27 @@
   #
   #   Critical exception: traffic destined for FakeIP (198.18.0.0/15) hits a `return` BEFORE the bypass mark, so TProxy
   #   can still catch and resolve those connections.
-  networking.nftables.tables = lib.mkIf config.services.sing-box.enable {vnet_bypass = {family = "inet"; content = ''
-    chain prerouting {
-      type filter hook prerouting priority dstnat - 5; policy accept;
+  networking.nftables.tables = lib.mkIf config.services.sing-box.enable {
+    vnet_bypass = {
+      family = "inet";
+      content = ''
+        chain prerouting {
+          type filter hook prerouting priority dstnat - 5; policy accept;
 
-      # 1. Do NOT bypass FakeIP traffic. Let sing-box handle it.
-      ip daddr 198.18.0.0/15 return
+          # 1. Do NOT bypass FakeIP traffic. Let sing-box handle it.
+          ip daddr 198.18.0.0/15 return
 
-      # 2. Bypass everything else from Docker & Libvirt
-      ip saddr {
-        172.17.0.0/16, # Docker Default
-        172.18.0.0/16, # Docker Custom
-        172.20.0.0/14, # Extra Containers
-        192.168.122.0/24 # Libvirt
-      } ct mark set 0x00002024
-    }
-  '';};};
+          # 2. Bypass everything else from Docker & Libvirt
+          ip saddr {
+            172.17.0.0/16, # Docker Default
+            172.18.0.0/16, # Docker Custom
+            172.20.0.0/14, # Extra Containers
+            192.168.122.0/24 # Libvirt
+          } ct mark set 0x00002024
+        }
+      '';
+    };
+  };
   # Fix 2: extraInputRules:
   #   With auto_redirect enabled, sing-box allocates a dynamic local TCP port
   #   and installs several nft rules. Because `redirect` rewrites the packet
@@ -105,17 +117,19 @@
       ''ATTR{vendor}=="0x8086", ATTR{device}=="0x9a60"''
       ''DRIVER!="vfio-pci"''
       ''RUN+="/bin/sh -c '${builtins.concatStringsSep "; " [
-        ''echo \$kernel > /sys/bus/pci/devices/\$kernel/driver/unbind''
-        ''echo vfio-pci > /sys/bus/pci/devices/\$kernel/driver_override''
-        ''modprobe vfio-pci''
-        ''echo \$kernel > /sys/bus/pci/drivers/vfio-pci/bind''
-      ]}'"''
+          ''echo \$kernel > /sys/bus/pci/devices/\$kernel/driver/unbind''
+          ''echo vfio-pci > /sys/bus/pci/devices/\$kernel/driver_override''
+          ''modprobe vfio-pci''
+          ''echo \$kernel > /sys/bus/pci/drivers/vfio-pci/bind''
+        ]}'"''
     ]}
   '';
   virtualisation = {
     spiceUSBRedirection.enable = true;
     # lxd.enable = true;
-    libvirtd = let domain_name = "win11"; in {
+    libvirtd = let
+      domain_name = "win11";
+    in {
       enable = true;
       qemu.swtpm.enable = true;
       qemu.vhostUserPackages = [pkgs.virtiofsd];

@@ -1,4 +1,10 @@
-{config, lib, mylib, pkgs, ...}: {
+{
+  config,
+  lib,
+  mylib,
+  pkgs,
+  ...
+}: {
   imports = mylib.scan_path ./.;
   home.packages = with pkgs; [
     iproute2mac
@@ -24,16 +30,17 @@
   # };
   ## END gpg.nix
   ## START associations.nix
-  home.activation.set_mpv_associations = let
+  home.activation.mpv_associations = let
     duti_exe = lib.getExe' pkgs.duti "duti";
-  in lib.hm.dag.entryAfter ["writeBoundary"] ''
-    # Set UTIs
-    ${duti_exe} -s io.mpv public.movie viewer
-    # Set file extensions
-    ${duti_exe} -s io.mpv .mkv viewer
-    ${duti_exe} -s io.mpv .mp4 viewer
-    ${duti_exe} -s com.google.Chrome .webm viewer
-    ${duti_exe} -s com.apple.Preview .heic viewer
-  '';
+  in
+    lib.hm.dag.entryAfter ["writeBoundary"] ''
+      # Set UTIs
+      ${duti_exe} -s io.mpv public.movie viewer
+      # Set file extensions
+      ${duti_exe} -s io.mpv .mkv viewer
+      ${duti_exe} -s io.mpv .mp4 viewer
+      ${duti_exe} -s com.google.Chrome .webm viewer
+      ${duti_exe} -s com.apple.Preview .heic viewer
+    '';
   ## END associations.nix
 }

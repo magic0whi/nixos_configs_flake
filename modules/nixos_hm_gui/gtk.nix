@@ -1,7 +1,10 @@
-{pkgs, config, ...}: {
-  # If your themes for mouse cursor, icons or windows don’t load correctly, try
-  # setting them with home.pointerCursor and gtk.theme, which enable a bunch of
-  # compatibility options that should make the themes load in all situations.
+{
+  config,
+  pkgs,
+  ...
+}: {
+  # If your themes for mouse cursor, icons or windows don’t load correctly, try setting them with `home.pointerCursor`
+  # and `gtk.theme`, which enables a bunch of compatibility options that should make the themes load in all situations
   home.pointerCursor = {
     gtk.enable = true;
     # x11.enable = true;
@@ -10,8 +13,8 @@
     size = 24;
   };
   # xresources.properties = { # Set DPI for 4k monitor
-    # "Xft.dpi" = 150; # dpi for Xorg's font
-    # "*.dpi" = 150; # or set a generic dpi
+  #   "Xft.dpi" = 150; # dpi for Xorg's font
+  #   "*.dpi" = 150; # or set a generic dpi
   # };
   gtk = {
     enable = true;
@@ -23,9 +26,7 @@
     gtk2.configLocation = "${config.xdg.configHome}/gtk-2.0/gtkrc";
     gtk3.extraConfig.gtk-application-prefer-dark-theme = true;
   };
-  dconf.settings."org/gnome/desktop/interface" = { # GTK4
-    color-scheme = "prefer-dark";
-  };
+  dconf.settings."org/gnome/desktop/interface".color-scheme = "prefer-dark"; # GTK4 prefer dark
   qt = {
     enable = true;
     platformTheme.name = "kvantum";

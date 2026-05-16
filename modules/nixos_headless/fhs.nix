@@ -1,14 +1,18 @@
+# Create a fhs environment by command `fhs`, so we can run non-NixOS packages in NixOS
 {pkgs, ...}: {
-  # Create a fhs environment by command `fhs`, so we can run non-NixOS packages
-  # in NixOS
-  environment.systemPackages = [(let base = pkgs.appimageTools.defaultFhsEnvArgs;
-  in pkgs.buildFHSEnv (base // {
-    name = "fhs";
-    targetPkgs = pkgs: (base.targetPkgs pkgs) ++ [pkgs.pkg-config];
-    profile = "export FHS=1";
-    runScript = "zsh";
-    extraOutputsToInstall = ["dev"];
-  }))];
+  environment.systemPackages = [
+    (let
+      base = pkgs.appimageTools.defaultFhsEnvArgs;
+    in
+      pkgs.buildFHSEnv (base
+        // {
+          name = "fhs";
+          targetPkgs = pkgs: (base.targetPkgs pkgs) ++ [pkgs.pkg-config];
+          profile = "export FHS=1";
+          runScript = "zsh";
+          extraOutputsToInstall = ["dev"];
+        }))
+  ];
   # nix-ld will install itself at `/lib64/ld-linux-x86-64.so.2` so that it can be used as the dynamic linker for non-NixOS binaries.
   # Ref: https://github.com/Mic92/nix-ld
   # nix-ld works like a middleware between the actual link loader located at `/nix/store/.../ld-linux-x86-64.so.2`

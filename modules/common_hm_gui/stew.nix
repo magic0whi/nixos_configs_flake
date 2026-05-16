@@ -1,4 +1,8 @@
-{pkgs, lib, config, ...}: {
+{
+  config,
+  pkgs,
+  ...
+}: {
   home.packages = with pkgs; [
     localsend # Alternative to AirDrop
     # discord # Update too frequently, use the web version instead

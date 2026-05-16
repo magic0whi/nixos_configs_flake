@@ -13,13 +13,17 @@
           name = "crypted-${diskId}";
           # passwordFile = "/tmp/dm_password.key";
           initrdUnlock = false;
-          settings = { # boot.initrd.luks.device.<name>.*
-            keyFile = "/etc/dm_keyfile.key";
+          # For boot.initrd.luks.device.<name>.*
+          settings = {
+            keyFile = "/etc/dm_keyfile.key"; # TODO: Unsafe
             allowDiscards = true;
             bypassWorkqueues = true;
             # fallbackToPassword = false;
           };
-          content = {type = "zfs"; pool = "storage";};
+          content = {
+            type = "zfs";
+            pool = "storage";
+          };
         };
       };
     };
@@ -51,13 +55,20 @@ in {
               label = "SWAP PARTITION";
               type = "0657FD6D-A4AB-43C4-84E5-0933C84B4F4F";
               size = "24G";
-              content = {type = "swap"; discardPolicy = "both"; resumeDevice = true;};
+              content = {
+                type = "swap";
+                discardPolicy = "both";
+                resumeDevice = true;
+              };
             };
             zfs_root = {
               label = "ZROOT PARTITION";
               type = "6A85CF4D-1DD2-11B2-99A6-080020736631";
               size = "100%";
-              content = {type = "zfs"; pool = "zroot";};
+              content = {
+                type = "zfs";
+                pool = "zroot";
+              };
             };
           };
         };
@@ -74,7 +85,8 @@ in {
     zpool = let
       type = "zpool";
       options.ashift = "12"; # Pool-level options
-      rootFsOptions = { # Dataset defaults
+      # Dataset defaults
+      rootFsOptions = {
         # ACL and Extended Attributes
         acltype = "posixacl";
         xattr = "sa";
@@ -90,15 +102,17 @@ in {
         mountpoint = "none";
         canmount = "off";
       };
-    in { # ROOT POOL (NVMe) - Impermanence Setup
+    in {
+      # ROOT POOL (NVMe) - Impermanence Setup
       zroot = {
         inherit type options;
         mode = "";
         rootFsOptions = rootFsOptions // {mountpoint = "/";};
-        postCreateHook = "zpool set bootfs=zroot/root zroot;"
-        + "zpool set cachefile=/etc/zfs/zpool.cache zroot"; # Create zpool.cache
+        postCreateHook =
+          "zpool set bootfs=zroot/root zroot;" + "zpool set cachefile=/etc/zfs/zpool.cache zroot"; # Create zpool.cache
         datasets = {
-          root = { # ROOT dataset (ephemeral, rolled back to blank on boot)
+          # ROOT dataset (ephemeral, rolled back to blank on boot)
+          root = {
             type = "zfs_fs";
             mountpoint = "/";
             options."com.sun:auto-snapshot" = "false";
@@ -106,20 +120,36 @@ in {
           };
           home = {
             # `com.sun:auto-snapshot` is used by options `services.zfs.autoSnapshot.*`
-            type = "zfs_fs"; mountpoint = "/home"; options."com.sun:auto-snapshot" = "true";
+            type = "zfs_fs";
+            mountpoint = "/home";
+            options."com.sun:auto-snapshot" = "true";
           };
-          "home/root" = {type = "zfs_fs"; mountpoint = "/root";};
+          "home/root" = {
+            type = "zfs_fs";
+            mountpoint = "/root";
+          };
           nix = {
-            type = "zfs_fs"; mountpoint = "/nix"; options."com.sun:auto-snapshot" = "false"; options.atime = "off";
+            type = "zfs_fs";
+            mountpoint = "/nix";
+            options."com.sun:auto-snapshot" = "false";
+            options.atime = "off";
           };
-          persistent = {type = "zfs_fs"; mountpoint = "/persistent"; options."com.sun:auto-snapshot" = "false";};
+          persistent = {
+            type = "zfs_fs";
+            mountpoint = "/persistent";
+            options."com.sun:auto-snapshot" = "false";
+          };
         };
       };
-      storage = { # STORAGE POOL (SATA RAIDZ2)
+      # STORAGE POOL (SATA RAIDZ2)
+      storage = {
         inherit type options rootFsOptions;
         mode = "raidz2";
         datasets.data = {
-          type = "zfs_fs"; mountpoint = myvars.storage_path; mountOptions = ["nofail"]; options.canmount = "on";
+          type = "zfs_fs";
+          mountpoint = myvars.storage_path;
+          mountOptions = ["nofail"];
+          options.canmount = "on";
         };
       };
     };

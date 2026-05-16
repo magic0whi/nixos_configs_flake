@@ -1,4 +1,10 @@
-{inputs, mylib, myvars, system, ...}: let
+{
+  inputs,
+  mylib,
+  myvars,
+  system,
+  ...
+}: let
   name = baseNameOf ./.;
   nixpkgs_modules = map mylib.relative_to_root [
     "modules/secrets/common.nix"

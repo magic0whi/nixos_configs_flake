@@ -1,44 +1,52 @@
-{myvars, pkgs, lib, ...}: {
-  # This value determines the Home Manager release that your configuration is compatible with. This helps avoid
-  # breakage when a new Home Manager release introduces backwards incompatible changes.
+{
+  myvars,
+  pkgs,
+  lib,
+  ...
+}: {
+  # This value determines the Home Manager release that your configuration is compatible with. This helps avoid breakage
+  # when a new Home Manager release introduces backwards incompatible changes.
   #
   # You can update Home Manager without changing this value. See the Home Manager release notes for a list of state
   # version changes in each release.
   home.stateVersion = myvars.nixos_state_version;
   programs.home-manager.enable = true; # Let Home Manager install and manage itself.
-  home.packages = with pkgs; [
-    fastfetch
-    bc
-    ## Modern cli tools, replacement of grep/sed/...
-    # A fast and polyglot tool for code searching, linting, rewriting at large scale
-    # supported languages: only some mainstream languages currently (don't support nix/nginx/yaml/toml/...)
-    ast-grep
-    sad # CLI search and replace, just like sed, but with diff preview.
-    lazygit # Git terminal UI.
-    hyperfine # command-line benchmarking tool, replace `time`
-    gping # ping, but with a graph (TUI)
-    doggo # DNS client for humans
-    duf # Disk Usage/Free Utility - a better 'df' alternative
-    dust # A more intuitive version of `du` in rust
-    ncdu # Analyzer your disk usage Interactively, via TUI (replacement of `du`)
-    gdu # Disk usage analyzer(replacement of `du`)
+  programs.rclone.enable = true;
+  home.packages = with pkgs;
+    [
+      fastfetch
+      bc
+      ## Modern CLI Tools, replacement of grep/sed/...
+      # A fast and polyglot tool for code searching, linting, rewriting at large scale
+      # Supported languages: only some mainstream languages currently (don't support nix/nginx/yaml/toml/...)
+      ast-grep
+      sad # CLI search and replace, just like sed, but with diff preview.
+      lazygit # Git terminal UI.
+      hyperfine # Command-line benchmarking tool, replace `time`
+      gping # ping, but with a graph (TUI)
+      doggo # DNS client for humans
+      duf # Disk Usage/Free Utility - a better 'df' alternative
+      dust # A more intuitive version of `du` in rust
+      ncdu # Analyzer your disk usage Interactively, via TUI (replacement of `du`)
+      gdu # Disk usage analyzer(replacement of `du`)
 
-    ## Nix related
-    hydra-check # Check hydra (nix's build farm) for the build status of a package
-    nix-index # A small utility to index nix store paths
-    nix-init # Generate nix derivation from url
-    nix-melt # A TUI flake.lock viewer, ref: https://github.com/nix-community/nix-melt
-  ]
-  ++ lib.optionals (!stdenv.hostPlatform.isRiscV64) [ # TODO: Requires bootstrap GHC
-    nix-output-monitor # Command `nom`, works just like `nix` with more fancy output
-    nix-tree # A TUI to visualize the dependency graph of a nix derivation, ref: https://github.com/utdemir/nix-tree
-  ];
-  ## START syncthing.nix
+      ## Nix related
+      hydra-check # Check hydra (nix's build farm) for the build status of a package
+      nix-index # A small utility to index nix store paths
+      nix-init # Generate nix derivation from url
+      nix-melt # A TUI flake.lock viewer, ref: https://github.com/nix-community/nix-melt
+    ]
+    # TODO: Requires bootstrap GHC
+    ++ lib.optionals (!stdenv.hostPlatform.isRiscV64) [
+      nix-output-monitor # Command `nom`, works just like `nix` with more fancy output
+      nix-tree # A TUI to visualize the dependency graph of a nix derivation, ref: https://github.com/utdemir/nix-tree
+    ];
+  ## BEGIN syncthing.nix
   services.syncthing.enable = lib.mkDefault true;
   systemd.user.services.syncthing.environment.STNODEFAULTFOLDER = "true";
   launchd.agents.syncthing.config.EnvironmentVariables.STNODEFAULTFOLDER = "true";
   ## END syncthing.nix
-  ## START pip.nix
+  ## BEGIN pip.nix
   # Use mirror for pip install
   xdg.configFile."pip/pip.conf".text = ''
     [global]
@@ -46,16 +54,17 @@
     format = columns
   '';
   ## END pip.nix
-  ## START btop.nix
-  programs.btop = { # Alternative to htop/nmon
+  ## BEGIN btop.nix
+  # Alternative to htop/nmon
+  programs.btop = {
     enable = true;
     settings.theme_background = false; # Make btop transparent
   };
   ## END btop.nix
-  ## START yazi.nix
-  programs.yazi = { # terminal file manager
-    # NOTE: Home Mabnager provides `y` to allow changing working directory when
-    # exitig Yazi
+  ## BEGIN yazi.nix
+  # Terminal file manager
+  programs.yazi = {
+    # NOTE: Home Manager provides `y` to allow changing working directory when exitig Yazi
     enable = true;
     settings.mgr = {
       linemode = "mtime";
@@ -63,38 +72,62 @@
       sort_dir_first = true;
     };
     plugins.drag = pkgs.yaziPlugins.drag;
-    plugins.recycle-bin = if pkgs.stdenv.isDarwin then pkgs.emptyFile else pkgs.yaziPlugins.recycle-bin;
-    initLua = if pkgs.stdenv.isDarwin
-    then null
-    else ''require("recycle-bin"):setup()'';
+    plugins.recycle-bin =
+      if pkgs.stdenv.isDarwin
+      then pkgs.emptyFile
+      else pkgs.yaziPlugins.recycle-bin;
+    initLua =
+      if pkgs.stdenv.isDarwin
+      then null
+      else ''require("recycle-bin"):setup()'';
     extraPackages = with pkgs; [ripdrag trash-cli ueberzugpp];
     keymap = {
       mgr.prepend_keymap = [
-        {on = ["<C-s>"]; run = "plugin drag"; desc = "Drag Files";}
-        {on = ["R" "b"]; run = "plugin recycle-bin"; desc = "Open Trash";}
-        {on = ["g" "w"]; run = "cd ~/Works"; desc = "Go ~/Works";}
-        {on = ["g" "a"]; run = "cd ~/Works/AI/ai_instructions"; desc = "~/Works/AI/ai_instructions";}
+        {
+          on = ["<C-s>"];
+          run = "plugin drag";
+          desc = "Drag Files";
+        }
+        {
+          on = ["R" "b"];
+          run = "plugin recycle-bin";
+          desc = "Open Trash";
+        }
+        {
+          on = ["g" "w"];
+          run = "cd ~/Works";
+          desc = "Go ~/Works";
+        }
+        {
+          on = ["g" "a"];
+          run = "cd ~/Works/AI/ai_instructions";
+          desc = "~/Works/AI/ai_instructions";
+        }
       ];
     };
   };
   ## END yazi.nix
-  ## START direnv.nix
+  ## BEGIN direnv.nix
   # programs.direnv = {
   #   enable = true;
   #   nix-direnv.enable = true;
   # };
   ## END direnv.nix
-  ## START neovim.nix
+  ## BEGIN neovim.nix
   # programs.neovim = {
   #   enable = true;
   #   viAlias = true;
   #   vimAlias = true;
   # };
   ## END neovim.nix
-  ## START gpg.nix
+  ## BEGIN gpg.nix
   programs.gpg = {
-    publicKeys = [ # https://www.gnupg.org/gph/en/manual/x334.html
-      {source = "${myvars.secrets_dir}/${myvars.useremail}.pub.asc"; trust = 5; /*ultimate trust, my own keys*/}
+    # https://www.gnupg.org/gph/en/manual/x334.html
+    publicKeys = [
+      {
+        source = "${myvars.secrets_dir}/${myvars.useremail}.pub.asc";
+        trust = 5; # Ultimate trust
+      }
     ];
     enable = true;
     # $GNUPGHOME/trustdb.gpg stores all the trust level you specified in `programs.gpg.publicKeys` option. If set
@@ -111,8 +144,8 @@
       no-greeting = true; # Get rid of the copyright notice
       no-emit-version = true; # Disable inclusion of the version string in ASCII armored output
       no-comments = false; # Do not write comment packets
-      # Export the smallest key possible. This removes all signatures except the most recent self-signature on each
-      # user ID
+      # Export the smallest key possible. This removes all signatures except the most recent self-signature on each user
+      # ID
       export-options = "export-minimal";
       keyid-format = "0xlong"; # Display long key IDs
       with-fingerprint = true; # List all keys (or the specified ones) along with their fingerprints
@@ -147,12 +180,12 @@
     sshKeys = myvars.gpg2ssh_keygrip; # Run 'gpg --export-ssh-key gpg-key!' to export public key
   };
   ## END gpg.nix
-  ## START catppuccin.nix
-  catppuccin = { # Enable Catppuccin globally
+  ## BEGIN catppuccin.nix
+  # Enable Catppuccin globally
+  catppuccin = {
     enable = lib.mkDefault true;
     accent = myvars.catppuccin_accent;
     flavor = myvars.catppuccin_flavor;
   };
   ## END catppuccin.nix
-  programs.rclone.enable = true;
 }

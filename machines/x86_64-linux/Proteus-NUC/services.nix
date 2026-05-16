@@ -1,4 +1,10 @@
-{pkgs, lib, config, myvars, ...}: {
+{
+  config,
+  lib,
+  myvars,
+  pkgs,
+  ...
+}: {
   networking.firewall = let
     sunshine_port = config.services.sunshine.settings.port;
     s_https = builtins.toString (sunshine_port - 5); # Default: 47984 HTTPS
@@ -7,7 +13,7 @@
     s_ctrl = builtins.toString (sunshine_port + 10); # Default: 47999 UDP
     s_audio = builtins.toString (sunshine_port + 11); # Default: 48000 UDP
     s_rtsp = builtins.toString (sunshine_port + 21); # Default: 48010 TCP
-  in{
+  in {
     allowedTCPPorts = [
       5201 # iperf3
       22000 # Syncthing TCP transfers
@@ -87,8 +93,10 @@
     config = {
       default_config = {}; # Implicitly enable `mobile_app`
       http = {
-        server_port = 8123; server_host = ["127.0.0.1" "::1"];
-        use_x_forwarded_for = true; trusted_proxies = ["127.0.0.1" "::1"];
+        server_port = 8123;
+        server_host = ["127.0.0.1" "::1"];
+        use_x_forwarded_for = true;
+        trusted_proxies = ["127.0.0.1" "::1"];
         cors_allowed_origins = ["https://hass.${myvars.domain}"];
       };
       homeassistant = {
@@ -105,37 +113,43 @@
   ## BEGIN services_sunshine.nix
   # Wake monitor when connect
   # Ref: https://github.com/orgs/LizardByte/discussions/439#discussioncomment-15813284
-  security.wrappers = lib.mkIf config.services.sunshine.enable {conntrack = {
-    source = "${pkgs.conntrack-tools}/bin/conntrack";
-    capabilities = "cap_net_admin+ep"; # conntrack needs `cap_net_admin` to run as a normal user
-    owner = "root"; group = "root";
-  };};
-  # Adapt for Hyprland
-  systemd.user.services = lib.mkIf (
-    config.services.sunshine.enable
-    && config.home-manager.users.${myvars.username}.wayland.windowManager.hyprland.enable) {
-    sunshine-wake-monitor = {
-      description = "Monitor Sunshine TCP connections and wake monitors";
-      after = ["hyprland-session.target"];
-      wantedBy = ["hyprland-session.target"];
-      serviceConfig.Restart = "on-failure";
-      script = ''
-        ${config.security.wrapperDir}/conntrack -E -e new -p tcp --dport ${
-          builtins.toString (config.services.sunshine.settings.port - 5)
-        } | \
-        while read line; do
-          echo "New Sunshine connection detected, waking up the monitors"
-          ${lib.getExe' pkgs.hyprland "hyprctl"} --instance 0 'dispatch dpms on'
-          sleep 5
-        done
-      '';
+  security.wrappers = lib.mkIf config.services.sunshine.enable {
+    conntrack = {
+      source = "${pkgs.conntrack-tools}/bin/conntrack";
+      capabilities = "cap_net_admin+ep"; # conntrack needs `cap_net_admin` to run as a normal user
+      owner = "root";
+      group = "root";
     };
   };
+  # Adapt for Hyprland
+  systemd.user.services =
+    lib.mkIf (
+      config.services.sunshine.enable
+      && config.home-manager.users.${myvars.username}.wayland.windowManager.hyprland.enable
+    ) {
+      sunshine-wake-monitor = {
+        description = "Monitor Sunshine TCP connections and wake monitors";
+        after = ["hyprland-session.target"];
+        wantedBy = ["hyprland-session.target"];
+        serviceConfig.Restart = "on-failure";
+        script = ''
+          ${config.security.wrapperDir}/conntrack -E -e new -p tcp --dport ${
+            builtins.toString (config.services.sunshine.settings.port - 5)
+          } | \
+          while read line; do
+            echo "New Sunshine connection detected, waking up the monitors"
+            ${lib.getExe' pkgs.hyprland "hyprctl"} --instance 0 'dispatch dpms on'
+            sleep 5
+          done
+        '';
+      };
+    };
   services.sunshine = {
     enable = true;
     capSysAdmin = true;
     settings = {
-      adapter_name = if config.home-manager.users.${myvars.username}.wayland.windowManager.hyprland.nvidia
+      adapter_name =
+        if config.home-manager.users.${myvars.username}.wayland.windowManager.hyprland.nvidia
         then "/dev/dri/${myvars.dgpu_sym_name}"
         else "/dev/dri/${myvars.igpu_sym_name}";
       origin_web_ui_allowed = "pc";
@@ -149,11 +163,18 @@
   # module. CI script will run as 'proteus', so we make the folder owned by
   # `myvars.username` but give the group (which default to 'caddy') read access.
   systemd.tmpfiles.settings."10-caddy-create-webroot" = let
-    root_path = builtins.head (builtins.match ''.*root \* ([a-zA-Z0-9/_-]+).*''
+    root_path = builtins.head (
+      builtins.match ''.*root \* ([a-zA-Z0-9/_-]+).*''
       # Get the first attrset under services.caddy.virtualHosts
       (builtins.head (builtins.attrValues config.services.caddy.virtualHosts)).extraConfig
     );
-  in {${root_path}.d = {mode = "2755"; user = myvars.username; group = config.services.caddy.group;};};
+  in {
+    ${root_path}.d = {
+      mode = "2755";
+      user = myvars.username;
+      group = config.services.caddy.group;
+    };
+  };
   services.caddy = {
     enable = true;
     # Caddy doesn't need to bind to public ports (80/443) since Traefik handles

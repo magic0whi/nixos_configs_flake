@@ -1,23 +1,30 @@
 {
-  myvars,
   config,
-  pkgs,
   lib,
+  myvars,
   # nixpkgs-postgresql,
+  pkgs,
   ...
 }: {
   networking.firewall.allowedTCPPorts = [config.services.postgresql.settings.port];
-  sops.secrets = let restartUnits = ["postgresql.service" "postgresql-setup.service"]; in {
+  sops.secrets = let
+    restartUnits = ["postgresql.service" "postgresql-setup.service"];
+  in {
     "postgresql_server.priv.pem" = {
       inherit restartUnits;
       sopsFile = "${myvars.secrets_dir}/proteus_server.priv.pem.sops";
       format = "binary";
       owner = config.systemd.services.postgresql.serviceConfig.User;
     };
-    postgres_ldap_bind_pw = {inherit restartUnits; sopsFile = "${myvars.secrets_dir}/${config.networking.hostName}.sops.yaml";};
+    postgres_ldap_bind_pw = {
+      inherit restartUnits;
+      sopsFile = "${myvars.secrets_dir}/${config.networking.hostName}.sops.yaml";
+    };
   };
   # Ref: https://github.com/NixOS/nixpkgs/blob/549bd84d6279f9852cae6225e372cc67fb91a4c1/nixos/modules/services/databases/postgresql.nix#L684
-  sops.templates."pg_hba_auth.conf" = let base_dn = "dc=" + builtins.replaceStrings ["."] [",dc="] myvars.domain; in {
+  sops.templates."pg_hba_auth.conf" = let
+    base_dn = "dc=" + builtins.replaceStrings ["."] [",dc="] myvars.domain;
+  in {
     content = ''
       # Generated file; do not edit!
 
@@ -28,7 +35,7 @@
       host all all 100.64.0.0/10 ldap ldapurl="ldaps://ldap.${myvars.domain}/${base_dn}?uid?sub" ldapbinddn="uid=${config.systemd.services.postgresql.serviceConfig.User},ou=ServiceAccounts,${base_dn}" ldapbindpasswd="${config.sops.placeholder.postgres_ldap_bind_pw}"
       host all all fd7a:115c:a1e0::/48 ldap ldapurl="ldaps://ldap.${myvars.domain}/${base_dn}?uid?sub" ldapbinddn="uid=${config.systemd.services.postgresql.serviceConfig.User},ou=ServiceAccounts,${base_dn}" ldapbindpasswd="${config.sops.placeholder.postgres_ldap_bind_pw}"
 
-      # default value of services.postgresql.authentication
+      # default value of `services.postgresql.authentication`
       local all postgres         peer map=postgres
       local all all              peer
       host  all all 127.0.0.1/32 md5
@@ -60,13 +67,33 @@
       "nextcloud"
     ];
     ensureUsers = [
-      {name = "proteus"; ensureClauses = {login = true; /*superuser = true;*/ createdb = true;};}
-      {name = "atuin"; ensureDBOwnership = true;}
-      {name = config.services.paperless.user; ensureDBOwnership = true;}
-      {name = config.services.authelia.instances.main.user; ensureDBOwnership =true;}
-      {name = "nextcloud"; ensureDBOwnership = true;}
+      {
+        name = "proteus";
+        ensureClauses = {
+          login = true;
+          # superuser = true;
+          createdb = true;
+        };
+      }
+      {
+        name = "atuin";
+        ensureDBOwnership = true;
+      }
+      {
+        name = config.services.paperless.user;
+        ensureDBOwnership = true;
+      }
+      {
+        name = config.services.authelia.instances.main.user;
+        ensureDBOwnership = true;
+      }
+      {
+        name = "nextcloud";
+        ensureDBOwnership = true;
+      }
     ];
-    # DO NOT USE `services.postgresql.authentication` as we use sops templateed `services.postgresql.settings.hba_file`
+    # DO NOT USE `services.postgresql.authentication`, because I use SOPS-templateed
+    # `services.postgresql.settings.hba_file` instead
   };
   services.postgresqlBackup = {
     enable = true;
@@ -75,9 +102,15 @@
     compression = "zstd";
     compressionLevel = 3;
   };
-  systemd.tmpfiles.settings = let cfg = config.services.postgresqlBackup; in lib.mkIf cfg.enable {
-    "10-postgresqlBackup-change-group".${cfg.location}.z = {mode = "2770"; group = "storage";};
-  };
+  systemd.tmpfiles.settings = let
+    cfg = config.services.postgresqlBackup;
+  in
+    lib.mkIf cfg.enable {
+      "10-postgresqlBackup-change-group".${cfg.location}.z = {
+        mode = "2770";
+        group = "storage";
+      };
+    };
   systemd.services.postgresqlBackup.serviceConfig.ExecStartPost = [
     "+${pkgs.coreutils}/bin/chmod -R g+r ${config.services.postgresqlBackup.location}"
   ];

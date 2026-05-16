@@ -1,4 +1,9 @@
-{myvars, lib, config, ...}: {
+{
+  config,
+  lib,
+  myvars,
+  ...
+}: {
   # NOTE: Impermance can not coexist with nixos-generators, don't import this file if you wanna generate bootable iso
   # TIP: to show impermanence usage, run `sudo ncdu -x /`
   config = lib.mkIf (config.environment ? persistence) {
@@ -30,27 +35,47 @@
 
         "/var/log"
         "/var/lib"
-
       ];
       # ++ lib.optional config.boot.lanzaboote.enable config.boot.lanzaboote.pkiBundle; # If lanzaboote is enabled. Disable since we got its parent `/var/lib` persistent already
 
       files = ["/etc/machine-id"];
 
-      users.${myvars.username} = { # The following directories will be passed to /persistent/home/$USER
+      users.${myvars.username} = {
+        # The following directories will be passed to /persistent/home/$USER
         directories = [
-          {directory = ".gnupg"; mode = "0700";}
-          {directory = ".ssh"; mode = "0700";}
+          {
+            directory = ".gnupg";
+            mode = "0700";
+          }
+          {
+            directory = ".ssh";
+            mode = "0700";
+          }
 
           # Misc
           ".config/pulse"
           ".pki"
 
           # Cloud native
-          {directory = ".pulumi"; mode = "0700";} # pulumi - infrastructure as code
-          {directory = ".aws"; mode = "0700";}
-          {directory = ".docker"; mode = "0700";}
-          {directory = ".kube"; mode = "0700";}
+          # TODO: Try pulumi - infrastructure as code
+          {
+            directory = ".pulumi";
+            mode = "0700";
+          }
+          {
+            directory = ".aws";
+            mode = "0700";
+          }
+          {
+            directory = ".docker";
+            mode = "0700";
+          }
+          {
+            directory = ".kube";
+            mode = "0700";
+          }
 
+          # TODO: Try emacs
           # doom-emacs
           # ".config/emacs"
 

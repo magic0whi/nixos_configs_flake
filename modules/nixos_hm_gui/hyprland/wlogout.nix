@@ -1,4 +1,10 @@
-{pkgs, lib, config, ...}: { # Logout ment
+# Logout menu
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}: {
   options.programs.wlogout = {
     wrapper_script = lib.mkOption {
       type = lib.types.path;
@@ -28,13 +34,44 @@
   config = {
     programs.wlogout = {
       enable = true;
-      layout = [ # Align with those logout bind configs from Hyprland
-        {label = "lock"; action = "loginctl lock-session"; text = "Lock"; keybind = "z";}
-        {label = "logout"; action = "loginctl terminate-user $USER"; text = "Logout"; keybind = "q";}
-        {label = "suspend"; action = "systemctl suspend"; text = "Suspend"; keybind = "w";}
-        {label = "hibernate"; action = "systemctl hibernate"; text = "Hibernate"; keybind = "e";}
-        {label = "reboot"; action = "systemctl reboot"; text = "Reboot"; keybind = "r";}
-        {label = "shutdown"; action = "systemctl poweroff"; text = "Shutdown"; keybind = "t";}
+      layout = [
+        # Align with those logout bind configs from Hyprland
+        {
+          label = "lock";
+          action = "loginctl lock-session";
+          text = "Lock";
+          keybind = "z";
+        }
+        {
+          label = "logout";
+          action = "loginctl terminate-user $USER";
+          text = "Logout";
+          keybind = "q";
+        }
+        {
+          label = "suspend";
+          action = "systemctl suspend";
+          text = "Suspend";
+          keybind = "w";
+        }
+        {
+          label = "hibernate";
+          action = "systemctl hibernate";
+          text = "Hibernate";
+          keybind = "e";
+        }
+        {
+          label = "reboot";
+          action = "systemctl reboot";
+          text = "Reboot";
+          keybind = "r";
+        }
+        {
+          label = "shutdown";
+          action = "systemctl poweroff";
+          text = "Shutdown";
+          keybind = "t";
+        }
       ];
       style = ''
         /** ********** Fonts ********** **/

@@ -1,4 +1,9 @@
-{config, lib, myvars, ...}: {
+{
+  config,
+  lib,
+  myvars,
+  ...
+}: {
   programs.zsh = {
     enable = true; # On darwin, this creates /etc/zshrc that loads the nix-darwin environment. Which is
     # required if you want to use darwin's default shell - zsh
@@ -79,8 +84,8 @@
       # END Zsh Shell Coloring
     '';
     promptInit = ''
-    autoload -U promptinit && promptinit; setopt PROMPT_SUBST
-    PS1='[%{$BRed%}%n%{$Color_Off%}@%{$BBlue%}%m%{$Color_Off%} %{$BBlue%}%3~%{$Color_Off%} %{$BCyan%}%{$Color_Off%}]%{$BGreen%}%(#.#.$)%{$Color_Off%} '
+      autoload -U promptinit && promptinit; setopt PROMPT_SUBST
+      PS1='[%{$BRed%}%n%{$Color_Off%}@%{$BBlue%}%m%{$Color_Off%} %{$BBlue%}%3~%{$Color_Off%} %{$BCyan%}%{$Color_Off%}]%{$BGreen%}%(#.#.$)%{$Color_Off%} '
     ''; # Fallback prompt if starship doesn't work
   };
   environment.variables = lib.mkIf config.home-manager.users.${myvars.username}.programs.helix.defaultEditor {EDITOR = "hx";};

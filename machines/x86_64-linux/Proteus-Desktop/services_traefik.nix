@@ -1,5 +1,16 @@
-{config, myvars, lib, mylib, ...}: let server_pub_crt = "${myvars.secrets_dir}/proteus_server.pub.pem"; in {
-  networking.firewall = {allowedTCPPorts = [80 443]; allowedUDPPorts = [443];};
+{
+  config,
+  lib,
+  mylib,
+  myvars,
+  ...
+}: let
+  server_pub_crt = "${myvars.secrets_dir}/proteus_server.pub.pem";
+in {
+  networking.firewall = {
+    allowedTCPPorts = [80 443];
+    allowedUDPPorts = [443];
+  };
   sops.secrets."traefik_server.priv.pem" = {
     sopsFile = "${myvars.secrets_dir}/proteus_server.priv.pem.sops";
     format = "binary";
@@ -9,20 +20,33 @@
   services.traefik = {
     enable = true;
     staticConfigOptions = {
-      global = {checkNewVersion = false; sendAnonymousUsage = false;};
+      global = {
+        checkNewVersion = false;
+        sendAnonymousUsage = false;
+      };
       api.dashboard = true;
       entryPoints = {
-        web = {address = ":80"; http.redirections.entryPoint = {to = "websecure"; scheme = "https";};};
+        web = {
+          address = ":80";
+          http.redirections.entryPoint = {
+            to = "websecure";
+            scheme = "https";
+          };
+        };
         websecure = {
           address = ":443";
           http3 = {};
-          transport.respondingTimeouts = {readTimeout = "600s"; idleTimeout = "600s";};
+          transport.respondingTimeouts = {
+            readTimeout = "600s";
+            idleTimeout = "600s";
+          };
         };
       };
     };
     dynamicConfigOptions = {
       tls.stores.default.defaultCertificate = {
-        certFile = server_pub_crt; keyFile = config.sops.secrets."traefik_server.priv.pem".path;
+        certFile = server_pub_crt;
+        keyFile = config.sops.secrets."traefik_server.priv.pem".path;
       };
       http = {
         middlewares.authelia-auth.forwardAuth = {
@@ -30,7 +54,8 @@
           trustForwardHeader = true;
           authResponseHeaders = ["Remote-User" "Remote-Groups" "Remote-Email" "Remote-Name"];
         };
-        middlewares.nextcloud-hsts.headers = { # Strict-Transport-Security
+        # Strict-Transport-Security
+        middlewares.nextcloud-hsts.headers = {
           stsSeconds = 15552000;
           stsIncludeSubdomains = true;
           stsPreload = true; # Adds preload flag to STS header
@@ -39,35 +64,56 @@
         routers = {
           traefik-dashboard = {
             rule = "Host(`traefik-desktop.${myvars.domain}`)";
-            entryPoints = ["websecure"]; middlewares = ["authelia-auth"]; service = "api@internal"; tls = {};
+            entryPoints = ["websecure"];
+            middlewares = ["authelia-auth"];
+            service = "api@internal";
+            tls = {};
           };
           sb = {
             rule = "Host(`sb-desktop.${myvars.domain}`)";
-            entryPoints = ["websecure"]; middlewares = ["authelia-auth"]; service = "sb-dashboard"; tls = {};
+            entryPoints = ["websecure"];
+            middlewares = ["authelia-auth"];
+            service = "sb-dashboard";
+            tls = {};
           };
           syncthing = {
             rule = "Host(`syncthing-desktop.${myvars.domain}`)";
-            entryPoints = ["websecure"]; middlewares = ["authelia-auth"]; service = "syncthing-dashboard"; tls = {};
+            entryPoints = ["websecure"];
+            middlewares = ["authelia-auth"];
+            service = "syncthing-dashboard";
+            tls = {};
           };
           s3 = {
-            rule =
-              ''Host(`s3.${myvars.domain}`) || HostRegexp(`^[^.]+\.s3\.${lib.strings.escapeRegex myvars.domain}$`)'';
-            entryPoints = ["websecure"]; service = "s3"; tls = {};
+            rule = builtins.concatStringsSep " " [
+              "Host(`s3.${myvars.domain}`)"
+              ''|| HostRegexp(`^[^.]+\.s3\.${lib.strings.escapeRegex myvars.domain}$`)''
+            ];
+            entryPoints = ["websecure"];
+            service = "s3";
+            tls = {};
           };
           s3-pub = {
             rule = builtins.concatStringsSep " " [
               "Host(`s3-pub.${myvars.domain}`)"
               ''|| HostRegexp(`^[^.]+\.s3-pub\.${lib.strings.escapeRegex myvars.domain}$`)''
             ];
-            entryPoints = ["websecure"]; service = "s3-pub"; tls = {};
+            entryPoints = ["websecure"];
+            service = "s3-pub";
+            tls = {};
           };
           garage-webui = {
             rule = "Host(`garage.${myvars.domain}`)";
-            entryPoints = ["websecure"]; middlewares = ["authelia-auth"]; service = "garage-webui"; tls = {};
+            entryPoints = ["websecure"];
+            middlewares = ["authelia-auth"];
+            service = "garage-webui";
+            tls = {};
           };
           nextcloud = {
             rule = "Host(`nextcloud.${myvars.domain}`)";
-            entryPoints = ["websecure"]; middlewares = ["nextcloud-hsts"]; service = "nextcloud"; tls = {};
+            entryPoints = ["websecure"];
+            middlewares = ["nextcloud-hsts"];
+            service = "nextcloud";
+            tls = {};
           };
         };
         services = {
@@ -77,23 +123,41 @@
             servers = [{url = "http://${config.home-manager.users.${myvars.username}.services.syncthing.guiAddress}";}];
             healthCheck.path = "/rest/noauth/health";
           };
-          s3.loadBalancer = let cfg = config.services.garage.settings; in {
+          s3.loadBalancer = let
+            cfg = config.services.garage.settings;
+          in {
             servers = [{url = "http://${cfg.s3_api.api_bind_addr}";}]; # Default :3900
             # Probe the admin port
-            healthCheck = {port = builtins.toString (mylib.get_uri_port cfg.admin.api_bind_addr); path = "/health";};
+            healthCheck = {
+              port = builtins.toString (mylib.get_uri_port cfg.admin.api_bind_addr);
+              path = "/health";
+            };
           };
-          s3-pub.loadBalancer= let cfg = config.services.garage.settings; in {
+          s3-pub.loadBalancer = let
+            cfg = config.services.garage.settings;
+          in {
             servers = [{url = "http://${cfg.s3_web.bind_addr}";}]; # Default :3902
             # Probe the admin port
-            healthCheck = {port = builtins.toString (mylib.get_uri_port cfg.admin.api_bind_addr); path = "/health";};
+            healthCheck = {
+              port = builtins.toString (mylib.get_uri_port cfg.admin.api_bind_addr);
+              path = "/health";
+            };
           };
-          garage-webui.loadBalancer.servers = [{url = let
-            list_find_first_prefix = key: list:
-              builtins.elemAt list (lib.lists.findFirstIndex (i: lib.strings.hasPrefix key i) null list);
-            port = lib.lists.last (lib.strings.splitString
-              "=" (list_find_first_prefix "PORT=" config.systemd.services.garage-webui.serviceConfig.Environment));
-          in "http://127.0.0.1:${port}";}]; # Default 3909
-          nextcloud.loadBalancer = {servers = [{ url = "http://127.0.0.1:8080"; }]; healthCheck.path = "/status.php";};
+          garage-webui.loadBalancer.servers = [
+            {
+              url = let
+                list_find_first_prefix = key: list:
+                  builtins.elemAt list (lib.lists.findFirstIndex (i: lib.strings.hasPrefix key i) null list);
+                port =
+                  lib.lists.last (lib.strings.splitString
+                    "=" (list_find_first_prefix "PORT=" config.systemd.services.garage-webui.serviceConfig.Environment));
+              in "http://127.0.0.1:${port}"; # Default :3909
+            }
+          ];
+          nextcloud.loadBalancer = {
+            servers = [{url = "http://127.0.0.1:8080";}];
+            healthCheck.path = "/status.php";
+          };
         };
       };
     };

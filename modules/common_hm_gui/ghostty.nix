@@ -1,21 +1,33 @@
-{pkgs, lib, ...}: {
-  programs.ghostty = { # terminal emulator
+{
+  lib,
+  myvars,
+  pkgs,
+  ...
+}: {
+  programs.ghostty = {
     enable = true;
     # As of Jun 1, 2025, pkgs.ghostty is still marked as broken on MacOS (aarch64-darwin)
     # TIP: Use `pkgs.emptyFile` (or `pkgs.emptyDirectory` or `null` if formers don't work) as a dummy package
-    package = if pkgs.stdenv.isDarwin then pkgs.ghostty-bin else pkgs.ghostty;
-    settings = { # https://ghostty.org/docs/config/reference
-      keybind = [
-        "alt+left=unbind"
-        "alt+right=unbind"
-      ];
-      font-family = "Iosevka Nerd Font Mono";
-      font-size = 14;
-      scrollback-limit = 20000;
-    } // lib.optionalAttrs pkgs.stdenv.isDarwin { # Only supported on macOS
-      macos-option-as-alt = "left";
-      background-opacity = 0.93;
-      background-blur = true;
-    };
+    package =
+      if pkgs.stdenv.isDarwin
+      then pkgs.ghostty-bin
+      else pkgs.ghostty;
+    # https://ghostty.org/docs/config/reference
+    settings =
+      {
+        keybind = [
+          "alt+left=unbind"
+          "alt+right=unbind"
+        ];
+        font-family = "Iosevka Nerd Font Mono";
+        font-size = 14;
+        scrollback-limit = 20000;
+      }
+      # Options that only available on macOS
+      // lib.optionalAttrs pkgs.stdenv.isDarwin {
+        macos-option-as-alt = "left";
+        background-opacity = 0.93;
+        background-blur = true;
+      };
   };
 }

@@ -1,4 +1,10 @@
-{inputs, mylib, myvars, system, ...}: let
+{
+  inputs,
+  mylib,
+  myvars,
+  system,
+  ...
+}: let
   name = baseNameOf ./.;
   nixpkgs_modules = map mylib.relative_to_root [
     "modules/secrets/common.nix"
@@ -24,12 +30,13 @@
     myvars = desktop_myvars;
     machine_path = ./.;
   });
-  nixos_iso = (inputs.nixpkgs.lib.nixosSystem (mylib.gen_system_args {
-    inherit name mylib nixpkgs_modules hm_modules;
-    myvars = desktop_myvars;
-    generate_iso = true;
-    machine_path = ./.;
-  })).config.system.build.images.iso;
+  nixos_iso =
+    (inputs.nixpkgs.lib.nixosSystem (mylib.gen_system_args {
+      inherit name mylib nixpkgs_modules hm_modules;
+      myvars = desktop_myvars;
+      generate_iso = true;
+      machine_path = ./.;
+    })).config.system.build.images.iso;
 in {
   _DEBUG = {inherit name nixpkgs_modules hm_modules myvars mylib;};
   nixos_configurations.${name} = nixos_system;

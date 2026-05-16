@@ -1,11 +1,22 @@
-{lib, pkgs, myvars, ...}: {
-  system.stateVersion = if pkgs.stdenv.isDarwin then myvars.darwin_state_version else myvars.nixos_state_version;
+{
+  lib,
+  myvars,
+  pkgs,
+  ...
+}: {
+  system.stateVersion =
+    if pkgs.stdenv.isDarwin
+    then myvars.darwin_state_version
+    else myvars.nixos_state_version;
   # Add my self-signed CA certificate to the system-wide trust store.
   security.pki.certificateFiles = ["${myvars.secrets_dir}/proteus_ca.pub.pem"];
   nixpkgs.config.allowUnfree = true; # Allow chrome, vscode to install
   ## BEGIN nix.nix
   nix.package = pkgs.nixVersions.latest; # Use latest nix, default is pkgs.nix
-  nix.gc = {automatic = true; options = "--delete-older-than 7d";};
+  nix.gc = {
+    automatic = true;
+    options = "--delete-older-than 7d";
+  };
   nix.channel.enable = false; # Remove nix-channel related tools & configs, use flakes instead
   # Manual optimise storage: nix-store --optimise
   # https://nixos.org/manual/nix/stable/command-ref/conf-file.html#conf-auto-optimise-store
@@ -16,7 +27,8 @@
     # Specify additional substituters via:
     # 1. `nixConfig.substituers` in `flake.nix`
     # 2. command line args `--options substituers http://xxx`
-    substituters = [ # substituers that will be considered before the official ones (https://cache.nixos.org)
+    substituters = [
+      # Substituers that will be considered before the official ones (https://cache.nixos.org)
       # cache mirror located in China
       # "https://mirrors.ustc.edu.cn/nix-channels/store" # status: https://mirrors.ustc.edu.cn/status/
       "https://mirror.sjtu.edu.cn/nix-channels/store" # status: https://mirror.sjtu.edu.cn/
@@ -62,17 +74,23 @@
     ];
     # Define the host key for remote builders so that Nix can verify all the remote builders.
     # This config will be written to /etc/ssh/ssh_known_hosts
-    knownHosts = lib.attrsets.mapAttrs (name: val: let host = myvars.networking.hosts_addr.${name} or {}; in {
-      hostNames = [name] # Hostname and its IPv4 & IPv6
-        ++ (lib.optional (host ? ipv4) host.ipv4) ++ (lib.optional (host ? et_ipv4) host.et_ipv4)
-        ++ (lib.optional (host ? ipv6) host.ipv6) ++ (lib.optional (host ? et_ipv6) host.et_ipv6);
-      publicKey = val.public_key;
-    }) myvars.networking.known_hosts;
+    knownHosts =
+      lib.attrsets.mapAttrs (name: val: let
+        host = myvars.networking.hosts_addr.${name} or {};
+      in {
+        hostNames =
+          [name] # Hostname and its IPv4 & IPv6
+          ++ (lib.optional (host ? ipv4) host.ipv4) ++ (lib.optional (host ? et_ipv4) host.et_ipv4)
+          ++ (lib.optional (host ? ipv6) host.ipv6) ++ (lib.optional (host ? et_ipv6) host.et_ipv6);
+        publicKey = val.public_key;
+      })
+      myvars.networking.known_hosts;
   };
   ## END ssh.nix
   ## BEGIN users.nix
   users.users.${myvars.username} = {
-    description = myvars.userfullname; openssh.authorizedKeys.keys = myvars.ssh_authorized_keys;
+    description = myvars.userfullname;
+    openssh.authorizedKeys.keys = myvars.ssh_authorized_keys;
   };
   ## END users.nix
   ## BEGIN tailscale.nix
@@ -93,7 +111,8 @@
   ## END sing-box.nix
   ## BEGIN fonts.nix
   fonts.packages = with pkgs; [
-    noto-fonts-cjk-sans noto-fonts-cjk-serif
+    noto-fonts-cjk-sans
+    noto-fonts-cjk-serif
     inter-nerdfont # NerdFont patch of the Inter font
     # nerdfonts
     # Ref: https://github.com/NixOS/nixpkgs/blob/nixos-unstable-small/pkgs/data/fonts/nerd-fonts/manifests/fonts.json
@@ -103,7 +122,7 @@
   ## END fonts.nix
   ## BEGIN packages.nix
   environment.systemPackages = with pkgs; [
-    ## Core tools
+    ## Core Tools
     git # Used by nix flakes
 
     # Misc

@@ -1,14 +1,16 @@
-{ # Adjust the color temperature (& brightness) of your screen according to your surroundings. This may help your eyes
-  # hurt less if you are working in front of the screen at night. Ref: https://gitlab.com/chinstrap/gammastep
-  # Works fine with both x11 & wayland (hyprland)
+# Adjust the color temperature (& brightness) of your screen according to your surroundings. This may relieve your eyes
+# fatigue if you are working in front of the screen at night. Ref: https://gitlab.com/chinstrap/gammastep
+# Works on X11 & Wayland
+{pkgs, lib, ...}: {
   services.gammastep = {
-    enable =true;
+    enable = true;
     tray = true;
     temperature = {
       day = 6500;
       night = 4000;
     };
-    settings = { # https://gitlab.com/chinstrap/gammastep/-/blob/master/gammastep.conf.sample?ref_type=heads
+    # https://gitlab.com/chinstrap/gammastep/-/blob/master/gammastep.conf.sample?ref_type=heads
+    settings = {
       general = {
         location-provider = "manual";
         # by default, Redshift will use the current elevation of the sun to determine whether it is daytime, night or
@@ -24,7 +26,8 @@
         # brightness-day = "1.0";
         # brightness-night = "0.8";
       };
-      manual = { # Set geological position to Bilibili's headquarter, Shanghai, China.
+      manual = {
+        # Set geological position to Bilibili's headquarter, Shanghai, China.
         # https://www.openstreetmap.org/node/7190124016
         lat = "31.3113626";
         lon = "121.5020943";
@@ -33,11 +36,11 @@
   };
   xdg.configFile."gammastep/hooks/mako.sh" = {
     text = ''
-    #!/usr/bin/env sh
-    case $1 in
-      period-changed)
-        exec notify-send "Gammastep" "Period changed to $3"
-    esac
+      #!/usr/bin/env sh
+      case $1 in
+        period-changed)
+          exec notify-send "Gammastep" "Period changed to $3"
+      esac
     '';
     executable = true;
   };

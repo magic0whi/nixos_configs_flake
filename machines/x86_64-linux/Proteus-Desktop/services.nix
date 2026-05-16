@@ -26,7 +26,8 @@
   ## START syncthing.nix
   sops.secrets."${config.networking.hostName}_syncthing.priv.pem" = {
     sopsFile = "${myvars.secrets_dir}/${config.networking.hostName}_syncthing.priv.pem.sops";
-    format = "binary"; restartUnits = ["syncthing.service"];
+    format = "binary";
+    restartUnits = ["syncthing.service"];
   };
   # If without `users.groups.storage` and rely on LDAP group
   # systemd.services.syncthing.serviceConfig.SupplementaryGroups = ["storage"];
@@ -54,7 +55,8 @@
         };
         "Games" = {
           path = "${myvars.storage_path}/share/Games";
-          devices = lib.lists.subtractLists
+          devices =
+            lib.lists.subtractLists
             (builtins.attrNames mobile_devices) (builtins.attrNames config.services.syncthing.settings.devices);
         };
         "Music" = {
@@ -67,12 +69,14 @@
         };
         "Secrets" = {
           path = "${myvars.storage_path}/share/Secrets";
-          devices = lib.lists.subtractLists
+          devices =
+            lib.lists.subtractLists
             (builtins.attrNames mobile_devices) (builtins.attrNames config.services.syncthing.settings.devices);
         };
         "Works" = {
           path = "${myvars.storage_path}/share/Works";
-          devices = lib.lists.subtractLists
+          devices =
+            lib.lists.subtractLists
             (builtins.attrNames mobile_devices) (builtins.attrNames config.services.syncthing.settings.devices);
         };
       };

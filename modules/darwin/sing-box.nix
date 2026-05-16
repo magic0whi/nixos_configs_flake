@@ -1,5 +1,11 @@
 # TODO: Create a PR to nix-darwin/nix-darwin
-{config, lib, pkgs, myvars, ...}: let
+{
+  config,
+  lib,
+  myvars,
+  pkgs,
+  ...
+}: let
   cfg = config.services.sing-box;
   sing-box_dir = "/Library/Application Support/sing-box";
 in {
@@ -16,14 +22,17 @@ in {
     environment.systemPackages = [cfg.package];
 
     system.activationScripts.postActivation.text = ''
-      # Ensure the state directory is initialized
+      # Ensure the sing-box state directory is initialized
       echo "Setting up Sing-box directory..."
       if [ ! -d "${sing-box_dir}" ]; then install -dm700 "${sing-box_dir}"; fi
     '';
     launchd.daemons.sing-box.serviceConfig = {
       Label = lib.mkOverride 999 "io.nekohasekai.sing-box";
       RunAtLoad = true;
-      KeepAlive = {Crashed = true; SuccessfulExit = false;};
+      KeepAlive = {
+        Crashed = true;
+        SuccessfulExit = false;
+      };
       WorkingDirectory = sing-box_dir;
       StandardErrorPath = "/Library/Logs/io.nekohasekai.sing-box.stderr.log";
       StandardOutPath = "/Library/Logs/io.nekohasekai.sing-box.stdout.log";

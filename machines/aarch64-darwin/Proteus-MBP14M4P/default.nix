@@ -1,4 +1,9 @@
-{inputs, mylib, myvars, ...}: let
+{
+  inputs,
+  mylib,
+  myvars,
+  ...
+}: let
   name = baseNameOf ./.;
   nixpkgs_modules = map mylib.relative_to_root [
     "modules/secrets"
@@ -11,7 +16,8 @@
     "modules/darwin_hm"
   ];
   darwin_system = inputs.nix-darwin.lib.darwinSystem (mylib.gen_system_args {
-    inherit name mylib myvars nixpkgs_modules hm_modules; machine_path = ./.;
+    inherit name mylib myvars nixpkgs_modules hm_modules;
+    machine_path = ./.;
   });
 in {
   _DEBUG = {inherit name nixpkgs_modules hm_modules;};

@@ -1,4 +1,10 @@
-{mylib, pkgs, myvars, config, ...}: {
+{
+  config,
+  mylib,
+  myvars,
+  pkgs,
+  ...
+}: {
   imports = mylib.scan_path ./.;
   home.packages = with pkgs; [chezmoi];
   programs = {
@@ -8,7 +14,10 @@
       "9" = ["RTK UHD HDR"];
       "0" = ["RTK UHD HDR"];
     };
-    mpv.profiles.common = {vulkan-device = "Apple M4 Pro"; ao = "avfoundation";};
+    mpv.profiles.common = {
+      vulkan-device = "Apple M4 Pro";
+      ao = "avfoundation";
+    };
   };
   ## BEGIN nix.nix
   xdg.configFile."nix/public.key".source = "${myvars.secrets_dir}/nix_public.key";

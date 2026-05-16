@@ -8,14 +8,15 @@
 # Useful Hot Keys for Linux:
 # 1. Increase Font Size: `ctrl + shift + =` | `ctrl + shift + +`
 # 2. Decrease Font Size: `ctrl + shift + -` | `ctrl + shift + _`
-# 3. Search Text: `ctrl + shift + N`
+# 3. Search Text: `ctrl + shift + space`
 # 4. And Other common shortcuts such as Copy, Paste, Cursor Move, etc.
 #
 # NOTE: Alacritty do not have support for Tabs, and any graphic protocol.
-{pkgs, ...}: {
+{myvars, pkgs, ...}: {
   programs.alacritty = {
     enable = true;
-    settings = { # https://alacritty.org/config-alacritty.html
+    # https://alacritty.org/config-alacritty.html
+    settings = {
       window = {
         opacity = 0.93;
         startup_mode = "Maximized"; # Maximized window
@@ -28,7 +29,10 @@
         bold_italic.family = "Iosevka Nerd Font Mono";
         italic.family = "Iosevka Nerd Font Mono";
         normal.family = "Iosevka Nerd Font Mono";
-        size = if pkgs.stdenv.isDarwin then 14 else 10;
+        size =
+          if pkgs.stdenv.isDarwin
+          then 14
+          else 10;
       };
       terminal = {
         # shell = { # Spawn a nushell in login mode via `bash`

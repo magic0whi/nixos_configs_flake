@@ -1,4 +1,8 @@
-{lib, config, ...}: {
+{
+  config,
+  lib,
+  ...
+}: {
   options.services.sing-box = {
     # Use camel case for outside interface
     configFile = lib.mkOption {
@@ -17,8 +21,9 @@
         LoadCredential = [("config.json:" + config.services.sing-box.configFile)];
         ExecStart = [
           "" # Empty value remove previous value
-          (let configArgs = "-c $\{CREDENTIALS_DIRECTORY}/config.json";
-            in "${lib.getExe config.services.sing-box.package} -D \${STATE_DIRECTORY} ${configArgs} run")
+          (let
+            configArgs = "-c $\{CREDENTIALS_DIRECTORY}/config.json";
+          in "${lib.getExe config.services.sing-box.package} -D \${STATE_DIRECTORY} ${configArgs} run")
         ];
       };
       wantedBy = ["multi-user.target"];

@@ -1,4 +1,8 @@
-{modulesPath, config, ...}: {
+{
+  config,
+  modulesPath,
+  ...
+}: {
   imports = [(modulesPath + "/installer/scan/not-detected.nix")];
 
   boot.initrd.availableKernelModules = ["xhci_pci" "ehci_pci" "ahci" "nvme" "usbhid" "uas" "sd_mod"];
@@ -22,7 +26,7 @@
     sata5 = "ata-ST1000LM048-2E7172_WKPEZYSN";
     sata6 = "ata-WDC_WD2002FYPS-02W3B0_WCAVY6186321";
     mnt_opts = "nofail,luks,discard,no-read-workqueue,no-write-workqueue";
-    key_file = "/persistent/etc/dm_keyfile.key";
+    key_file = "/persistent/etc/dm_keyfile.key"; # TODO: Unsafe
   in ''
     crypted-${sata1} /dev/disk/by-id/${sata1}-part1 ${key_file} ${mnt_opts}
     crypted-${sata2} /dev/disk/by-id/${sata2}-part1 ${key_file} ${mnt_opts}

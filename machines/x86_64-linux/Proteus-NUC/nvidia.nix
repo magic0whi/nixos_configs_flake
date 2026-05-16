@@ -1,10 +1,17 @@
-{lib, myvars, ...}: {
+{
+  lib,
+  myvars,
+  ...
+}: {
   boot.blacklistedKernelModules = ["nova_core"];
   services.xserver.videoDrivers = ["nvidia"];
   hardware.nvidia = {
     dynamicBoost.enable = true;
     open = true;
-    powerManagement = {enable = true; finegrained = true;};
+    powerManagement = {
+      enable = true;
+      finegrained = true;
+    };
     prime = let
       # "0001:02:03.4" to "PCI:2@1:3:4", in which the order is "PCI:bus@domain:device:func"
       to_nixos_bus_id = pci_ids: let
@@ -24,7 +31,10 @@
       # https://github.com/NixOS/nixpkgs/blob/6c9a78c09ff4d6c21d0319114873508a6ec01655/nixos/modules/hardware/video/nvidia.nix#L508
       intelBusId = to_nixos_bus_id myvars.igpu_pci_ids;
       nvidiaBusId = to_nixos_bus_id myvars.dgpu_pci_ids;
-      offload = {enable = true; enableOffloadCmd = true;};
+      offload = {
+        enable = true;
+        enableOffloadCmd = true;
+      };
     };
   };
   services.udev.extraRules = ''

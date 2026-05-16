@@ -62,7 +62,7 @@
   home.sessionVariables.NIXOS_OZONE_WL = "1";
   # https://github.com/nix-community/home-manager/blob/master/modules/programs/chromium.nix
   programs.google-chrome = {
-    enable =true;
+    enable = true;
     # https://wiki.archlinux.org/title/Chromium#Native_Wayland_support
     commandLineArgs = [
       "--ozone-platform-hint=auto"
@@ -72,7 +72,8 @@
   };
   ## END browsers.nix
   ## START obs-studio.nix
-  programs.obs-studio = { # Live streaming
+  programs.obs-studio = {
+    # Live streaming
     enable = true;
     plugins = with pkgs.obs-studio-plugins; [
       # screen capture

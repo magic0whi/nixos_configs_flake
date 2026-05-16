@@ -1,29 +1,44 @@
-{myvars, pkgs, config, lib, ...}: let
-  restart_runner_units = map
+{
+  config,
+  lib,
+  myvars,
+  pkgs,
+  ...
+}: let
+  restart_runner_units =
+    map
     (name: "gitea-runner-${name}.service") (builtins.attrNames config.services.gitea-actions-runner.instances);
   clean_runner_units = map (s: lib.strings.removeSuffix ".service" s) restart_runner_units;
 in {
-  sops = let sopsFile = "${myvars.secrets_dir}/${config.networking.hostName}.sops.yaml";
-  in lib.mkMerge [
-    {
-      secrets."forgejo_authelia_secret" = {
-        inherit sopsFile; restartUnits = ["forgejo.service"]; owner = config.services.forgejo.user;
-      };
-    }
-    {
-      # Generate the runner token for the global runner
-      # `sudo -u forgejo nix run nixpkgs#forgejo -- forgejo-cli --config /var/lib/forgejo/custom/conf/app.ini actions generate-runner-token`
-      # Note this is different with `nixpgs#forgejo-cli`.
-      # The token will not change until regenerate it. To regenerate the token, go through WebUI -> Site administration
-      # -> Actions -> Runners, click the edit and check the "Regenerate token" box, them save
-      secrets."forgejo_runner_token" = {inherit sopsFile; restartUnits = restart_runner_units;};
-      templates."forgejo_runner_token.env" = {
-        restartUnits = restart_runner_units; content = "TOKEN=${config.sops.placeholder.forgejo_runner_token}";
-        # The module uses DynamicUser
-        # owner = config.systemd.services."gitea-runner-${builtins.head (builtins.attrNames config.services.gitea-actions-runner.instances)}".serviceConfig.User;
-      };
-    }
-  ];
+  sops = let
+    sopsFile = "${myvars.secrets_dir}/${config.networking.hostName}.sops.yaml";
+  in
+    lib.mkMerge [
+      {
+        secrets."forgejo_authelia_secret" = {
+          inherit sopsFile;
+          restartUnits = ["forgejo.service"];
+          owner = config.services.forgejo.user;
+        };
+      }
+      {
+        # Generate the runner token for the global runner
+        # `sudo -u forgejo nix run nixpkgs#forgejo -- forgejo-cli --config /var/lib/forgejo/custom/conf/app.ini actions generate-runner-token`
+        # Note this is different with `nixpgs#forgejo-cli`.
+        # The token will not change until regenerate it. To regenerate the token, go through WebUI -> Site
+        # administration -> Actions -> Runners, click the edit and check the "Regenerate token" box, them save
+        secrets."forgejo_runner_token" = {
+          inherit sopsFile;
+          restartUnits = restart_runner_units;
+        };
+        templates."forgejo_runner_token.env" = {
+          restartUnits = restart_runner_units;
+          content = "TOKEN=${config.sops.placeholder.forgejo_runner_token}";
+          # The module uses DynamicUser
+          # owner = config.systemd.services."gitea-runner-${builtins.head (builtins.attrNames config.services.gitea-actions-runner.instances)}".serviceConfig.User;
+        };
+      }
+    ];
   services.forgejo = {
     enable = true;
     database.type = "postgres"; # Module will automatically provision PostgreSQL
@@ -36,72 +51,87 @@ in {
         # PROTOCOL = "http+unix"; # http through unix
       };
       openid.ENABLE_OPENID_SIGNIN = false; # Only allow OAuth
-      oauth2_client = {ENABLE_AUTO_REGISTRATION = true; ACCOUNT_LINKING = "auto"; USERNAME = "userid";};
+      oauth2_client = {
+        ENABLE_AUTO_REGISTRATION = true;
+        ACCOUNT_LINKING = "auto";
+        USERNAME = "userid";
+      };
       # Delegating registration entirely to Authelia
       service.ALLOW_ONLY_EXTERNAL_REGISTRATION = true;
       # Add support for actions, based on act: https://github.com/nektos/act
-      actions = {ENABLED = true; DEFAULT_ACTIONS_URL = "github";};
+      actions = {
+        ENABLED = true;
+        DEFAULT_ACTIONS_URL = "github";
+      };
     };
   };
   systemd.services = lib.mkMerge [
-    {forgejo = {
-      preStart = ''
-        set -eufo pipefail
+    {
+      forgejo = {
+        preStart = ''
+          set -eufo pipefail
 
-        mkdir -p ${config.services.forgejo.stateDir}/custom/public/assets/img/auth/
-        cp -f ${pkgs.authelia.src}/docs/static/images/branding/logo.png ${config.services.forgejo.stateDir}/custom/public/assets/img/auth/authelia.png
-      '';
-      postStart = ''
-        set -eufo pipefail
+          mkdir -p ${config.services.forgejo.stateDir}/custom/public/assets/img/auth/
+          cp -f ${pkgs.authelia.src}/docs/static/images/branding/logo.png ${config.services.forgejo.stateDir}/custom/public/assets/img/auth/authelia.png
+        '';
+        postStart = ''
+          set -eufo pipefail
 
-        # Wait for Forgejo to be fully ready to accept CLI commands
-        while [ "$(${lib.getExe pkgs.curl} -sSf https://git.${myvars.domain}/api/healthz | ${lib.getExe pkgs.jq} -r '.status')" != "pass" ]; do
-          sleep 1
-        done
+          # Wait for Forgejo to be fully ready to accept CLI commands
+          while [ "$(${lib.getExe pkgs.curl} -sSf https://git.${myvars.domain}/api/healthz | ${lib.getExe pkgs.jq} -r '.status')" != "pass" ]; do
+            sleep 1
+          done
 
-        # Read the secret from your age file
-        OIDC_SECRET=$(cat ${config.sops.secrets."forgejo_authelia_secret".path})
+          # Read the secret from your age file
+          OIDC_SECRET=$(cat ${config.sops.secrets."forgejo_authelia_secret".path})
 
-        # The environment variables (FORGEJO_WORK_DIR, etc.) are already injected by systemd.
-        # `forgejo` is injected in `systemd.services.forgejo.path`
-        FORGEJO_CLI="forgejo --config ${config.services.forgejo.stateDir}/custom/conf/app.ini admin auth"
+          # The environment variables (FORGEJO_WORK_DIR, etc.) are already injected by systemd.
+          # `forgejo` is injected in `systemd.services.forgejo.path`
+          FORGEJO_CLI="forgejo --config ${config.services.forgejo.stateDir}/custom/conf/app.ini admin auth"
 
-        # Check if the Authelia auth source already exists
-        if ! $FORGEJO_CLI list | grep -q "Authelia"; then
-          echo "Adding Authelia OIDC provider..."
-          $FORGEJO_CLI add-oauth \
-            --name Authelia \
-            --provider openidConnect \
-            --key "forgejo" \
-            --secret "$OIDC_SECRET" \
-            --auto-discover-url "https://auth.${myvars.domain}/.well-known/openid-configuration" \
-            --icon-url "/assets/img/auth/authelia.png"
-        else
-          echo "Updating existing Authelia OIDC provider..."
-          AUTHELIA_ID=$($FORGEJO_CLI list | ${lib.getExe pkgs.gawk} '/Authelia/ {print $1;}')
-          $FORGEJO_CLI update-oauth \
-            --name Authelia \
-            --id $AUTHELIA_ID \
-            --provider openidConnect \
-            --key "forgejo" \
-            --secret "$OIDC_SECRET" \
-            --auto-discover-url "https://auth.${myvars.domain}/.well-known/openid-configuration" \
-            --icon-url "/assets/img/auth/authelia.png"
-        fi
-      '';
-    };}
-    (lib.attrsets.genAttrs
-      clean_runner_units (name: {serviceConfig.ExecStartPre = lib.mkAfter [(pkgs.writeShellScript "wait-for-forgejo" ''
-        set -eufo pipefail
+          # Check if the Authelia auth source already exists
+          if ! $FORGEJO_CLI list | grep -q "Authelia"; then
+            echo "Adding Authelia OIDC provider..."
+            $FORGEJO_CLI add-oauth \
+              --name Authelia \
+              --provider openidConnect \
+              --key "forgejo" \
+              --secret "$OIDC_SECRET" \
+              --auto-discover-url "https://auth.${myvars.domain}/.well-known/openid-configuration" \
+              --icon-url "/assets/img/auth/authelia.png"
+          else
+            echo "Updating existing Authelia OIDC provider..."
+            AUTHELIA_ID=$($FORGEJO_CLI list | ${lib.getExe pkgs.gawk} '/Authelia/ {print $1;}')
+            $FORGEJO_CLI update-oauth \
+              --name Authelia \
+              --id $AUTHELIA_ID \
+              --provider openidConnect \
+              --key "forgejo" \
+              --secret "$OIDC_SECRET" \
+              --auto-discover-url "https://auth.${myvars.domain}/.well-known/openid-configuration" \
+              --icon-url "/assets/img/auth/authelia.png"
+          fi
+        '';
+      };
+    }
+    (
+      lib.attrsets.genAttrs
+      clean_runner_units
+      (name: {
+        serviceConfig.ExecStartPre = lib.mkAfter [
+          (pkgs.writeShellScript "wait-for-forgejo" ''
+            set -eufo pipefail
 
-        echo "Waiting for Forgejo to be online..."
-        # Retry until Forgejo reports status=pass
-        while [ "$(${lib.getExe pkgs.curl} -sSf https://git.${myvars.domain}/api/healthz | ${lib.getExe pkgs.jq} -r '.status')" != "pass" ]; do
-          sleep 1
-        done
+            echo "Waiting for Forgejo to be online..."
+            # Retry until Forgejo reports status=pass
+            while [ "$(${lib.getExe pkgs.curl} -sSf https://git.${myvars.domain}/api/healthz | ${lib.getExe pkgs.jq} -r '.status')" != "pass" ]; do
+              sleep 1
+            done
 
-        echo "Forgejo is online, proceeding with runner startup."
-      '')];})
+            echo "Forgejo is online, proceeding with runner startup."
+          '')
+        ];
+      })
     )
   ];
 

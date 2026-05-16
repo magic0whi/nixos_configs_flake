@@ -1,10 +1,17 @@
-{myvars, config, lib, ...}: let
+{
+  config,
+  lib,
+  myvars,
+  ...
+}: let
   iface_wlan = myvars.networking.hosts_addr.${config.networking.hostName}.iface_wlan;
 in {
+  boot.binfmt.emulatedSystems = ["riscv64-linux"]; # Cross compilation
   ## START sing-box.nix
   sops.secrets."sb_client_linux.json" = {
     sopsFile = "${myvars.secrets_dir}/sb_client_linux.json.sops";
-    format = "binary"; restartUnits = ["sing-box.service"];
+    format = "binary";
+    restartUnits = ["sing-box.service"];
   };
   services.sing-box.enable = true;
   services.sing-box.configFile = config.sops.secrets."sb_client_linux.json".path;
@@ -20,12 +27,12 @@ in {
   #   "01-acl-data-share"."${myvars.storage_path}/share".a.argument = "g:storage:rwX";
   # };
   ## END systemd_tmpfiles.nix
-  boot.binfmt.emulatedSystems = ["riscv64-linux"]; # Cross compilation
   ## START hostapd.nix
   boot.extraModulePackages = [config.boot.kernelPackages.rtl8812au];
   boot.kernelModules = ["8812au"];
   sops.secrets."proteus_ap_password" = {
-    sopsFile = "${myvars.secrets_dir}/Proteus-Desktop.sops.yaml"; restartUnits = ["hostapd.service"];
+    sopsFile = "${myvars.secrets_dir}/Proteus-Desktop.sops.yaml";
+    restartUnits = ["hostapd.service"];
   };
   services.hostapd = {
     enable = true;
@@ -36,50 +43,65 @@ in {
       countryCode = "US";
       # Band 1 Capabilities
       # NOTE on Band 2 some wifi4 capibilities is unavailable
-      wifi4.capabilities = [ "HT40+" "SMPS-STATIC" "SHORT-GI-20" "SHORT-GI-40" "RX-STBC1" "MAX-AMSDU-7935" "DSSS_CCK-40"
+      wifi4.capabilities = [
+        "HT40+"
+        "SMPS-STATIC"
+        "SHORT-GI-20"
+        "SHORT-GI-40"
+        "RX-STBC1"
+        "MAX-AMSDU-7935"
+        "DSSS_CCK-40"
       ];
       # wifi5.operatingChannelWidth = "80";
-      # They are in Band 2 Capabilities
+      # These are in Band 2 Capabilities
       # wifi5.capabilities = ["MAX-MPDU-11454" "SHORT-GI-80" "TX-STBC-2BY1" "SU-BEAMFORMEE" "HTC-VHT"];
       networks = {
         ${iface_wlan} = {
           ssid = "Proteus_AP";
           settings = {
             # vht_oper_centr_freq_seg0_idx = "155"; # Center frequency index (only for 80MHz or wider)
-            # Disable Protected Management Frames (802.11w), WPA3 (SAE) requires
-            # this to be enabled
+            # Disable Protected Management Frames (802.11w), WPA3 (SAE) requires this to be enabled
             # ieee80211w = 0;
             ieee80211d = true; # Advertises the country_code
             ieee80211h = true; # Dynamic Frequency Selection
           };
           authentication = {
-            # "wpa2-sha1" is standard WPA2-PSK (AES/CCMP). "wpa2-sha256" causes
-            # issues.
-            mode = "wpa2-sha1"; wpaPasswordFile = config.sops.secrets."proteus_ap_password".path;
+            # "wpa2-sha1" is standard WPA2-PSK (AES/CCMP). "wpa2-sha256" causes issues.
+            mode = "wpa2-sha1";
+            wpaPasswordFile = config.sops.secrets."proteus_ap_password".path;
             # mode = "wpa3-sae"; saePasswords = [{passwordFile = config.sops.secrets."proteus_ap_password.key".path;}];
           };
         };
       };
     };
   };
-  networking.interfaces.${iface_wlan}.ipv4.addresses = [{address = "192.168.12.1"; prefixLength = 24;}];
-  networking.nftables.tables = lib.mkIf config.services.sing-box.enable {hostapd_bypass = {
-    family = "inet"; content = with (builtins.head config.networking.interfaces.${iface_wlan}.ipv4.addresses); ''
-      chain prerouting {
-        type filter hook prerouting priority dstnat - 5; policy accept;
+  networking.interfaces.${iface_wlan}.ipv4.addresses = [
+    {
+      address = "192.168.12.1";
+      prefixLength = 24;
+    }
+  ];
+  networking.nftables.tables = lib.mkIf config.services.sing-box.enable {
+    hostapd_bypass = {
+      family = "inet";
+      content = with (builtins.head config.networking.interfaces.${iface_wlan}.ipv4.addresses); ''
+        chain prerouting {
+          type filter hook prerouting priority dstnat - 5; policy accept;
 
-        # 1. Do NOT bypass FakeIP traffic. Let sing-box handle it.
-        ip daddr 198.18.0.0/15 return
+          # 1. Do NOT bypass FakeIP traffic. Let sing-box handle it.
+          ip daddr 198.18.0.0/15 return
 
-        # 2. Bypass everything else from hostapd managed iface
-        # ip saddr ${address}/${toString prefixLength} ct mark set 0x00002024
-      }
-    '';
-  };};
-  networking.firewall.extraInputRules =
-    with (builtins.head config.networking.interfaces.${iface_wlan}.ipv4.addresses); ''
-      ip saddr ${address}/${toString prefixLength} accept comment "Allow hostapd clients to reach auto_redirect ports"
-    '';
+          # 2. Bypass everything else from hostapd managed iface
+          # ip saddr ${address}/${toString prefixLength} ct mark set 0x00002024
+        }
+      '';
+    };
+  };
+  networking.firewall.extraInputRules = with (
+    builtins.head config.networking.interfaces.${iface_wlan}.ipv4.addresses
+  ); ''
+    ip saddr ${address}/${toString prefixLength} accept comment "Allow hostapd clients to reach auto_redirect ports"
+  '';
   services.dnsmasq = {
     enable = true;
     settings = {

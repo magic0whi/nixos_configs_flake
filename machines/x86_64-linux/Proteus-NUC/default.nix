@@ -1,4 +1,10 @@
-{inputs, mylib, myvars, system, ...}: let
+{
+  inputs,
+  mylib,
+  myvars,
+  system,
+  ...
+}: let
   name = baseNameOf ./.;
   nixpkgs_modules = map mylib.relative_to_root [
     "modules/secrets/common.nix"
@@ -14,18 +20,28 @@
     "modules/nixos_hm_headless"
     "modules/nixos_hm_gui"
   ];
-  nuc_myvars = myvars // {
-    # `lspci -Dnnd 8086::03xx | cut -f1 -d' '`
-    igpu_sym_name = "intel"; igpu_pci_ids = "0000:00:02.0";
-    # `lspci -Dnnd 10de::03xx | cut -f1 -d' '`
-    dgpu_sym_name = "nvidia"; dgpu_pci_ids = "0000:01:00.0";
-  };
+  nuc_myvars =
+    myvars
+    // {
+      igpu_sym_name = "intel";
+      # `lspci -Dnnd 8086::03xx | cut -f1 -d' '`
+      igpu_pci_ids = "0000:00:02.0";
+      dgpu_sym_name = "nvidia";
+      # `lspci -Dnnd 10de::03xx | cut -f1 -d' '`
+      dgpu_pci_ids = "0000:01:00.0";
+    };
   nixos_system = inputs.nixpkgs.lib.nixosSystem (mylib.gen_system_args {
-    inherit name mylib nixpkgs_modules hm_modules; myvars = nuc_myvars; machine_path = ./.;
+    inherit name mylib nixpkgs_modules hm_modules;
+    myvars = nuc_myvars;
+    machine_path = ./.;
   });
-  nixos_iso = (inputs.nixpkgs.lib.nixosSystem (mylib.gen_system_args {
-    inherit name mylib nixpkgs_modules hm_modules; generate_iso = true; myvars = nuc_myvars; machine_path = ./.;
-  })).config.system.build.images.iso;
+  nixos_iso =
+    (inputs.nixpkgs.lib.nixosSystem (mylib.gen_system_args {
+      inherit name mylib nixpkgs_modules hm_modules;
+      generate_iso = true;
+      myvars = nuc_myvars;
+      machine_path = ./.;
+    })).config.system.build.images.iso;
 in {
   _DEBUG = {inherit name nixpkgs_modules hm_modules myvars mylib;};
   nixos_configurations.${name} = nixos_system;

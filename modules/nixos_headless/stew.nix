@@ -1,4 +1,10 @@
-{lib, config, myvars, pkgs, ...}: {
+{
+  config,
+  lib,
+  myvars,
+  pkgs,
+  ...
+}: {
   ## BEGIN bootloader.nix
   boot.loader.efi.canTouchEfiVariables = lib.mkDefault true; # Allow installation process to modify EFI boot variables
   boot.loader.systemd-boot = {
@@ -17,9 +23,9 @@
     Host *
       IdentityAgent /run/user/${builtins.toString config.users.users.${myvars.username}.uid}/gnupg/S.gpg-agent.ssh
   '';
-  # The OpenSSH agent remembers private keys for you. So that you don’t have to
-  # type in passphrases every time you make an SSH connection.
-  # Use `ssh-add` to add a key to the agent.
+  # The OpenSSH agent remembers private keys for you. So that you don’t have to type in passphrases every time you make
+  # an SSH connection.
+  # TIP: Use `ssh-add` to add a key to the agent.
   # NOTE: You cannot use ssh-agent and GnuPG agent with SSH support at the same time
   # ssh.startAgent = true;
   ## END ssh.nix
@@ -27,15 +33,15 @@
   # Select internationalisation properties.
   i18n.defaultLocale = "en_US.UTF-8";
   # i18n.extraLocaleSettings = {
-    # LC_ADDRESS = "en_US.UTF-8";
-    # LC_IDENTIFICATION = "en_US.UTF-8";
-    # LC_MEASUREMENT = "en_US.UTF-8";
-    # LC_MONETARY = "en_US.UTF-8";
-    # LC_NAME = "en_US.UTF-8";
-    # LC_NUMERIC = "en_US.UTF-8";
-    # LC_PAPER = "en_US.UTF-8";
-    # LC_TELEPHONE = "en_US.UTF-8";
-    # LC_TIME = "en_US.UTF-8";
+  #   LC_ADDRESS = "en_US.UTF-8";
+  #   LC_IDENTIFICATION = "en_US.UTF-8";
+  #   LC_MEASUREMENT = "en_US.UTF-8";
+  #   LC_MONETARY = "en_US.UTF-8";
+  #   LC_NAME = "en_US.UTF-8";
+  #   LC_NUMERIC = "en_US.UTF-8";
+  #   LC_PAPER = "en_US.UTF-8";
+  #   LC_TELEPHONE = "en_US.UTF-8";
+  #   LC_TIME = "en_US.UTF-8";
   # };
   ## END i18n.nix
   ## BEGIN dbus.nix
@@ -56,8 +62,8 @@
       udp dport bootps accept comment "Allow DHCP server (systemd-nspawn)"
     '';
   };
-  networking.timeServers = [ # Or
   # services.timesyncd.servers = [
+  networking.timeServers = [
     "ntp.aliyun.com" # Aliyun NTP Server
     "ntp.tencent.com" # Tencent NTP Server
   ];
@@ -78,10 +84,8 @@
   ## END network.nix
   ## BEGIN journald.nix
   services.journald = {
-     # The time window (1 minute) used to calculate the message limit.
-    rateLimitInterval = "1min";
-    # The maximum number of log lines a single service can generate within the
-    # time window before being throttled.
+    rateLimitInterval = "1min"; # The time window (1 minute) used to calculate the message limit.
+    # The maximum number of log lines a single service can generate within the time window before being throttled.
     rateLimitBurst = 500;
     extraConfig = ''
       # Keep logs for 1 month max
@@ -114,12 +118,12 @@
     groups = {
       # ${myvars.username} = {gid = 1000;};
       docker = {};
-      storage = {gid=1001;};
+      storage = {gid = 1001;};
     };
     users.${myvars.username} = {
-      # Public Keys that can be used to login to all my PCs, Macbooks, and servers.
+      # Public Keys that can be used to login to all my PCs, MacBooks, and servers.
       #
-      # Since its authority is so large, we must strengthen its security:
+      # Since the authority range is pretty large, we must strengthen its security:
       # - The corresponding private key must be:
       #   1. Generated locally on every trusted client via:
       #     ```bash
@@ -133,17 +137,10 @@
       home = "/home/${myvars.username}";
       # initialHashedPassword = myvars.initial_hashed_password;
       isNormalUser = true;
-      extraGroups = [
-        myvars.username
-        "docker"
-        "input"
-        "libvirtd"
-        "network"
-        "video"
-        "wheel"
-      ];
+      extraGroups = [myvars.username "docker" "input" "libvirtd" "network" "video" "wheel"];
     };
-    users.root = { # root's ssh key are heavily used for remote deployment
+    # root user are heavily used for remote NixOS deployment
+    users.root = {
       # initialHashedPassword = config.users.users."${myvars.username}".initialHashedPassword;
       openssh.authorizedKeys.keys = config.users.users."${myvars.username}".openssh.authorizedKeys.keys;
     };
@@ -152,8 +149,8 @@
   ## BEGIN zram.nix
   zramSwap.enable = true;
   ## END zram.nix
-  systemd.services.console-blanking = { # Let monitor become blank after 2mins, and 3mins inactive to
-  # poweroff
+  systemd.services.console-blanking = {
+    # Let monitor become blank after 2 mins, and 3 mins inactive to poweroff
     description = "Enable virtual console blanking and DPMS";
     after = ["display-manager.service"];
     environment.TERM = "linux";
@@ -166,7 +163,8 @@
     wantedBy = ["multi-user.target"];
   };
   ## BEGIN fonts.nix
-  fonts = { # All fonts are linked to /nix/var/nix/profiles/system/sw/share/X11/fonts
+  # All fonts are linked to /nix/var/nix/profiles/system/sw/share/X11/fonts
+  fonts = {
     fontDir.enable = true;
     packages = with pkgs; [noto-fonts noto-fonts-color-emoji];
     fontconfig = {
@@ -177,7 +175,9 @@
         monospace = [
           "Iosevka Nerd Font Mono"
           "Noto Sans Mono"
-          "Noto Sans Mono CJK SC" "Noto Sans Mono CJK TC" "Noto Sans Mono CJK JP"
+          "Noto Sans Mono CJK SC"
+          "Noto Sans Mono CJK TC"
+          "Noto Sans Mono CJK JP"
         ];
         emoji = ["Noto Color Emoji"];
       };
@@ -190,20 +190,30 @@
   security.sudo.package = pkgs.sudo.override {withSssd = true;};
   security.sudo.extraConfig = ''Defaults passwd_timeout=0''; # Disable timeout for sudo prompt
   system.nssDatabases.sudoers = ["sss"]; # Use LDAP to distribute configuration of sudo as well
-  sops = let restartUnits = ["sssd.service"]; sopsFile = "${myvars.secrets_dir}/common.sops.yaml"; in {
+  sops = let
+    restartUnits = ["sssd.service"];
+    sopsFile = "${myvars.secrets_dir}/common.sops.yaml";
+  in {
     secrets."sssd_ldap_default_authtok" = {inherit sopsFile restartUnits;};
     templates."sssd.env" = {
       # https://github.com/NixOS/nixpkgs/blob/15f4ee454b1dce334612fa6843b3e05cf546efab/nixos/modules/services/misc/sssd.nix#L111-L113
-      inherit restartUnits; content = "SSSD_LDAP_DEFAULT_AUTHTOK='${config.sops.placeholder.sssd_ldap_default_authtok}'";
+      inherit restartUnits;
+      content = "SSSD_LDAP_DEFAULT_AUTHTOK='${config.sops.placeholder.sssd_ldap_default_authtok}'";
     };
   };
   services.sssd = {
     enable = true;
     environmentFile = config.sops.templates."sssd.env".path;
     settings = {
-      sssd = {/*debug_level = 7;*/ services = "ifp, nss, pam, sudo"; domains = "LDAP";};
+      sssd = {
+        # debug_level = 7;
+        services = "ifp, nss, pam, sudo";
+        domains = "LDAP";
+      };
       # "pam".pam_verbosity = 3;
-      "domain/LDAP" = let base_dn = "dc=" + builtins.replaceStrings ["."] [",dc="] myvars.domain; in {
+      "domain/LDAP" = let
+        base_dn = "dc=" + builtins.replaceStrings ["."] [",dc="] myvars.domain;
+      in {
         override_shell = "/run/current-system/sw/bin/${config.users.defaultUserShell.meta.mainProgram}";
         cache_credentials = true;
         entry_cache_timeout = 600;

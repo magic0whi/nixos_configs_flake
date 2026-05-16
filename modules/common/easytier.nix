@@ -1,22 +1,45 @@
-{config, myvars, lib, pkgs, ...}: {
-  networking = lib.attrsets.optionalAttrs (!pkgs.stdenv.isDarwin) {firewall = {
-    allowedTCPPortRanges = [{from = 11010; to = 11013;}]; allowedUDPPortRanges = [{from = 11010; to = 11012;}];
-  };};
+{
+  config,
+  myvars,
+  lib,
+  pkgs,
+  ...
+}: {
+  networking = lib.attrsets.optionalAttrs (!pkgs.stdenv.isDarwin) {
+    firewall = {
+      allowedTCPPortRanges = [
+        {
+          from = 11010;
+          to = 11013;
+        }
+      ];
+      allowedUDPPortRanges = [
+        {
+          from = 11010;
+          to = 11012;
+        }
+      ];
+    };
+  };
   sops = let
     restartUnits = map (name: "easytier-${name}.service") (builtins.attrNames config.services.easytier.instances);
     sopsFile = "${myvars.secrets_dir}/common.sops.yaml";
   in {
-    secrets."easytier_network_secret" = {inherit sopsFile;}
+    secrets."easytier_network_secret" =
+      {inherit sopsFile;}
       // lib.attrsets.optionalAttrs (!pkgs.stdenv.isDarwin) {inherit restartUnits;};
-    secrets."easytier_peer_0" = {inherit sopsFile;}
+    secrets."easytier_peer_0" =
+      {inherit sopsFile;}
       // lib.attrsets.optionalAttrs (!pkgs.stdenv.isDarwin) {inherit restartUnits;};
-    templates."easytier.env" = {
-      content = ''
-        ET_NETWORK_SECRET=${config.sops.placeholder.easytier_network_secret}
-        # ET_PEERS uses comma delimiter
-        ET_PEERS=udp://${config.sops.placeholder.easytier_peer_0}
-      '';
-    } // lib.attrsets.optionalAttrs (!pkgs.stdenv.isDarwin) {inherit restartUnits;};
+    templates."easytier.env" =
+      {
+        content = ''
+          ET_NETWORK_SECRET=${config.sops.placeholder.easytier_network_secret}
+          # ET_PEERS uses comma delimiter
+          ET_PEERS=udp://${config.sops.placeholder.easytier_peer_0}
+        '';
+      }
+      // lib.attrsets.optionalAttrs (!pkgs.stdenv.isDarwin) {inherit restartUnits;};
   };
   services.easytier = {
     enable = true;
@@ -39,10 +62,12 @@
       };
       extraSettings = {
         ipv6 = "${myvars.networking.hosts_addr.${config.networking.hostName}.et_ipv6}/64";
-        flags = {
-          accept_dns = true; # Enable Magic DNS
-          # relay_all_peer_rpc = true; # Help others hole punching
-        } // lib.attrsets.optionalAttrs (!pkgs.stdenv.isDarwin) {dev_name = "et-main";};
+        flags =
+          {
+            accept_dns = true; # Enable Magic DNS
+            # relay_all_peer_rpc = true; # Help others hole punching
+          }
+          // lib.attrsets.optionalAttrs (!pkgs.stdenv.isDarwin) {dev_name = "et-main";};
         stun_servers = ["stun.miwifi.com" "stun.chat.bilibili.com"];
       };
     };

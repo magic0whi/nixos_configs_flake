@@ -1,4 +1,9 @@
-{config, pkgs, lib, ...}: let
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}: let
   cfg = config.services.traffic-quota;
   script = pkgs.writeShellScript "check-traffic-quota" ''
     set -eufo pipefail
@@ -43,13 +48,19 @@ in {
     systemd.services.traffic-quota = {
       description = "Check vnstat traffic quota and shutdown if exceeded";
       after = ["vnstat.service"];
-      serviceConfig = {Type = "oneshot"; ExecStart = script;};
+      serviceConfig = {
+        Type = "oneshot";
+        ExecStart = script;
+      };
       path = with pkgs; [jq vnstat vnstat systemd];
     };
     systemd.timers.traffic-quota = {
       description = "Timer for traffic quota checker";
       wantedBy = ["timers.target"];
-      timerConfig = {OnBootSec = "5m"; OnUnitActiveSec = "5m";};
+      timerConfig = {
+        OnBootSec = "5m";
+        OnUnitActiveSec = "5m";
+      };
     };
   };
 }

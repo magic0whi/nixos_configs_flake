@@ -3,19 +3,30 @@
 # - To retrieve latest snapshots:
 #   restic-<Hostname> latest --target /tmp/restic-restore
 #   restic-<Hostname> <Snapshot ID> --target /tmp/restic-restore
-{myvars, config, ...}: {
+{
+  config,
+  myvars,
+  ...
+}: {
   sops = let
     sopsFile = "${myvars.secrets_dir}/common.sops.yaml";
     restartUnits = ["restic-backups-${config.networking.hostName}.service"];
   in {
-    secrets.restic_password = { # Restic repository encryption password
-      inherit sopsFile restartUnits; owner = config.services.restic.backups.${config.networking.hostName}.user;
+    # Restic repository encryption password
+    secrets = {
+      restic_password = {
+        inherit sopsFile restartUnits;
+        owner = config.services.restic.backups.${config.networking.hostName}.user;
+      };
+      restic_aws_secret_access_key = {inherit sopsFile restartUnits;};
     };
-    secrets.restic_aws_secret_access_key = {inherit sopsFile restartUnits;};
-    templates."restic.env" = {inherit restartUnits; content = ''
-      AWS_ACCESS_KEY_ID=GKa80ba5756034df47aadc5b8f
-      AWS_SECRET_ACCESS_KEY=${config.sops.placeholder.restic_aws_secret_access_key}
-    '';};
+    templates."restic.env" = {
+      inherit restartUnits;
+      content = ''
+        AWS_ACCESS_KEY_ID=GKa80ba5756034df47aadc5b8f
+        AWS_SECRET_ACCESS_KEY=${config.sops.placeholder.restic_aws_secret_access_key}
+      '';
+    };
   };
   systemd.services."restic-backups-${config.networking.hostName}".serviceConfig.EnvironmentFile = config.sops.templates."restic.env".path;
   services.restic.backups.${config.networking.hostName} = {
@@ -26,7 +37,9 @@
     passwordFile = config.sops.secrets.restic_password.path; # Password for restic backup itself
     # An environment file for your storage provider credentials (e.g., AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY)
     # environmentFile = sops.templates."restic.env".path;
-    pruneOpts = [ # Retention policy
+
+    # Retention policy
+    pruneOpts = [
       "--keep-daily 7"
       "--keep-weekly 5"
       "--keep-monthly 12"
@@ -40,18 +53,20 @@
       Persistent = true; # Run immediately if system was off at scheduled time
     };
     # Performance tuning
-    extraBackupArgs = ["--limit-upload ${builtins.toString (50*1024)}"];
-      # Limit upload speed to 50 MB/s, unit is KiB/s
+    extraBackupArgs = ["--limit-upload ${builtins.toString (50 * 1024)}"];
+    # Limit upload speed to 50 MB/s, unit is KiB/s
     extraOptions = [
       "s3.region=cn-east1-a"
       "read-concurrency=4" # Read concurrency for better throughput on ZFS
     ];
-    paths = [ # Paths to backup
+    # Paths to backup
+    paths = [
       "/srv/Backups/paperless-export" # Paperless
       "/srv/Backups/psql"
       # "/var/lib/tailscale"
     ];
-    exclude = [ # Paths to exclude from backup
+    # Paths to exclude from backup
+    exclude = [
       "**/.Trash"
       "**/node_modules"
       # Cache directories

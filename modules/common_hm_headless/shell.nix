@@ -1,10 +1,17 @@
-{config, pkgs, lib, myvars, ...}: {
+{
+  config,
+  lib,
+  myvars,
+  pkgs,
+  ...
+}: {
   home.packages = with pkgs; [
     tlrc # tldr written in Rust
-    fd # search for files by name, faster than find
-    (ripgrep.override {withPCRE2 = true;}) # search for files by its content, replacement of grep
+    fd # Search for files by name, faster than `find`
+    (ripgrep.override {withPCRE2 = true;}) # search for files by its content, replacement of `grep`
   ];
-  home.sessionVariables = { # Environment variables that always set at login
+  # Environment variables that always set at login
+  home.sessionVariables = {
     # Disable line-number since I use bat mostly and this will cause double line
     # numbering
     # LESS = "-R -N";
@@ -18,6 +25,7 @@
     k = "kubectl";
     urldecode = "python3 -c 'import sys, urllib.parse as ul; print(ul.unquote_plus(sys.stdin.read()))'";
     urlencode = "python3 -c 'import sys, urllib.parse as ul; print(ul.quote_plus(sys.stdin.read()))'";
+
     # `programs.eza.enable*Integration` overrides these
     ls = "eza";
     ll = "eza -lg";
@@ -27,6 +35,7 @@
     # ll = "ls -l --color=auto -v";
     # la = "ls -la --color=auto -v";
     # lh = "ls -lah --color=auto -v";
+
     grep = "grep --color=auto";
     ip = "ip --color=auto";
     cp = "cp -i";
@@ -44,8 +53,7 @@
       "command man"
     ];
     tmux = "tmux -2"; # `-2` force assume the terminal supports 256 colors
-    # Run `TERM=xterm-ghostty command ssh` if the remote machine has the
-    # corresponding terminfo installed
+    # Run `TERM=xterm-ghostty command ssh` if the remote machine has the corresponding terminfo installed
     ssh = "TERM=xterm-256color ssh";
     sshot = "ssh -o 'ConnectTimeout=10' -o 'IdentitiesOnly=no' -o 'UserKnownHostsFile=/dev/null' -o 'StrictHostKeyChecking=no'"; # One-time SSH session
     sshstop = "ssh -O stop"; # Close a persistent SSH session
@@ -62,6 +70,7 @@
     targz = "tar -I 'nix run nixpkgs#pigz --' -cvf";
     targzls = "tar -I 'nix run nixpkgs#pigz --' -tvf";
   };
+  # TODO: Re-enable
   # catppuccin.fzf.enable = false; # catppuccin fzf is prone to fail on macOS
   programs = {
     zsh = {
@@ -76,78 +85,84 @@
         local_bin = "${config.home.homeDirectory}/.local/bin";
         go_bin = "${config.home.homeDirectory}/go/bin";
         rust_bin = "${config.home.homeDirectory}/.cargo/bin";
-      in lib.mkAfter ''
-        # Export GPG primary key and subkeys to a specified (or default) directory
-        export-gpg-keys() {
-          set -eufo pipefail
+      in
+        lib.mkAfter ''
+          # Export GPG primary key and subkeys to a specified (or default) directory
+          export-gpg-keys() {
+            set -eufo pipefail
 
-          local OUTPUT_DIR PRIMARY_KEY_ID EMAIL GPG_UID
-          local -a KEYS=(
-            "primary:75DB252683B07650"
-            "auth:30973F79B17F9ED3"
-            "enc:940B76AB99D87247"
-            "sig:FC4881A7361DF34E"
-          )
-
-          if [[ $# -gt 0 ]]; then
-            OUTPUT_DIR="$1"
-            shift
-          else
-            OUTPUT_DIR=$(
-              zoxide query --list Secrets 2>/dev/null | grep --max-count=1 'Secrets' \
-              || echo "${config.home.homeDirectory}/Secrets"
+            local OUTPUT_DIR PRIMARY_KEY_ID EMAIL GPG_UID
+            local -a KEYS=(
+              "primary:75DB252683B07650"
+              "auth:30973F79B17F9ED3"
+              "enc:940B76AB99D87247"
+              "sig:FC4881A7361DF34E"
             )
-          fi
 
-          # Remove trailing slash unless it's just root "/"
-          OUTPUT_DIR=''${OUTPUT_DIR%/}
+            if [[ $# -gt 0 ]]; then
+              OUTPUT_DIR="$1"
+              shift
+            else
+              OUTPUT_DIR=$(
+                zoxide query --list Secrets 2>/dev/null | grep --max-count=1 'Secrets' \
+                || echo "${config.home.homeDirectory}/Secrets"
+              )
+            fi
 
-          mkdir -p "$OUTPUT_DIR" || {
-            echo "Failed to create directory: $OUTPUT_DIR" >&2
-            return 1
+            # Remove trailing slash unless it's just root "/"
+            OUTPUT_DIR=''${OUTPUT_DIR%/}
+
+            mkdir -p "$OUTPUT_DIR" || {
+              echo "Failed to create directory: $OUTPUT_DIR" >&2
+              return 1
+            }
+
+            PRIMARY_KEY_ID=''${KEYS[1]##*:}
+
+            GPG_UID=$(gpg --list-secret-keys --with-colons "$PRIMARY_KEY_ID" | awk -F ':' '$1=="uid" {print $10; exit}')
+            EMAIL=''${GPG_UID##*<}
+            EMAIL=''${EMAIL%%>*}
+
+            if [[ -z "$EMAIL" || "$EMAIL" == "$GPG_UID" ]]; then
+              echo "Could not determine email from GPG UID for key $PRIMARY_KEY_ID" >&2
+              return 1
+            fi
+
+            local success=0
+            local pair key key_id filename
+            for pair in ''${KEYS[@]}; do
+              key=''${pair%%:*}
+              key_id=''${pair##*:}
+              filename="$OUTPUT_DIR/$EMAIL.$key.priv.asc"
+
+              if gpg --armor --export-secret-keys "$key_id!" > "$filename"; then
+                echo "✓ Exported $key key ($key_id) to $filename"
+                # Using `set -e` in a script prevents ((var++)) increment in bash
+                # Ref: https://stackoverflow.com/a/49072797/26004653
+                ((++success))
+              else
+                echo "✗ Failed to export $key key ($key_id)" >&2
+              fi
+            done
+
+            echo "Exported $success/''${#KEYS[@]} keys to $OUTPUT_DIR"
           }
 
-          PRIMARY_KEY_ID=''${KEYS[1]##*:}
-
-          GPG_UID=$(gpg --list-secret-keys --with-colons "$PRIMARY_KEY_ID" | awk -F ':' '$1=="uid" {print $10; exit}')
-          EMAIL=''${GPG_UID##*<}
-          EMAIL=''${EMAIL%%>*}
-
-          if [[ -z "$EMAIL" || "$EMAIL" == "$GPG_UID" ]]; then
-            echo "Could not determine email from GPG UID for key $PRIMARY_KEY_ID" >&2
-            return 1
-          fi
-
-          local success=0
-          local pair key key_id filename
-          for pair in ''${KEYS[@]}; do
-            key=''${pair%%:*}
-            key_id=''${pair##*:}
-            filename="$OUTPUT_DIR/$EMAIL.$key.priv.asc"
-
-            if gpg --armor --export-secret-keys "$key_id!" > "$filename"; then
-              echo "✓ Exported $key key ($key_id) to $filename"
-              # Using `set -e` in a script prevents ((var++)) increment in bash
-              # Ref: https://stackoverflow.com/a/49072797/26004653
-              ((++success))
-            else
-              echo "✗ Failed to export $key key ($key_id)" >&2
-            fi
-          done
-
-          echo "Exported $success/''${#KEYS[@]} keys to $OUTPUT_DIR"
-        }
-
-        export PATH="$PATH:${local_bin}:${go_bin}:${rust_bin}"
-      '';
+          export PATH="$PATH:${local_bin}:${go_bin}:${rust_bin}"
+        '';
     };
-    eza = { # A modern replacement for ‘ls’, useful in bash/zsh prompt, but not in nushell
-      enable = if pkgs.stdenv.hostPlatform.isRiscV64 then false else true;
+    # A modern replacement for `ls`, useful in bash/zsh prompt, but not in nushell
+    eza = {
+      enable =
+        if pkgs.stdenv.hostPlatform.isRiscV64
+        then false
+        else true;
       enableZshIntegration = false;
       git = true;
       icons = "auto";
     };
-    bat = { # a cat-like with syntax highlighting and Git integration.
+    # A `cat`-like with syntax highlighting and Git integration.
+    bat = {
       enable = true;
       config.pager = "less -FR";
     };
@@ -155,7 +170,7 @@
     fzf = {
       enable = true;
       defaultOptions = ["-m"];
-      defaultCommand = "rg --files"; # Using ripgrep in fzf
+      defaultCommand = "rg --files"; # Using `ripgrep` in `fzf`
     };
     # zoxide is a smarter cd command, inspired by z and autojump.
     # It remembers which directories you use most frequently,
@@ -176,36 +191,47 @@
     # z foo<SPACE><TAB> # show interactive completions (zoxide v0.8.0+, bash 4.4+/fish/zsh only)
     zoxide.enable = true;
 
-    # Atuin replaces your existing shell history with a SQLite database,
-    # and records additional context for your commands.
-    # Additionally, it provides optional and fully encrypted
-    # synchronisation of your history between machines, via an Atuin server.
-    atuin.enable = true;
-    atuin.settings.sync_address = "https://atuin.${myvars.domain}";
+    # Atuin replaces your existing shell history with a SQLite database, and records additional context for your
+    # commands. Additionally, it provides optional and fully encrypted synchronisation of your history between machines,
+    # via an Atuin server.
+    atuin = {
+      enable = true;
+      settings.sync_address = "https://atuin.${myvars.domain}";
+    };
     starship = {
       enable = true;
       settings = {
         add_newline = false;
         line_break.disabled = true;
         status.disabled = false;
-        character.success_symbol = "[➜ ](bold green)";
-        character.error_symbol = "[✗ ](bold red)";
-        aws.disabled = true;
-        aws.symbol = "🅰 ";
+        character = {
+          success_symbol = "[➜ ](bold green)";
+          error_symbol = "[✗ ](bold red)";
+        };
+        aws = {
+          disabled = true;
+          symbol = "🅰 ";
+        };
         gcloud = {
           disabled = true;
-          # Do not show the account/project's info to avoid the leak of sensitive information when sharing the
-          # terminal
+          # Do not show the account/project's info to avoid the leak of sensitive information when sharing the terminal
           format = "on [$symbol$active(\($region\))]($style) ";
           symbol = "🅶 ️";
         };
-        hostname.ssh_only = false;
-        hostname.format = "[$ssh_symbol$hostname]($style) ";
-        time.disabled = false;
-        time.format = "[$time]($style)";
+        hostname = {
+          ssh_only = false;
+          format = "[$ssh_symbol$hostname]($style) ";
+        };
+        # Distracting when you need copy
+        # time = {
+        #   disabled = false;
+        #   format = "[$time]($style)";
+        # };
         right_format = "[$status$time]($style)";
-        username.format = "[$user]($style) @ ";
-        username.show_always = true;
+        username = {
+          format = "[$user]($style) @ ";
+          show_always = true;
+        };
       };
     };
     # tmux = {

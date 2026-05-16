@@ -2,7 +2,11 @@
 # It's a bunch of specifications from freedesktop.org intended to standardize desktops and
 # other GUI applications on various systems (primarily Unix-like) to be interoperable:
 #   https://www.freedesktop.org/wiki/Specifications/
-{config, pkgs, ...}: {
+{
+  config,
+  pkgs,
+  ...
+}: {
   home.packages = with pkgs; [
     xdg-utils # Provides cli tools such as `xdg-mime` `xdg-open`
     xdg-user-dirs

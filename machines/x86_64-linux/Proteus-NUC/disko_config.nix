@@ -8,13 +8,17 @@ _: let
       type = "luks";
       name = "crypted-${disk_id}";
       # passwordFile = "/tmp/dm_password.key";
-      settings = { # boot.initrd.luks.device.<name>.*
+      # For boot.initrd.luks.device.<name>.*
+      settings = {
         # keyFile = "/etc/dm_keyfile.key";
         allowDiscards = true;
         bypassWorkqueues = true;
         # fallbackToPassword = false;
       };
-      content = {type = "zfs"; pool = zroot;};
+      content = {
+        type = "zfs";
+        pool = zroot;
+      };
     };
   };
 in {
@@ -58,7 +62,8 @@ in {
               };
             };
             luks_part = mk_luks_part disk_id;
-            windows = { # Optional spare/unused space
+            # Optional spare/unused space for Microsoft(R) Windows
+            windows = {
               label = "WINDOWS";
               type = "EBD0A0A2-B9E5-4433-87C0-68B6B72699C7"; # aka. Basic data partition
               size = "100%";
@@ -83,7 +88,8 @@ in {
       type = "zpool";
       mode = ""; # stripe (RAID-0)
       options.ashift = "12"; # Pool-level options
-      rootFsOptions = { # Dataset defaults
+      # Dataset defaults
+      rootFsOptions = {
         # ACL and Extended Attributes
         acltype = "posixacl";
         xattr = "sa";
@@ -99,22 +105,37 @@ in {
         mountpoint = "/";
         canmount = "off";
       };
-      postCreateHook = "zpool set bootfs=${zroot}/root ${zroot};"
-      + "zpool set cachefile=/etc/zfs/zpool.cache ${zroot}"; # Create zpool.cache
+      postCreateHook =
+        "zpool set bootfs=${zroot}/root ${zroot};" + "zpool set cachefile=/etc/zfs/zpool.cache ${zroot}"; # Create zpool.cache
       datasets = {
-        root = { # ROOT dataset (ephemeral, rolled back to blank on boot)
-          type = "zfs_fs"; mountpoint = "/"; options."com.sun:auto-snapshot" = "false";
+        # ROOT dataset (ephemeral, rolled back to blank on boot)
+        root = {
+          type = "zfs_fs";
+          mountpoint = "/";
+          options."com.sun:auto-snapshot" = "false";
           postCreateHook = "zfs list -t snapshot -H -o name | grep -E '^${zroot}/root@blank$' || zfs snapshot ${zroot}/root@blank";
         };
         home = {
           # `com.sun:auto-snapshot` is used by options `services.zfs.autoSnapshot.*`
-          type = "zfs_fs"; mountpoint = "/home"; options."com.sun:auto-snapshot" = "false";
+          type = "zfs_fs";
+          mountpoint = "/home";
+          options."com.sun:auto-snapshot" = "false";
           # postCreateHook = "zfs list -t snapshot -H -o name | grep -E '^${zroot}/home@blank$' || zfs snapshot ${zroot}/home@blank";
         };
-        "home/root" = {type = "zfs_fs"; mountpoint = "/root";};
-        nix = {type = "zfs_fs"; mountpoint = "/nix"; options."com.sun:auto-snapshot" = "false"; options.atime = "off";};
+        "home/root" = {
+          type = "zfs_fs";
+          mountpoint = "/root";
+        };
+        nix = {
+          type = "zfs_fs";
+          mountpoint = "/nix";
+          options."com.sun:auto-snapshot" = "false";
+          options.atime = "off";
+        };
         persistent = {
-          type = "zfs_fs"; mountpoint = "/persistent"; options."com.sun:auto-snapshot" = "true";
+          type = "zfs_fs";
+          mountpoint = "/persistent";
+          options."com.sun:auto-snapshot" = "true";
           mountOptions = ["defaults" "x-gvfs-trash"];
         };
       };

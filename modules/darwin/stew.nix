@@ -1,6 +1,13 @@
-{myvars, pkgs, config, lib, ...}: let
+{
+  config,
+  lib,
+  myvars,
+  pkgs,
+  ...
+}: let
   homebrew_env_script = let
-    homebrew_mirror_env = { # Homebrew Mirror
+    # Homebrew Mirror
+    homebrew_mirror_env = {
       # NOTE: This is only useful when you run `brew install` manually! (not via nix-darwin)
       # TUNA mirror
       # HOMEBREW_API_DOMAIN = "https://mirrors.tuna.tsinghua.edu.cn/homebrew-bottles/api";
@@ -17,13 +24,15 @@
       HOMEBREW_PIP_INDEX_URL = "https://pypi.tuna.tsinghua.edu.cn/simple";
     };
     homebrew_auto_update_env.HOMEBREW_AUTO_UPDATE_SECS = "86400";
-  in lib.attrsets.foldlAttrs (acc: n: v: "${acc}\nexport ${n}=${v}") ""
-    (homebrew_mirror_env // homebrew_auto_update_env);
+  in
+    lib.attrsets.foldlAttrs
+    (acc: n: v: "${acc}\nexport ${n}=${v}") "" (homebrew_mirror_env // homebrew_auto_update_env);
 in {
   system.primaryUser = myvars.username;
   ## START networking.nix
   networking.knownNetworkServices = ["Wi-Fi"];
-  networking.dns = [ # sing-box requires a non-local address to hijack DNS
+  # sing-box requires a non-local address to hijack DNS
+  networking.dns = [
     "223.5.5.5"
     # "2400:3200::1"
     # "8.8.8.8"
@@ -50,7 +59,8 @@ in {
   ];
   ## START packages.nix
   ## START terminal.nix
-  environment.variables.TERMINFO_DIRS = (map (path: path + "/share/terminfo") config.environment.profiles)
+  environment.variables.TERMINFO_DIRS =
+    (map (path: path + "/share/terminfo") config.environment.profiles)
     ++ ["/usr/share/terminfo"];
   ## END terminal.nix
   ## START shell.nix
@@ -62,12 +72,11 @@ in {
     echo >&2 '# DEBUG:${homebrew_env_script}'
     ${homebrew_env_script}
   '';
-  # homebrew need to be installed manually, see https://github.com/nix-darwin/nix-darwin/blob/44a7d0e687a87b73facfe94fba78d323a6686a90/modules/homebrew.nix#L541
-  environment.etc.zprofile.text = lib.mkAfter ''
-    eval "$(/opt/homebrew/bin/brew shellenv)"
-  '';
-  homebrew = { # homebrew need to be installed manually, see https://brew.sh
-    enable = true; # disable homebrew for fast deploy
+  # homebrew need to be installed manually, see https://brew.sh and
+  # https://github.com/nix-darwin/nix-darwin/blob/44a7d0e687a87b73facfe94fba78d323a6686a90/modules/homebrew.nix#L541
+  environment.etc.zprofile.text = lib.mkAfter ''eval "$(/opt/homebrew/bin/brew shellenv)"'';
+  homebrew = {
+    enable = true; # TIP: Disable homebrew for fast deploy
 
     onActivation = {
       # autoUpdate = true; # Fetch the newest stable branch of Homebrew's git repo
@@ -97,10 +106,12 @@ in {
       "hashicorp/tap"
       "gcenx/wine" # homebrew-wine - game-porting-toolkit & wine-crossover
     ];
-    brews = [ # formulae, 'brew install'
+    # formulae, `brew install`
+    brews = [
       # "llvm" "lld" "cmake" "ninja" # Poorly with stdlib
     ];
-    casks = [ # 'brew install --cask'
+    # `brew install --cask`
+    casks = [
       "blender" # 3D modeling, currently in nixpkg it's marked as broken on darwin
       "keepassxc" # gpgme is marked as broken, use casks temporally
       # "sfm" # Standalone client for sing-box, it lacks some features compares to its cli version

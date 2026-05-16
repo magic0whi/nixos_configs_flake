@@ -1,8 +1,13 @@
-{config, myvars, ...}: let
+{
+  config,
+  myvars,
+  ...
+}: let
   path_prefix = "/srv";
 in {
   sops.secrets.aria2_rpc_secret = {
-    sopsFile = "${myvars.secrets_dir}/${config.networking.hostName}.sops.yaml"; restartUnits = ["aria2.service"];
+    sopsFile = "${myvars.secrets_dir}/${config.networking.hostName}.sops.yaml";
+    restartUnits = ["aria2.service"];
   };
   users.users.${myvars.username}.extraGroups = ["aria2"];
   services.aria2 = {
@@ -16,7 +21,7 @@ in {
       always-resume = false;
       max-resume-failure-tries = 1;
       remote-time = true; # Keep file timestamp from remote
-      input-file= "${path_prefix}/aria2/aria2.session";
+      input-file = "${path_prefix}/aria2/aria2.session";
       save-session = "${path_prefix}/aria2/aria2.session";
       save-session-interval = 1;
       auto-save-interval = 30;
@@ -30,7 +35,7 @@ in {
       max-connection-per-server = 8;
       split = 16;
       min-split-size = "64M";
-      piece-length="1M"; # All splits occur at multiple of this length.
+      piece-length = "1M"; # All splits occur at multiple of this length.
       allow-piece-length-change = true;
       lowest-speed-limit = 0;
       max-overall-download-limit = 0;
@@ -45,7 +50,12 @@ in {
       min-tls-version = "TLSv1.2";
 
       ## BT/PT
-      listen-port = [{from=6888;to=6888;}]; # BT listen (TCP)
+      listen-port = [
+        {
+          from = 6888;
+          to = 6888;
+        }
+      ]; # BT listen (TCP)
       dht-listen-port = 6888; # DHT listen (UDP)
       enable-dht = true;
       enable-dht6 = true;

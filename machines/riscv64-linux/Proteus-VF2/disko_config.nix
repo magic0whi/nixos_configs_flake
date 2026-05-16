@@ -34,7 +34,10 @@ _: {
             label = "ZROOT PARTITION";
             type = "6A85CF4D-1DD2-11B2-99A6-080020736631";
             size = "100%";
-            content = {type = "zfs"; pool = "zroot";};
+            content = {
+              type = "zfs";
+              pool = "zroot";
+            };
           };
         };
       };
@@ -43,7 +46,8 @@ _: {
     zpool.zroot = {
       type = "zpool";
       options.ashift = "12"; # Pool-level options
-      rootFsOptions = { # Dataset defaults
+      # Dataset defaults
+      rootFsOptions = {
         # ACL and Extended Attributes
         acltype = "posixacl";
         xattr = "sa";
@@ -60,10 +64,11 @@ _: {
         canmount = "off";
       };
       mode = "";
-      postCreateHook = "zpool set bootfs=zroot/root zroot;"
-        + "zpool set cachefile=/etc/zfs/zpool.cache zroot"; # Create zpool.cache
+      postCreateHook =
+        "zpool set bootfs=zroot/root zroot;" + "zpool set cachefile=/etc/zfs/zpool.cache zroot"; # Create zpool.cache
       datasets = {
-        root = { # ROOT dataset (ephemeral, rolled back to blank on boot)
+        # ROOT dataset (ephemeral, rolled back to blank on boot)
+        root = {
           type = "zfs_fs";
           mountpoint = "/";
           options."com.sun:auto-snapshot" = "false";

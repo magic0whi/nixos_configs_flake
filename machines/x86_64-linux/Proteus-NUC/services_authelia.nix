@@ -1,4 +1,9 @@
-{myvars, config, lib, ...}: let
+{
+  config,
+  lib,
+  myvars,
+  ...
+}: let
   restartUnits = map (name: "authelia-${name}.service") (builtins.attrNames config.services.authelia.instances);
 in {
   sops.secrets = let
@@ -11,13 +16,20 @@ in {
     authelia_ldap_password = {inherit sopsFile owner restartUnits;};
     authelia_oidc_hmac = {inherit sopsFile owner restartUnits;};
     "authelia_oidc_rsa.pem" = {
-      inherit owner restartUnits; sopsFile = "${myvars.secrets_dir}/authelia_oidc_rsa.pem.sops"; format = "binary";
+      inherit owner restartUnits;
+      sopsFile = "${myvars.secrets_dir}/authelia_oidc_rsa.pem.sops";
+      format = "binary";
     };
   };
-  systemd.services = let clean_units = map (s: lib.strings.removeSuffix ".service" s) restartUnits;
-  in lib.mkMerge [(lib.attrsets
-    .genAttrs clean_units (name: {serviceConfig.SupplementaryGroups = [config.services.redis.servers.authelia.group];})
-  )];
+  systemd.services = let
+    clean_units = map (s: lib.strings.removeSuffix ".service" s) restartUnits;
+  in
+    lib.mkMerge [
+      (
+        lib.genAttrs
+        clean_units (name: {serviceConfig.SupplementaryGroups = [config.services.redis.servers.authelia.group];})
+      )
+    ];
 
   services.redis.servers.authelia.enable = true;
   services.authelia.instances.main = {
@@ -43,14 +55,17 @@ in {
       theme = "dark";
       default_2fa_method = "totp";
       server.address = "tcp://127.0.0.1:9092"; # Use the new server.address syntax required by the module
-      session.cookies = [{ # This allows the login cookie to work across all your subdomains
-        inherit (myvars) domain;
-        authelia_url = "https://auth.${myvars.domain}";
-        same_site = "lax";
-        inactivity = "5 minutes";
-        expiration = "1 hour";
-        remember_me = "1 month";
-      }];
+      session.cookies = [
+        {
+          # This allows the login cookie to work across all your subdomains
+          inherit (myvars) domain;
+          authelia_url = "https://auth.${myvars.domain}";
+          same_site = "lax";
+          inactivity = "5 minutes";
+          expiration = "1 hour";
+          remember_me = "1 month";
+        }
+      ];
       session.redis.host = config.services.redis.servers.authelia.unixSocket;
       storage.postgres = {
         address = "tcp://postgresql.${myvars.domain}:${builtins.toString config.services.postgresql.settings.port}";
@@ -61,7 +76,9 @@ in {
       };
       notifier.filesystem.filename = "/var/lib/authelia-main/emails.txt"; # TODO use real email
       authentication_backend = {
-        ldap = let base_dn = "dc=" + builtins.replaceStrings ["."] [",dc="] myvars.domain; in {
+        ldap = let
+          base_dn = "dc=" + builtins.replaceStrings ["."] [",dc="] myvars.domain;
+        in {
           implementation = "custom";
           address = "ldaps://ldap.${myvars.domain}:636";
           # password = "password"; # Password is injected via environment variable
@@ -74,7 +91,11 @@ in {
           groups_filter = "(member={dn})";
           user = "uid=${config.services.authelia.instances.main.user},ou=ServiceAccounts,${base_dn}";
           attributes = {
-            username = "uid"; display_name = "cn"; mail = "mail"; group_name = "cn"; nickname = "givenName";
+            username = "uid";
+            display_name = "cn";
+            mail = "mail";
+            group_name = "cn";
+            nickname = "givenName";
             # NOTE: Here the name attribute is used for internal references within Authelia, while the attrset name is
             # the directory server attribute to search
             # Ref: https://www.authelia.com/configuration/first-factor/ldap/#extra
@@ -83,9 +104,17 @@ in {
         };
       };
       access_control = {
-        rules = [ # Orders does matter
-          {domain = "syncthing.${myvars.domain}"; policy = "bypass"; resources = ["^/rest/noauth/.*$"];}
-          {domain = "*.${myvars.domain}"; policy = "one_factor";}
+        rules = [
+          # Orders does matter
+          {
+            domain = "syncthing.${myvars.domain}";
+            policy = "bypass";
+            resources = ["^/rest/noauth/.*$"];
+          }
+          {
+            domain = "*.${myvars.domain}";
+            policy = "one_factor";
+          }
         ];
         default_policy = "deny";
       };
@@ -104,8 +133,12 @@ in {
           # homeDirectory = {attribute = "home_directory";};
         };
         # Bind the claim to the `nextcloud_userinfo` scope
-        scopes.nextcloud_userinfo.claims = ["is_nextcloud_admin" /*"homeDirectory"*/];
-        clients = [ # https://www.authelia.com/configuration/identity-providers/openid-connect/clients/
+        scopes.nextcloud_userinfo.claims = [
+          "is_nextcloud_admin"
+          # "homeDirectory"
+        ];
+        # https://www.authelia.com/configuration/identity-providers/openid-connect/clients/
+        clients = [
           {
             client_id = "papra";
             client_name = "Papra";
@@ -154,7 +187,8 @@ in {
             scopes = ["openid" "email" "profile"];
             token_endpoint_auth_method = "client_secret_post";
           }
-          { # Ref: https://www.authelia.com/integration/openid-connect/clients/nextcloud/
+          # Ref: https://www.authelia.com/integration/openid-connect/clients/nextcloud/
+          {
             client_id = "nextcloud";
             client_name = "Nextcloud";
             client_secret = "$pbkdf2-sha512$310000$Nf0RYQUukNM3r/FVDi/YDA$RCvY0zSeZFvJgr4F4bubUdBfWbMiL2rQe7oKjoj0995XQNaDrzl4ZfVBDoyBjVipQIVgIvTCcSRN2Ak6Vv7jfQ";

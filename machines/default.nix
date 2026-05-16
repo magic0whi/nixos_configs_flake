@@ -1,4 +1,9 @@
-{lib, mylib, system, ...}@args: let
+{
+  lib,
+  mylib,
+  system,
+  ...
+} @ args: let
   machines = map (i: import i args) (mylib.scan_path ./${system});
 in {
   _DEBUG = {inherit machines;}; # TIP: Use 'builtins.elemAt lists index' to keep lazy eval

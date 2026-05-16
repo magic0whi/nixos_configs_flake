@@ -1,5 +1,11 @@
 # https://github.com/nixpak/pkgs/blob/master/pkgs/modules/gui-base.nix
-{config, lib, pkgs, sloth, ...}: let
+{
+  config,
+  lib,
+  pkgs,
+  sloth,
+  ...
+}: let
   envSuffix = envKey: suffix: sloth.concat' (sloth.env envKey) suffix;
   # cursor & icon's theme should be the same as the host's one.
   cursor_theme = pkgs.bibata-cursors;

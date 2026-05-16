@@ -1,4 +1,10 @@
-{myvars, config, pkgs, lib, ...}: {
+{
+  config,
+  lib,
+  myvars,
+  pkgs,
+  ...
+}: {
   services.openldap = let
     base_dn = "dc=" + builtins.replaceStrings ["."] [",dc="] myvars.domain;
     manager_dn = "cn=Manager,${base_dn}";
@@ -6,7 +12,11 @@
     enable = true;
     # The `///` tells OpenLDAP to bind to the default port on all available
     # network interfaces (`0.0.0.0` and `::`)
-    urlList = [/*"ldaps:///"*/ "pldap://127.0.0.1:389/" "pldap://[::1]:389/"];
+    urlList = [
+      # "ldaps:///"
+      "pldap://127.0.0.1:389/"
+      "pldap://[::1]:389/"
+    ];
     settings = {
       # dn: cn=config
       attrs = {
@@ -19,7 +29,10 @@
         # olcTLSProtocolMin = "3.3"; # 3.4 for tls1.3
       };
       children = {
-        "cn=module".attrs = {objectClass = "olcModuleList"; olcModuleLoad = ["argon2"];};
+        "cn=module".attrs = {
+          objectClass = "olcModuleList";
+          olcModuleLoad = ["argon2"];
+        };
         "cn=schema".includes = with pkgs; [
           "${openldap}/etc/schema/core.ldif"
           "${openldap}/etc/schema/cosine.ldif"

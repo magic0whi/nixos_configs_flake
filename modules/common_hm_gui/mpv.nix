@@ -1,10 +1,15 @@
-{pkgs, lib, ...}: {
+{
+  lib,
+  pkgs,
+  ...
+}: {
   home.shellAliases."mpv" = "mpv --player-operation-mode=pseudo-gui";
   programs.mpv = {
     enable = true;
-    package = if pkgs.stdenv.isDarwin
-    then pkgs.mpv-unwrapped # https://github.com/NixOS/nixpkgs/issues/356860
-    else pkgs.mpv;
+    package =
+      if pkgs.stdenv.isDarwin
+      then pkgs.mpv-unwrapped # https://github.com/NixOS/nixpkgs/issues/356860
+      else pkgs.mpv;
     scripts = lib.optionals (!pkgs.stdenv.isDarwin) [pkgs.mpvScripts.mpris];
     defaultProfiles = ["common" "gpu-hq"];
     config = {
@@ -63,13 +68,14 @@
       # /path/to/video/subtitles/
       # the sub configuration subdirectory (usually `~/.config/mpv/sub/`)
       sub-file-paths = "sub:subtitles";
-      slang= "chi,zh-CN,sc,chs"; # Equivalent to `--alang`, for subtitle tracks
+      slang = "chi,zh-CN,sc,chs"; # Equivalent to `--alang`, for subtitle tracks
       # sub-ass-use-video-data = "none"; # Whether the subtitle aspects the video ratio, 3D rotations and blurs
 
       screenshot-format = "avif"; # Save screenshot as AV1 image file format
     };
-    profiles = { # NOTE: Conditions are executed as Lua code
+    profiles = {
       "HDR_or_21:9" = {
+        # NOTE: Conditions are Lua code
         profile-cond = "p[\"video-params/primaries\"]==\"bt.2020\" or p[\"video-params/aspect\"]>=2.0";
         blend-subtitles = false;
         # Enables placing toptitles and subtitles in black borders when they are available. Default: no
@@ -85,7 +91,8 @@
         blend-subtitles = true;
         sub-ass-force-margins = false;
       };
-      common = { # Create a profile based on gpu-hq and Linux platform
+      # Mainly on gpu-hq and Linux platform
+      common = {
         profile = "gpu-hq";
         fbo-format = "rgba32f";
         vo = "gpu-next";
@@ -95,7 +102,8 @@
         hwdec = "auto";
         ao = lib.mkDefault "pipewire";
       };
-      Low = { # 1080 * 1.414213 / 4 = 381.8
+      # 1080 * 1.414213 / 4 = 381.8
+      Low = {
         # Currently mpv.nix doesn't support hm.dag,
         # see https://github.com/nix-community/home-manager/blob/master/modules/programs/mpv.nix
         "\#\nglsl-shaders-clr\n\#" = "Placeholder";
@@ -108,10 +116,12 @@
           "${pkgs.mpv-shim-default-shaders}/share/mpv-shim-default-shaders/shaders/nnedi3-nns32-win8x6.hook"
         ];
       };
-      SD = { # 1080 / 16 * 9 = 607.5
+      # 1080 / 16 * 9 = 607.5
+      SD = {
         "\#\nglsl-shaders-clr\n\#" = "Placeholder";
         profile-desc = "480p/576p";
-        profile-cond = "(p[\"video-params/w\"]<1080 and p[\"video-params/h\"]<608)"
+        profile-cond =
+          "(p[\"video-params/w\"]<1080 and p[\"video-params/h\"]<608)"
           + " and (p[\"video-params/w\"]>678 or p[\"video-params/h\"]>381)";
         profile = "common";
         glsl-shaders-append = [
@@ -119,10 +129,12 @@
           "${pkgs.mpv-shim-default-shaders}/share/mpv-shim-default-shaders/shaders/nnedi3-nns64-win8x6.hook"
         ];
       };
-      HD30 = { # 1080 * 1.414213 / 2 = 763.7
+      HD30 = {
+        # 1080 * 1.414213 / 2 = 763.7
         "\#\nglsl-shaders-clr\n\#" = "Placeholder";
         profile-desc = "640p/720p 30fps";
-        profile-cond = "(p[\"video-params/w\"]<1358 and p[\"video-params/h\"]<764)"
+        profile-cond =
+          "(p[\"video-params/w\"]<1358 and p[\"video-params/h\"]<764)"
           + " and (p[\"video-params/w\"]>=1080 or p[\"video-params/h\"]>=608)"
           + " and p[\"estimated-vf-fps\"]<31";
         profile = "common";
@@ -134,7 +146,8 @@
       HD60 = {
         "\#\nglsl-shaders-clr\n\#" = "Placeholder";
         profile-desc = "640p/720p 60fps";
-        profile-cond = "(p[\"video-params/w\"]<1358 and p[\"video-params/h\"]<764)"
+        profile-cond =
+          "(p[\"video-params/w\"]<1358 and p[\"video-params/h\"]<764)"
           + " and (p[\"video-params/w\"]>=1080 or p[\"video-params/h\"]>=608)"
           + " and p[\"estimated-vf-fps\"]>=31";
         profile = "common";
@@ -150,13 +163,13 @@
       KrigBilateral = {
         "\#\nglsl-shaders-clr\n\#" = "Placeholder";
         profile = "common";
-        glsl-shaders-append =
-          "${pkgs.mpv-shim-default-shaders}/share/mpv-shim-default-shaders/shaders/KrigBilateral.glsl";
+        glsl-shaders-append = "${pkgs.mpv-shim-default-shaders}/share/mpv-shim-default-shaders/shaders/KrigBilateral.glsl";
       };
       FHD = {
         "\#\nglsl-shaders-clr\n\#" = "Placeholder";
         profile-desc = "1080p";
-        profile-cond = "(p[\"video-params/w\"]<=1920 and p[\"video-params/h\"]<=1080)"
+        profile-cond =
+          "(p[\"video-params/w\"]<=1920 and p[\"video-params/h\"]<=1080)"
           + " and (p[\"video-params/w\"]>=1358 or p[\"video-params/h\"]>=764)";
         profile = "KrigBilateral";
       };
@@ -165,7 +178,8 @@
         profile-desc = "4k 30fps: use SSIM to downscale";
         profile-cond = "(p[\"video-params/w\"]>2560 or p[\"video-params/h\"]>1440) and p[\"estimated-vf-fps\"]<31";
         profile = "common";
-        glsl-shaders-append = # SSimDownscaler requires turn off linear-dewnscaling
+        glsl-shaders-append =
+          # NOTE: SSimDownscaler requires turning off linear-dewnscaling
           "${pkgs.mpv-shim-default-shaders}/share/mpv-shim-default-shaders/shaders/SSimDownscaler.glsl";
         # Scale in linear light when downscaling. It should only be used with a `--fbo-format` that has at least 16 bit
         # precision. This option has no effect on HDR content. Default to yes in profile `gpu-hq`

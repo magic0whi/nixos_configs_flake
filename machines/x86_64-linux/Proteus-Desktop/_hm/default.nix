@@ -1,4 +1,10 @@
-{mylib, pkgs, myvars, config, ...}: {
+{
+  config,
+  mylib,
+  myvars,
+  pkgs,
+  ...
+}: {
   imports = mylib.scan_path ./.;
   home.packages = with pkgs; [nvtopPackages.intel];
   services.syncthing.enable = false;

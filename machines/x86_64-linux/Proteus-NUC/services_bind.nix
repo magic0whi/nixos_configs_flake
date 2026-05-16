@@ -1,4 +1,10 @@
-{myvars, lib, pkgs, config, ...}: let
+{
+  config,
+  lib,
+  myvars,
+  pkgs,
+  ...
+}: let
   tailnet_prefix_length = 48;
   soa_parms = {
     serial = "2026051403"; # Serial (YYYYMMDDNN)
@@ -34,9 +40,9 @@
     # 2. Extract the first 3 octets, reverse them, and join with dots
     # e.g. ["100" "64" "161" "20"] -> ["100" "64" "161"] -> ["161" "64" "100"] -> "161.64.100"
     reverse_prefix = builtins.concatStringsSep "." (lib.lists.reverseList (lib.lists.take 3 octets));
-
-  # 3. Construct the full dynamic zone name, e.g. "161.64.100.in-addr.arpa"
-  in "${reverse_prefix}.in-addr.arpa";
+  in
+    # 3. Construct the full dynamic zone name, e.g. "161.64.100.in-addr.arpa"
+    "${reverse_prefix}.in-addr.arpa";
 
   # ==========================================
   # IPv6 Reverse Logic (Zero-Compression Expansion)
@@ -47,42 +53,54 @@
 
     # 2. Split the IP into a list, and pad add segments to 4 characters
     # e.g. Left part: ["fd7a" "115c" "a1e0"], right part: ["cd3a" "a114"]
-    pad_hex = s: let len = builtins.stringLength s; in # Helper: Pad a string to 4 characters with leading zeros
-      if len == 0 then "0000"
-      else if len == 1 then "000${s}"
-      else if len == 2 then "00${s}"
-      else if len == 3 then "0${s}"
+    pad_hex = s: let
+      len = builtins.stringLength s;
+    in
+      # Helper: Pad a string to 4 characters with leading zeros
+      if len == 0
+      then "0000"
+      else if len == 1
+      then "000${s}"
+      else if len == 2
+      then "00${s}"
+      else if len == 3
+      then "0${s}"
       else s;
     left_padded = map pad_hex (lib.strings.splitString ":" (builtins.head split_double_colon));
     right_padded = map pad_hex (lib.strings.splitString ":" (lib.lists.last split_double_colon));
 
     # 3. Calculate and generate missing zero segments (IPv6 has 8 total segments)
     # e.g. Missing count is `8 - (3 + 2) = 3`, so the missing_segments is: ["0000" "0000" "0000"]
-    missing_segments = let missing_count = 8 - (builtins.length left_padded + builtins.length right_padded); in
-      builtins.genList (_: "0000") missing_count;
+    missing_segments = let
+      missing_count = 8 - (builtins.length left_padded + builtins.length right_padded);
+    in (builtins.genList (_: "0000") missing_count);
 
     # 4. Construct the full 32-character string
     # e.g.: ["fd7a" "115c" "a1e0", "0000" "0000" "0000" "cd3a" "a114"] -> "fd7a115ca1e0000000000000cd3aa114"
     full_ipv6_str = builtins.concatStringsSep "" (left_padded ++ missing_segments ++ right_padded);
-
+  in
     # 5. Reverse it character by character
     # e.g. "fd7a115ca1e0000000000000cd3aa114"
     # -> ["f" "d" "7" "a" "1" "1" "5" "c" "a" "1" "e" "0" "0" "0" "0" "0" "0" "0" "0" "0" "0" "0" "0" "0" "c" "d" "3" "a" "a" "1" "1" "4"]
     # -> ["4" "1" "1" "a" "a" "3" "d" "c" "0" "0" "0" "0" "0" "0" "0" "0" "0" "0" "0" "0" "0" "e" "1" "a" "c" "5" "1" "1" "a" "7" "d" "f"]
-  in lib.lists.reverseList (lib.strings.stringToCharacters full_ipv6_str);
+    lib.lists.reverseList (lib.strings.stringToCharacters full_ipv6_str);
 
   # Tailscale uses a /48 prefix. So the PTR length is `128 - 48 = 80` bits (20 hex chars), and the Zone Prefix is 48
   # bits (12 hex chars). e.g.
   # ["4" "1" "1" "a" "a" "3" "d" "c" "0" "0" "0" "0" "0" "0" "0" "0" "0" "0" "0" "0" "0" "e" "1" "a" "c" "5" "1" "1" "a" "7" "d" "f"]
   # -> ["4" "1" "1" "a" "a" "3" "d" "c" "0" "0" "0" "0" "0" "0" "0" "0" "0" "0" "0" "0"]
   # -> "4.1.1.a.a.3.d.c.0.0.0.0.0.0.0.0.0.0.0.0"
-  gen_v6_ptr_host = {reversed_chars, prefix_len}:
-    builtins.concatStringsSep "." (lib.lists.take ((128 - prefix_len) / 4) reversed_chars);
+  gen_v6_ptr_host = {
+    reversed_chars,
+    prefix_len,
+  }: (builtins.concatStringsSep "." (lib.lists.take ((128 - prefix_len) / 4) reversed_chars));
   # e.g.
   # ["4" "1" "1" "a" "a" "3" "d" "c" "0" "0" "0" "0" "0" "0" "0" "0" "0" "0" "0" "0" "0" "e" "1" "a" "c" "5" "1" "1" "a" "7" "d" "f"]
   # -> ["0" "e" "1" "a" "c" "5" "1" "1" "a" "7" "d" "f"] -> "0.e.1.a.c.5.1.1.a.7.d.f"
-  gen_v6_zone_prefix = {reversed_chars, prefix_len}:
-    builtins.concatStringsSep "." (lib.lists.drop ((128 - prefix_len) / 4) reversed_chars);
+  gen_v6_zone_prefix = {
+    reversed_chars,
+    prefix_len,
+  }: (builtins.concatStringsSep "." (lib.lists.drop ((128 - prefix_len) / 4) reversed_chars));
 
   # =========================================
   # Forward Zone (proteus.eu.org)
@@ -100,55 +118,61 @@
   # 2. Automate reverse zone generate
   # For ipv4, give a octets_merge_depth variable to decide which level
   # e.g., Merge 100.*.*.* to one zone for `octets_merge_depth = 1`; Merge 100.64.*.* to one zone for `octets_merge_depth = 2`
-  proteus_zone = pkgs.writeText "${myvars.domain}.zone" ((zone_head myvars.domain) + ''
-    ; Manually specify
-    @ IN A    ${myvars.networking.hosts_addr.Proteus-NUC.ipv4}
-    @ IN AAAA ${myvars.networking.hosts_addr.Proteus-NUC.ipv6}
+  proteus_zone = pkgs.writeText "${myvars.domain}.zone" ((zone_head myvars.domain)
+    + ''
+      ; Manually specify
+      @ IN A    ${myvars.networking.hosts_addr.Proteus-NUC.ipv4}
+      @ IN AAAA ${myvars.networking.hosts_addr.Proteus-NUC.ipv6}
 
-    ; Nameserver A/AAAA records (Glue records)
-    ; Manually specify since it cannot be CNAME
-    ns1 IN A    ${myvars.networking.hosts_addr.Proteus-NUC.ipv4}
-    ns1 IN AAAA ${myvars.networking.hosts_addr.Proteus-NUC.ipv6}
+      ; Nameserver A/AAAA records (Glue records)
+      ; Manually specify since it cannot be CNAME
+      ns1 IN A    ${myvars.networking.hosts_addr.Proteus-NUC.ipv4}
+      ns1 IN AAAA ${myvars.networking.hosts_addr.Proteus-NUC.ipv6}
 
-    ; Grouped Host Records
-    ${lib.attrsets.foldlAttrs (acc: n: v: "${acc}\n${n} IN A ${v.ipv4}") ""
-      (lib.attrsets.filterAttrs (_: v: v ? ipv4 ) myvars.networking.hosts_addr)}
-    ${lib.attrsets.foldlAttrs (acc: n: v: "${acc}\n${n} IN AAAA ${v.ipv6}") ""
-      (lib.attrsets.filterAttrs (_: v: v ? ipv6) myvars.networking.hosts_addr)}
+      ; Grouped Host Records
+      ${lib.attrsets.foldlAttrs (acc: n: v: "${acc}\n${n} IN A ${v.ipv4}") ""
+        (lib.attrsets.filterAttrs (_: v: v ? ipv4) myvars.networking.hosts_addr)}
+      ${lib.attrsets.foldlAttrs (acc: n: v: "${acc}\n${n} IN AAAA ${v.ipv6}") ""
+        (lib.attrsets.filterAttrs (_: v: v ? ipv6) myvars.networking.hosts_addr)}
 
-    ; EasyTier Hostnames
-    ; For me `lib.attrsets.foldlAttrs` takes a bit longer to understand
-    ; lib.attrsets.foldlAttrs (acc: name: value: <new_acc>) acc attrset
-    ${let
-      et_hosts = lib.attrsets.filterAttrs (_: v: v ? et_ipv4 || v ? et_ipv6) myvars.networking.hosts_addr;
-      et_v4_hosts = lib.attrsets.foldlAttrs (acc: n: v: "${acc}\n${n}.et IN A ${v.et_ipv4}") "" et_hosts;
-      et_v6_hosts = lib.attrsets.foldlAttrs (acc: n: v: "${acc}\n${n}.et IN AAAA ${v.et_ipv6}") "" et_hosts;
-    in "${et_v4_hosts}\n${et_v6_hosts}"}
+      ; EasyTier Hostnames
+      ; For me `lib.attrsets.foldlAttrs` takes a bit longer to understand
+      ; lib.attrsets.foldlAttrs (acc: name: value: <new_acc>) acc attrset
+      ${let
+        et_hosts = lib.attrsets.filterAttrs (_: v: v ? et_ipv4 || v ? et_ipv6) myvars.networking.hosts_addr;
+        et_v4_hosts = lib.attrsets.foldlAttrs (acc: n: v: "${acc}\n${n}.et IN A ${v.et_ipv4}") "" et_hosts;
+        et_v6_hosts = lib.attrsets.foldlAttrs (acc: n: v: "${acc}\n${n}.et IN AAAA ${v.et_ipv6}") "" et_hosts;
+      in "${et_v4_hosts}\n${et_v6_hosts}"}
 
-    ; Subdomain Services
-    ; Step 1: map (i: "''${i} IN CNAME Proteus-Desktop") domain_hosts.Proteus-Desktop.domains.IN
-    ; [
-    ;   "monero IN CNAME Proteus-Desktop"
-    ;   "traefik-desktop IN CNAME Proteus-Desktop"
-    ;   ...
-    ; ]
-    ; Step 2: lib.attrsets.foldlAttrs
-    ;   (acc: class: names: acc ++ (map (name: "''${name} ''${class} CNAME Proteus-Desktop") names))
-    ;   [] domain_hosts.Proteus-Desktop.domains
-    ; [
-    ;   "monero IN CNAME Proteus-Desktop"
-    ;   "traefik-desktop IN CNAME Proteus-Desktop
-    ;   ...
-    ; ]
-    ; Step 3:
-    ${let
-      domain_hosts = lib.attrsets.filterAttrs (_: v: v ? domains) myvars.networking.hosts_addr;
-      records = lib.attrsets.foldlAttrs
-        (acc_1: hostname: v: acc_1 ++ (lib.attrsets.foldlAttrs
-          (acc_2: class: names: acc_2 ++ (map (name: "${name} ${class} CNAME ${hostname}") names)) [] v.domains))
-        [] domain_hosts;
-    in builtins.concatStringsSep "\n" records}
-  '');
+      ; Subdomain Services
+      ; Step 1: map (i: "''${i} IN CNAME Proteus-Desktop") domain_hosts.Proteus-Desktop.domains.IN
+      ; [
+      ;   "monero IN CNAME Proteus-Desktop"
+      ;   "traefik-desktop IN CNAME Proteus-Desktop"
+      ;   ...
+      ; ]
+      ; Step 2: lib.attrsets.foldlAttrs
+      ;   (acc: class: names: acc ++ (map (name: "''${name} ''${class} CNAME Proteus-Desktop") names))
+      ;   [] domain_hosts.Proteus-Desktop.domains
+      ; [
+      ;   "monero IN CNAME Proteus-Desktop"
+      ;   "traefik-desktop IN CNAME Proteus-Desktop
+      ;   ...
+      ; ]
+      ; Step 3:
+      ${let
+        domain_hosts = lib.attrsets.filterAttrs (_: v: v ? domains) myvars.networking.hosts_addr;
+        records =
+          lib.attrsets.foldlAttrs
+          (acc_1: hostname: v:
+            acc_1
+            ++ (lib.attrsets.foldlAttrs
+              (acc_2: class: names: acc_2 ++ (map (name: "${name} ${class} CNAME ${hostname}") names)) []
+              v.domains))
+          []
+          domain_hosts;
+      in (builtins.concatStringsSep "\n" records)}
+    '');
   # =========================================
   # IPv4 Reverse Zones
   # =========================================
@@ -161,8 +185,8 @@
       ; PTR Record for last octet pointing to Tailscale domain
       ${lib.lists.last (lib.strings.splitString "." nuc_ipv4)} IN PTR proteus-nuc.${myvars.tailnet}.
     '';
-  # in builtins.trace content (pkgs.writeText "${nuc_reverse_zone_v4_name}.zone" content);
-  in pkgs.writeText "${nuc_reverse_zone_v4_name}.zone" content;
+    # in builtins.trace content (pkgs.writeText "${nuc_reverse_zone_v4_name}.zone" content);
+  in (pkgs.writeText "${nuc_reverse_zone_v4_name}.zone" content);
 
   desktop_reverse_zone_v4_name = gen_reverse_prefix_v4 desktop_ipv4;
   desktop_reverse_zone_v4 = pkgs.writeText "${desktop_reverse_zone_v4_name}.zone" ''
@@ -175,13 +199,20 @@
   # =========================================
   nuc_reversed_chars = gen_reversed_chars_v6 nuc_ipv6;
 
-  nuc_ipv6_ptr_host = gen_v6_ptr_host {reversed_chars = nuc_reversed_chars; prefix_len = tailnet_prefix_length;};
+  nuc_ipv6_ptr_host = gen_v6_ptr_host {
+    reversed_chars = nuc_reversed_chars;
+    prefix_len = tailnet_prefix_length;
+  };
   desktop_ipv6_ptr_host = gen_v6_ptr_host {
-    reversed_chars = gen_reversed_chars_v6 desktop_ipv6; prefix_len = tailnet_prefix_length;
+    reversed_chars = gen_reversed_chars_v6 desktop_ipv6;
+    prefix_len = tailnet_prefix_length;
   };
   # e.g. "0.e.1.a.c.5.1.1.a.7.d.f.ip6.arpa"
   reverse_zone_v6_name = "${
-    gen_v6_zone_prefix {reversed_chars = nuc_reversed_chars; prefix_len = tailnet_prefix_length;}
+    gen_v6_zone_prefix {
+      reversed_chars = nuc_reversed_chars;
+      prefix_len = tailnet_prefix_length;
+    }
   }.ip6.arpa";
   reverse_zone_v6 = pkgs.writeText "${reverse_zone_v6_name}.zone" ''
     ${zone_head reverse_zone_v6_name}
@@ -191,7 +222,10 @@
     ${desktop_ipv6_ptr_host} IN PTR proteus-desktop.${myvars.tailnet}.
   '';
 in {
-  networking.firewall = {allowedTCPPorts = [53]; allowedUDPPorts = [53];};
+  networking.firewall = {
+    allowedTCPPorts = [53];
+    allowedUDPPorts = [53];
+  };
   systemd.services.bind.preStart = lib.mkAfter ''
     install -m 0644 ${proteus_zone} ${config.services.bind.directory}/${myvars.domain}.zone
     install -m 0644 ${nuc_reverse_zone_v4} ${config.services.bind.directory}/${nuc_reverse_zone_v4_name}.zone
@@ -199,7 +233,7 @@ in {
     install -m 0644 ${reverse_zone_v6} ${config.services.bind.directory}/${reverse_zone_v6_name}.zone
   '';
   services.resolved.settings.Resolve = {
-    DNSSEC= "allow-downgrade";
+    DNSSEC = "allow-downgrade";
     Domains = [
       "~${myvars.domain}" # The '~' prefix makes this a routing domain
       "~${nuc_reverse_zone_v4_name}"

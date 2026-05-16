@@ -1,4 +1,8 @@
-{modulesPath, lib, ...}: {
+{
+  lib,
+  modulesPath,
+  ...
+}: {
   # Run `nixos-generate-config --show-hardware-config` to show
   imports = [(modulesPath + "/profiles/qemu-guest.nix")];
 

@@ -1,11 +1,15 @@
-{pkgs, lib, config, ...}: let
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}: let
   hypr_pkg = pkgs.hyprland;
 in {
-   # NOTE: this executable is used by greetd to start a wayland session when
-   # system boot up. With such a vendor-no-locking script, we can switch to
-   # another wayland compositor without modifying greetd's config in NixOS
-   # module
-   home.file.".wayland-session" = {
+  # NOTE: this executable is used by Greetd to start a wayland session when system boot up. With such a
+  # vendor-no-locking script, we can switch to another wayland compositor without modifying greetd's config in NixOS
+  # module
+  home.file.".wayland-session" = {
     source = "${hypr_pkg}/bin/start-hyprland";
     executable = true;
   };
@@ -129,13 +133,15 @@ in {
         "ALT,Print,exec,${launch_prefix} hyprshot -m window -o ~/Pictures/Screenshots -- imv"
         "CTRL,Print,exec,${launch_prefix} hyprshot -m region -o ~/Pictures/Screenshots -- imv"
       ];
-      binde = [ # Resize windows
+      binde = [
+        # Resize windows
         "$mainMod ALT,H,resizeactive,-5% 0"
         "$mainMod ALT,L,resizeactive,5% 0"
         "$mainMod ALT,J,resizeactive,0 5%"
         "$mainMod ALT,K,resizeactive,0 -5%"
       ];
-      bindel = [ # Multimedia keys for volume and brightness
+      bindel = [
+        # Multimedia keys for volume and brightness
         ",XF86AudioRaiseVolume,exec,wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%+"
         ",XF86AudioLowerVolume,exec,wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-"
         ",XF86AudioMute,exec,wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"
@@ -156,7 +162,8 @@ in {
         "$mainMod CTRL SHIFT,T,exec,systemctl poweroff" # Shutdown
         ",switch:Lid Switch,exec,loginctl lock-session" # Lock when lid switch triggered
       ];
-      bindm = [ # LMB/RMB and dragging to move/resize windows
+      bindm = [
+        # LMB/RMB and dragging to move/resize windows
         "$mainMod,mouse:272,movewindow"
         "$mainMod,mouse:273,resizewindow"
       ];
@@ -236,7 +243,8 @@ in {
     };
     systemd.variables = ["--all"];
   };
-  services.hypridle = { # For dbus' loginctl lock/unlock
+  # For dbus' loginctl lock/unlock
+  services.hypridle = {
     enable = true;
     settings = {
       general = {
