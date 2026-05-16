@@ -61,8 +61,10 @@
     ];
     # Paths to backup
     paths = [
-      "/srv/Backups/paperless-export" # Paperless
-      "/srv/Backups/psql"
+      config.services.paperless.exporter.directory # Paperless
+      config.services.immich.mediaLocation # Immich
+      config.services.postgresqlBackup.location # Postgresql
+      config.services.forgejo.dump.backupDir # Forgejo
       # "/var/lib/tailscale"
     ];
     # Paths to exclude from backup

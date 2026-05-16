@@ -36,6 +36,12 @@
   catppuccin_accent = "pink";
 
   storage_path = "/mnt/storage/data";
+
+  backup_times = {
+    forgejo = "02:00:00";
+    paperless = "02:15:00";
+    postgresql = "02:20:00";
+  };
   ## END pkgs dependent functions
   ## BEGIN pkgs dependent functions
   mk_for_pkgs = pkgs: {

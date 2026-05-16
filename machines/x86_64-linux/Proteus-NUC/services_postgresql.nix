@@ -97,6 +97,7 @@
   };
   services.postgresqlBackup = {
     enable = true;
+    startAt = myvars.backup_times.postgresql;
     # databases = ["docspell"];
     location = "/srv/Backups/psql";
     compression = "zstd";

@@ -64,6 +64,11 @@ in {
         DEFAULT_ACTIONS_URL = "github";
       };
     };
+    dump = {
+      enable = true;
+      interval = myvars.backup_times.forgejo;
+      type = "tar.zst";
+    };
   };
   systemd.services = lib.mkMerge [
     {

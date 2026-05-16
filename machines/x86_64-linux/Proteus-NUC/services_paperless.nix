@@ -77,10 +77,13 @@
     };
     environmentFile = config.sops.templates."paperless.env".path;
     # dataDir = "/srv/paperless";
-    exporter.enable = true;
-    exporter.directory = "/srv/Backups/paperless-export";
-    exporter.settings.no-archive = true;
-    exporter.settings.no-thumbnail = true;
+    exporter = {
+      enable = true;
+      onCalendar = myvars.backup_times.paperless;
+      directory = "/srv/Backups/paperless-export";
+      settings.no-archive = true;
+      settings.no-thumbnail = true;
+    };
   };
   systemd.tmpfiles.settings = let
     cfg = config.services.paperless.exporter;
