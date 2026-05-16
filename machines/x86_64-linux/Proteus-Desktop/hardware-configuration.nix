@@ -18,6 +18,7 @@
 
   # disko will take care of filesystems.*, swapDevices, boot.resumeDevice, boot.initrd.luks.devices
 
+  # TODO: Rewrite to `boot.initrd.luks.devices.<name>`
   environment.etc."crypttab".text = let
     sata1 = "ata-ST500DM002-1BD142_S2A7EA2P";
     sata2 = "ata-WDC_WD5000AAKX-001CA0_WD-WMAYU5316042";

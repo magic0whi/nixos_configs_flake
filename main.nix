@@ -1,20 +1,24 @@
 {
-  self,
-  nixpkgs,
+  alejandra,
   deploy-rs,
+  nixpkgs,
+  self,
   treefmt-nix,
   ...
 } @ inputs: let
   inherit (inputs.nixpkgs) lib;
-  # Functions
+  ## BEGIN Functions
   for_each_system = f:
     lib.genAttrs (builtins.attrNames (nixos_systems // darwin_systems)) (system: f nixpkgs.legacyPackages.${system});
+
   treefmt_eval = for_each_system (pkgs:
     treefmt-nix.lib.evalModule pkgs (_: {
       # Used to find the project root
       projectRootFile = "flake.nix";
       programs.alejandra.enable = true;
+      programs.alejandra.package = alejandra.defaultPackage.${pkgs.stdenv.hostPlatform.system};
     }));
+
   args_fn = let
     # The args given to other nix files
     mylib = import ./libs {inherit inputs;};
@@ -24,9 +28,10 @@
       inherit inputs lib system myvars;
       mylib = mylib // (mylib.mk_for_system system);
     };
-
-  # Variables
   import_each_system = supported_systems: lib.genAttrs supported_systems (system: import ./machines (args_fn system));
+  ## END Functions
+
+  ## BEGIN Variables
   nixos_systems = let
     supported_nixos_systems = [
       "x86_64-linux"
@@ -44,6 +49,7 @@
     import_each_system supported_darwin_systems;
   nixos_systems_values = builtins.attrValues nixos_systems;
   darwin_systems_values = builtins.attrValues darwin_systems;
+  ## END Variables
 in {
   # Add attribute sets into outputs for debugging
   _DEBUG = {inherit inputs args_fn nixos_systems darwin_systems;};
@@ -85,4 +91,13 @@ in {
     lib.recursiveUpdate deploy_checks my_checks;
 
   formatter = for_each_system (pkgs: treefmt_eval.${pkgs.stdenv.hostPlatform.system}.config.build.wrapper);
+
+  devShells = for_each_system (pkgs:
+    {
+      default = pkgs.mkShell {
+        buildInputs = [alejandra.defaultPackage.${pkgs.stdenv.hostPlatform.system}];
+        name = "nixos-config";
+      };
+    }
+  );
 }
