@@ -75,6 +75,7 @@ in {
     my_checks = for_each_system (pkgs: let
       test_results = import ./libs/tests.nix {inherit pkgs inputs;};
     in {
+      # nix build .#checks.x86_64-linux.mylib_tests
       mylib_tests =
         if test_results == []
         then

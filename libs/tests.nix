@@ -4,7 +4,7 @@
 }: let
   inherit (pkgs) lib;
   mylib = import ./default.nix {inherit inputs;};
-  mylib_sys = mylib.mk_for_system pkgs.stdenv.hostPlatform.system;
+  mylib_pkgs = mylib.mk_for_pkgs pkgs;
 in
   lib.runTests {
     ## BEGIN System Agnostic Tests
@@ -86,20 +86,20 @@ in
     # Verifies that mk_out_of_store_symlink correctly strips unsafe characters
     # from the generated derivation name.
     test_mk_out_of_store_symlink_symlink_name_sanitization = {
-      expr = (mylib_sys.mk_out_of_store_symlink "/home/user/my unsafe path!@#.txt").name;
+      expr = (mylib_pkgs.mk_out_of_store_symlink "/home/user/my unsafe path!@#.txt").name;
       expected = "custom_myunsafepath.txt";
     };
     # Verifies that when generate_iso = true, impermanence.nix files are
     # correctly filtered out of the nixpkgs_modules array.
     test_gen_system_args_impermanence_filtered = {
       expr = let
-        args = mylib_sys.gen_system_args {
+        args = mylib_pkgs.gen_system_args {
           inherit mylib;
           name = "test-host";
           myvars = {username = "testuser";};
           nixpkgs_modules = ["bar_impermanence.nix" "impermanence.nix"];
           hm_modules = [];
-          machine_path = ./.; # Using current dir just so readDir doesn't crash
+          machine_path = ./.; # Using current dir so readDir doesn't crash
           generate_iso = true;
         };
       in
@@ -110,7 +110,7 @@ in
     # kept in the module array.
     test_gen_system_args_impermanence_kept = {
       expr = let
-        args = mylib_sys.gen_system_args {
+        args = mylib_pkgs.gen_system_args {
           inherit mylib;
           name = "test-host";
           myvars = {username = "testuser";};
