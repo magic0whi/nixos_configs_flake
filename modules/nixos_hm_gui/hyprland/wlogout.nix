@@ -2,6 +2,7 @@
 {
   config,
   lib,
+  myvars,
   pkgs,
   ...
 }: {
@@ -75,7 +76,7 @@
       ];
       style = ''
         /** ********** Fonts ********** **/
-        * {font-family: "Iosevka Nerd Font", sans-serif; font-size: 14px; font-weight: bold;}
+        * {font-family: "${myvars.monospace.name}", sans-serif; font-size: 14px; font-weight: bold;}
 
         /** ********** Main Window ********** **/
         window {background-color: #1e1e2e;}

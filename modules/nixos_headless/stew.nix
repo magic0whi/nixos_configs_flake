@@ -173,7 +173,7 @@
         serif = ["Noto Serif" "FZYaSongS-R-GB" "Noto Serif CJK SC" "Noto Serif CJK TC" "Noto Serif CJK JP"];
         sansSerif = ["Inter Nerd Font" "Noto Sans" "Noto Sans CJK SC" "Noto Sans CJK TC" "Noto Sans CJK JP"];
         monospace = [
-          "Iosevka Nerd Font Mono"
+          myvars.monospace.name
           "Noto Sans Mono"
           "Noto Sans Mono CJK SC"
           "Noto Sans Mono CJK TC"

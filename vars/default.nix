@@ -1,4 +1,5 @@
 {mylib, ...}: {
+  ## BEGIN pkgs agnostic functions
   username = "proteus";
   userfullname = "Proteus Qian";
   useremail = "sudaku233@outlook.com";
@@ -35,4 +36,13 @@
   catppuccin_accent = "pink";
 
   storage_path = "/mnt/storage/data";
+  ## END pkgs dependent functions
+  ## BEGIN pkgs dependent functions
+  mk_for_pkgs = pkgs: {
+    monospace = {
+      name = "Iosevka Nerd Font Mono";
+      package = pkgs.nerd-fonts.iosevka;
+    };
+  };
+  ## END pkgs dependent functions
 }

@@ -19,7 +19,7 @@
           "alt+left=unbind"
           "alt+right=unbind"
         ];
-        font-family = "Iosevka Nerd Font Mono";
+        font-family = myvars.monospace.name;
         font-size = 14;
         scrollback-limit = 20000;
       }

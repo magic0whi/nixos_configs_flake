@@ -1,7 +1,7 @@
 {inputs}: let
   inherit (inputs.nixpkgs) lib;
 in {
-  ## BEGIN System agnostic functions
+  ## BEGIN pkgs agnostic functions
   # Use path relative to the root of the project
   relative_to_root = lib.path.append ../.;
 
@@ -54,11 +54,9 @@ in {
     else if scheme == "ssh"
     then 22
     else null;
-  ## END System agnostic functions
-  ## BEGIN System dependent functions
-  mk_for_system = _system: let
-    pkgs = inputs.nixpkgs.legacyPackages.${_system};
-  in {
+  ## END pkgs agnostic functions
+  ## BEGIN pkgs dependent functions
+  mk_for_pkgs = pkgs: {
     # Create a symlink of dir/file out of /nix/store (with prefix `custom_`)
     mk_out_of_store_symlink = path: let
       path_str = builtins.toString path;
@@ -86,7 +84,7 @@ in {
       hm_modules,
       machine_path,
       generate_iso ? false,
-      system ? _system,
+      system ? pkgs.stdenv.hostPlatform.system,
     }: let
       inherit
         (inputs)
@@ -153,5 +151,5 @@ in {
         ]);
     };
   };
-  ## END System dependent functions
+  ## END pkgs dependent functions
 }

@@ -25,10 +25,10 @@
       };
       scrolling.history = 10000;
       font = {
-        bold.family = "Iosevka Nerd Font Mono";
-        bold_italic.family = "Iosevka Nerd Font Mono";
-        italic.family = "Iosevka Nerd Font Mono";
-        normal.family = "Iosevka Nerd Font Mono";
+        bold.family = myvars.monospace.name;
+        bold_italic.family = myvars.monospace.name;
+        italic.family = myvars.monospace.name;
+        normal.family = myvars.monospace.name;
         size =
           if pkgs.stdenv.isDarwin
           then 14

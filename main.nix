@@ -24,9 +24,12 @@
     mylib = import ./libs {inherit inputs;};
     myvars = import ./vars {inherit lib mylib;};
   in
-    system: {
-      inherit inputs lib system myvars;
-      mylib = mylib // (mylib.mk_for_system system);
+    system: let
+      pkgs = nixpkgs.legacyPackages.${system};
+    in {
+      inherit inputs lib system;
+      myvars = myvars // (myvars.mk_for_pkgs pkgs);
+      mylib = mylib // (mylib.mk_for_pkgs pkgs);
     };
   import_each_system = supported_systems: lib.genAttrs supported_systems (system: import ./machines (args_fn system));
   ## END Functions
