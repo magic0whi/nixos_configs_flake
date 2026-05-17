@@ -122,7 +122,7 @@ in {
     (
       lib.genAttrs
       clean_runner_units
-      (name: {
+      (_: {
         serviceConfig.ExecStartPre = lib.mkAfter [
           (pkgs.writeShellScript "wait-for-forgejo" ''
             set -eufo pipefail

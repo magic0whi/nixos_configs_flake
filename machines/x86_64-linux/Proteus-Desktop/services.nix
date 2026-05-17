@@ -6,6 +6,7 @@
   ...
 }: {
   ## BEGIN services_monero.nix
+  systemd.services.monero.unitConfig.RequiresMountsFor = [myvars.storage_path];
   services.monero = {
     enable = true;
     dataDir = "${myvars.storage_path}/monero";

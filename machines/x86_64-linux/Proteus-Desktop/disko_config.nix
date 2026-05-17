@@ -12,11 +12,11 @@
           type = "luks";
           name = "crypted-${disk_id}";
           # passwordFile = "/tmp/dm_password.key";
-          initrdUnlock = false; # Manually manage in stage 2 by `environment.etc."crypttab"`
+          # initrdUnlock = false; # Manually manage in stage 2 by `environment.etc."crypttab"`
           # For boot.initrd.luks.device.<name>.*
           settings = {
             crypttabExtraOpts = ["nofail"];
-            keyFile = "/etc/dm_keyfile.key"; # TODO: Unsafe
+            # keyFile = "/etc/dm_keyfile.key"; # Conflicts with Cievis
             keyFileTimeout = 15;
             allowDiscards = true;
             bypassWorkqueues = true;

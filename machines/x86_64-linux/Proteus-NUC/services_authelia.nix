@@ -27,7 +27,7 @@ in {
     lib.mkMerge [
       (
         lib.genAttrs
-        clean_units (name: {serviceConfig.SupplementaryGroups = [config.services.redis.servers.authelia.group];})
+        clean_units (_: {serviceConfig.SupplementaryGroups = [config.services.redis.servers.authelia.group];})
       )
     ];
 

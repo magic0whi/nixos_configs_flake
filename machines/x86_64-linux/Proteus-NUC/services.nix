@@ -16,6 +16,7 @@
   in {
     allowedTCPPorts = [
       5201 # iperf3
+      (lib.toInt (builtins.head config.services.tang.listenStream)) # Tang
       22000 # Syncthing TCP transfers
       53317 # LocalSend (HTTP/TCP)
       # Open Sunshine TCP ports
@@ -190,4 +191,10 @@
     };
   };
   ## END services_caddy.nix
+  ## BEGIN services_tang.nix
+  services.tang = {
+    enable = true;
+    ipAddressAllow = ["192.168.1.0/24"];
+  };
+  ## END services_tang.nix
 }

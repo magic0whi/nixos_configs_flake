@@ -25,7 +25,7 @@ in {
   in
     lib.mkMerge [
       # Add RequiresMountsFor to wait for storage mounted
-      (lib.genAttrs clean_units (name: {unitConfig.RequiresMountsFor = [myvars.storage_path];}))
+      (lib.genAttrs clean_units (_: {unitConfig.RequiresMountsFor = [myvars.storage_path];}))
       # https://wiki.nixos.org/wiki/Nextcloud#Dynamic_configuration
       {
         nextcloud-custom-config = {
