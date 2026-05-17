@@ -40,7 +40,7 @@ repl:
   nix repl -f flake:nixpkgs
 
 # Remove all generations older than 7 days
-# on darwin, you may need to switch to root user to run this command
+# On darwin, you may need to switch to root user to run this command
 [group('nix')]
 clean:
   sudo nix profile wipe-history --profile /nix/var/nix/profiles/system --older-than 7d
@@ -76,12 +76,25 @@ fmt:
 gcroot:
   ls -al /nix/var/nix/gcroots/auto/
 
-# Verify all the store entries
-# Nix Store can contains corrupted entries if the nix store object has been
-# modified unexpectedly.
-# This command will verify all the store entries, and we need to fix the
-# corrupted entries manually via
+# Run all flake checks (including your new VM tests)
+[group('nix')]
+check:
+  nix flake check --keep-going --show-trace --verbose
+
+# Run a specific VM test
+[group('nix')]
+test-vm test_name:
+  nom build .#checks.x86_64-linux.{{test_name}} --show-trace --verbose
+
+# Run a specific VM test interactively (great for debugging)
+[group('nix')]
+test-vm-i test_name:
+  nix run .#checks.x86_64-linux.{{test_name}}.driverInteractive --show-trace --verbose
+
+# Nix Store can contains corrupted entries if the nix store object has been modified unexpectedly. This command will
+# verify all the store entries, and we need to fix the corrupted entries manually via
 # `sudo nix store delete <store-path-1> <store-path-2> ...`
+# Verify all the store entries
 [group('nix')]
 verify-store:
   nix store verify --all

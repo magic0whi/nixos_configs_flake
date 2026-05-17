@@ -13,20 +13,19 @@
 
   treefmt_eval = for_each_system (pkgs:
     treefmt-nix.lib.evalModule pkgs (_: {
-      # Used to find the project root
-      projectRootFile = "flake.nix";
+      projectRootFile = "flake.nix"; # Used to find the project root
       programs.alejandra.enable = true;
       programs.alejandra.package = alejandra.defaultPackage.${pkgs.stdenv.hostPlatform.system};
     }));
 
   args_fn = let
-    # The args given to other nix files
     mylib = import ./libs {inherit inputs;};
     myvars = import ./vars {inherit lib mylib;};
   in
     system: let
       pkgs = nixpkgs.legacyPackages.${system};
     in {
+      # The args given to other nix files
       inherit inputs lib system;
       myvars = myvars // (myvars.mk_for_pkgs pkgs);
       mylib = mylib // (mylib.mk_for_pkgs pkgs);
@@ -73,24 +72,27 @@ in {
   checks = let
     deploy_checks = builtins.mapAttrs (system: deployLib: deployLib.deployChecks self.deploy) deploy-rs.lib;
     my_checks = for_each_system (pkgs: let
-      test_results = import ./libs/tests.nix {inherit pkgs inputs;};
-    in {
-      # nix build .#checks.x86_64-linux.mylib_tests
-      mylib_tests =
-        if test_results == []
-        then
-          pkgs.runCommand "lib-tests-passed" {} ''
-            echo "All custom library unit tests passed on ${pkgs.stdenv.hostPlatform.system}!"
-            touch $out
-          ''
-        else
-          builtins.throw ''
-            Library unit tests failed on ${pkgs.stdenv.hostPlatform.system}!
-            ${builtins.toJSON test_results}
-          '';
+      lib_test_results = pkgs.callPackage ./libs/tests.nix {inherit inputs;};
+      vm_tests = import ./tests {inherit pkgs;};
+    in
+      {
+        # nix build .#checks.x86_64-linux.mylib_tests
+        mylib_tests =
+          if lib_test_results == []
+          then
+            pkgs.runCommand "lib-tests-passed" {} ''
+              echo "All custom library unit tests passed on ${pkgs.stdenv.hostPlatform.system}!"
+              touch $out
+            ''
+          else
+            builtins.throw ''
+              Library unit tests failed on ${pkgs.stdenv.hostPlatform.system}!
+              ${builtins.toJSON lib_test_results}
+            '';
 
-      format_check = treefmt_eval.${pkgs.stdenv.hostPlatform.system}.config.build.check self;
-    });
+        format_check = treefmt_eval.${pkgs.stdenv.hostPlatform.system}.config.build.check self;
+      }
+      // (lib.optionalAttrs pkgs.stdenv.isLinux vm_tests));
   in
     lib.recursiveUpdate deploy_checks my_checks;
 
