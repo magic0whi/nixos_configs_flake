@@ -1,6 +1,6 @@
 {myvars, ...}: let
   # LUKS-encrypted ZFS disk helper (460GB partition)
-  mkLuksZfsDisk = diskId: {
+  mk_luks_zfs_disk = diskId: {
     device = "/dev/disk/by-id/${diskId}";
     type = "disk";
     content = {
@@ -74,12 +74,12 @@ in {
         };
       };
       # --- 2. SATA Data Drives (LUKS + ZFS RAIDZ2) ---
-      sata1 = mkLuksZfsDisk "ata-ST500DM002-1BD142_S2A7EA2P";
-      sata2 = mkLuksZfsDisk "ata-WDC_WD5000AAKX-001CA0_WD-WMAYU5316042";
-      sata3 = mkLuksZfsDisk "ata-WDC_WD5000AAKX-60U6AA0_WD-WCC2E3HEXA48";
-      sata4 = mkLuksZfsDisk "ata-ST1000DM003-1CH162_S1DE5CWF";
-      sata5 = mkLuksZfsDisk "ata-ST1000LM048-2E7172_WKPEZYSN";
-      sata6 = mkLuksZfsDisk "ata-WDC_WD2002FYPS-02W3B0_WCAVY6186321";
+      sata1 = mk_luks_zfs_disk "ata-ST500DM002-1BD142_S2A7EA2P";
+      sata2 = mk_luks_zfs_disk "ata-WDC_WD5000AAKX-001CA0_WD-WMAYU5316042";
+      sata3 = mk_luks_zfs_disk "ata-WDC_WD5000AAKX-60U6AA0_WD-WCC2E3HEXA48";
+      sata4 = mk_luks_zfs_disk "ata-ST1000DM003-1CH162_S1DE5CWF";
+      sata5 = mk_luks_zfs_disk "ata-ST1000LM048-2E7172_WKPEZYSN";
+      sata6 = mk_luks_zfs_disk "ata-WDC_WD2002FYPS-02W3B0_WCAVY6186321";
     };
     # --- 3. ZFS Pools ---
     zpool = let

@@ -1,5 +1,6 @@
 {
   config,
+  lib,
   modulesPath,
   ...
 }: {
@@ -16,26 +17,26 @@
   # Ref: https://wiki.nixos.org/wiki/ZFS#ZFS_conflicting_with_systemd
   systemd.services.zfs-mount.enable = false;
 
-  # disko will take care of filesystems.*, swapDevices, boot.resumeDevice, boot.initrd.luks.devices
+  # disko will take care of filesystems.*, swapDevices, boot.resumeDevice, boot.initrd.luks.devices (not always work)
 
-  # TODO: Rewrite to `boot.initrd.luks.devices.<name>`
-  environment.etc."crypttab".text = let
-    sata1 = "ata-ST500DM002-1BD142_S2A7EA2P";
-    sata2 = "ata-WDC_WD5000AAKX-001CA0_WD-WMAYU5316042";
-    sata3 = "ata-WDC_WD5000AAKX-60U6AA0_WD-WCC2E3HEXA48";
-    sata4 = "ata-ST1000DM003-1CH162_S1DE5CWF";
-    sata5 = "ata-ST1000LM048-2E7172_WKPEZYSN";
-    sata6 = "ata-WDC_WD2002FYPS-02W3B0_WCAVY6186321";
-    mnt_opts = "nofail,luks,discard,no-read-workqueue,no-write-workqueue";
-    key_file = "/persistent/etc/dm_keyfile.key"; # TODO: Unsafe
-  in ''
-    crypted-${sata1} /dev/disk/by-id/${sata1}-part1 ${key_file} ${mnt_opts}
-    crypted-${sata2} /dev/disk/by-id/${sata2}-part1 ${key_file} ${mnt_opts}
-    crypted-${sata3} /dev/disk/by-id/${sata3}-part1 ${key_file} ${mnt_opts}
-    crypted-${sata4} /dev/disk/by-id/${sata4}-part1 ${key_file} ${mnt_opts}
-    crypted-${sata5} /dev/disk/by-id/${sata5}-part1 ${key_file} ${mnt_opts}
-    crypted-${sata6} /dev/disk/by-id/${sata6}-part1 ${key_file} ${mnt_opts}
-  '';
+  boot.initrd.luks.devices = let
+    satas = [
+      "ata-ST500DM002-1BD142_S2A7EA2P"
+      "ata-WDC_WD5000AAKX-001CA0_WD-WMAYU5316042"
+      "ata-WDC_WD5000AAKX-60U6AA0_WD-WCC2E3HEXA48"
+      "ata-ST1000DM003-1CH162_S1DE5CWF"
+      "ata-ST1000LM048-2E7172_WKPEZYSN"
+      "ata-WDC_WD2002FYPS-02W3B0_WCAVY6186321"
+    ];
+  in (lib.genAttrs satas (name: {
+    device = "/dev/disk/by-id/${name}-part1";
+    # fallbackToPassword = true;
+    crypttabExtraOpts = ["nofail"];
+    keyFile = "/persistent/etc/dm_keyfile.key"; # TODO: Unsafe
+    keyFileTimeout = 15;
+    allowDiscards = true;
+    bypassWorkqueues = true;
+  }));
 
   networking.useDHCP = true;
   networking.hostId = "953b2f69"; # ZFS requires this
