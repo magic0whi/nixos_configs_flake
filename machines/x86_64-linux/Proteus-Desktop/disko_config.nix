@@ -12,7 +12,7 @@
           type = "luks";
           name = "crypted-${disk_id}";
           # passwordFile = "/tmp/dm_password.key";
-          # initrdUnlock = false; # Manually manage in stage 2 by `environment.etc."crypttab"`
+          initrdUnlock = false; # Manually manage in stage 2 by `environment.etc."crypttab"`
           # For boot.initrd.luks.device.<name>.*
           settings = {
             crypttabExtraOpts = ["nofail"];
