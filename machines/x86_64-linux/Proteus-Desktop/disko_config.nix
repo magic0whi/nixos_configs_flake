@@ -1,7 +1,7 @@
 {myvars, ...}: let
   # LUKS-encrypted ZFS disk helper (460GB partition)
-  mk_luks_zfs_disk = diskId: {
-    device = "/dev/disk/by-id/${diskId}";
+  mk_luks_zfs_disk = disk_id: {
+    device = "/dev/disk/by-id/${disk_id}";
     type = "disk";
     content = {
       type = "gpt";
@@ -10,12 +10,14 @@
         size = "488385536K"; # Unit is KiB, ~500G
         content = {
           type = "luks";
-          name = "crypted-${diskId}";
+          name = "crypted-${disk_id}";
           # passwordFile = "/tmp/dm_password.key";
-          initrdUnlock = false;
+          initrdUnlock = false; # Manually manage in stage 2 by `environment.etc."crypttab"`
           # For boot.initrd.luks.device.<name>.*
           settings = {
+            crypttabExtraOpts = ["nofail"];
             keyFile = "/etc/dm_keyfile.key"; # TODO: Unsafe
+            keyFileTimeout = 15;
             allowDiscards = true;
             bypassWorkqueues = true;
             # fallbackToPassword = false;
@@ -74,6 +76,7 @@ in {
         };
       };
       # --- 2. SATA Data Drives (LUKS + ZFS RAIDZ2) ---
+      # Better list them here one-by-one than iterate and append at the end of this attrset
       sata1 = mk_luks_zfs_disk "ata-ST500DM002-1BD142_S2A7EA2P";
       sata2 = mk_luks_zfs_disk "ata-WDC_WD5000AAKX-001CA0_WD-WMAYU5316042";
       sata3 = mk_luks_zfs_disk "ata-WDC_WD5000AAKX-60U6AA0_WD-WCC2E3HEXA48";
