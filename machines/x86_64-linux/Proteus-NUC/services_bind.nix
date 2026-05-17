@@ -137,7 +137,7 @@
 
       ; EasyTier Hostnames
       ; For me `lib.foldlAttrs` takes a bit longer to understand
-      ; lib.foldlAttrs (acc: name: value: <new_acc>) acc attrset
+      ; lib.foldlAttrs (acc: name: val: <new_acc>) acc attrset
       ${let
         et_hosts = lib.filterAttrs (_: v: v ? et_ipv4 || v ? et_ipv6) myvars.networking.hosts_addr;
         et_v4_hosts = lib.foldlAttrs (acc: n: v: "${acc}\n${n}.et IN A ${v.et_ipv4}") "" et_hosts;
