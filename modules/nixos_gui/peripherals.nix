@@ -1,4 +1,12 @@
-{pkgs, ...}: {
+{
+  config,
+  lib,
+  myvars,
+  pkgs,
+  ...
+}: {
+  security.pam.services =
+    lib.mkIf config.home-manager.users.${myvars.username}.programs.swaylock.enable {swaylock = {};};
   # Audio(PipeWire)
   environment.systemPackages = [pkgs.pulseaudio]; # Provides `pactl`, which is required by some apps (e.g. sonic-pi)
 

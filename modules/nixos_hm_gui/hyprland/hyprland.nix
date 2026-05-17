@@ -201,7 +201,10 @@ in {
         key_press_enables_dpms = true;
         vrr = 1;
         # https://github.com/hyprwm/hyprlock/issues/779
-        allow_session_lock_restore = true;
+        allow_session_lock_restore =
+          if config.programs.hyprlock.enable
+          then true
+          else false;
       };
       windowrule = [
         "match:class ^imv$,float true"
@@ -241,11 +244,16 @@ in {
     systemd.variables = ["--all"];
   };
   # For dbus' loginctl lock/unlock
-  services.hypridle = {
+  services.hypridle = let
+    locking_utility =
+      if config.programs.hyprlock.enable
+      then lib.getExe config.programs.hyprlock.package
+      else lib.getExe config.programs.swaylock.package; # Default to swaylock
+  in {
     enable = true;
     settings = {
       general = {
-        lock_cmd = lib.mkDefault "pidof hyprlock || (hyprlock && loginctl unlock-session)";
+        lock_cmd = lib.mkDefault "pidof ${locking_utility} || (${locking_utility} && loginctl unlock-session)";
         before_sleep_cmd = "loginctl lock-session"; # lock before suspend.
         after_sleep_cmd = "hyprctl dispatch dpms on"; # avoid have to press a key twice to turn on the display.
       };
@@ -262,7 +270,11 @@ in {
       ];
     };
   };
-  programs.hyprlock.enable = true;
+  programs.hyprlock.enable = false;
+  programs.swaylock.enable =
+    if config.programs.hyprlock.enable
+    then false
+    else true;
   home.pointerCursor.hyprcursor.enable = true;
   services.cliphist.enable = true;
 }

@@ -143,10 +143,6 @@ in {
       # render = {cm_auto_hdr = 0; cm_fs_passthrough = 0;};
     };
   };
-  services.hypridle.settings.general = {
-    lock_cmd = "lock_cmd = pidof hyprlock || (brightnessctl -sd usb-3-11-3-1::kbd_backlight set 0; hyprlock && loginctl unlock-session)";
-    unlock_cmd = "brightnessctl -rd usb-3-11-3-1::kbd_backlight";
-  };
   programs.mpv.profiles.common.vulkan-device =
     if config.wayland.windowManager.hyprland.nvidia
     then "NVIDIA GeForce RTX 3070 Laptop GPU"

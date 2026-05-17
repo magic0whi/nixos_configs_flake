@@ -80,6 +80,7 @@
             "class<libreoffice-startcenter>" = "&#xf376;"; # nf-linux-libreoffice
             "class<qemu>" = "&#xeb7b;"; # nf-cod-vm_running
             "class<superProductivity>" = "&#xf1ad0;"; # nf-md-timer_check
+            "class<electron>" = "&#xe62e;"; # nf-custom-electron
           };
         };
         idle_inhibitor = {
