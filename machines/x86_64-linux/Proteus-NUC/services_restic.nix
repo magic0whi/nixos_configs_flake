@@ -85,6 +85,7 @@
       // {
         repository = "s3:s3.${myvars.domain}/backups/${config.networking.hostName}_immich";
         paths = [config.services.immich.mediaLocation];
+        pruneOpts = ["--keep-last 1"];
         exclude =
           shared.exclude
           ++ [
