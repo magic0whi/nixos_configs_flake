@@ -15,7 +15,7 @@
     treefmt-nix.lib.evalModule pkgs (_: {
       projectRootFile = "flake.nix"; # Used to find the project root
       programs.alejandra.enable = true;
-      programs.alejandra.package = alejandra.defaultPackage.${pkgs.stdenv.hostPlatform.system};
+      programs.alejandra.package = alejandra.packages.${pkgs.stdenv.hostPlatform.system};
     }));
 
   args_fn = let
@@ -101,7 +101,7 @@ in {
   devShells = for_each_system (
     pkgs: {
       default = pkgs.mkShell {
-        buildInputs = [alejandra.defaultPackage.${pkgs.stdenv.hostPlatform.system}];
+        buildInputs = [alejandra.packages.${pkgs.stdenv.hostPlatform.system}];
         name = "nixos-config";
       };
     }
