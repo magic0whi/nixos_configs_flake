@@ -15,7 +15,7 @@
     then "eDP-1,highres,auto,${dpi_scale},bitdepth,8,cm,adobe"
     else "eDP-1,highres,auto,${dpi_scale},bitdepth,10,cm,adobe";
   secondary_monitor = "HDMI-A-1,highres,auto-left,2,bitdepth,10,cm,adobe";
-  third_monitor = "DP-3,highres,auto-left,1.67,bitdepth,10,cm,adobe";
+  third_monitor = "DP-3,highres,auto-up,1.67,bitdepth,10,cm,adobe";
 in {
   imports = mylib.scan_path ./.;
   ## BEGIN packages.nix
