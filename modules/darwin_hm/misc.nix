@@ -91,11 +91,13 @@
     lib.hm.dag.entryAfter [ "writeBoundary" ] ''
       # Set UTIs
       ${duti_exe} -s io.mpv public.movie viewer
+      ${duti_exe} -s info.sioyek.sioyek com.adobe.pdf viewer
       # Set file extensions
       ${duti_exe} -s io.mpv .mkv viewer
       ${duti_exe} -s io.mpv .mp4 viewer
       ${duti_exe} -s com.google.Chrome .webm viewer
       ${duti_exe} -s com.apple.Preview .heic viewer
+      ${duti_exe} -s info.sioyek.sioyek .pdf viewer
     '';
   ## END associations.nix
 }
