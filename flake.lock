@@ -474,15 +474,15 @@
         "pre-commit-hooks": "pre-commit-hooks"
       },
       "locked": {
-        "lastModified": 1780583164,
-        "narHash": "sha256-Wn3v/plODT95Xh+F10d7Qd8h2AKFsM8B4KVYKnjlAGo=",
-        "rev": "c13ca9adcfb39914efcb88e18c628e95e2ba51e9",
+        "lastModified": 1788312802,
+        "narHash": "sha256-eKXcJ+lk86wb/FN+mtPSFgfaXsdeI43AS5Z42B/SlME=",
+        "rev": "7059b2106bc0a9dfcdd74636b4ee60bfda5f6561",
         "type": "tarball",
-        "url": "https://git.lix.systems/api/v1/repos/lix-project/lix/archive/c13ca9adcfb39914efcb88e18c628e95e2ba51e9.tar.gz?rev=c13ca9adcfb39914efcb88e18c628e95e2ba51e9"
+        "url": "https://git.lix.systems/api/v1/repos/lix-project/lix/archive/7059b2106bc0a9dfcdd74636b4ee60bfda5f6561.tar.gz?rev=7059b2106bc0a9dfcdd74636b4ee60bfda5f6561"
       },
       "original": {
         "type": "tarball",
-        "url": "https://git.lix.systems/lix-project/lix/archive/c13ca9adcfb39914efcb88e18c628e95e2ba51e9.tar.gz"
+        "url": "https://git.lix.systems/lix-project/lix/archive/7059b2106bc0a9dfcdd74636b4ee60bfda5f6561.tar.gz"
       }
     },
     "lix-module": {
@@ -497,15 +497,15 @@
         ]
       },
       "locked": {
-        "lastModified": 1779730214,
+        "lastModified": 1787347232,
         "narHash": "sha256-Ikdf593tWTFMkKhtScxE+t2fV+Myh8n4JeYU/0Xc8H8=",
-        "rev": "727d859b6f5f3289ce49fe26146b3f006387d457",
+        "rev": "c5b8d8576206ddce31b86e336476c2f9b8361085",
         "type": "tarball",
-        "url": "https://git.lix.systems/api/v1/repos/lix-project/nixos-module/archive/727d859b6f5f3289ce49fe26146b3f006387d457.tar.gz?rev=727d859b6f5f3289ce49fe26146b3f006387d457"
+        "url": "https://git.lix.systems/api/v1/repos/lix-project/nixos-module/archive/c5b8d8576206ddce31b86e336476c2f9b8361085.tar.gz?rev=c5b8d8576206ddce31b86e336476c2f9b8361085"
       },
       "original": {
         "type": "tarball",
-        "url": "https://git.lix.systems/lix-project/nixos-module/archive/727d859b6f5f3289ce49fe26146b3f006387d457.tar.gz"
+        "url": "https://git.lix.systems/lix-project/nixos-module/archive/c5b8d8576206ddce31b86e336476c2f9b8361085.tar.gz"
       }
     },
     "lowdown-src": {
