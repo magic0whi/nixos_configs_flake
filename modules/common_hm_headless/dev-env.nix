@@ -56,6 +56,7 @@
       nixd
       taplo # TOML LSP
       kdlfmt
+      beancount-language-server
     ])
     ++ (with dev-flake.devShells.${pkgs.stdenv.system}.latex; nativeBuildInputs ++ buildInputs)
     # NOTE: Requires bootstrap GHC
