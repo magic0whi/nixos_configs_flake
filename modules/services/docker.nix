@@ -5,19 +5,9 @@
   pkgs,
   ...
 }:
-let
-  docker_cidr = "172.16.0.0-172.31.255.252";
-in
 {
   services.resolved.settings.Resolve.DNSStubListenerExtra = [ "172.17.0.1" ]; # for split DNS
   users.users.${const.username}.extraGroups = [ "docker" ];
-  #  With auto_redirect enabled, sing-box allocates a dynamic local TCP port and installs several nft rules. Because
-  # `redirect` rewrites the packet destination to the host, traffic finally enters the INPUT chain. But nixos-fw's
-  # default-drop INPUT policy silently dropped these packets. Accepting 172.18.0.0/16 on INPUT covers all Docker bridge
-  # subnets regardless of bridge name or port changes across restarts.
-  networking.firewall.extraInputRules = lib.mkIf config.services.sing-box.enable ''
-    ip saddr { ${docker_cidr} } accept comment "Allow Docker to reach auto_redirect ports"
-  '';
   systemd.services.docker.path = lib.mkIf (config.virtualisation.docker.daemon.settings.firewall-backend == "nftables") [
     pkgs.nftables
   ];

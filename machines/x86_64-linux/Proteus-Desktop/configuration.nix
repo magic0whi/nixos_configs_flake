@@ -38,9 +38,6 @@ in
     DHCP = "no";
     networkConfig.IPv6AcceptRA = true;
   };
-  networking.firewall.extraInputRules = ''
-    ip saddr 192.168.1.21 accept comment "Allow LAN AP clients to reach auto_redirect ports"
-  '';
   ## END network.nix
   ## BEGIN hardware.nix
   boot.initrd.availableKernelModules = lib.optional config.boot.initrd.systemd.network.enable "r8169";

@@ -69,11 +69,6 @@ in
       prefixLength = lib.toInt (lib.last (lib.splitString "/" nics.wireless.ipv4));
     }
   ];
-  networking.firewall.extraInputRules = ''
-    ip saddr ${
-      config.vars.hostAddrs.${hostname}.wireless.ipv4
-    } accept comment "Allow hostapd clients to reach auto_redirect ports"
-  '';
   services.dnsmasq = {
     enable = true;
     resolveLocalQueries = false; # Don't run on `127.0.0.1`

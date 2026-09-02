@@ -66,9 +66,6 @@ in
   ## END sriov.nix
   ## BEGIN libvirtd.nix
   users.users.${const.username}.extraGroups = [ "libvirtd" ];
-  networking.firewall.extraInputRules = lib.mkIf config.services.sing-box.enable ''
-    ip saddr ${const.networking.libvirtNetCidr} accept comment "Allow Libvirt to reach auto_redirect ports"
-  '';
   systemd.network = lib.mkIf (!config.services.sing-box.enable) {
     netdevs."20-macvtap0" = {
       netdevConfig = {
