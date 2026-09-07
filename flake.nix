@@ -87,11 +87,11 @@
     flake-parts.url = "github:hercules-ci/flake-parts/f7c1a2d347e4c52d5fb8d10cb4d94b5884e546fb";
     # Pinned as of 2026-06-05 17:32
     lix = {
-      url = "https://git.lix.systems/lix-project/lix/archive/7059b2106bc0a9dfcdd74636b4ee60bfda5f6561.tar.gz";
+      url = "https://git.lix.systems/lix-project/lix/archive/c13ca9adcfb39914efcb88e18c628e95e2ba51e9.tar.gz";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     lix-module = {
-      url = "https://git.lix.systems/lix-project/nixos-module/archive/c5b8d8576206ddce31b86e336476c2f9b8361085.tar.gz";
+      url = "https://git.lix.systems/lix-project/nixos-module/archive/727d859b6f5f3289ce49fe26146b3f006387d457.tar.gz";
       inputs = {
         nixpkgs.follows = "nixpkgs";
         lix.follows = "lix";
