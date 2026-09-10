@@ -120,6 +120,11 @@
       ];
       language-server = {
         yaml-language-server.config.yaml.format.singleQuote = true;
+        beancount-language-server.config = {
+          journal_file = "main.bean";
+          completion.fuzzy_match_accounts = true;
+          diagnosticFlags = [ "!" ]; # Surface incompleted transcation as warning
+        };
         ltex = {
           command = "ltex-ls-plus";
           config.ltex = {
